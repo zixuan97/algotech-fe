@@ -1,25 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import React from 'react';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import AuthRoute from './components/auth/AuthRoute';
+import AuthState from './context/auth/AuthState';
+import Login from './pages/Login';
+import { setAuthToken } from './utils/authUtils';
+import Home from './pages/Home';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#1F1646'
+        },
+        secondary: {
+            main: '#96694C'
+        }
+    },
+    typography: {
+        allVariants: {
+            fontFamily: 'Poppins',
+            textTransform: 'none',
+            fontSize: 14
+        }
+    }
+});
+
+const App = () => {
+    const token = localStorage.token;
+    React.useEffect(() => {
+        if (localStorage.token) {
+            setAuthToken(localStorage.token);
+        }
+    }, [token]);
+    return (
+        <ThemeProvider theme={theme}>
+            <AuthState>
+                <Router>
+                    <Routes>
+                        <Route
+                            path='/'
+                            element={
+                                <AuthRoute redirectTo='/login'>
+                                    <Home />
+                                </AuthRoute>
+                            }
+                        />
+                        <Route path='/login' element={<Login />} />
+                    </Routes>
+                </Router>
+            </AuthState>
+        </ThemeProvider>
+    );
+};
 
 export default App;
