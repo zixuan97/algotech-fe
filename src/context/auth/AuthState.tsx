@@ -7,6 +7,9 @@ import { PropsWithChildren } from 'react';
 import { getAxiosErrorMsg } from 'src/utils/errorUtils';
 import { UserInput } from 'src/pages/Login';
 import apiRoot from 'src/services/apiRoot';
+import useNext from './useNext'
+
+
 
 const AuthState = (props: PropsWithChildren) => {
     const initialState: AuthStateAttr = {
@@ -17,7 +20,7 @@ const AuthState = (props: PropsWithChildren) => {
     };
 
     const [state, dispatch] = useReducer(authReducer, initialState);
-
+    const nextState = useNext(state);
     // load user - check which user is logged in and get user data
     const loadUser = async () => {
         try {
@@ -47,8 +50,9 @@ const AuthState = (props: PropsWithChildren) => {
             dispatch({
                 type: AuthActionTypes.LOGIN_SUCCESS,
                 payload: res.data
-            });
-
+            })
+            // added to await state changes before proceeding to next action
+            await nextState();
             loadUser();
         } catch (e) {
             dispatch({
