@@ -25,6 +25,10 @@ const theme = createTheme({
     }
 });
 
+// if (localStorage.token) {
+//     setAuthToken(localStorage.token);
+// }
+
 const App = () => {
     const token = localStorage.token;
     React.useEffect(() => {
