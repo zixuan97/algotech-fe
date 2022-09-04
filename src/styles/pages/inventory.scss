@@ -1,0 +1,31 @@
+@use '../variables/colors.scss';
+@use '../variables/fonts.scss';
+@use '../common/common.scss';
+
+.createProduct {
+	display: flex;
+    margin-top: 1%;
+    justify-content: center;
+}
+
+.createProduct-box {
+	@extend .container-center;
+	flex-direction: column;
+	color: colors.$primary;
+	font-family: fonts.$primary-font;
+}
+
+.create-product-container {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+}
+
+.create-btn {
+	width: 100%;
+}
+
+.cancel-btn {
+	width: 100%;
+}
+

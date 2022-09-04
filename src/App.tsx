@@ -4,8 +4,11 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import AuthRoute from './components/auth/AuthRoute';
 import AuthState from './context/auth/AuthState';
 import Login from './pages/Login';
+import CreateProduct from './pages/inventory/CreateProduct';
 import { setAuthToken } from './utils/authUtils';
 import Home from './pages/Home';
+import Appbar from './components/common/Appbar';
+import Sidebar from './components/common/Sidebar';
 
 const theme = createTheme({
     palette: {
@@ -30,6 +33,7 @@ const theme = createTheme({
 // }
 
 const App = () => {
+    const [open, setOpen] = React.useState<boolean>(false);
     const token = localStorage.token;
     React.useEffect(() => {
         setAuthToken(localStorage.token);
@@ -39,6 +43,13 @@ const App = () => {
             <AuthState>
                 <Router>
                     <Routes>
+                        <Route path='/login' element={<Login />} />
+                    </Routes>
+
+                    <Appbar toggleOpen={setOpen} />
+                        <Sidebar open={open} toggleOpen={setOpen} />
+                    <Routes>
+                       
                         <Route
                             path='/'
                             element={
@@ -47,7 +58,7 @@ const App = () => {
                                 </AuthRoute>
                             }
                         />
-                        <Route path='/login' element={<Login />} />
+                        <Route path='/createProduct' element={<CreateProduct />} />
                     </Routes>
                 </Router>
             </AuthState>
