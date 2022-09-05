@@ -208,7 +208,7 @@ const ViewProduct = () => {
                     className='create-btn'
                     color='primary'
                     onClick={() => {
-                      navigate('/');
+                      navigate('/products');
                     }}
                   >
                     Back

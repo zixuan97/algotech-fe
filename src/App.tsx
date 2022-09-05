@@ -10,6 +10,7 @@ import Home from './pages/Home';
 import Appbar from './components/common/Appbar';
 import Sidebar from './components/common/Sidebar';
 import ViewProduct from './pages/inventory/ViewProduct';
+import ViewAllProducts from './pages/inventory/ViewAllProducts';
 
 const theme = createTheme({
   palette: {
@@ -60,6 +61,7 @@ const App = () => {
             />
             <Route path='/createProduct' element={<CreateProduct />} />
             <Route path='/viewProduct' element={<ViewProduct />} />
+            <Route path='/products' element={<ViewAllProducts />} />
           </Routes>
         </Router>
       </AuthState>
