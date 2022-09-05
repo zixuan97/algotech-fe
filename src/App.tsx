@@ -9,23 +9,24 @@ import { setAuthToken } from './utils/authUtils';
 import Home from './pages/Home';
 import Appbar from './components/common/Appbar';
 import Sidebar from './components/common/Sidebar';
+import ViewProduct from './pages/inventory/ViewProduct';
 
 const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#1F1646'
-        },
-        secondary: {
-            main: '#96694C'
-        }
+  palette: {
+    primary: {
+      main: '#1F1646'
     },
-    typography: {
-        allVariants: {
-            fontFamily: 'Poppins',
-            textTransform: 'none',
-            fontSize: 14
-        }
+    secondary: {
+      main: '#96694C'
     }
+  },
+  typography: {
+    allVariants: {
+      fontFamily: 'Poppins',
+      textTransform: 'none',
+      fontSize: 14
+    }
+  }
 });
 
 // if (localStorage.token) {
@@ -33,37 +34,37 @@ const theme = createTheme({
 // }
 
 const App = () => {
-    const [open, setOpen] = React.useState<boolean>(false);
-    const token = localStorage.token;
-    React.useEffect(() => {
-        setAuthToken(localStorage.token);
-    }, [token]);
-    return (
-        <ThemeProvider theme={theme}>
-            <AuthState>
-                <Router>
-                    <Routes>
-                        <Route path='/login' element={<Login />} />
-                    </Routes>
+  const [open, setOpen] = React.useState<boolean>(false);
+  const token = localStorage.token;
+  React.useEffect(() => {
+    setAuthToken(localStorage.token);
+  }, [token]);
+  return (
+    <ThemeProvider theme={theme}>
+      <AuthState>
+        <Router>
+          <Routes>
+            <Route path='/login' element={<Login />} />
+          </Routes>
 
-                    <Appbar toggleOpen={setOpen} />
-                        <Sidebar open={open} toggleOpen={setOpen} />
-                    <Routes>
-                       
-                        <Route
-                            path='/'
-                            element={
-                                <AuthRoute redirectTo='/login'>
-                                    <Home />
-                                </AuthRoute>
-                            }
-                        />
-                        <Route path='/createProduct' element={<CreateProduct />} />
-                    </Routes>
-                </Router>
-            </AuthState>
-        </ThemeProvider>
-    );
+          <Appbar toggleOpen={setOpen} />
+          <Sidebar open={open} toggleOpen={setOpen} />
+          <Routes>
+            <Route
+              path='/'
+              element={
+                <AuthRoute redirectTo='/login'>
+                  <Home />
+                </AuthRoute>
+              }
+            />
+            <Route path='/createProduct' element={<CreateProduct />} />
+            <Route path='/viewProduct' element={<ViewProduct />} />
+          </Routes>
+        </Router>
+      </AuthState>
+    </ThemeProvider>
+  );
 };
 
 export default App;

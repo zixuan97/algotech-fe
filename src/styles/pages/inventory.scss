@@ -3,29 +3,61 @@
 @use '../common/common.scss';
 
 .createProduct {
-	display: flex;
-    margin-top: 1%;
-    justify-content: center;
+  margin-top: 1%;
+  display: flex;
+  justify-content: center;
 }
 
 .createProduct-box {
-	@extend .container-center;
-	flex-direction: column;
-	color: colors.$primary;
-	font-family: fonts.$primary-font;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  color: colors.$primary;
+  font-family: fonts.$primary-font;
+  width: 60%;
 }
 
-.create-product-container {
-	display: flex;
-	justify-content: center;
-	flex-direction: column;
+.create-product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px 20px;
+  margin: 2% 2% 2% 2%;
 }
 
-.create-btn {
-	width: 100%;
+.headerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.cancel-btn {
-	width: 100%;
+.topContent {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+  gap: 15px 20px;
 }
 
+.textFields {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 15px 20px;
+}
+
+.rowGroup {
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px 10px;
+}
+
+.viewButtonGroup {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px 10px;
+}

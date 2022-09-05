@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   FormGroup,
@@ -46,7 +47,7 @@ const tags = [
   }
 ];
 
-const CreateProduct = () => {
+const ViewProduct = () => {
   const [unit, setUnit] = useState('');
   const [category, setCategory] = useState('');
   const [tag, setTag] = useState('');
@@ -60,13 +61,32 @@ const CreateProduct = () => {
   const handleTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTag(event.target.value);
   };
+  const navigate = useNavigate();
 
   return (
     <>
       <div className='createProduct'>
         <Box className='createProduct-box'>
           <div className='headerContent'>
-            <h1>Create New Product</h1>
+            <h1>View Product: </h1>
+            <div className='buttonGroup'>
+              <Button
+                type='submit'
+                variant='contained'
+                className='create-btn'
+                color='primary'
+              >
+                EDIT
+              </Button>
+              <Button
+                type='submit'
+                variant='contained'
+                className='create-btn'
+                color='primary'
+              >
+                DELETE
+              </Button>
+            </div>
           </div>
 
           <Paper elevation={2}>
@@ -181,17 +201,17 @@ const CreateProduct = () => {
                   variant='standard'
                 />
 
-                <div className='buttonGroup'>
-                  <Button variant='text' className='cancel-btn' color='primary'>
-                    CANCEL
-                  </Button>
+                <div className='viewButtonGroup'>
                   <Button
                     type='submit'
                     variant='contained'
                     className='create-btn'
                     color='primary'
+                    onClick={() => {
+                      navigate('/');
+                    }}
                   >
-                    CREATE PRODUCT
+                    Back
                   </Button>
                 </div>
               </FormGroup>
@@ -203,4 +223,4 @@ const CreateProduct = () => {
   );
 };
 
-export default CreateProduct;
+export default ViewProduct;
