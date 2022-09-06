@@ -1,0 +1,63 @@
+@use '../variables/colors.scss';
+@use '../variables/fonts.scss';
+@use '../common/common.scss';
+
+.create-product {
+  margin-top: 1%;
+  display: flex;
+  justify-content: center;
+}
+
+.create-product-box {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  color: colors.$primary;
+  font-family: fonts.$primary-font;
+  width: 60%;
+}
+
+.create-product-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px 20px;
+  margin: 2% 2% 2% 2%;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.top-content {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+  gap: 15px 20px;
+}
+
+.text-fields {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  gap: 15px 20px;
+}
+
+.row-group {
+  display: flex;
+  flex-direction: row;
+  column-gap: 10px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px 10px;
+}
+
+.view-button-group {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px 10px;
+}
