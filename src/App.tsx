@@ -6,53 +6,52 @@ import AuthState from './context/auth/AuthState';
 import Login from './pages/Login';
 import { setAuthToken } from './utils/authUtils';
 import Home from './pages/Home';
+import Inventory from './pages/Inventory';
 
 const theme = createTheme({
-    palette: {
-        primary: {
-            main: '#1F1646'
-        },
-        secondary: {
-            main: '#96694C'
-        }
+  palette: {
+    primary: {
+      main: '#1F1646'
     },
-    typography: {
-        allVariants: {
-            fontFamily: 'Poppins',
-            textTransform: 'none',
-            fontSize: 14
-        }
+    secondary: {
+      main: '#96694C'
     }
+  },
+  typography: {
+    allVariants: {
+      fontFamily: 'Poppins',
+      textTransform: 'none',
+      fontSize: 14
+    }
+  }
 });
 
-// if (localStorage.token) {
-//     setAuthToken(localStorage.token);
-// }
-
 const App = () => {
-    const token = localStorage.token;
-    React.useEffect(() => {
-        setAuthToken(localStorage.token);
-    }, [token]);
-    return (
-        <ThemeProvider theme={theme}>
-            <AuthState>
-                <Router>
-                    <Routes>
-                        <Route
-                            path='/'
-                            element={
-                                <AuthRoute redirectTo='/login'>
-                                    <Home />
-                                </AuthRoute>
-                            }
-                        />
-                        <Route path='/login' element={<Login />} />
-                    </Routes>
-                </Router>
-            </AuthState>
-        </ThemeProvider>
-    );
+  const token = localStorage.token;
+  React.useEffect(() => {
+    setAuthToken(localStorage.token);
+  }, [token]);
+  return (
+    <ThemeProvider theme={theme}>
+      <AuthState>
+        <Router>
+          <Routes>
+            <Route
+              path='/'
+              element={
+                <AuthRoute redirectTo='/login'>
+                  <Home>
+                    <Inventory />
+                  </Home>
+                </AuthRoute>
+              }
+            />
+            <Route path='/login' element={<Login />} />
+          </Routes>
+        </Router>
+      </AuthState>
+    </ThemeProvider>
+  );
 };
 
 export default App;
