@@ -48,9 +48,9 @@ const tags = [
 ];
 
 const ViewProduct = () => {
-  const [unit, setUnit] = useState('');
-  const [category, setCategory] = useState('');
-  const [tag, setTag] = useState('');
+  const [unit, setUnit] = useState<String>('');
+  const [category, setCategory] = useState<String>('');
+  const [tag, setTag] = useState<String>('');
 
   const handleUnitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUnit(event.target.value);
@@ -65,11 +65,11 @@ const ViewProduct = () => {
 
   return (
     <>
-      <div className='createProduct'>
-        <Box className='createProduct-box'>
-          <div className='headerContent'>
+      <div className='create-product'>
+        <Box className='create-product-box'>
+          <div className='header-content'>
             <h1>View Product: </h1>
-            <div className='buttonGroup'>
+            <div className='button-group'>
               <Button
                 type='submit'
                 variant='contained'
@@ -92,7 +92,7 @@ const ViewProduct = () => {
           <Paper elevation={2}>
             <form>
               <FormGroup className='create-product-form'>
-                <div className='topContent'>
+                <div className='top-content'>
                   <Box
                     sx={{
                       width: 200,
@@ -105,7 +105,7 @@ const ViewProduct = () => {
                     }}
                   />
 
-                  <div className='textFields'>
+                  <div className='text-fields'>
                     <TextField
                       required
                       fullWidth
@@ -122,7 +122,7 @@ const ViewProduct = () => {
                       name='productName'
                       placeholder='eg.: Nasi Lemak Popcorn'
                     />
-                    <div className='rowGroup'>
+                    <div className='row-group'>
                       <TextField
                         required
                         fullWidth
@@ -160,7 +160,7 @@ const ViewProduct = () => {
                   </div>
                 </div>
 
-                <div className='rowGroup'>
+                <div className='row-group'>
                   <TextField
                     id='outlined-select-category'
                     fullWidth
@@ -201,7 +201,7 @@ const ViewProduct = () => {
                   variant='standard'
                 />
 
-                <div className='viewButtonGroup'>
+                <div className='view-button-group'>
                   <Button
                     type='submit'
                     variant='contained'

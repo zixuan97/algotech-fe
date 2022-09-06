@@ -47,9 +47,9 @@ const tags = [
 ];
 
 const CreateProduct = () => {
-  const [unit, setUnit] = useState('');
-  const [category, setCategory] = useState('');
-  const [tag, setTag] = useState('');
+  const [unit, setUnit] = useState<String>('');
+  const [category, setCategory] = useState<String>('');
+  const [tag, setTag] = useState<String>('');
 
   const handleUnitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUnit(event.target.value);
@@ -63,16 +63,16 @@ const CreateProduct = () => {
 
   return (
     <>
-      <div className='createProduct'>
-        <Box className='createProduct-box'>
-          <div className='headerContent'>
+      <div className='create-product'>
+        <Box className='create-product-box'>
+          <div className='header-content'>
             <h1>Create New Product</h1>
           </div>
 
           <Paper elevation={2}>
             <form>
               <FormGroup className='create-product-form'>
-                <div className='topContent'>
+                <div className='top-content'>
                   <Box
                     sx={{
                       width: 200,
@@ -85,7 +85,7 @@ const CreateProduct = () => {
                     }}
                   />
 
-                  <div className='textFields'>
+                  <div className='text-fields'>
                     <TextField
                       required
                       fullWidth
@@ -102,7 +102,7 @@ const CreateProduct = () => {
                       name='productName'
                       placeholder='eg.: Nasi Lemak Popcorn'
                     />
-                    <div className='rowGroup'>
+                    <div className='row-group'>
                       <TextField
                         required
                         fullWidth
@@ -140,7 +140,7 @@ const CreateProduct = () => {
                   </div>
                 </div>
 
-                <div className='rowGroup'>
+                <div className='row-group'>
                   <TextField
                     id='outlined-select-category'
                     fullWidth
@@ -181,7 +181,7 @@ const CreateProduct = () => {
                   variant='standard'
                 />
 
-                <div className='buttonGroup'>
+                <div className='button-group'>
                   <Button variant='text' className='cancel-btn' color='primary'>
                     CANCEL
                   </Button>
