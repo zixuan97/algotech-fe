@@ -7,10 +7,9 @@ import Login from './pages/Login';
 import CreateProduct from './pages/inventory/CreateProduct';
 import { setAuthToken } from './utils/authUtils';
 import Home from './pages/Home';
-import Appbar from './components/common/Appbar';
-import Sidebar from './components/common/Sidebar';
 import ViewProduct from './pages/inventory/ViewProduct';
 import ViewAllProducts from './pages/inventory/ViewAllProducts';
+import Inventory from './pages/Inventory';
 
 const theme = createTheme({
   palette: {
@@ -35,7 +34,6 @@ const theme = createTheme({
 // }
 
 const App = () => {
-  const [open, setOpen] = React.useState<boolean>(false);
   const token = localStorage.token;
   React.useEffect(() => {
     setAuthToken(localStorage.token);
@@ -46,11 +44,6 @@ const App = () => {
         <Router>
           <Routes>
             <Route path='/login' element={<Login />} />
-          </Routes>
-
-          <Appbar toggleOpen={setOpen} />
-          <Sidebar open={open} toggleOpen={setOpen} />
-          <Routes>
             <Route
               path='/'
               element={
@@ -58,10 +51,15 @@ const App = () => {
                   <Home />
                 </AuthRoute>
               }
-            />
-            <Route path='/createProduct' element={<CreateProduct />} />
-            <Route path='/viewProduct' element={<ViewProduct />} />
-            <Route path='/products' element={<ViewAllProducts />} />
+            >
+              <Route path='inventory' element={<Inventory />}></Route>
+              <Route
+                path='inventory/createProduct'
+                element={<CreateProduct />}
+              />
+              <Route path='inventory/viewProduct' element={<ViewProduct />} />
+              <Route path='inventory/products' element={<ViewAllProducts />} />
+            </Route>
           </Routes>
         </Router>
       </AuthState>

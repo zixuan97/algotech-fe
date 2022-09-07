@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   Box,
   FormGroup,
   TextField,
   Paper,
   MenuItem,
-  Button
+  Button,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import '../../styles/pages/inventory.scss';
+import { ChevronLeft } from '@mui/icons-material';
 
 const units = [
   {
@@ -47,7 +50,21 @@ const tags = [
   }
 ];
 
+type ViewProductSearchParams = URLSearchParams & {
+  id: string | null;
+  edit: boolean | null;
+};
+
 const ViewProduct = () => {
+  const params = new Proxy<Partial<ViewProductSearchParams>>(
+    new URLSearchParams(window.location.search),
+    {
+      get: (searchParams: URLSearchParams, prop: string) =>
+        searchParams.get(prop)
+    }
+  );
+  const { id, edit } = params;
+  console.log(id, edit);
   const [unit, setUnit] = useState<String>('');
   const [category, setCategory] = useState<String>('');
   const [tag, setTag] = useState<String>('');
@@ -65,6 +82,11 @@ const ViewProduct = () => {
 
   return (
     <>
+      <Tooltip title='Return to Product Inventory' enterDelay={300}>
+        <IconButton size='large' onClick={() => navigate('/inventory')}>
+          <ChevronLeft />
+        </IconButton>
+      </Tooltip>
       <div className='create-product'>
         <Box className='create-product-box'>
           <div className='header-content'>

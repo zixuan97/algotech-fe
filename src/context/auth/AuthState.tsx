@@ -16,7 +16,7 @@ import asyncFetchCallback from 'src/services/asyncFetchCallback';
 const AuthState = (props: PropsWithChildren) => {
   const initialState: AuthStateAttr = {
     token: localStorage.getItem('token'),
-    isAuthenticated: false,
+    isAuthenticated: !!localStorage.getItem('token'),
     user: null,
     error: null
   };

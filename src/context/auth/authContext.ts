@@ -4,7 +4,7 @@ import { AuthStateInit } from './authTypes';
 // TODO: externalise initial state to an object
 const authContext = createContext({
   token: localStorage.getItem('token'),
-  isAuthenticated: false,
+  isAuthenticated: !!localStorage.getItem('token'),
   user: null,
   error: null
 } as AuthStateInit);
