@@ -6,20 +6,20 @@ import { User } from 'src/models/types';
 import apiRoot from '../apiRoot';
 
 export interface UserInput {
-    email: string;
-    password: string;
+  email: string;
+  password: string;
 }
 
 export const getWebTokenSvc = async (userInput: UserInput): Promise<string> => {
-    return axios
-        .post(`${apiRoot}/user/auth`, userInput, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then((res) => res.data);
+  return axios
+    .post(`${apiRoot}/user/auth`, userInput, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then((res) => res.data);
 };
 
 export const getUserSvc = (): Promise<User> => {
-    return axios.get(`${apiRoot}/user`).then((res) => res.data);
+  return axios.get(`${apiRoot}/user`).then((res) => res.data);
 };
