@@ -13,6 +13,7 @@ export interface UserInput {
 export const getWebTokenSvc = async (userInput: UserInput): Promise<string> => {
   return axios
     .post(`${apiRoot}/user/auth`, userInput, {
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json'
       }
@@ -21,5 +22,7 @@ export const getWebTokenSvc = async (userInput: UserInput): Promise<string> => {
 };
 
 export const getUserSvc = (): Promise<User> => {
-  return axios.get(`${apiRoot}/user`).then((res) => res.data);
+  return axios
+    .get(`${apiRoot}/user`, { withCredentials: true })
+    .then((res) => res.data);
 };
