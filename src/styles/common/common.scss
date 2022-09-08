@@ -6,6 +6,17 @@
   justify-content: center;
 }
 
+.container-center-padding {
+	@extend .container-center;
+	padding: 2em;
+}
+
+.horizontal-inline-bar {
+	display: flex;
+	align-items: center;
+	gap: 1em;
+}
+
 .full-btn {
 	width: 100%;
 }

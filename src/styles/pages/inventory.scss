@@ -69,3 +69,9 @@
   justify-content: flex-start;
   gap: 10px 10px;
 }
+
+.search-bar {
+	@extend .horizontal-inline-bar;
+	padding: 0 0 1em;
+	width: 20%;
+}

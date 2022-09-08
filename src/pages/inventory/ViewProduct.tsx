@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   FormGroup,
@@ -65,9 +65,9 @@ const ViewProduct = () => {
   );
   const { id, edit } = params;
   console.log(id, edit);
-  const [unit, setUnit] = useState<String>('');
-  const [category, setCategory] = useState<String>('');
-  const [tag, setTag] = useState<String>('');
+  const [unit, setUnit] = useState<string>('');
+  const [category, setCategory] = useState<string>('');
+  const [tag, setTag] = useState<string>('');
 
   const handleUnitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUnit(event.target.value);
