@@ -7,22 +7,20 @@ import {
   Receipt
 } from '@mui/icons-material';
 import {
-    Divider,
-    Drawer,
-    IconButton,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    Toolbar,
-    Typography
+  Button,
+  Divider,
+  Drawer,
+  IconButton,
+  List,
+  Toolbar
 } from '@mui/material';
 import React from 'react';
+import { Link } from 'react-router-dom';
+import ListItemLink from './ListItemLink';
 
 type SidebarProps = {
-    open: boolean;
-    toggleOpen: (open: boolean) => void;
+  open: boolean;
+  toggleOpen: (open: boolean) => void;
 };
 
 const Sidebar = ({ open, toggleOpen }: SidebarProps) => {

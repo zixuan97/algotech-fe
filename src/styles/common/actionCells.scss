@@ -1,0 +1,13 @@
+@use '../common/common.scss';
+
+.action-cell {
+	width: 100%;
+	display: flex;
+	justify-content: space-evenly;
+	gap: 1em;
+	padding: 0 0.25em;
+}
+
+.action-cell > * {
+	flex-grow: 1;
+}
