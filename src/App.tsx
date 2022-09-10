@@ -11,6 +11,7 @@ import Appbar from './components/common/Appbar';
 import Sidebar from './components/common/Sidebar';
 import ViewProduct from './pages/inventory/ViewProduct';
 import ViewAllProducts from './pages/inventory/ViewAllProducts';
+import Inventory from './pages/Inventory';
 
 const theme = createTheme({
   palette: {
@@ -58,10 +59,15 @@ const App = () => {
                   <Home />
                 </AuthRoute>
               }
-            />
-            <Route path='/createProduct' element={<CreateProduct />} />
-            <Route path='/viewProduct' element={<ViewProduct />} />
-            <Route path='/products' element={<ViewAllProducts />} />
+            >
+              <Route path='inventory' element={<Inventory />}></Route>
+              <Route
+                path='inventory/createProduct'
+                element={<CreateProduct />}
+              />
+              <Route path='inventory/viewProduct' element={<ViewProduct />} />
+              <Route path='inventory/products' element={<ViewAllProducts />} />
+            </Route>
           </Routes>
         </Router>
       </AuthState>
