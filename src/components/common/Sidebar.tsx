@@ -93,6 +93,11 @@ const Sidebar = ({ open, toggleOpen }: SidebarProps) => {
             disabled
           />
           <ListItemLink icon={<AccountBox />} primary='HR' to='/hr' disabled />
+          <ListItemLink
+            icon={<People />}
+            primary='User Accounts'
+            to='/accounts'
+          />
         </List>
       </Drawer>
     </div>

@@ -3,7 +3,7 @@
  */
 import axios from 'axios';
 import { User } from 'src/models/types';
-import apiRoot from '../apiRoot';
+import apiRoot from '../util/apiRoot';
 
 export const getAllUserSvc = (): Promise<Array<User>> => {
   return axios.get(`${apiRoot}/user/all`).then((res) => res.data);
@@ -24,4 +24,3 @@ export const enableUserSvc = (userId: string): Promise<any> => {
 export const createUserSvc = (user: User): Promise<any> => {
   return axios.post(`${apiRoot}/user`, user).then((res) => res.data);
 };
-
