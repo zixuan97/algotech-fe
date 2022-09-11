@@ -6,8 +6,20 @@
   justify-content: center;
 }
 
+.container-left {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+}
+
 .container-center-padding {
 	@extend .container-center;
+	padding: 2em;
+}
+
+.container-left-padding {
+	@extend .container-left;
 	padding: 2em;
 }
 
@@ -19,4 +31,12 @@
 
 .full-btn {
 	width: 100%;
+}
+
+.full-divider {
+	width: 100%;
+}
+
+.number-card {
+	padding: 0 10em 2em 2em;
 }

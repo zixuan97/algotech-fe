@@ -7,22 +7,31 @@ import { createSearchParams } from 'react-router-dom';
 
 const ProductCellAction = ({ id }: GridRenderCellParams) => {
   const navigate = useNavigate();
-  const navToViewProduct = (edit: boolean) =>
-    navigate({
-      pathname: '/inventory/viewProduct',
-      search: createSearchParams({
-        id: id.toString(),
-        ...(edit && { edit: Boolean(edit).toString() })
-      }).toString()
-    });
+  //   const navToViewProduct = (edit: boolean) =>
+  //     navigate({
+  //       pathname: '/inventory/viewProduct',
+  //       search: createSearchParams({
+  //         id: id.toString()
+  //       }).toString()
+  //     });
   return (
     <div className='action-cell'>
-      <Button variant='contained' onClick={() => navToViewProduct(false)}>
-        View
+      <Button
+        variant='contained'
+        onClick={() =>
+          navigate({
+            pathname: '/inventory/productDetails',
+            search: createSearchParams({
+              id: id.toString()
+            }).toString()
+          })
+        }
+      >
+        View Details
       </Button>
-      <Button variant='contained' onClick={() => navToViewProduct(true)}>
+      {/* <Button variant='contained' onClick={() => navToViewProduct(true)}>
         Edit
-      </Button>
+      </Button> */}
     </div>
   );
 };
