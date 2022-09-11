@@ -31,7 +31,7 @@ const BottomButton: React.FC<props> = ({location, firstButtonText, secondButtonT
                 variant='contained'
                 className='create-btn'
                 color='primary'
-                onClick={() => secondButtonFn()}
+                onClick={(e) => secondButtonFn(e)}
             >
                 {secondButtonText}
             </Button>
