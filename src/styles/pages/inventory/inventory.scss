@@ -2,14 +2,6 @@
 @use '../../variables/fonts.scss';
 @use '../../common/common.scss';
 
-.product-inventory {
-	display: flex;
-	justify-content: center;
-	flex-direction: column;
-	padding: 2rem;
-
-}
-
 .create-product {
   margin-top: 1%;
   display: flex;

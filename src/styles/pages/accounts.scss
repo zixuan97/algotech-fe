@@ -1,0 +1,56 @@
+@use '../variables/colors.scss';
+@use '../variables/fonts.scss';
+@use '../common/common.scss';
+
+.center-div {
+  display: flex;
+  justify-content: center;
+}
+
+.center-box {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  color: colors.$primary;
+  font-family: fonts.$primary-font;
+  width: 60%;
+  margin: 2% 2% 2% 2%;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.content-body {
+  display: flex;
+  flex-direction: row;
+  width: 60vw;
+  height: 35vh;
+}
+
+.left-image {
+  display: flex;
+  justify-content: flex-start;
+  margin: 2% 2% 2% 2%;
+}
+
+.right-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  margin: 2% 2% 2% 2%;
+}
+
+.display-box {
+  display:flex;
+  flex-flow: row wrap;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.display-box > * {
+  flex-basis: 50%;
+}

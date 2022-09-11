@@ -15,11 +15,13 @@ export enum UserStatus {
 }
 
 export interface User {
-  id: number;
+  id?: number;
   email: string;
+  role: string;
+  status: string;
+  firstName: string;
+  lastName: string;
   password: string;
-  role: UserRole;
-  status: UserStatus;
 }
 
 export interface Category {

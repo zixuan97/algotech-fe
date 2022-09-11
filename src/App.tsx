@@ -15,6 +15,11 @@ import Home from './pages/Home';
 import ProductDetails from './pages/inventory/ProductDetails';
 import AllProducts from './pages/inventory/AllProducts';
 import InventoryDashboard from './pages/inventory/InventoryDashboard';
+import Accounts from './pages/account/Accounts';
+import ViewAccount from './pages/account/ViewAccount';
+import CreateNewUser from './pages/account/CreateNewUser';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const theme = createTheme({
   palette: {
@@ -46,6 +51,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <AuthState>
+        <ToastContainer />
         <Router>
           <Routes>
             <Route path='/login' element={<Login />} />
@@ -73,6 +79,13 @@ const App = () => {
               <Route
                 path='inventory/productDetails'
                 element={<ProductDetails />}
+              />
+
+              <Route path='accounts' element={<Accounts />} />
+              <Route path='accounts/viewAccount' element={<ViewAccount />} />
+              <Route
+                path='accounts/createNewUser'
+                element={<CreateNewUser />}
               />
             </Route>
           </Routes>
