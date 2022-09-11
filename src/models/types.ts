@@ -1,8 +1,12 @@
 export interface User {
-  id: number;
+  id?: number;
   email: string;
+  role: string;
+  status: string;
+  firstName: string;
+  lastName: string;
+  password: string;
 }
-
 
 export interface Product {
     id: number;

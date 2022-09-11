@@ -10,6 +10,9 @@ import Home from './pages/Home';
 import ViewProduct from './pages/inventory/ViewProduct';
 import ViewAllProducts from './pages/inventory/ViewAllProducts';
 import Inventory from './pages/Inventory';
+import Accounts from './pages/account/Accounts';
+import ViewAccount from './pages/account/ViewAccount';
+import CreateNewUser from './pages/account/CreateNewUser';
 
 const theme = createTheme({
   palette: {
@@ -59,6 +62,10 @@ const App = () => {
               />
               <Route path='inventory/viewProduct' element={<ViewProduct />} />
               <Route path='inventory/products' element={<ViewAllProducts />} />
+
+              <Route path='accounts' element={<Accounts />} />
+              <Route path='accounts/viewAccount' element={<ViewAccount />} />
+              <Route path='accounts/createNewUser' element={<CreateNewUser />} />
             </Route>
           </Routes>
         </Router>
