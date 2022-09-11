@@ -25,3 +25,7 @@ export const createUserSvc = (user: User): Promise<any> => {
   return axios.post(`${apiRoot}/user`, user).then((res) => res.data);
 };
 
+export const deleteUserSvc = (userId: string): Promise<any> => {
+  return axios.delete(`${apiRoot}/user/${userId}`).then((res) => res.data);
+};
+
