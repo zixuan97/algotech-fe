@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AccountCellAction from 'src/components/account/AccountCellAction';
 import '../../styles/pages/accounts.scss';
+import { Box } from '@mui/system';
+import { Button } from '@mui/material';
+import { User } from 'src/models/types';
+import asyncFetchCallback from 'src/services/asyncFetchCallback';
+import { getAllUserSvc } from 'src/services/account/accountService';
 
 //TODO: Include avatar
 const columns: GridColDef[] = [
@@ -13,34 +19,52 @@ const columns: GridColDef[] = [
   {
     field: 'action',
     headerName: 'Action',
-    headerAlign: 'right',
+    headerAlign: 'center',
     flex: 1,
     renderCell: AccountCellAction
   }
 ];
 
-const data = [
-  {
-    id: 12345,
-    firstName: 'Zi Xuan',
-    lastName: 'Ng',
-    email: 'zixuan@gmail.com',
-    role: 'Admin'
-  },
-  {
-    id: 67890,
-    firstName: 'Leonard',
-    lastName: 'Lee',
-    email: 'leeleonard@gmail.com',
-    role: 'Admin'
-  },
-];
-
 const Accounts = () => {
+  const navigate = useNavigate();
+  const [users, setUsers] = useState<Array<User>>([]);
+
+  useEffect(() => {
+    asyncFetchCallback(
+      getAllUserSvc(),
+      (users: Array<User>) => {
+        setUsers(users);
+      },
+      () => {
+        //handle error here
+      }
+    )
+  }, []);
+
+  (
+    !users && (
+      <div>
+        Loading ...
+      </div>
+    )
+  )
   return (
     <div className='accounts'>
       <h1>User Accounts</h1>
-      <DataGrid columns={columns} rows={data} autoHeight />
+      <Box>
+        <Button
+          type='submit'
+          variant='contained'
+          className='create-btn'
+          color='primary'
+          onClick={() => {
+            navigate('/accounts/createNewUser');
+          }}
+        >
+          Create New User
+        </Button>
+      </Box>
+      <DataGrid columns={columns} rows={users} autoHeight />
     </div>
   );
 };

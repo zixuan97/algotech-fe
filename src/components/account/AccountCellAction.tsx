@@ -12,12 +12,12 @@ const AccountCellAction = ({ id }: GridRenderCellParams) => {
       pathname: '/accounts/viewAccount',
       search: createSearchParams({
         id: id.toString(),
-        ...(edit && { edit: Boolean(edit).toString() })
+        // ...(edit && { edit: Boolean(edit).toString() })
       }).toString()
     });
   return (
     <div className='action-cell'>
-      <Button variant='contained' onClick={() => navToViewAccount(true)}>
+      <Button variant='contained' onClick={() => navToViewAccount(false)}>
         Edit
       </Button>
     </div>
