@@ -150,7 +150,7 @@ const CreateNewUser = () => {
                         placeholder='eg.: John'
                         value={newUser?.first_name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          userFieldOnChange(e, 'firstName')
+                          userFieldOnChange(e, 'first_name')
                         }
                       />
                     </Grid>
@@ -164,7 +164,7 @@ const CreateNewUser = () => {
                         placeholder='eg.: Tan'
                         value={newUser?.last_name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          userFieldOnChange(e, 'lastName')
+                          userFieldOnChange(e, 'last_name')
                         }
                       />
                     </Grid>
