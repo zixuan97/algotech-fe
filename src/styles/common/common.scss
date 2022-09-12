@@ -6,6 +6,29 @@
   justify-content: center;
 }
 
+.container-left {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
+}
+
+.container-center-padding {
+	@extend .container-center;
+	padding: 2em;
+}
+
+.container-left-padding {
+	@extend .container-left;
+	padding: 2em;
+}
+
+.horizontal-inline-bar {
+	display: flex;
+	align-items: center;
+	gap: 1em;
+}
+
 .full-btn {
 	width: 100%;
 }
@@ -13,4 +36,12 @@
 .view-button-group {
   margin: 1% 1% 1% 1%;
   justify-content: flex-end;
+}
+
+.full-divider {
+	width: 100%;
+}
+
+.number-card {
+	padding: 0 10em 2em 2em;
 }

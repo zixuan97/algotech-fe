@@ -7,7 +7,7 @@ If I have time, I'll create a script for automatically updating the `types.js` f
 
 Steps to follow:
 1. Copy the `schema.prisma` file from the backend into `/src/models`
-2. Run the following commmand: `npx @kalissaac/prisma-typegen ./ ./schema.prisma`
+2. Run the following commmand: `npx @kalissaac/prisma-typegen ./src/models/types ./src/models/schema.prisma`
 3. Copy the output from the `index.ts` file and transfer it into the `types.ts` file
 4. Delete the output folder and the schema.prisma, and perform other cleanups if necessary
 

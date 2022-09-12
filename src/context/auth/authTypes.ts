@@ -1,5 +1,5 @@
 import { User } from 'src/models/types';
-import { UserInput } from 'src/services/auth/authService';
+import { UserInput } from 'src/services/authService';
 
 export type AuthStateAttr = {
   token: string | null;
