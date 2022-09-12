@@ -33,8 +33,8 @@ export interface User {
   last_name: string,
   email: string,
   password: string,
-  role: '',
-  status: '',
+  role: string,
+  status: string,
 }
 
 export interface Category {
