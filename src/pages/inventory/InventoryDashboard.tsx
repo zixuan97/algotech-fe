@@ -75,7 +75,7 @@ const InventoryDashboard = () => {
           number={computeProductsWithLowStock()}
           text='Products with low stock levels'
         />
-        <NumberCard number={20} text='Days of supply left on average' />
+        {/* <NumberCard number={20} text='Days of supply left on average' /> */}
       </div>
       <Link
         to='/inventory/allProducts'

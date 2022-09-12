@@ -15,6 +15,7 @@ import Home from './pages/Home';
 import ProductDetails from './pages/inventory/ProductDetails';
 import AllProducts from './pages/inventory/AllProducts';
 import InventoryDashboard from './pages/inventory/InventoryDashboard';
+import AllOrders from './pages/procurement/AllOrders';
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
@@ -80,7 +81,7 @@ const App = () => {
                 path='inventory/productDetails'
                 element={<ProductDetails />}
               />
-
+              <Route path='orders' element={<AllOrders />} />
               <Route path='accounts' element={<Accounts />} />
               <Route path='accounts/viewAccount' element={<ViewAccount />} />
               <Route

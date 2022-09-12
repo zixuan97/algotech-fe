@@ -7,7 +7,11 @@ import {
   deleteUserSvc,
   getUserDetailsSvc
 } from 'src/services/account/accountService';
+<<<<<<< HEAD
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
+=======
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+>>>>>>> main
 import { User } from 'src/models/types';
 import ConfirmationDialog from 'src/components/common/ConfirmationDialog';
 

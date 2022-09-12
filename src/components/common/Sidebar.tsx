@@ -80,12 +80,7 @@ const Sidebar = ({ open, toggleOpen }: SidebarProps) => {
             to='/sales'
             disabled
           />
-          <ListItemLink
-            icon={<Receipt />}
-            primary='Orders'
-            to='/orders'
-            disabled
-          />
+          <ListItemLink icon={<Receipt />} primary='Orders' to='/orders' />
           <ListItemLink
             icon={<People />}
             primary='Customers'
