@@ -25,8 +25,8 @@ const CreateNewUser = () => {
     email: '',
     role: '',
     status: '',
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     password: ''
   };
 
@@ -34,8 +34,8 @@ const CreateNewUser = () => {
   const handleCreateButtonClick = (e: any) => {
     if (
       newUser.email &&
-      newUser.firstName &&
-      newUser.lastName &&
+      newUser.first_name &&
+      newUser.last_name &&
       newUser.role &&
       newUser.password
     ) {
@@ -148,9 +148,9 @@ const CreateNewUser = () => {
                         label='First Name'
                         name='firstName'
                         placeholder='eg.: John'
-                        value={newUser?.firstName}
+                        value={newUser?.first_name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          userFieldOnChange(e, 'firstName')
+                          userFieldOnChange(e, 'first_name')
                         }
                       />
                     </Grid>
@@ -162,9 +162,9 @@ const CreateNewUser = () => {
                         label='Last Name'
                         name='lastName'
                         placeholder='eg.: Tan'
-                        value={newUser?.lastName}
+                        value={newUser?.last_name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          userFieldOnChange(e, 'lastName')
+                          userFieldOnChange(e, 'last_name')
                         }
                       />
                     </Grid>

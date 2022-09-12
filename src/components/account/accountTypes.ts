@@ -1,22 +1,22 @@
 export const roles = [
   {
-    value: 'intern',
+    value: 'INTERN',
     label: 'Intern'
   },
   {
-    value: 'pt',
+    value: 'PARTTIME',
     label: 'Part Time'
   },
   {
-    value: 'ft',
+    value: 'FULLTIME',
     label: 'Full Time'
   },
   {
-    value: 'customer',
+    value: 'CUSTOMER',
     label: 'Customer'
   },
   {
-    value: 'admin',
+    value: 'ADMIN',
     label: 'Admin'
   }
 ];
