@@ -30,19 +30,18 @@ const columns: GridColDef[] = [
 
 const Accounts = () => {
   const navigate = useNavigate();
-  const authContext = React.useContext(AuthContext);
+
   const [users, setUsers] = useState<User[]>([]);
   const [filteredData, setFilteredData] = React.useState<User[]>([]);
   const [searchField, setSearchField] = React.useState<string>('');
-  const { user } = authContext;
+  const userId = localStorage.getItem("userId");
 
-  console.log("user", user);
   useEffect(() => {
     asyncFetchCallback(
       getAllUserSvc(),
       (users: Array<User>) => {
         users.filter((urs) => {
-          return urs.email !== user?.email;
+          return urs.id !== Number(userId);
         })
         setUsers(users);
       },
