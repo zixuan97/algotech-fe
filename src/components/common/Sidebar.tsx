@@ -17,6 +17,7 @@ import {
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ListItemLink from './ListItemLink';
+import NestedList from './NestedList';
 
 type SidebarProps = {
   open: boolean;
@@ -24,55 +25,82 @@ type SidebarProps = {
 };
 
 const Sidebar = ({ open, toggleOpen }: SidebarProps) => {
-  return (
-    <Drawer variant='persistent' anchor='left' open={open}>
-      <Toolbar>
-        <Button
-          variant='text'
-          component={Link}
-          to='/'
-          style={{ textDecoration: 'none', color: 'inherit' }}
-        >
-          Admin Portal
-        </Button>
-        <IconButton onClick={() => toggleOpen(false)}>
-          <ChevronLeft />
-        </IconButton>
-      </Toolbar>
-      <Divider />
-      <List>
-        <ListItemLink
-          icon={<Inventory />}
-          primary='Inventory'
-          to='/inventory'
-        />
-        <ListItemLink
-          icon={<LocalGroceryStore />}
-          primary='Sales'
-          to='/sales'
-          disabled
-        />
-        <ListItemLink
-          icon={<Receipt />}
-          primary='Orders'
-          to='/orders'
-          disabled
-        />
-        <ListItemLink
-          icon={<People />}
-          primary='Customers'
-          to='/customers'
-          disabled
-        />
-        <ListItemLink icon={<AccountBox />} primary='HR' to='/hr' disabled />
+  const [inventoryOpen, setInventoryOpen] = React.useState<boolean>(false);
+  const [salesOpen, setSalesOpen] = React.useState<boolean>(false);
+  const [ordersOpen, setOrdersOpen] = React.useState<boolean>(false);
+  const [customersOpen, setCustomersOpen] = React.useState<boolean>(false);
+  const [hrOpen, setHrOpen] = React.useState<boolean>(false);
 
-        <ListItemLink
-          icon={<People />}
-          primary='User Accounts'
-          to='/accounts'
-        />
-      </List>
-    </Drawer>
+  const submenuTypographyProps = { fontSize: '0.8em' };
+
+  return (
+    <div style={{ width: 300 }}>
+      <Drawer variant='persistent' anchor='left' open={open}>
+        <Toolbar>
+          <Button
+            variant='text'
+            component={Link}
+            to='/'
+            style={{ textDecoration: 'none', color: 'inherit' }}
+          >
+            Admin Portal
+          </Button>
+          <IconButton onClick={() => toggleOpen(false)}>
+            <ChevronLeft />
+          </IconButton>
+        </Toolbar>
+        <Divider />
+        <List>
+          <NestedList
+            open={inventoryOpen}
+            toggleOpen={setInventoryOpen}
+            icon={<Inventory />}
+          >
+            <List component='div' disablePadding>
+              <ListItemLink
+                primary='Dashboard'
+                to='/inventory/dashboard'
+                typographyProps={submenuTypographyProps}
+              />
+              <ListItemLink
+                primary='All Products'
+                to='/inventory/allProducts'
+                typographyProps={submenuTypographyProps}
+              />
+              <ListItemLink
+                primary='Manage Warehouses'
+                to='/inventory/warehouses'
+                typographyProps={submenuTypographyProps}
+              />
+            </List>
+          </NestedList>
+          <ListItemLink
+            icon={<LocalGroceryStore />}
+            primary='Sales'
+            to='/sales'
+            disabled
+          />
+          <ListItemLink
+            icon={<Receipt />}
+            primary='Orders'
+            to='/orders'
+            disabled
+          />
+          <ListItemLink
+            icon={<People />}
+            primary='Customers'
+            to='/customers'
+            disabled
+          />
+          <ListItemLink icon={<AccountBox />} primary='HR' to='/hr' disabled />
+          <ListItemLink
+            icon={<People />}
+            primary='User Accounts'
+            to='/accounts'
+          />
+        </List>
+      </Drawer>
+    </div>
   );
 };
 

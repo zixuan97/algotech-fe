@@ -5,70 +5,94 @@ import {
   TextField,
   Paper,
   MenuItem,
-  Button
+  Button,
+  CircularProgress,
+  Tooltip,
+  IconButton,
+  Typography,
+  FormControl,
+  InputLabel,
+  Select,
+  OutlinedInput,
+  Chip,
+  SelectChangeEvent
 } from '@mui/material';
-import '../../styles/pages/inventory.scss';
+import '../../styles/pages/inventory/inventory.scss';
+import { ChevronLeft } from '@mui/icons-material';
+import { DataGrid } from '@mui/x-data-grid';
+import { useNavigate } from 'react-router';
+import { Category, Product, ProductCategory } from 'src/models/types';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { getAllProductCategories } from 'src/services/productService';
+import { intersectionWith } from 'lodash';
 
-const units = [
-  {
-    value: 'ea',
-    label: 'Each'
-  },
-  {
-    value: 'ptk',
-    label: 'Packet'
-  },
-  {
-    value: 'ctn',
-    label: 'Carton'
-  }
-];
-
-const categories = [
-  {
-    value: 'popcorn',
-    label: 'Popcorn'
-  },
-  {
-    value: 'sticks',
-    label: 'Sticks'
-  }
-];
-
-const tags = [
-  {
-    value: 'snack',
-    label: 'Snack'
-  },
-  {
-    value: 'nonSnack',
-    label: 'Non Snack'
-  }
-];
+type NewProduct = Partial<Product> & {
+  categories?: Category[];
+};
 
 const CreateProduct = () => {
-  const [unit, setUnit] = useState<String>('');
-  const [category, setCategory] = useState<String>('');
-  const [tag, setTag] = useState<String>('');
+  const navigate = useNavigate();
 
-  const handleUnitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUnit(event.target.value);
+  const [newProduct, setNewProduct] = React.useState<NewProduct>({});
+  const [categories, setCategories] = React.useState<Category[]>([]);
+
+  React.useEffect(() => {
+    asyncFetchCallback(getAllProductCategories(), setCategories);
+  }, []);
+
+  console.log(newProduct);
+
+  const handleEditProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewProduct((prev) => {
+      if (prev) {
+        return { ...prev, [e.target.name]: e.target.value };
+      } else {
+        return prev;
+      }
+    });
   };
-  const handleCategoryChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setCategory(event.target.value);
+
+  const handleEditCategories = (e: SelectChangeEvent<string[]>) => {
+    const inputCategories = e.target.value;
+    setNewProduct((prev) => {
+      if (prev) {
+        return {
+          ...prev,
+          categories: intersectionWith(
+            categories,
+            inputCategories,
+            (a, b) => a.name === b
+          )
+        };
+      } else {
+        return prev;
+      }
+    });
   };
-  const handleTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTag(event.target.value);
+
+  const handleSave = async () => {
+    if (newProduct) {
+      // await asyncFetchCallback(updateProduct(newProduct), (res) => {
+      //   setLoading(false);
+      // });
+    }
   };
 
   return (
-    <>
+    <div>
+      <Tooltip title='Return to Product Inventory' enterDelay={300}>
+        <IconButton
+          size='large'
+          onClick={() => navigate({ pathname: '/inventory/allProducts' })}
+        >
+          <ChevronLeft />
+        </IconButton>
+      </Tooltip>
       <div className='create-product'>
         <Box className='create-product-box'>
           <div className='header-content'>
-            <h1>Create New Product</h1>
+            <h1>Create Product</h1>
           </div>
-
           <Paper elevation={2}>
             <form>
               <FormGroup className='create-product-form'>
@@ -84,7 +108,6 @@ const CreateProduct = () => {
                       }
                     }}
                   />
-
                   <div className='text-fields'>
                     <TextField
                       required
@@ -92,95 +115,61 @@ const CreateProduct = () => {
                       id='outlined-required'
                       label='SKU'
                       name='sku'
+                      value={newProduct?.sku}
+                      onChange={handleEditProduct}
                       placeholder='eg.: SKU12345678'
                     />
+
                     <TextField
                       required
                       fullWidth
                       id='outlined-required'
                       label='Product Name'
-                      name='productName'
+                      name='name'
+                      value={newProduct?.name}
+                      onChange={handleEditProduct}
                       placeholder='eg.: Nasi Lemak Popcorn'
                     />
-                    <div className='row-group'>
-                      <TextField
-                        required
-                        fullWidth
-                        id='outlined-field'
-                        label='Price'
-                        name='price'
-                        placeholder='eg.: $10'
-                      />
 
-                      <TextField
-                        required
-                        fullWidth
-                        id='outlined-field'
-                        select
-                        label='Unit'
-                        value={unit}
-                        onChange={handleUnitChange}
+                    <FormControl>
+                      <InputLabel id='productCategories-label'>
+                        Categories
+                      </InputLabel>
+                      <Select
+                        labelId='productCategories-label'
+                        id='ProductCategories'
+                        multiple
+                        value={
+                          newProduct?.categories?.map((cat) => cat.name) ?? []
+                        }
+                        onChange={handleEditCategories}
+                        input={<OutlinedInput label='Categories' />}
                       >
-                        {units.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
+                        {categories.map((option) => (
+                          <MenuItem key={option.id} value={option.name}>
+                            {option.name}
                           </MenuItem>
                         ))}
-                      </TextField>
-
-                      <TextField
-                        required
-                        fullWidth
-                        id='outlined-quantity'
-                        label='Quantity'
-                        name='quantity'
-                        placeholder='eg.: 12'
-                      />
-                    </div>
+                      </Select>
+                    </FormControl>
+                    <TextField
+                      required
+                      id='outlined-required'
+                      label='Quantity Threshold'
+                      name='qtyThreshold'
+                      placeholder='e.g. 10'
+                      onChange={handleEditProduct}
+                      value={newProduct?.qtyThreshold}
+                    />
                   </div>
                 </div>
-
-                <div className='row-group'>
-                  <TextField
-                    id='outlined-select-category'
-                    fullWidth
-                    select
-                    label='Category'
-                    value={category}
-                    onChange={handleCategoryChange}
-                  >
-                    {categories.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-
-                  <TextField
-                    id='outlined-select-unit'
-                    fullWidth
-                    select
-                    label='Tags'
-                    value={tag}
-                    onChange={handleTagChange}
-                  >
-                    {tags.map((option) => (
-                      <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                      </MenuItem>
-                    ))}
-                  </TextField>
-                </div>
-
-                <TextField
-                  id='standard-multiline-static'
-                  label='Comments'
-                  multiline
-                  rows={3}
-                  placeholder='Insert comments here...'
-                  variant='standard'
-                />
-
+                {/* <DataGrid
+					columns={columns}
+					rows={locationDetails}
+					getRowId={(row) => row.locationName}
+					autoHeight
+					pageSize={5}
+				  /> */}
                 <div className='button-group'>
                   <Button variant='text' className='cancel-btn' color='primary'>
                     CANCEL
@@ -199,7 +188,7 @@ const CreateProduct = () => {
           </Paper>
         </Box>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -19,7 +19,7 @@ import '../styles/pages/login.scss';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import AuthContext from 'src/context/auth/authContext';
 import { useNavigate } from 'react-router-dom';
-import { UserInput } from 'src/services/auth/authService';
+import { UserInput } from 'src/services/authService';
 
 const Login = () => {
   const authContext = React.useContext(AuthContext);

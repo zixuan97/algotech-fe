@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Navigate,
+  Route,
+  Routes
+} from 'react-router-dom';
 import React from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import AuthRoute from './components/auth/AuthRoute';
@@ -7,9 +12,9 @@ import Login from './pages/Login';
 import CreateProduct from './pages/inventory/CreateProduct';
 import { setAuthToken } from './utils/authUtils';
 import Home from './pages/Home';
-import ViewProduct from './pages/inventory/ViewProduct';
-import ViewAllProducts from './pages/inventory/ViewAllProducts';
-import Inventory from './pages/Inventory';
+import ProductDetails from './pages/inventory/ProductDetails';
+import AllProducts from './pages/inventory/AllProducts';
+import InventoryDashboard from './pages/inventory/InventoryDashboard';
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
@@ -46,7 +51,7 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <AuthState>
-      <ToastContainer/>
+        <ToastContainer />
         <Router>
           <Routes>
             <Route path='/login' element={<Login />} />
@@ -58,17 +63,30 @@ const App = () => {
                 </AuthRoute>
               }
             >
-              <Route path='inventory' element={<Inventory />}></Route>
+              <Route
+                path='inventory'
+                element={<Navigate replace to='/inventory/dashboard' />}
+              />
+              <Route
+                path='inventory/dashboard'
+                element={<InventoryDashboard />}
+              />
+              <Route path='inventory/allProducts' element={<AllProducts />} />
               <Route
                 path='inventory/createProduct'
                 element={<CreateProduct />}
               />
-              <Route path='inventory/viewProduct' element={<ViewProduct />} />
-              <Route path='inventory/products' element={<ViewAllProducts />} />
+              <Route
+                path='inventory/productDetails'
+                element={<ProductDetails />}
+              />
 
               <Route path='accounts' element={<Accounts />} />
               <Route path='accounts/viewAccount' element={<ViewAccount />} />
-              <Route path='accounts/createNewUser' element={<CreateNewUser />} />
+              <Route
+                path='accounts/createNewUser'
+                element={<CreateNewUser />}
+              />
             </Route>
           </Routes>
         </Router>

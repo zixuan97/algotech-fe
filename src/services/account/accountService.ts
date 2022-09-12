@@ -3,7 +3,7 @@
  */
 import axios from 'axios';
 import { User } from 'src/models/types';
-import apiRoot from '../apiRoot';
+import apiRoot from '../util/apiRoot';
 
 export const getAllUserSvc = (): Promise<Array<User>> => {
   return axios.get(`${apiRoot}/user/all`).then((res) => res.data);
@@ -28,4 +28,3 @@ export const createUserSvc = (user: User): Promise<any> => {
 export const deleteUserSvc = (userId: string): Promise<any> => {
   return axios.delete(`${apiRoot}/user/${userId}`).then((res) => res.data);
 };
-

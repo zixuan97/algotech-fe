@@ -3,7 +3,7 @@
  */
 import axios from 'axios';
 import { User } from 'src/models/types';
-import apiRoot from '../apiRoot';
+import apiRoot from './util/apiRoot';
 
 export interface UserInput {
   email: string;
@@ -20,6 +20,6 @@ export const getWebTokenSvc = async (userInput: UserInput): Promise<string> => {
     .then((res) => res.data);
 };
 
-export const getUserSvc = (): Promise<User> => {
+export const getUserSvc = async (): Promise<User> => {
   return axios.get(`${apiRoot}/user`).then((res) => res.data);
 };

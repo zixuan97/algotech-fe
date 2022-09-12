@@ -8,10 +8,10 @@ import {
   getUserSvc,
   getWebTokenSvc,
   UserInput
-} from 'src/services/auth/authService';
+} from 'src/services/authService';
 import useNext from 'src/hooks/useNext';
 import { User } from 'src/models/types';
-import asyncFetchCallback from 'src/services/asyncFetchCallback';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 
 const AuthState = (props: PropsWithChildren) => {
   const initialState: AuthStateAttr = {

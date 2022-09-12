@@ -1,0 +1,5 @@
+@use '../../common/common.scss';
+
+.inventory-dashboard {
+	@extend .container-left-padding;
+}
