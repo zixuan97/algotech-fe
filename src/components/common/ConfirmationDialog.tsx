@@ -20,7 +20,7 @@ const CustomDialog: React.FC<props> = ({ openDialog, title, message, closeDialog
         <div>
             <Dialog
                 open={openDialog}
-                onClose={closeDialogFn()}
+                onClose={() => closeDialogFn()}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >

@@ -40,16 +40,18 @@ const ViewAccount = () => {
   };
 
   const handleDeleteAccount = () => {
-    id &&
-      asyncFetchCallback(
-        deleteUserSvc(id),
-        () => {
-          handleCloseDialog();
-        },
-        () => {
-          //handle error here
-        }
-      );
+    // id &&
+    //   asyncFetchCallback(
+    //     deleteUserSvc(id),
+    //     () => {
+    //       handleCloseDialog();
+    //     },
+    //     () => {
+    //       //handle error here
+    //     }
+    //   );
+
+    console.log("button hit");
   };
 
   useEffect(() => {

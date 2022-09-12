@@ -5,6 +5,7 @@
 .center-div {
   display: flex;
   justify-content: center;
+  padding: 2rem;
 }
 
 .center-box {
@@ -15,6 +16,10 @@
   font-family: fonts.$primary-font;
   width: 60%;
   margin: 2% 2% 2% 2%;
+}
+
+.accounts  { 
+  padding: 2rem;
 }
 
 .header-content {
@@ -53,4 +58,12 @@
 
 .display-box > * {
   flex-basis: 50%;
+}
+
+.grid-toolbar {
+	width: 100%;
+	padding: 0 0 1em;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
