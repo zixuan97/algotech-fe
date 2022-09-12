@@ -1,0 +1,10 @@
+@use '../variables/colors.scss';
+@use '../variables/fonts.scss';
+@use '../common/common.scss';
+
+.procurement-orders {
+    display: flex;
+	justify-content: center;
+	flex-direction: column;
+	padding: 2rem;
+}
