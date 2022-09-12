@@ -1,58 +1,152 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Box, Paper, Button, IconButton, Tooltip } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import {
   deleteUserSvc,
+  disableUserSvc,
+  enableUserSvc,
   getUserDetailsSvc
 } from 'src/services/account/accountService';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
-import ConfirmationDialog from 'src/components/common/ConfirmationDialog';
+import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import { toast } from 'react-toastify';
+interface ModalProps {
+  wrapperParam: wrapperParam,
+  modalOpen: boolean,
+  onClose: () => void
+}
+interface wrapperParam {
+  title: string,
+  body: string,
+  funct: () => void,
+}
+
+const WrapperModal = ({ wrapperParam, modalOpen, onClose }: ModalProps) => {
+  return (
+    <ConfirmationModal
+      title={wrapperParam.title}
+      body={wrapperParam.body}
+      onConfirm={wrapperParam.funct}
+      open={modalOpen}
+      onClose={onClose}
+    />
+  )
+};
 
 const ViewAccount = () => {
   let params = new URLSearchParams(window.location.search);
   const navigate = useNavigate();
   const [user, setUser] = useState<User>();
-  const [message, setMessage] = useState<string>('');
-  const [title, setTitle] = useState<string>('');
-  const [openDialog, setOpenDialog] = useState<boolean>(false);
-
+  const [modalOpen, setModalOpen] = useState<boolean>(true);
+  const [wrapParam, setWrapParam] = useState<wrapperParam>({
+    title: '',
+    body: '',
+    funct: () => { }
+  })
+  const loaded = useRef(false);
   const id = params.get('id');
 
   const handleEditButtonClick = () => {
     console.log('Incomplete');
   };
 
-  const handleDeleteButtonClick = () => {
-    setOpenDialog(true);
-    setTitle('Delete This Account.');
-    setMessage('delete this account');
-  };
-
-  const handleCloseDialog = () => {
-    return setOpenDialog(false);
-  };
-
   const handleDisableButtonClick = () => {
-    console.log('Incomplete');
+    setWrapParam({
+      title: "Disable Account",
+      body: "Are you sure you want to disable this account?",
+      funct: handleDisableAccount
+    });
+  };
+
+  const handleEnableButtonClick = () => {
+    setWrapParam({
+      title: "Enable Account",
+      body: "Are you sure you want to enable this account?",
+      funct: handleEnableAccount
+    });
+  };
+
+  const handleDeleteButtonClick = () => {
+    setWrapParam({
+      title: "Delete Account",
+      body: "Are you sure you want to delete this account?",
+      funct: handleDeleteAccount
+    });
   };
 
   const handleDeleteAccount = () => {
-    // id &&
-    //   asyncFetchCallback(
-    //     deleteUserSvc(id),
-    //     () => {
-    //       handleCloseDialog();
-    //     },
-    //     () => {
-    //       //handle error here
-    //     }
-    //   );
-
-    console.log("button hit");
+    id &&
+      asyncFetchCallback(
+        deleteUserSvc(id),
+        () => {
+          toast.success('Account deleted.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          setModalOpen(false);
+          navigate('/accounts');
+        }
+      );
+    setModalOpen(false);
   };
+
+  const handleDisableAccount = () => {
+    id &&
+      asyncFetchCallback(
+        disableUserSvc(id),
+        () => {
+          toast.success('Account disabled.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          setModalOpen(false);
+          navigate('/accounts');
+        }
+      );
+    setModalOpen(false);
+  };
+
+  const handleEnableAccount = () => {
+    id &&
+      asyncFetchCallback(
+        enableUserSvc(id),
+        () => {
+          toast.success('Account enabled.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          setModalOpen(false);
+          navigate('/accounts');
+        }
+      );
+    setModalOpen(false);
+  };
+
+  useEffect(() => {
+    if (loaded.current) {
+      setModalOpen(!modalOpen);
+    } else {
+      loaded.current = true;
+    }
+  }, [wrapParam]);
 
   useEffect(() => {
     id &&
@@ -71,13 +165,12 @@ const ViewAccount = () => {
 
   return (
     <>
-      <ConfirmationDialog
-        openDialog={openDialog}
-        title={title}
-        message={message}
-        closeDialogFn={() => {
-          handleDeleteAccount();
+      <WrapperModal
+        modalOpen={modalOpen}
+        onClose={() => {
+          setModalOpen(false)
         }}
+        wrapperParam={wrapParam}
       />
 
       <Tooltip title='Return to Accounts' enterDelay={300}>
@@ -104,7 +197,7 @@ const ViewAccount = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
-                onClick={() => handleDeleteButtonClick()}
+                onClick={handleDeleteButtonClick}
               >
                 DELETE
               </Button>
@@ -113,29 +206,15 @@ const ViewAccount = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
-                onClick={() => handleDisableButtonClick()}
+                onClick={user?.status === "ACTIVE" ? handleDisableButtonClick: handleEnableButtonClick}
               >
-                DISABLE
+                {user?.status === "ACTIVE" ? "DISABLE": "ENABLE"}
               </Button>
             </div>
           </div>
 
           <Paper elevation={2}>
             <div className='content-body'>
-              <div className='left-image'>
-                <Box
-                  sx={{
-                    width: 200,
-                    height: 200,
-                    backgroundColor: 'primary.dark',
-                    '&:hover': {
-                      backgroundColor: 'primary.main',
-                      opacity: [0.9, 0.8, 0.7]
-                    }
-                  }}
-                />
-              </div>
-
               <div className='right-content'>
                 <Box className='display-box'>
                   <div>
@@ -165,11 +244,6 @@ const ViewAccount = () => {
                   <div>
                     <h6>Email</h6>
                     <h4>{user?.email}</h4>
-                  </div>
-
-                  <div>
-                    <h6>Password</h6>
-                    <h4>**********</h4>
                   </div>
                 </Box>
               </div>

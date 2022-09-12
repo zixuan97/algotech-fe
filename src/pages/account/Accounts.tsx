@@ -9,6 +9,7 @@ import { User } from 'src/models/types';
 import { getAllUserSvc } from 'src/services/account/accountService';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { Search } from '@mui/icons-material';
+import AuthContext from 'src/context/auth/authContext';
 
 //TODO: Include avatar
 const columns: GridColDef[] = [
@@ -17,6 +18,7 @@ const columns: GridColDef[] = [
   { field: 'last_name', headerName: 'Last Name', flex: 1 },
   { field: 'email', headerName: 'Email', flex: 1 },
   { field: 'role', headerName: 'Role', flex: 1 },
+  { field: 'status', headerName: 'Status', flex: 1 },
   {
     field: 'action',
     headerName: 'Action',
@@ -28,14 +30,20 @@ const columns: GridColDef[] = [
 
 const Accounts = () => {
   const navigate = useNavigate();
+  const authContext = React.useContext(AuthContext);
   const [users, setUsers] = useState<User[]>([]);
   const [filteredData, setFilteredData] = React.useState<User[]>([]);
   const [searchField, setSearchField] = React.useState<string>('');
+  const { user } = authContext;
 
+  console.log("user", user);
   useEffect(() => {
     asyncFetchCallback(
       getAllUserSvc(),
       (users: Array<User>) => {
+        users.filter((urs) => {
+          return urs.email !== user?.email;
+        })
         setUsers(users);
       },
       () => {
@@ -48,10 +56,10 @@ const Accounts = () => {
     setFilteredData(
       searchField
         ? users.filter((user) =>
-            Object.values(user).some((value) =>
-              String(value).toLowerCase().match(searchField.toLowerCase())
-            )
+          Object.values(user).some((value) =>
+            String(value).toLowerCase().match(searchField.toLowerCase())
           )
+        )
         : users
     );
   }, [searchField, users]);
