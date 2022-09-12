@@ -22,7 +22,6 @@ const CategoryCellAction = ({ id }: GridRenderCellParams) => {
           >
             View Category
           </Button>
-          {}
       </div>
   );
 };
