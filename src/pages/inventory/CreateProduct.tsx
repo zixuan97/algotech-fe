@@ -80,10 +80,10 @@ const CreateProduct = () => {
 
   return (
     <div>
-      <Tooltip title='Return to Product Inventory' enterDelay={300}>
+      <Tooltip title='Return to Previous Page' enterDelay={300}>
         <IconButton
           size='large'
-          onClick={() => navigate({ pathname: '/inventory/allProducts' })}
+          onClick={() => navigate(-1)}
         >
           <ChevronLeft />
         </IconButton>

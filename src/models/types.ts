@@ -73,10 +73,10 @@ export interface Product {
 }
 
 export interface Location {
-  id: number,
-  name: string,
-  address: string,
-  stockQuantity: StockQuantity[],
+  name: string;
+  address: string;
+  id: number;
+  stockQuantity: StockQuantity[];
 }
 
 export interface StockQuantity {

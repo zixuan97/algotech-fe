@@ -12,10 +12,20 @@ import Login from './pages/Login';
 import CreateProduct from './pages/inventory/CreateProduct';
 import { setAuthToken } from './utils/authUtils';
 import Home from './pages/Home';
+
 import ProductDetails from './pages/inventory/ProductDetails';
 import AllProducts from './pages/inventory/AllProducts';
 import InventoryDashboard from './pages/inventory/InventoryDashboard';
 import AllOrders from './pages/procurement/AllOrders';
+
+// import AllCategories from './pages/inventory/AllCategories';
+// import CreateCategory from './pages/inventory/CreateCategory';
+// import CategoryDetails from './pages/inventory/CategoryDetails';
+
+import AllWarehouses from './pages/inventory/Warehouses';
+import WarehouseDetails from './pages/inventory/WarehouseDetails';
+import CreateWarehouse from './pages/inventory/CreateWarehouse';
+
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
@@ -82,6 +92,31 @@ const App = () => {
                 element={<ProductDetails />}
               />
               <Route path='orders' element={<AllOrders />} />
+              {/* <Route
+                path='inventory/allCategories'
+                element={<AllCategories />}
+              />
+              <Route
+                path='inventory/createCategory'
+                element={<CreateCategory />}
+              />
+              <Route
+                path='inventory/categoryDetails'
+                element={<CategoryDetails />}
+              /> */}
+              <Route
+                path='inventory/warehouses'
+                element={<AllWarehouses />}
+              />
+              <Route
+                path='inventory/warehouseDetails'
+                element={<WarehouseDetails />}
+              />
+              <Route
+                path='inventory/createWarehouse'
+                element={<CreateWarehouse />}
+              />
+
               <Route path='accounts' element={<Accounts />} />
               <Route path='accounts/viewAccount' element={<ViewAccount />} />
               <Route
