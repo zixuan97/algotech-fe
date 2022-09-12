@@ -22,6 +22,8 @@ import { toast } from 'react-toastify';
 
 const CreateNewUser = () => {
   const mockUser: User = {
+    //note: id is temp holder, BE doesn't consume id on create
+    id: 0,
     email: '',
     role: '',
     status: '',
