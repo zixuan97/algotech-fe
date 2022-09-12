@@ -72,6 +72,7 @@ const Sidebar = ({ open, toggleOpen }: SidebarProps) => {
                 to='/inventory/warehouses'
                 typographyProps={submenuTypographyProps}
               />
+              
             </List>
           </NestedList>
           <ListItemLink
