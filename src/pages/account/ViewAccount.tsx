@@ -7,7 +7,7 @@ import {
   deleteUserSvc,
   getUserDetailsSvc
 } from 'src/services/account/accountService';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import ConfirmationDialog from 'src/components/common/ConfirmationDialog';
 
@@ -40,16 +40,18 @@ const ViewAccount = () => {
   };
 
   const handleDeleteAccount = () => {
-    id &&
-      asyncFetchCallback(
-        deleteUserSvc(id),
-        () => {
-          handleCloseDialog();
-        },
-        () => {
-          //handle error here
-        }
-      );
+    // id &&
+    //   asyncFetchCallback(
+    //     deleteUserSvc(id),
+    //     () => {
+    //       handleCloseDialog();
+    //     },
+    //     () => {
+    //       //handle error here
+    //     }
+    //   );
+
+    console.log("button hit");
   };
 
   useEffect(() => {

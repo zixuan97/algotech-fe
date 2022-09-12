@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft, Visibility, VisibilityOff } from '@mui/icons-material';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import { roles } from 'src/components/account/accountTypes';
 import BottomButton from 'src/components/common/BottomButton';
@@ -22,6 +22,8 @@ import { toast } from 'react-toastify';
 
 const CreateNewUser = () => {
   const mockUser: User = {
+    //note: id is temp holder, BE doesn't consume id on create
+    id: 0,
     email: '',
     role: '',
     status: '',
