@@ -62,6 +62,13 @@
   gap: 10px 10px;
 }
 
+.product-inventory {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	padding: 2rem;
+}
+
 .search-bar {
 	@extend .horizontal-inline-bar;
 	width: 20%;
