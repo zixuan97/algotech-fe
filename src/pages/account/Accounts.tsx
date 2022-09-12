@@ -7,7 +7,7 @@ import { Box } from '@mui/system';
 import { Button } from '@mui/material';
 import { User } from 'src/models/types';
 import { getAllUserSvc } from 'src/services/account/accountService';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 
 //TODO: Include avatar
 const columns: GridColDef[] = [
