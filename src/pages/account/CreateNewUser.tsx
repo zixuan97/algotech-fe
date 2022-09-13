@@ -31,20 +31,30 @@ const CreateNewUser = () => {
     last_name: '',
     password: ''
   };
-
+  
   const navigate = useNavigate();
   const handleCreateButtonClick = (e: any) => {
     if (
       newUser.email &&
       newUser.first_name &&
       newUser.last_name &&
-      newUser.role &&
-      newUser.password
+      newUser.role 
     ) {
       e.preventDefault();
       asyncFetchCallback(
         createUserSvc(newUser),
-        () => {},
+        () => {
+          toast.success('Account created.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          navigate('/accounts');
+        },
         () => {
           toast.error('Error creating account! Try again later.', {
             position: 'top-right',
@@ -97,20 +107,6 @@ const CreateNewUser = () => {
           <Paper elevation={2}>
             <form>
               <div className='content-body'>
-                <div className='left-image'>
-                  <Box
-                    sx={{
-                      width: 200,
-                      height: 200,
-                      backgroundColor: 'primary.dark',
-                      '&:hover': {
-                        backgroundColor: 'primary.main',
-                        opacity: [0.9, 0.8, 0.7]
-                      }
-                    }}
-                  />
-                </div>
-
                 <div className='right-content'>
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
@@ -187,7 +183,7 @@ const CreateNewUser = () => {
                     <Grid item xs={6}>
                       <OutlinedInput
                         fullWidth
-                        required
+                        disabled
                         type={showPassword ? 'text' : 'password'}
                         id='outlined-quantity'
                         label='Password'
