@@ -18,13 +18,13 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import ListItemLink from './ListItemLink';
 import NestedList from './NestedList';
+import 'src/styles/pages/home.scss';
 
 type SidebarProps = {
-  open: boolean;
-  toggleOpen: (open: boolean) => void;
+  sidebarWidth: string;
 };
 
-const Sidebar = ({ open, toggleOpen }: SidebarProps) => {
+const Sidebar = ({ sidebarWidth }: SidebarProps) => {
   const [inventoryOpen, setInventoryOpen] = React.useState<boolean>(false);
   const [salesOpen, setSalesOpen] = React.useState<boolean>(false);
   const [ordersOpen, setOrdersOpen] = React.useState<boolean>(false);
@@ -34,8 +34,19 @@ const Sidebar = ({ open, toggleOpen }: SidebarProps) => {
   const submenuTypographyProps = { fontSize: '0.8em' };
 
   return (
-    <div style={{ width: 300 }}>
-      <Drawer variant='persistent' anchor='left' open={open}>
+    <div>
+      <Drawer
+        variant='permanent'
+        anchor='left'
+        sx={{
+          width: sidebarWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: sidebarWidth,
+            boxSizing: 'border-box'
+          }
+        }}
+      >
         <Toolbar>
           <Button
             variant='text'
@@ -45,9 +56,9 @@ const Sidebar = ({ open, toggleOpen }: SidebarProps) => {
           >
             Admin Portal
           </Button>
-          <IconButton onClick={() => toggleOpen(false)}>
+          {/* <IconButton onClick={() => toggleOpen(false)}>
             <ChevronLeft />
-          </IconButton>
+          </IconButton> */}
         </Toolbar>
         <Divider />
         <List>
@@ -72,7 +83,6 @@ const Sidebar = ({ open, toggleOpen }: SidebarProps) => {
                 to='/inventory/warehouses'
                 typographyProps={submenuTypographyProps}
               />
-              
             </List>
           </NestedList>
           <ListItemLink

@@ -1,0 +1,14 @@
+@use '../variables/colors.scss';
+@use '../variables/fonts.scss';
+@use '../common/common.scss';
+
+$sidebar-width: 20%;
+
+.appbar {
+	width: calc(100% - $sidebar-width);
+	margin-left: $sidebar-width;
+}
+
+.sidebar {
+	width: $sidebar-width;
+}
