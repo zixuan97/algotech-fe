@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box, Paper, Button, IconButton, Tooltip } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
+import { Box, Paper, Button, IconButton, Tooltip, Grid } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import {
@@ -13,6 +13,7 @@ import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import { toast } from 'react-toastify';
+import EditAccount from './EditAccount';
 interface ModalProps {
   wrapperParam: wrapperParam,
   modalOpen: boolean,
@@ -49,15 +50,11 @@ const ViewAccount = () => {
   const loaded = useRef(false);
   const id = params.get('id');
 
-  const handleEditButtonClick = () => {
-    console.log('Incomplete');
-  };
-
   const handleDisableButtonClick = () => {
     setWrapParam({
       title: "Disable Account",
       body: "Are you sure you want to disable this account?",
-      funct: handleDisableAccount
+      funct: disableAccount
     });
   };
 
@@ -65,7 +62,7 @@ const ViewAccount = () => {
     setWrapParam({
       title: "Enable Account",
       body: "Are you sure you want to enable this account?",
-      funct: handleEnableAccount
+      funct: enableAccount
     });
   };
 
@@ -73,11 +70,11 @@ const ViewAccount = () => {
     setWrapParam({
       title: "Delete Account",
       body: "Are you sure you want to delete this account?",
-      funct: handleDeleteAccount
+      funct: deleteAccount
     });
   };
 
-  const handleDeleteAccount = () => {
+  const deleteAccount = () => {
     id &&
       asyncFetchCallback(
         deleteUserSvc(id),
@@ -98,12 +95,12 @@ const ViewAccount = () => {
     setModalOpen(false);
   };
 
-  const handleDisableAccount = () => {
+  const disableAccount = () => {
     id &&
       asyncFetchCallback(
         disableUserSvc(id),
         () => {
-          toast.success('Account disabled.', {
+          toast.warning('Account disabled.', {
             position: 'top-right',
             autoClose: 5000,
             hideProgressBar: false,
@@ -113,13 +110,13 @@ const ViewAccount = () => {
             progress: undefined
           });
           setModalOpen(false);
-          navigate('/accounts');
+          navigate(`/accounts/viewAccount?id=${id}`);
         }
       );
     setModalOpen(false);
   };
 
-  const handleEnableAccount = () => {
+  const enableAccount = () => {
     id &&
       asyncFetchCallback(
         enableUserSvc(id),
@@ -134,7 +131,7 @@ const ViewAccount = () => {
             progress: undefined
           });
           setModalOpen(false);
-          navigate('/accounts');
+          navigate(`/accounts/viewAccount?id=${id}`);
         }
       );
     setModalOpen(false);
@@ -159,7 +156,7 @@ const ViewAccount = () => {
           //handle error here
         }
       );
-  }, []);
+  }, [user]);
 
   !user && <div>Loading ...</div>;
 
@@ -184,14 +181,17 @@ const ViewAccount = () => {
           <div className='header-content'>
             <h1>View User ID: {params.get('id')} </h1>
             <div className='button-group'>
-              <Button
-                variant='contained'
-                className='create-btn'
-                color='primary'
-                onClick={() => handleEditButtonClick()}
+              <Link
+                to="/accounts/editAccount"
+                state={user}
               >
-                EDIT
-              </Button>
+                <Button
+                  variant='contained'
+                  className='create-btn'
+                  color='primary'>
+                  EDIT
+                </Button>
+              </Link>
               <Button
                 type='submit'
                 variant='contained'
@@ -206,9 +206,9 @@ const ViewAccount = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
-                onClick={user?.status === "ACTIVE" ? handleDisableButtonClick: handleEnableButtonClick}
+                onClick={user?.status === "ACTIVE" ? handleDisableButtonClick : handleEnableButtonClick}
               >
-                {user?.status === "ACTIVE" ? "DISABLE": "ENABLE"}
+                {user?.status === "ACTIVE" ? "DISABLE" : "ENABLE"}
               </Button>
             </div>
           </div>
@@ -216,36 +216,39 @@ const ViewAccount = () => {
           <Paper elevation={2}>
             <div className='content-body'>
               <div className='right-content'>
-                <Box className='display-box'>
-                  <div>
-                    <h6>User ID</h6>
-                    <h4>{user?.id}</h4>
-                  </div>
 
-                  <div>
-                    <h6>Role</h6>
-                    <h4>{user?.role}</h4>
-                  </div>
-                </Box>
-
-                <Box className='display-box'>
-                  <div>
-                    <h6>First Name</h6>
-                    <h4>{user?.first_name}</h4>
-                  </div>
-
-                  <div>
-                    <h6>Last Name</h6>
-                    <h4>{user?.last_name}</h4>
-                  </div>
-                </Box>
-
-                <Box className='display-box'>
-                  <div>
-                    <h6>Email</h6>
-                    <h4>{user?.email}</h4>
-                  </div>
-                </Box>
+                <Grid container spacing={1}>
+                  <Grid item xs={4}>
+                    <div>
+                      <h4>User ID</h4>
+                      <h3>{user?.id}</h3>
+                    </div>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <div>
+                      <h4>First Name</h4>
+                      <h3>{user?.first_name}</h3>
+                    </div>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <div>
+                      <h4>Last Name</h4>
+                      <h3>{user?.last_name}</h3>
+                    </div>
+                  </Grid>
+                  <Grid item xs={8}>
+                    <div>
+                      <h4>Email</h4>
+                      <h3>{user?.email}</h3>
+                    </div>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <div>
+                      <h4>Role</h4>
+                      <h3>{user?.role}</h3>
+                    </div>
+                  </Grid>
+                </Grid>
               </div>
             </div>
             <div className='view-button-group'>

@@ -3,13 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AccountCellAction from 'src/components/account/AccountCellAction';
 import '../../styles/pages/accounts.scss';
-import { Box } from '@mui/system';
 import { Button, TextField } from '@mui/material';
 import { User } from 'src/models/types';
 import { getAllUserSvc } from 'src/services/account/accountService';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { Search } from '@mui/icons-material';
-import AuthContext from 'src/context/auth/authContext';
 
 //TODO: Include avatar
 const columns: GridColDef[] = [
@@ -34,15 +32,13 @@ const Accounts = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredData, setFilteredData] = React.useState<User[]>([]);
   const [searchField, setSearchField] = React.useState<string>('');
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   useEffect(() => {
     asyncFetchCallback(
       getAllUserSvc(),
       (users: Array<User>) => {
         setUsers(users);
-      },
-      () => {
-        //handle error here
       }
     );
   }, []);
