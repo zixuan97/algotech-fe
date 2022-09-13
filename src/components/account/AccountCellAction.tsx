@@ -18,7 +18,7 @@ const AccountCellAction = ({ id }: GridRenderCellParams) => {
   return (
     <div className='action-cell'>
       <Button variant='contained' onClick={() => navToViewAccount(false)}>
-        Edit
+        View
       </Button>
     </div>
   );

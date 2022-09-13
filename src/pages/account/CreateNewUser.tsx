@@ -21,7 +21,7 @@ import { createUserSvc } from 'src/services/account/accountService';
 import { toast } from 'react-toastify';
 
 const CreateNewUser = () => {
-  const mockUser: User = {
+  const placeholderUser: User = {
     //note: id is temp holder, BE doesn't consume id on create
     id: 0,
     email: '',
@@ -69,8 +69,8 @@ const CreateNewUser = () => {
       );
     }
   };
-  const [showPassword, setShowPassword] = useState<Boolean>(false);
-  const [newUser, setNewUser] = useState<User>(mockUser);
+
+  const [newUser, setNewUser] = useState<User>(placeholderUser);
 
   const userFieldOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -82,15 +82,6 @@ const CreateNewUser = () => {
         [key]: event.target.value
       };
     });
-  };
-
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-  const handleMouseDownPassword = (
-    event: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    event.preventDefault();
   };
 
   return (
@@ -166,7 +157,7 @@ const CreateNewUser = () => {
                         }
                       />
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={12}>
                       <TextField
                         required
                         fullWidth
@@ -177,36 +168,6 @@ const CreateNewUser = () => {
                         value={newUser?.email}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           userFieldOnChange(e, 'email')
-                        }
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <OutlinedInput
-                        fullWidth
-                        disabled
-                        type={showPassword ? 'text' : 'password'}
-                        id='outlined-quantity'
-                        label='Password'
-                        name='password'
-                        value={newUser?.password}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          userFieldOnChange(e, 'password')
-                        }
-                        endAdornment={
-                          <InputAdornment position='end'>
-                            <IconButton
-                              aria-label='toggle password visibility'
-                              onClick={handleClickShowPassword}
-                              onMouseDown={handleMouseDownPassword}
-                              edge='end'
-                            >
-                              {showPassword ? (
-                                <VisibilityOff />
-                              ) : (
-                                <Visibility />
-                              )}
-                            </IconButton>
-                          </InputAdornment>
                         }
                       />
                     </Grid>

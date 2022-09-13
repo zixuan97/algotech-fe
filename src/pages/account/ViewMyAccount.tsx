@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Box,
     Paper,
@@ -8,24 +8,62 @@ import {
     TextField,
     MenuItem,
     Grid,
-
+    OutlinedInput,
+    InputAdornment,
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
-import { ChevronLeft } from '@mui/icons-material';
+import { ChevronLeft, Visibility, VisibilityOff } from '@mui/icons-material';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import { roles } from 'src/components/account/accountTypes';
 import BottomButton from 'src/components/common/BottomButton';
-import { editUserSvc } from 'src/services/account/accountService';
+import { editUserSvc, getUserDetailsSvc } from 'src/services/account/accountService';
 import { toast } from 'react-toastify';
 
-const EditAccount = () => {
+const placeholderUser: User = {
+    //note: id is temp holder, BE doesn't consume id on create
+    id: 0,
+    email: '',
+    role: '',
+    status: '',
+    first_name: '',
+    last_name: '',
+    password: ''
+};
+
+const ViewMyAccount = () => {
     const navigate = useNavigate();
-    const location = useLocation();
+    let params = new URLSearchParams(window.location.search);
+    const id = params.get('id');
+    const [user, setUser] = useState<User>(placeholderUser);
+    // const [showPassword, setShowPassword] = useState<Boolean>(false);
+
+    // const handleClickShowPassword = () => {
+    //     setShowPassword(!showPassword);
+    // };
+    // const handleMouseDownPassword = (
+    //     event: React.MouseEvent<HTMLButtonElement>
+    // ) => {
+    //     event.preventDefault();
+    // };
+
+    useEffect(() => {
+        id &&
+            asyncFetchCallback(
+                getUserDetailsSvc(id),
+                (user: User) => {
+                    setUser(user);
+                },
+                () => {
+                    //handle error here
+                }
+            );
+    }, []);
+
     const handleSaveButtonClick = (e: any) => {
         e.preventDefault();
         asyncFetchCallback(
-            editUserSvc(currentUser),
+            editUserSvc(user!),
             () => {
                 toast.success('Account edited.', {
                     position: 'top-right',
@@ -36,7 +74,7 @@ const EditAccount = () => {
                     draggable: true,
                     progress: undefined
                 });
-                navigate(`/accounts/viewAccount?id=${currentUser.id}`);
+                navigate(`/accounts/viewMyAccount?id=${id}`);
             },
             () => {
                 toast.error('Error saving changes for account! Try again later.', {
@@ -51,16 +89,14 @@ const EditAccount = () => {
             }
         );
     };
-    const user = location.state as User;
-    const [currentUser, setCurrentUser] = useState<User>(user);
 
     const userFieldOnChange = (
         event: React.ChangeEvent<HTMLInputElement>,
         key: string
     ) => {
-        setCurrentUser((user: User) => {
+        setUser((paramUser: User) => {
             return {
-                ...user,
+                ...paramUser,
                 [key]: event.target.value
             };
         });
@@ -69,14 +105,14 @@ const EditAccount = () => {
     return (
         <>
             <Tooltip title='Return to Accounts' enterDelay={300}>
-                <IconButton size='large' onClick={() => navigate(`/accounts/viewAccount?id=${currentUser.id}`)}>
+                <IconButton size='large' onClick={() => navigate('/accounts')}>
                     <ChevronLeft />
                 </IconButton>
             </Tooltip>
 
             <div className='center-div'>
                 <Box className='center-box'>
-                    <h1>Edit Account</h1>
+                    <h1>Your Profile Page</h1>
                     <Paper elevation={2}>
                         <form>
                             <div className='content-body'>
@@ -89,7 +125,7 @@ const EditAccount = () => {
                                                 id='outlined-quantity'
                                                 label='User ID'
                                                 name='userId'
-                                                value={currentUser?.id}
+                                                value={user?.id}
                                                 placeholder='eg.: 12'
                                             />
                                         </Grid>
@@ -100,7 +136,7 @@ const EditAccount = () => {
                                                 id='outlined-field'
                                                 select
                                                 label='Role'
-                                                value={currentUser?.role}
+                                                value={user?.role}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                                     userFieldOnChange(e, 'role')
                                                 }
@@ -120,7 +156,7 @@ const EditAccount = () => {
                                                 label='First Name'
                                                 name='firstName'
                                                 placeholder='eg.: John'
-                                                value={currentUser?.first_name}
+                                                value={user?.first_name}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                                     userFieldOnChange(e, 'first_name')
                                                 }
@@ -134,7 +170,7 @@ const EditAccount = () => {
                                                 label='Last Name'
                                                 name='lastName'
                                                 placeholder='eg.: Tan'
-                                                value={currentUser?.last_name}
+                                                value={user?.last_name}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                                     userFieldOnChange(e, 'last_name')
                                                 }
@@ -148,17 +184,48 @@ const EditAccount = () => {
                                                 label='Email'
                                                 name='email'
                                                 placeholder='eg.: johntan@gmail.com'
-                                                value={currentUser?.email}
+                                                value={user?.email}
                                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                                     userFieldOnChange(e, 'email')
                                                 }
                                             />
                                         </Grid>
+
+                                        {/* <Grid item xs={6}>
+                                            <OutlinedInput
+                                                fullWidth
+                                                disabled
+                                                type={showPassword ? 'text' : 'password'}
+                                                id='outlined-quantity'
+                                                label='Password'
+                                                name='password'
+                                                value={user?.password}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                                    userFieldOnChange(e, 'password')
+                                                }
+                                                endAdornment={
+                                                    <InputAdornment position='end'>
+                                                        <IconButton
+                                                            aria-label='toggle password visibility'
+                                                            onClick={handleClickShowPassword}
+                                                            onMouseDown={handleMouseDownPassword}
+                                                            edge='end'
+                                                        >
+                                                            {showPassword ? (
+                                                                <VisibilityOff />
+                                                            ) : (
+                                                                <Visibility />
+                                                            )}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                }
+                                            />
+                                        </Grid> */}
                                     </Grid>
                                 </div>
                             </div>
                             <BottomButton
-                                location='accounts'
+                                location='/'
                                 firstButtonText='CANCEL'
                                 secondButtonText='SAVE CHANGES'
                                 secondButtonFn={handleSaveButtonClick}
@@ -171,4 +238,4 @@ const EditAccount = () => {
     );
 };
 
-export default EditAccount;
+export default ViewMyAccount;
