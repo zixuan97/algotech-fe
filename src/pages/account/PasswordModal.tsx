@@ -1,31 +1,74 @@
-import * as React from 'react';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+  Backdrop
+} from '@mui/material';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { forgetPasswordSvc } from 'src/services/account/accountService';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 
-const PasswordModal = () => {
-  const [open, setOpen] = React.useState(false);
+type PasswordModalProps = {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  body: string;
+  focusPassthrough?: boolean;
+};
 
-  const handleClickOpen = () => {
-    setOpen(true);
+const PasswordModal = ({
+  open,
+  onClose,
+  title,
+  body,
+  focusPassthrough = false
+}: PasswordModalProps) => {
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [inputEmail, setInputEmail] = useState<string>('');
+  const navigate = useNavigate();
+
+  const handleForgetPassword = async () => {
+    setLoading(true);
+    await asyncFetchCallback(
+      forgetPasswordSvc(inputEmail!),
+      (res) => {
+        setLoading(false);
+        // TODO: print out success
+        navigate({ pathname: '/login' });
+      },
+      () => setLoading(false)
+    );
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputEmail(e.target.value);
   };
 
   return (
     <div>
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Subscribe</DialogTitle>
+      <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={loading}
+      />
+      <Dialog
+        open={open}
+        onClose={onClose}
+        aria-labelledby='alert-dialog-title'
+        aria-describedby='alert-dialog-description'
+      >
+        <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            To subscribe to this website, please enter your email address here. We
-            will send updates occasionally.
+          <DialogContentText id='alert-dialog-description'>
+            {body}
           </DialogContentText>
           <TextField
             autoFocus
@@ -35,11 +78,16 @@ const PasswordModal = () => {
             type="email"
             fullWidth
             variant="standard"
+            onChange={handleChange}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleClose}>Subscribe</Button>
+          <Button onClick={onClose} autoFocus={!focusPassthrough}>
+            Close
+          </Button>
+          <Button onClick={handleForgetPassword} autoFocus={focusPassthrough}>
+            Send Email
+          </Button>
         </DialogActions>
       </Dialog>
     </div>

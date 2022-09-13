@@ -21,6 +21,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import AuthContext from 'src/context/auth/authContext';
 import { useNavigate } from 'react-router-dom';
 import { UserInput } from 'src/services/authService';
+import PasswordModal from './account/PasswordModal';
 
 const Login = () => {
   const authContext = React.useContext(AuthContext);
@@ -36,8 +37,8 @@ const Login = () => {
     }
   }, [isAuthenticated, error, navigate, clearErrors]);
 
+  const [showDialog, setShowDialog] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [showDialog, setShowDialog] = React.useState<Boolean>(false);
   const [userInput, setUserInput] = React.useState<UserInput>({
     email: '',
     password: ''
@@ -122,7 +123,7 @@ const Login = () => {
                 label='Stay signed in'
               />
 
-              <Link href="#" onClick={()=>setShowDialog(true)}>Forget Password</Link>
+              <Link href="#" onClick={() => setShowDialog(true)}>Forget Password</Link>
             </div>
 
             <div style={{ marginTop: '2vh' }}>
@@ -138,6 +139,12 @@ const Login = () => {
           </FormGroup>
         </form>
       </Box>
+      <PasswordModal
+        open={showDialog}
+        onClose={() => setShowDialog(false)}
+        title='Forget Password'
+        body='Enter the your login email. An email will be sent to you to reset your password.'
+      />
     </div>
   );
 };

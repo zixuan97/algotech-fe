@@ -32,3 +32,8 @@ export const editUserSvc = (user: User): Promise<any> => {
 export const deleteUserSvc = (userId: string): Promise<any> => {
   return axios.delete(`${apiRoot}/user/${userId}`).then((res) => res.data);
 };
+
+export const forgetPasswordSvc = (recipientEmail : string): Promise<any> => {
+  return axios.post(`${apiRoot}/forgetpw`, recipientEmail).then((res) => res.data);
+};
+
