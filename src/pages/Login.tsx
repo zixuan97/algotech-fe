@@ -12,6 +12,7 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
+  Link,
   OutlinedInput,
   TextField
 } from '@mui/material';
@@ -36,6 +37,7 @@ const Login = () => {
   }, [isAuthenticated, error, navigate, clearErrors]);
 
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [showDialog, setShowDialog] = React.useState<Boolean>(false);
   const [userInput, setUserInput] = React.useState<UserInput>({
     email: '',
     password: ''
@@ -114,10 +116,15 @@ const Login = () => {
               </Alert>
             )}
             {/* the checkbox does nothing; i just followed the wireframe first lols */}
-            <FormControlLabel
-              control={<Checkbox defaultChecked />}
-              label='Stay signed in'
-            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <FormControlLabel
+                control={<Checkbox defaultChecked />}
+                label='Stay signed in'
+              />
+
+              <Link href="#" onClick={()=>setShowDialog(true)}>Forget Password</Link>
+            </div>
+
             <div style={{ marginTop: '2vh' }}>
               <Button
                 type='submit'
