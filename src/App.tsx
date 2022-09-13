@@ -75,6 +75,10 @@ const App = () => {
               }
             >
               <Route
+                index
+                element={<Navigate replace to='/inventory/dashboard' />}
+              />
+              <Route
                 path='inventory'
                 element={<Navigate replace to='/inventory/dashboard' />}
               />

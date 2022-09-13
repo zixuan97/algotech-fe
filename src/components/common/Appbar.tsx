@@ -4,12 +4,13 @@ import { IconButton, Menu, MenuItem, Toolbar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import { AccountCircle } from '@mui/icons-material';
 import AuthContext from 'src/context/auth/authContext';
+import 'src/styles/pages/home.scss';
 
 type AppbarProps = {
-  toggleOpen: (open: boolean) => void;
+  sidebarWidth: string;
 };
 
-const Appbar = ({ toggleOpen }: AppbarProps) => {
+const Appbar = ({ sidebarWidth }: AppbarProps) => {
   const authContext = React.useContext(AuthContext);
   const { logout } = authContext;
 
@@ -24,9 +25,12 @@ const Appbar = ({ toggleOpen }: AppbarProps) => {
   };
 
   return (
-    <AppBar position='static'>
-      <Toolbar style={{ justifyContent: 'space-between' }}>
-        <IconButton
+    <AppBar
+      position='static'
+      sx={{ width: `calc(100% - ${sidebarWidth})`, ml: sidebarWidth }}
+    >
+      <Toolbar style={{ justifyContent: 'flex-end' }}>
+        {/* <IconButton
           size='medium'
           edge='start'
           color='inherit'
@@ -35,7 +39,7 @@ const Appbar = ({ toggleOpen }: AppbarProps) => {
           sx={{ mr: 2 }}
         >
           <MenuIcon />
-        </IconButton>
+        </IconButton> */}
 
         <div>
           <IconButton
