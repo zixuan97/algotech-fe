@@ -34,15 +34,11 @@ const Accounts = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredData, setFilteredData] = React.useState<User[]>([]);
   const [searchField, setSearchField] = React.useState<string>('');
-  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
     asyncFetchCallback(
       getAllUserSvc(),
       (users: Array<User>) => {
-        users.filter((urs) => {
-          return urs.id !== Number(userId);
-        })
         setUsers(users);
       },
       () => {

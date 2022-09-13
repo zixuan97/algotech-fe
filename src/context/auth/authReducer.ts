@@ -8,7 +8,6 @@ const authReducer: Reducer<AuthStateAttr, AuthAction> = (
 ): AuthStateAttr => {
   switch (action.type) {
     case AuthActionTypes.USER_LOADED:
-      localStorage.setItem("userId", action.payload.id);
       return {
         ...state,
         isAuthenticated: true,
