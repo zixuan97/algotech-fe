@@ -16,7 +16,6 @@ import Home from './pages/Home';
 import ProductDetails from './pages/inventory/ProductDetails';
 import AllProducts from './pages/inventory/AllProducts';
 import InventoryDashboard from './pages/inventory/InventoryDashboard';
-import AllOrders from './pages/procurement/AllOrders';
 
 // import AllCategories from './pages/inventory/AllCategories';
 // import CreateCategory from './pages/inventory/CreateCategory';
@@ -26,6 +25,7 @@ import AllWarehouses from './pages/inventory/Warehouses';
 import WarehouseDetails from './pages/inventory/WarehouseDetails';
 import CreateWarehouse from './pages/inventory/CreateWarehouse';
 
+import AllOrders from './pages/procurement/AllProcurementOrders';
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
@@ -104,10 +104,7 @@ const App = () => {
                 path='inventory/categoryDetails'
                 element={<CategoryDetails />}
               /> */}
-              <Route
-                path='inventory/warehouses'
-                element={<AllWarehouses />}
-              />
+              <Route path='inventory/warehouses' element={<AllWarehouses />} />
               <Route
                 path='inventory/warehouseDetails'
                 element={<WarehouseDetails />}
