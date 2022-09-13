@@ -17,9 +17,13 @@ import ProductDetails from './pages/inventory/ProductDetails';
 import AllProducts from './pages/inventory/AllProducts';
 import InventoryDashboard from './pages/inventory/InventoryDashboard';
 
-// import AllCategories from './pages/inventory/AllCategories';
-// import CreateCategory from './pages/inventory/CreateCategory';
-// import CategoryDetails from './pages/inventory/CategoryDetails';
+import AllCategories from './pages/inventory/AllCategories';
+import CreateCategory from './pages/inventory/CreateCategory';
+import CategoryDetails from './pages/inventory/CategoryDetails';
+
+import AllBrands from './pages/inventory/AllBrands';
+import CreateBrand from './pages/inventory/CreateBrand';
+import BrandDetails from './pages/inventory/BrandDetails';
 
 import AllWarehouses from './pages/inventory/Warehouses';
 import WarehouseDetails from './pages/inventory/WarehouseDetails';
@@ -96,7 +100,7 @@ const App = () => {
                 element={<ProductDetails />}
               />
               <Route path='orders' element={<AllOrders />} />
-              {/* <Route
+              <Route
                 path='inventory/allCategories'
                 element={<AllCategories />}
               />
@@ -107,7 +111,19 @@ const App = () => {
               <Route
                 path='inventory/categoryDetails'
                 element={<CategoryDetails />}
-              /> */}
+              />
+              <Route
+                path='inventory/allBrands'
+                element={<AllBrands />}
+              />
+              <Route
+                path='inventory/createBrand'
+                element={<CreateBrand />}
+              />
+              <Route
+                path='inventory/brandDetails'
+                element={<BrandDetails />}
+              />
               <Route path='inventory/warehouses' element={<AllWarehouses />} />
               <Route
                 path='inventory/warehouseDetails'
