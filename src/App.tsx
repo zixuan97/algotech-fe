@@ -31,6 +31,8 @@ import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import EditAccount from './pages/account/EditAccount';
+import ViewMyAccount from './pages/account/ViewMyAccount';
 
 const theme = createTheme({
   palette: {
@@ -120,10 +122,12 @@ const App = () => {
 
               <Route path='accounts' element={<Accounts />} />
               <Route path='accounts/viewAccount' element={<ViewAccount />} />
+              <Route path='accounts/editAccount' element={<EditAccount />} />
               <Route
                 path='accounts/createNewUser'
                 element={<CreateNewUser />}
               />
+              <Route path='accounts/viewMyAccount' element={<ViewMyAccount />} />
             </Route>
           </Routes>
         </Router>
