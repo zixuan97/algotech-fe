@@ -79,6 +79,16 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
                 typographyProps={submenuTypographyProps}
               />
               <ListItemLink
+                primary='Manage Brands'
+                to='/inventory/allBrands'
+                typographyProps={submenuTypographyProps}
+              />
+              <ListItemLink
+                primary='Manage Categories'
+                to='/inventory/allCategories'
+                typographyProps={submenuTypographyProps}
+              />
+              <ListItemLink
                 primary='Manage Warehouses'
                 to='/inventory/warehouses'
                 typographyProps={submenuTypographyProps}
