@@ -3,7 +3,7 @@ import React from 'react';
 
 type DisplayedFieldProps = {
   label: string;
-  value: string;
+  value: string | number | undefined;
 };
 
 const DisplayedField = ({ label, value }: DisplayedFieldProps) => {

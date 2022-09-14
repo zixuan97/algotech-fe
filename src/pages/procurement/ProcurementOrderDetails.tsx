@@ -11,6 +11,10 @@ import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { useSearchParams } from 'react-router-dom';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { getProcurementOrderById } from 'src/services/procurementService';
+import { ProcurementOrder, ProcurementOrderItem } from 'src/models/types';
 
 const order = {
   order_id: '123456',
@@ -41,6 +45,26 @@ const data = [
 
 const ProcurementOrderDetails = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+
+  const [originalOrder, setOriginalOrder] = React.useState<ProcurementOrder>();
+  const [originalOrderItems, setOriginalOrderItems] = React.useState<
+    ProcurementOrderItem[]
+  >([]);
+  const [originalOrderDate, setOriginalOrderDate] = React.useState('');
+
+  React.useEffect(() => {
+    if (id) {
+      asyncFetchCallback(getProcurementOrderById(id), (res) => {
+        let currentDate = new Date(res.order_date);
+        let stringOrderDate = currentDate.toDateString();
+        setOriginalOrderDate(stringOrderDate);
+        setOriginalOrderItems(res.proc_order_items);
+        setOriginalOrder(res);
+      });
+    }
+  }, [id]);
 
   return (
     <div className='view-order-details'>
@@ -55,22 +79,29 @@ const ProcurementOrderDetails = () => {
       <div className='order-details-section'>
         <Paper elevation={2} className='order-details-paper'>
           <div className='horizontal-text-fields'>
-            <DisplayedField label='Order ID' value={order.order_id} />
-            <DisplayedField label='Date' value={order.order_date} />
-            <DisplayedField label='Supplier' value={order.supplier} />
+            <DisplayedField label='Order ID' value={originalOrder?.id} />
+            <DisplayedField label='Date' value={originalOrderDate} />
+            <DisplayedField
+              label='Supplier'
+              value={originalOrder?.supplier_id}
+            />
           </div>
           <div className='horizontal-text-fields-two'>
             <DisplayedField
               label='Payment Status'
-              value={order.payment_status}
+              value={originalOrder?.payment_status}
             />
             <DisplayedField label='Order Total' value={order.order_total} />
           </div>
           <div className='horizontal-text-fields'>
-            <DisplayedField label='Comments' value={order.description} />
+            <DisplayedField
+              label='Comments'
+              value={originalOrder?.description}
+            />
           </div>
         </Paper>
         <Paper elevation={2} className='order-details-paper'>
+          <h3>View Order Status</h3>
           <React.Fragment>
             <Timeline>
               <TimelineItem>
@@ -90,7 +121,11 @@ const ProcurementOrderDetails = () => {
                   Order Arrived
                 </TimelineOppositeContent>
                 <TimelineSeparator>
-                  <TimelineDot />
+                  {(originalOrder?.fulfilment_status === 'ARRIVED' ||
+                    originalOrder?.fulfilment_status === 'COMPLETED') && (
+                    <TimelineDot color='primary' />
+                  )}
+                  <TimelineDot variant='outlined' />
                   <TimelineConnector />
                 </TimelineSeparator>
                 <TimelineContent color='text.secondary'>
@@ -102,7 +137,10 @@ const ProcurementOrderDetails = () => {
                   Order Completed
                 </TimelineOppositeContent>
                 <TimelineSeparator>
-                  <TimelineDot />
+                  {originalOrder?.fulfilment_status === 'COMPLETED' && (
+                    <TimelineDot color='primary' />
+                  )}
+                  <TimelineDot variant='outlined' />
                 </TimelineSeparator>
                 <TimelineContent color='text.secondary'>
                   Shipment Verified
