@@ -146,12 +146,13 @@ const CategoryDetails = () => {
 
   const handleDeleteCategory = async () => {
     setLoading(true);
-    if (originalCategory?.productCategory.length) {
-        //TODO: print failure; unable to delete toast
-      navigate({ pathname: '/inventory/allCategories' });
-      setLoading(false);
-    }
-    else if (originalCategory) {
+    // if (originalCategory?.productCategory.length) {
+    //     //TODO: print failure; unable to delete toast
+    //   navigate({ pathname: '/inventory/allCategories' });
+    //   setLoading(false);
+    // }
+    // else
+    if (originalCategory) {
       await asyncFetchCallback(
         deleteCategory(originalCategory.id),
         (res) => {
@@ -211,7 +212,7 @@ const CategoryDetails = () => {
                 </Button>
               )}
               <Button
-                disabled={!!productDetails.length}
+                // disabled={!!productDetails.length}
                 variant='contained'
                 className='create-btn'
                 color='primary'

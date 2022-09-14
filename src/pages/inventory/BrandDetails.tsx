@@ -16,7 +16,7 @@ import {
   // InputLabel,
   // Chip,
   // SelectChangeEvent,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -31,7 +31,6 @@ import {
   getProductById,
 } from 'src/services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-// import { intersectionWith } from 'lodash';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 
 const columns: GridColDef[] = [
@@ -110,32 +109,6 @@ const handleEditBrand = (e: React.ChangeEvent<HTMLInputElement>) => {
   });
 };
 
-// const handleEditCategories = (e: SelectChangeEvent<string[]>) => {
-//   const inputCategories = e.target.value;
-//   setEditBrand((prev) => {
-//     if (prev) {
-//       return {
-//         ...prev,
-//         productCategory: intersectionWith(
-//           brands,
-//           inputCategories,
-//           (a, b) => a.name === b
-//         ).map((cat) => {
-//           return {
-//           //   product_sku: editCategory?.sku,
-//             category_id: cat.id,
-//             category_name: cat.name,
-//             category: cat,
-//             product: editBrand
-//           } as ProductCategory;
-//         })
-//       };
-//     } else {
-//       return prev;
-//     }
-//   });
-// };
-
 const handleSave = async () => {
   setLoading(true);
   if (editBrand) {
@@ -145,25 +118,27 @@ const handleSave = async () => {
   }
 };
 
-const handleDeleteBrand = async () => {
-  setLoading(true);
-  if (originalBrand?.product.length) {
-      //TODO: print failure; unable to delete toast
-    navigate({ pathname: '/inventory/allBrands' });
-    setLoading(false);
-  }
-  else if (originalBrand) {
-    await asyncFetchCallback(
-      deleteBrand(originalBrand.id),
-      (res) => {
-        setLoading(false);
-        // TODO: print out success
-        navigate({ pathname: '/inventory/allBrands' });
-      },
-      () => setLoading(false)
-    );
-  }
-};
+// const handleDeleteBrand = async () => {
+//   setLoading(true);
+//   // if (originalBrand?.product.length) {
+//   //     //TODO: print failure; unable to delete toast
+//   //   navigate({ pathname: '/inventory/allBrands' });
+//   //   setLoading(false);
+//   // }
+//   // else
+//   if (originalBrand) {
+//     await asyncFetchCallback(
+//       deleteBrand(originalBrand.id),
+//       (res) => {
+//         setLoading(false);
+//         // TODO: print out success
+//         navigate({ pathname: '/inventory/allBrands' });
+//       },
+//       () => setLoading(false)
+//     );
+//   }
+// };
+
 
 const title = `${edit ? 'Edit' : ''} Brand Details`;
 
@@ -196,7 +171,7 @@ return (
                 }
               }}
             >
-              {edit ? 'SAVE CHANGES' : 'EDIT'}
+              {edit ? 'Save Changes' : 'Edit'}
             </Button>
             {edit && (
               <Button
@@ -208,25 +183,40 @@ return (
                   setEditBrand(originalBrand);
                 }}
               >
-                DISCARD CHANGES
+                Discard Changes
               </Button>
             )}
-            <Button
-              disabled={!!productDetails.length}
+            {/* <Button
+              // disabled={!!productDetails.length}
+              disabled
               variant='contained'
               className='create-btn'
               color='primary'
-              onClick={() => setModalOpen(true)}
+              // onClick={() => setModalOpen(true)}
             >
               DELETE
-            </Button>
-            <ConfirmationModal
+            </Button> */}
+
+            <Tooltip title={"Contact Zac to delete any brands."}>
+              <span>
+                <Button
+                  disabled
+                  variant='contained'
+                  className='create-btn'
+                  color='primary'
+                  >
+                    Delete
+                  </Button>
+              </span>
+            </Tooltip>
+
+            {/* <ConfirmationModal
               open={modalOpen}
               onClose={() => setModalOpen(false)}
-              onConfirm={handleDeleteBrand}
+              // onConfirm={handleDeleteBrand}
               title='Delete Brand'
               body='Are you sure you want to delete this brand?'
-            />
+            /> */}
           </div>
         </div>
         <Paper elevation={2}>
@@ -248,7 +238,7 @@ return (
                   ) : (
                     <Typography
                       sx={{ padding: '15px' }}
-                    >{`Category Name: ${editBrand?.name}`}</Typography>
+                    >{`Brand Name: ${editBrand?.name}`}</Typography>
                   )}
                   
                 </div>
