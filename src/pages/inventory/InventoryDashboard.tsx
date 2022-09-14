@@ -1,4 +1,4 @@
-import { Card, Divider, Tooltip, Typography } from '@mui/material';
+import { Button, Card, Divider, Tooltip, Typography } from '@mui/material';
 import React from 'react';
 import '../../styles/pages/inventory/inventoryDashboard.scss';
 import '../../styles/common/common.scss';
@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import ProductDashboardCellAction from 'src/components/inventory/ProductDashboardCellAction';
 import { Bar } from 'react-chartjs-2';
 import InventoryLevelsChart from 'src/components/inventory/InventoryTurnoverChart';
+import { getHtml2Canvas } from 'src/utils/fileUtils';
 
 const columns: GridColDef[] = [
   { field: 'sku', headerName: 'SKU', flex: 1 },
@@ -21,7 +22,6 @@ const columns: GridColDef[] = [
     type: 'number',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) => {
-      console.log(params);
       return (
         params.value?.reduce(
           (prev: number, curr: StockQuantity) => prev + curr.quantity,
@@ -42,6 +42,7 @@ const columns: GridColDef[] = [
 ];
 
 const InventoryDashboard = () => {
+  const pdfRef = React.createRef<HTMLDivElement>();
   const [productData, setProductData] = React.useState<Product[]>([]);
 
   const computeProductsWithLowStock = () => {
@@ -58,6 +59,13 @@ const InventoryDashboard = () => {
     });
     return count;
   };
+
+  const getGraphImage = React.useCallback(() => {
+    console.log(pdfRef.current);
+    if (pdfRef.current) {
+      getHtml2Canvas(pdfRef.current, 'image.png');
+    }
+  }, [pdfRef]);
 
   React.useEffect(() => {
     asyncFetchCallback(getAllProducts(), setProductData);
@@ -96,7 +104,8 @@ const InventoryDashboard = () => {
       </div>
       {/* <h4>Overall Inventory Turnover</h4> */}
       <h4>Current Inventory Levels by Product</h4>
-      <InventoryLevelsChart productData={productData} />
+      <Button onClick={() => getGraphImage()}>Download</Button>
+      <InventoryLevelsChart productData={productData} ref={pdfRef} />
     </div>
   );
 };
