@@ -32,6 +32,7 @@ import {
 import { getProductById } from 'src/services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import { toast } from 'react-toastify';
 
 const columns: GridColDef[] = [
   {
@@ -118,8 +119,41 @@ const handleSave = async () => {
   }
 };
 
-// const handleDeleteBrand = async () => {
-//   setLoading(true);
+const handleDeleteBrand = async () => {
+  setLoading(true);
+  if (originalBrand) {
+    setLoading(false);
+    asyncFetchCallback(
+      deleteBrand(originalBrand.id),
+      () => {
+        toast.success('Brand successfully deleted.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        navigate('/inventory/allBrands');
+      },
+      () => {
+        toast.error('Error deleting brand! Try again later.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        navigate('/inventory/allBrands');
+      }
+    );
+  }
+}
+
+
 //   // if (originalBrand?.product.length) {
 //   //     //TODO: print failure; unable to delete toast
 //   //   navigate({ pathname: '/inventory/allBrands' });
@@ -186,18 +220,17 @@ return (
                 Discard Changes
               </Button>
             )}
-            {/* <Button
+            <Button
               // disabled={!!productDetails.length}
-              disabled
               variant='contained'
               className='create-btn'
               color='primary'
-              // onClick={() => setModalOpen(true)}
+              onClick={() => setModalOpen(true)}
             >
-              DELETE
-            </Button> */}
+              Delete
+            </Button>
 
-            <Tooltip title={"Contact Zac to delete any brands."}>
+            {/* <Tooltip title={"Contact Zac to delete any brands."}>
               <span>
                 <Button
                   disabled
@@ -208,15 +241,16 @@ return (
                     Delete
                   </Button>
               </span>
-            </Tooltip>
+            </Tooltip> */}
 
-            {/* <ConfirmationModal
+            <ConfirmationModal
               open={modalOpen}
               onClose={() => setModalOpen(false)}
-              // onConfirm={handleDeleteBrand}
+              onConfirm={handleDeleteBrand}
               title='Delete Brand'
-              body='Are you sure you want to delete this brand?'
-            /> */}
+              body='Are you sure you want to delete this brand?
+              Note that deleting brands with associated products will cause the associated products to be deleted too.'
+            />
           </div>
         </div>
         <Paper elevation={2}>
