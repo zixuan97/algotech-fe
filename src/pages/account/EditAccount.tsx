@@ -147,11 +147,11 @@ const EditAccount = () => {
                                 </div>
                             </div>
                             <BottomButton
-                                location='accounts'
+                                location={`accounts/viewAccount?id=${user.id}`}
                                 firstButtonText='CANCEL'
                                 secondButtonText='SAVE CHANGES'
                                 secondButtonFn={handleSaveButtonClick}
-                            />
+                            />                            
                         </form>
                     </Paper>
                 </Box>

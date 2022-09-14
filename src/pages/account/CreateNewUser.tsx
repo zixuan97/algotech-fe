@@ -8,17 +8,17 @@ import {
   TextField,
   MenuItem,
   Grid,
-  InputAdornment,
-  OutlinedInput
+  Alert,
+  CircularProgress
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
-import { ChevronLeft, Visibility, VisibilityOff } from '@mui/icons-material';
+import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import { roles } from 'src/components/account/accountTypes';
 import BottomButton from 'src/components/common/BottomButton';
 import { createUserSvc } from 'src/services/accountService';
-import { toast } from 'react-toastify';
+import { AlertType } from 'src/components/common/Alert';
 
 const CreateNewUser = () => {
   const placeholderUser: User = {
@@ -31,46 +31,41 @@ const CreateNewUser = () => {
     password: '',
     isVerified: false
   };
-  
+
+  const [alert, setAlert] = useState<AlertType | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [newUser, setNewUser] = useState<User>(placeholderUser);
+
   const navigate = useNavigate();
   const handleCreateButtonClick = (e: any) => {
     if (
       newUser.email &&
       newUser.first_name &&
       newUser.last_name &&
-      newUser.role 
+      newUser.role
     ) {
+      setLoading(true);
       e.preventDefault();
       asyncFetchCallback(
         createUserSvc(newUser),
         () => {
-          toast.success('Account created.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          setAlert({
+            severity: 'success',
+            message: 'Account created.'
           });
-          navigate('/accounts');
+          setNewUser(placeholderUser);
+          setLoading(false);
         },
         () => {
-          toast.error('Error creating account! Try again later.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          setAlert({
+            severity: 'error',
+            message: 'Error creating account! Try again later.'
           });
+          setLoading(false);
         }
       );
     }
   };
-
-  const [newUser, setNewUser] = useState<User>(placeholderUser);
 
   const userFieldOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -95,6 +90,11 @@ const CreateNewUser = () => {
       <div className='center-div'>
         <Box className='center-box'>
           <h1>Create New User Account</h1>
+          {alert && (
+            <Alert severity={alert.severity} onClose={() => setAlert(null)} style={{margin: '1%'}}>
+              {alert.message}
+            </Alert>
+          )}
           <Paper elevation={2}>
             <form>
               <div className='content-body'>
@@ -128,7 +128,7 @@ const CreateNewUser = () => {
                         }
                       />
                     </Grid>
-                    
+
                     <Grid item xs={12}>
                       <TextField
                         required
@@ -165,6 +165,7 @@ const CreateNewUser = () => {
                   </Grid>
                 </div>
               </div>
+              {loading && <CircularProgress color='secondary' />}
               <BottomButton
                 location='accounts'
                 firstButtonText='CANCEL'

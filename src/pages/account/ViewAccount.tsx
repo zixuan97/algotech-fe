@@ -13,6 +13,7 @@ import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import { toast } from 'react-toastify';
+import { Typography } from '@mui/material';
 interface ModalProps {
   wrapperParam: wrapperParam,
   modalOpen: boolean,
@@ -159,8 +160,6 @@ const ViewAccount = () => {
       );
   }, [user]);
 
-  !user && <div>Loading ...</div>;
-
   return (
     <>
       <WrapperModal
@@ -182,7 +181,7 @@ const ViewAccount = () => {
           <div className='header-content'>
             <h1>View User Account </h1>
             <div className='button-group'>
-            {loading && <CircularProgress color='secondary' />}
+              {loading && <CircularProgress color='secondary' />}
               <Link
                 to="/accounts/editAccount"
                 state={user}
@@ -218,30 +217,37 @@ const ViewAccount = () => {
           <Paper elevation={2}>
             <div className='content-body'>
               <div className='right-content'>
-
                 <Grid container spacing={1}>
                   <Grid item xs={6}>
                     <div>
                       <h4>First Name</h4>
-                      <h3>{user?.first_name}</h3>
+                      <Typography>
+                        {user?.first_name}
+                      </Typography>
                     </div>
                   </Grid>
                   <Grid item xs={6}>
                     <div>
                       <h4>Last Name</h4>
-                      <h3>{user?.last_name}</h3>
+                      <Typography>
+                        {user?.last_name}
+                      </Typography>
                     </div>
                   </Grid>
                   <Grid item xs={6}>
                     <div>
                       <h4>Email</h4>
-                      <h3>{user?.email}</h3>
+                      <Typography>
+                        {user?.email}
+                      </Typography>
                     </div>
                   </Grid>
                   <Grid item xs={6}>
                     <div>
                       <h4>Role</h4>
-                      <h3>{user?.role}</h3>
+                      <Typography>
+                        {user?.role}
+                      </Typography>
                     </div>
                   </Grid>
                 </Grid>
