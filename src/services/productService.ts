@@ -14,9 +14,14 @@ export const getProductById = async (id: string | number): Promise<Product> => {
   return axios.get(`${apiRoot}/product/${id}`).then((res) => res.data);
 };
 
+export const getProductBySku = async (sku: string): Promise<Product> => {
+  return axios.get(`${apiRoot}/product/sku/${sku}`).then((res) => res.data);
+};
+
 export const createProduct = async (product: NewProduct): Promise<void> => {
   return axios.post(`${apiRoot}/product`, product);
 };
+
 export const updateProduct = async (product: Product): Promise<void> => {
   return axios.put(`${apiRoot}/product`, product);
 };

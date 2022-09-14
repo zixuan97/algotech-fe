@@ -30,6 +30,8 @@ import WarehouseDetails from './pages/inventory/WarehouseDetails';
 import CreateWarehouse from './pages/inventory/CreateWarehouse';
 
 import AllOrders from './pages/procurement/AllProcurementOrders';
+import CreateProcurementOrder from './pages/procurement/CreateProcurementOrder';
+import ProcurementOrderDetails from './pages/procurement/ProcurementOrderDetails';
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
@@ -103,6 +105,14 @@ const App = () => {
               />
               <Route path='orders' element={<AllOrders />} />
               <Route
+                path='orders/createProcurementOrder'
+                element={<CreateProcurementOrder />}
+              />
+              <Route
+                path='orders/procurementOrderDetails'
+                element={<ProcurementOrderDetails />}
+              />
+              {/* <Route
                 path='inventory/allCategories'
                 element={<AllCategories />}
               />
@@ -143,7 +153,7 @@ const App = () => {
                 path='accounts/createNewUser'
                 element={<CreateNewUser />}
               />
-              <Route path='accounts/viewMyAccount' element={<ViewMyAccount />} />
+              <Route path='accounts/viewMyAccount' element={<ViewMyAccount />} /> */}
             </Route>
           </Routes>
         </Router>

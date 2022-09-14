@@ -18,3 +18,111 @@
   margin-left: auto;
   margin-right: 0;
 }
+
+.create-procurement-order {
+  width: 90%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.create-procurement-order-heading {
+  display: flex;
+  flex-direction: row;
+  padding: 2rem;
+}
+
+.create-procurement-order-section {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding-left: 4rem;
+}
+
+.create-procurement-order-paper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.create-procurement-order-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px 20px;
+  margin: 2% 2% 2% 2%;
+}
+
+.text-fields {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  gap: 15px 20px;
+}
+
+.horizontal-text-fields {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+
+.horizontal-text-fields-two {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.button-container {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.modal-text-fields {
+  display: flex;
+  width: 80%;
+  padding-left: 2rem;
+}
+
+.view-order-details {
+  width: 90%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.view-order-details-heading {
+  display: flex;
+  flex-direction: row;
+  padding: 2rem;
+}
+
+.order-details-section {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  padding-left: 4rem;
+}
+
+.order-details-paper {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 1rem;
+  margin: 2% 2% 2% 2%;
+}
+
+.data-table-section {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding-left: 4rem;
+  padding-bottom: 4rem;
+}
