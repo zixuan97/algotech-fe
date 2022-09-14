@@ -17,10 +17,6 @@ import ProductDetails from './pages/inventory/ProductDetails';
 import AllProducts from './pages/inventory/AllProducts';
 import InventoryDashboard from './pages/inventory/InventoryDashboard';
 
-import AllCategories from './pages/inventory/AllCategories';
-import CreateCategory from './pages/inventory/CreateCategory';
-import CategoryDetails from './pages/inventory/CategoryDetails';
-
 import AllBrands from './pages/inventory/AllBrands';
 import CreateBrand from './pages/inventory/CreateBrand';
 import BrandDetails from './pages/inventory/BrandDetails';
@@ -39,6 +35,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EditAccount from './pages/account/EditAccount';
 import ViewMyAccount from './pages/account/ViewMyAccount';
+import AllCategories from './pages/inventory/AllCategories';
+import CreateCategory from './pages/inventory/CreateCategory';
+import CategoryDetails from './pages/inventory/CategoryDetails';
 
 const theme = createTheme({
   palette: {
@@ -112,7 +111,7 @@ const App = () => {
                 path='orders/procurementOrderDetails'
                 element={<ProcurementOrderDetails />}
               />
-              {/* <Route
+              <Route
                 path='inventory/allCategories'
                 element={<AllCategories />}
               />
@@ -153,7 +152,7 @@ const App = () => {
                 path='accounts/createNewUser'
                 element={<CreateNewUser />}
               />
-              <Route path='accounts/viewMyAccount' element={<ViewMyAccount />} /> */}
+              <Route path='accounts/viewMyAccount' element={<ViewMyAccount />} />
             </Route>
           </Routes>
         </Router>
