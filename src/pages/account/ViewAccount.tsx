@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Box, Paper, Button, IconButton, Tooltip, Grid, CircularProgress, Typography, Alert, TextField, MenuItem } from '@mui/material';
+import { Box, Paper, Button, IconButton, Tooltip, Grid, CircularProgress, Typography, Alert, TextField, MenuItem, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import {
@@ -15,6 +15,7 @@ import { User } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import { AlertType } from 'src/components/common/Alert';
 import { roles } from 'src/components/account/accountTypes';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 interface ModalProps {
   wrapperParam: wrapperParam,
   modalOpen: boolean,
