@@ -154,14 +154,15 @@ const LocationDetails = () => {
 
   const handleDeleteLocation = async () => {
     setLoading(true);
-    if (originalLocation?.stockQuantity.length) {
-      // navigate({ pathname: '/inventory/warehouses' });
-      setLoading(false);
+    // if (originalLocation?.stockQuantity.length) {
+    //   // navigate({ pathname: '/inventory/warehouses' });
+    //   setLoading(false);
 
-      //TODO: print failure; unable to delete toast
-      <Alert severity="error">This is an error alert — check it out!</Alert>
-    }
-    else if (originalLocation) {
+    //   //TODO: print failure; unable to delete toast
+    //   <Alert severity="error">This is an error alert — check it out!</Alert>
+    // }
+    // else
+    if (originalLocation) {
       await asyncFetchCallback(
         deleteLocation(originalLocation.id),
         (res) => {
@@ -256,7 +257,7 @@ const LocationDetails = () => {
               )}
               <Button
                 //disable --> if array !empty, disabled = true
-                disabled={!!productDetails.length}
+                // disabled={!!productDetails.length}
                 variant='contained'
                 className='create-btn'
                 color='primary'

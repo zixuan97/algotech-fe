@@ -21,13 +21,17 @@ import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
 import { Location } from 'src/models/types';
-// import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { randomId } from '@mui/x-data-grid-generator';
+import { AlertType } from 'src/components/common/Alert';
 
 type NewLocation = Partial<Location>;
 
 const CreateWarehouse = () => {
   const navigate = useNavigate();
 
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [newLocation, setNewLocation] = React.useState<NewLocation>({});
   
   console.log(newLocation);
