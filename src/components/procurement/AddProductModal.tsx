@@ -1,5 +1,7 @@
 import {
+  Backdrop,
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogTitle,
@@ -28,10 +30,26 @@ const AddProductModal = ({
 }: AddProductModalPops) => {
   const [sku, setSku] = React.useState<string>('');
   const [rate, setRate] = React.useState<string>('');
+  // const [loading, setLoading] = React.useState<boolean>(false);
   const [quantity, setQuantity] = React.useState<string>('');
+
+  React.useEffect(() => {
+    setSku('');
+    setRate('');
+    setQuantity('');
+  }, [open, onClose, onConfirm]);
 
   return (
     <div>
+      {/* <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={loading}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop> */}
       <Dialog
         open={open}
         onClose={onClose}
@@ -87,7 +105,7 @@ const AddProductModal = ({
               Cancel
             </Button>
             <Button
-              //   type='submit'
+              // type='submit'
               onClick={() => onConfirm(sku, rate, quantity)}
               autoFocus={focusPassthrough}
             >
