@@ -85,14 +85,17 @@ const InventoryDashboard = () => {
         />
         {/* <NumberCard number={20} text='Days of supply left on average' /> */}
       </div>
-      <Link
-        to='/inventory/allProducts'
-        style={{ textDecoration: 'none', color: 'inherit' }}
-      >
-        <Tooltip title='View all products' enterDelay={300}>
-          <h4>Products</h4>
-        </Tooltip>
-      </Link>
+      <div style={{ width: '100%', display:'flex', justifyContent:'space-between' }}>
+        <Link
+          to='/inventory/allProducts'
+          style={{ textDecoration: 'none', color: 'inherit' }}
+        >
+          <Tooltip title='View all products' enterDelay={300}>
+            <h4>Products</h4>
+          </Tooltip>
+        </Link>
+        <Button onClick={() => getGraphImage()}>Export Inventory Data</Button>
+      </div>
       <div style={{ width: '100%' }}>
         <DataGrid
           sx={{ fontSize: '0.8em' }}
@@ -104,7 +107,7 @@ const InventoryDashboard = () => {
       </div>
       {/* <h4>Overall Inventory Turnover</h4> */}
       <h4>Current Inventory Levels by Product</h4>
-      <Button onClick={() => getGraphImage()}>Download</Button>
+      <Button onClick={() => getGraphImage()}>Download Chart</Button>
       <InventoryLevelsChart productData={productData} ref={pdfRef} />
     </div>
   );
