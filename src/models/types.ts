@@ -28,13 +28,14 @@ export enum FulfilmentStatus {
 
 
 export interface User {
-  id: number | undefined,
+  id: number,
   first_name: string,
   last_name: string,
   email: string,
   password: string,
   role: string,
   status: string,
+  isVerified: boolean,
 }
 
 export interface Category {
@@ -73,10 +74,10 @@ export interface Product {
 }
 
 export interface Location {
-  name: string;
-  address: string;
-  id: number;
-  stockQuantity: StockQuantity[];
+  id: number,
+  name: string,
+  address: string,
+  stockQuantity: StockQuantity[],
 }
 
 export interface StockQuantity {
@@ -88,7 +89,7 @@ export interface StockQuantity {
   price: number,
   createdAt: Date,
   updatedAt: Date,
-  product_qtyThreshold?: number,
+  location_name: string,
   location: Location,
   product: Product,
 }
@@ -117,6 +118,7 @@ export interface ProcurementOrder {
   payment_status: PaymentStatus,
   fulfilment_status: FulfilmentStatus,
   supplier_id: number,
+  total_amount: number,
   supplier: Supplier,
   proc_order_items: ProcurementOrderItem[],
 }

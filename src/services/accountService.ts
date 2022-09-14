@@ -3,7 +3,7 @@
  */
 import axios from 'axios';
 import { User } from 'src/models/types';
-import apiRoot from '../util/apiRoot';
+import apiRoot from './util/apiRoot';
 
 export const getAllUserSvc = (): Promise<Array<User>> => {
   return axios.get(`${apiRoot}/user/all`).then((res) => res.data);
