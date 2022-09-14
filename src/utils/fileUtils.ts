@@ -1,4 +1,5 @@
 import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import React from 'react';
 
 export const getBase64 = (
@@ -16,13 +17,11 @@ export const getBase64 = (
   }
 };
 
-export const getHtml2Canvas = async <T extends HTMLElement>(
-  element: T,
-  fileName: string
-) => {
+export const createImageFromComponent = async <T extends HTMLElement>(
+  element: T
+): Promise<string> => {
   const canvas = await html2canvas(element);
-  const image = canvas.toDataURL(fileName, 1.0);
-  downloadFile(image, fileName);
+  return canvas.toDataURL('image/png', 1.0);
 };
 
 export const downloadFile = (blob: string, fileName: string) => {
@@ -36,4 +35,25 @@ export const downloadFile = (blob: string, fileName: string) => {
   document.body.removeChild(link);
 
   link.remove();
+};
+
+export const createPdfWithHeaderImage = (
+  header: string,
+  imgFile: string
+): string => {
+  const pdf = new jsPDF('portrait', 'pt', 'a4', true);
+  const imgProperties = pdf.getImageProperties(imgFile);
+  const pdfWidth = pdf.internal.pageSize.getWidth();
+  const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
+  pdf.text(header, 15, 40);
+  pdf.addImage(
+    imgFile,
+    'PNG',
+    15,
+    70,
+    pdfWidth * 0.95,
+    pdfHeight * 0.95,
+    'FAST'
+  );
+  return URL.createObjectURL(pdf.output('blob'));
 };
