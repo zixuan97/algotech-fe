@@ -58,21 +58,33 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             toggleOpen={setInventoryOpen}
             icon={<Inventory />}
           >
-            <ListItemLink
-              primary='Dashboard'
-              to='/inventory/dashboard'
-              typographyProps={submenuTypographyProps}
-            />
-            <ListItemLink
-              primary='All Products'
-              to='/inventory/allProducts'
-              typographyProps={submenuTypographyProps}
-            />
-            <ListItemLink
-              primary='Manage Warehouses'
-              to='/inventory/warehouses'
-              typographyProps={submenuTypographyProps}
-            />
+            <List component='div' disablePadding>
+              <ListItemLink
+                primary='Dashboard'
+                to='/inventory/dashboard'
+                typographyProps={submenuTypographyProps}
+              />
+              <ListItemLink
+                primary='All Products'
+                to='/inventory/allProducts'
+                typographyProps={submenuTypographyProps}
+              />
+              <ListItemLink
+                primary='Manage Brands'
+                to='/inventory/allBrands'
+                typographyProps={submenuTypographyProps}
+              />
+              <ListItemLink
+                primary='Manage Categories'
+                to='/inventory/allCategories'
+                typographyProps={submenuTypographyProps}
+              />
+              <ListItemLink
+                primary='Manage Warehouses'
+                to='/inventory/warehouses'
+                typographyProps={submenuTypographyProps}
+              />
+            </List>
           </NestedList>
           <ListItemLink
             icon={<LocalGroceryStore />}

@@ -1,60 +1,61 @@
 import React from 'react';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import CategoryCellAction from 'src/components/inventory/CategoryCellAction';
+import BrandCellAction from 'src/components/inventory/BrandCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
 import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
-import { Category } from '../../models/types';
+import { Brand } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getAllProductCategories } from 'src/services/productService';
+import { getAllBrands } from 'src/services/productService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  {field: 'id', headerName: 'Category ID', flex:1},
-  {field: 'name', headerName: 'Category Name', flex:1},
+  {field: 'id', headerName: 'Brand ID', flex:1},
+  {field: 'name', headerName: 'Brand Name', flex: 1 },
   {
     field: 'action',
     headerName: 'Action',
     headerAlign: 'right',
     flex: 1,
-    renderCell: CategoryCellAction
+    renderCell: BrandCellAction
   }
 ];
 
-const AllCategories = () => {
+const AllBrands = () => {
+
   const navigate = useNavigate();
 
   const [searchField, setSearchField] = React.useState<string>('');
-  const [categoryData, setCategoryData] = React.useState<Category[]>([]);
-  const [filteredData, setFilteredData] = React.useState<Category[]>([]);
+  const [brandData, setBrandData] = React.useState<Brand[]>([]);
+  const [filteredData, setFilteredData] = React.useState<Brand[]>([]);
 
   React.useEffect(() => {
     // TODO: implement error callback
-    // to do; write the categoryServices ts... vv this is WRONG
-    asyncFetchCallback(getAllProductCategories(), setCategoryData);
+    asyncFetchCallback(getAllBrands(), setBrandData);
   }, []);
 
   React.useEffect(() => {
     setFilteredData(
       searchField
-        ? categoryData.filter((category) =>
+        ? brandData.filter((category) =>
             Object.values(category).some((value) =>
               String(value).toLowerCase().match(searchField.toLowerCase())
             )
           )
-        : categoryData
+        : brandData
     );
-  }, [searchField, categoryData]);
+  }, [searchField, brandData]);
 
   console.log(filteredData);
 
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchField(e.target.value);
   };
+
   return (
     <div className='product-inventory'>
-      <h1>Manage Categories</h1>
+      <h1>Manage Brands</h1>
       <div className='grid-toolbar'>
         <div className='search-bar'>
           <Search />
@@ -70,14 +71,15 @@ const AllCategories = () => {
           variant='contained'
           size='large'
           sx={{ height: 'fit-content' }}
-          onClick={() => navigate({ pathname: '/inventory/createCategory' })}
+          onClick={() => navigate({ pathname: '/inventory/createBrand' })}
         >
-          Create Category
+          Create Brand
         </Button>
       </div>
       <DataGrid columns={columns} rows={filteredData} autoHeight />
     </div>
   );
+
 };
 
-export default AllCategories;
+export default AllBrands;

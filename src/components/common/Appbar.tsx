@@ -3,6 +3,8 @@ import AppBar from '@mui/material/AppBar';
 import { IconButton, Menu, MenuItem, Toolbar } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
 import AuthContext from 'src/context/auth/authContext';
+import 'src/styles/pages/home.scss';
+import { useNavigate } from 'react-router-dom';
 
 type AppbarProps = {
   sidebarWidth: string;
@@ -10,12 +12,18 @@ type AppbarProps = {
 
 const Appbar = ({ sidebarWidth }: AppbarProps) => {
   const authContext = React.useContext(AuthContext);
-  const { logout } = authContext;
+  const navigate = useNavigate();
+  const { logout, user } = authContext;
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>();
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleViewProfile = () => {
+    handleClose();
+    navigate(`accounts/viewMyAccount?id=${user?.id}`);
   };
 
   const handleClose = () => {
@@ -65,7 +73,7 @@ const Appbar = ({ sidebarWidth }: AppbarProps) => {
             open={!!anchorEl}
             onClose={handleClose}
           >
-            <MenuItem onClick={handleClose}>My Account</MenuItem>
+            <MenuItem onClick={handleViewProfile}>My Account</MenuItem>
             <MenuItem onClick={logout}>Logout</MenuItem>
           </Menu>
         </div>

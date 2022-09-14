@@ -70,7 +70,7 @@ interface ProductDetails {
   productName: string;
   quantity: number;
   price: number;
-}
+};
 
 const LocationDetails = () => {
   const navigate = useNavigate();
@@ -157,7 +157,7 @@ const LocationDetails = () => {
 
   return (
     <div>
-      <Tooltip title='Return to Manage Warehouses' enterDelay={300}>
+      <Tooltip title='Return to Previous Page' enterDelay={300}>
         <IconButton
           size='large'
           onClick={() => navigate(-1)}
@@ -210,7 +210,7 @@ const LocationDetails = () => {
                 </Button>
               )}
               <Button
-              //property called disable --> if array !empty, disabled = true
+                //disable --> if array !empty, disabled = true
                 disabled={!!productDetails.length}
                 variant='contained'
                 className='create-btn'
