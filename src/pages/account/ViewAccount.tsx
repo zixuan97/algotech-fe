@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Box, Paper, Button, IconButton, Tooltip, Grid } from '@mui/material';
+import { Box, Paper, Button, IconButton, Tooltip, Grid, CircularProgress } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import {
@@ -13,7 +13,6 @@ import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import { toast } from 'react-toastify';
-import EditAccount from './EditAccount';
 interface ModalProps {
   wrapperParam: wrapperParam,
   modalOpen: boolean,
@@ -42,6 +41,7 @@ const ViewAccount = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User>();
   const [modalOpen, setModalOpen] = useState<boolean>(true);
+  const [loading, setLoading] = React.useState<boolean>(true);
   const [wrapParam, setWrapParam] = useState<wrapperParam>({
     title: '',
     body: '',
@@ -151,6 +151,7 @@ const ViewAccount = () => {
         getUserDetailsSvc(id),
         (user: User) => {
           setUser(user);
+          setLoading(false);
         },
         () => {
           //handle error here
@@ -181,6 +182,7 @@ const ViewAccount = () => {
           <div className='header-content'>
             <h1>View User Account </h1>
             <div className='button-group'>
+            {loading && <CircularProgress color='secondary' />}
               <Link
                 to="/accounts/editAccount"
                 state={user}

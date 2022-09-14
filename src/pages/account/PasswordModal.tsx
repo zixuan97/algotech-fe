@@ -30,35 +30,32 @@ const PasswordModal = ({
 }: PasswordModalProps) => {
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [inputEmail, setInputEmail] = useState<string>('');
+  const [recipientEmail, setRecipientEmail] = useState<string>('');
   const navigate = useNavigate();
 
   const handleForgetPassword = async () => {
     setLoading(true);
-    await asyncFetchCallback(
-      forgetPasswordSvc(inputEmail!),
-      (res) => {
-        setLoading(false);
-        // TODO: print out success
-        navigate({ pathname: '/login' });
-      },
-      () => setLoading(false)
-    );
+    if (recipientEmail) {
+      console.log("page, email", recipientEmail);
+      await asyncFetchCallback(
+        forgetPasswordSvc(recipientEmail),
+        () => {
+          onClose()
+          navigate({ pathname: '/login' });
+          
+        },
+        () => setLoading(false)
+      );
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputEmail(e.target.value);
+    setRecipientEmail(e.target.value);
   };
 
   return (
     <div>
-      <Backdrop
-        sx={{
-          color: '#fff',
-          zIndex: (theme) => theme.zIndex.drawer + 1
-        }}
-        open={loading}
-      />
+
       <Dialog
         open={open}
         onClose={onClose}
@@ -85,7 +82,7 @@ const PasswordModal = ({
           <Button onClick={onClose} autoFocus={!focusPassthrough}>
             Close
           </Button>
-          <Button onClick={handleForgetPassword} autoFocus={focusPassthrough}>
+          <Button onClick={() => handleForgetPassword()} autoFocus={focusPassthrough}>
             Send Email
           </Button>
         </DialogActions>
