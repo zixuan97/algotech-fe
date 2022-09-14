@@ -11,15 +11,19 @@ import {
     Button,
     Alert,
     Typography,
-    CircularProgress
+    CircularProgress,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
-import { ChevronLeft, Visibility, VisibilityOff } from '@mui/icons-material';
+import { ChevronLeft, ExpandMore } from '@mui/icons-material';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import { roles } from 'src/components/account/accountTypes';
-import { editUserSvc, getUserDetailsSvc } from 'src/services/accountService';
+import { editUserSvc, getUserDetailsSvc, updatePasswordSvc } from 'src/services/accountService';
 import { AlertType } from 'src/components/common/Alert';
+
 
 const placeholderUser: User = {
     //note: id is temp holder, BE doesn't consume id on create
@@ -41,6 +45,9 @@ const ViewMyAccount = () => {
     const [edit, setEdit] = useState<boolean>(false);
     const [alert, setAlert] = useState<AlertType | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [currentPassword, setCurrentPassword] = useState<string>('');
+    const [newPassword, setNewPassword] = useState<string>('');
+    const [confirmPassword, setConfirmPassword] = useState<string>('');
 
     useEffect(() => {
         id &&
@@ -90,6 +97,29 @@ const ViewMyAccount = () => {
         );
     };
 
+    const updatePassword = (e: any) => {
+        e.preventDefault();
+        setLoading(true);
+        asyncFetchCallback(
+            updatePasswordSvc(user?.email, currentPassword, newPassword),
+            () => {
+                setLoading(false);
+                setAlert({
+                    severity: 'success',
+                    message: 'Password Updated.'
+                });
+                navigate(`/accounts/viewMyAccount?id=${id}`);
+            },
+            (err) => {
+                setLoading(false);
+                setAlert({
+                    severity: 'error',
+                    message: 'The password cannot be updated at this time. Try Again Later.'
+                });
+            }
+        );
+    };
+
     return (
         <>
             <Tooltip title='Return to Accounts' enterDelay={300}>
@@ -103,7 +133,7 @@ const ViewMyAccount = () => {
                     <div className="header-content">
                         <h1>Your Profile Page</h1>
                         <div className='button-group'>
-                        {loading && <CircularProgress color='secondary' />}
+                            {loading && <CircularProgress color='secondary' />}
                             {edit && (
                                 <Button
                                     variant='contained'
@@ -135,7 +165,7 @@ const ViewMyAccount = () => {
                     </div>
 
                     {alert && (
-                        <Alert severity={alert.severity} onClose={() => setAlert(null)} style={{margin: '1%'}}>
+                        <Alert severity={alert.severity} onClose={() => setAlert(null)} style={{ margin: '1%' }}>
                             {alert.message}
                         </Alert>
                     )}
@@ -241,37 +271,82 @@ const ViewMyAccount = () => {
                                                 </div>
                                             )}
                                         </Grid>
+                                        {!edit &&
+                                            <Grid item xs={12}>
+                                                <Accordion>
+                                                    <AccordionSummary
+                                                        expandIcon={<ExpandMore />}
+                                                        aria-controls="panel1a-content"
+                                                        id="panel1a-header"
+                                                    >
+                                                        <h4>
+                                                            Change Password
+                                                        </h4>
 
-                                        {/* <Grid item xs={6}>
-                                            <OutlinedInput
-                                                fullWidth
-                                                disabled
-                                                type={showPassword ? 'text' : 'password'}
-                                                id='outlined-quantity'
-                                                label='Password'
-                                                name='password'
-                                                value={user?.password}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                                    userFieldOnChange(e, 'password')
-                                                }
-                                                endAdornment={
-                                                    <InputAdornment position='end'>
-                                                        <IconButton
-                                                            aria-label='toggle password visibility'
-                                                            onClick={handleClickShowPassword}
-                                                            onMouseDown={handleMouseDownPassword}
-                                                            edge='end'
+                                                    </AccordionSummary>
+                                                    <AccordionDetails>
+                                                        <Grid container spacing={2}>
+                                                            <Grid item xs={12}>
+                                                                <Typography>
+                                                                    Enter your password details below to change your password.
+                                                                </Typography>
+                                                            </Grid>
+                                                            <Grid item xs={12}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    required
+                                                                    error={newPassword === currentPassword}
+                                                                    helperText={newPassword === currentPassword ? "Current Password same as new password!" : ''}
+                                                                    id='outlined-quantity'
+                                                                    label='Current Password'
+                                                                    name='currPwd'
+                                                                    placeholder='*********'
+                                                                    value={currentPassword}
+                                                                    onChange={(e: any) => setCurrentPassword(e.target.value)}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    required
+                                                                    error={confirmPassword !== newPassword || newPassword===currentPassword}
+                                                                    helperText={newPassword !== confirmPassword ? "New passwords don't match!" : ''}
+                                                                    id='outlined-quantity'
+                                                                    label='New Password'
+                                                                    name='newPwd'
+                                                                    placeholder='*********'
+                                                                    value={newPassword}
+                                                                    onChange={(e: any) => setNewPassword(e.target.value)}
+                                                                />
+                                                            </Grid>
+                                                            <Grid item xs={12}>
+                                                                <TextField
+                                                                    fullWidth
+                                                                    required
+                                                                    error={confirmPassword !== newPassword || confirmPassword===currentPassword}
+                                                                    id='outlined-quantity'
+                                                                    label='Confirm New Password'
+                                                                    name='cfmNewPwd'
+                                                                    placeholder='*********'
+                                                                    value={confirmPassword}
+                                                                    onChange={(e: any) => setConfirmPassword(e.target.value)}
+                                                                />
+                                                            </Grid>
+                                                        </Grid>
+                                                        <Button
+                                                            style={{ margin: '1%', display: 'flex', justifyContent: 'flex-end' }}
+                                                            variant='contained'
+                                                            className='create-btn'
+                                                            color='primary'
+                                                            onClick={updatePassword}
+                                                            disabled={!currentPassword || !newPassword || !confirmPassword}
                                                         >
-                                                            {showPassword ? (
-                                                                <VisibilityOff />
-                                                            ) : (
-                                                                <Visibility />
-                                                            )}
-                                                        </IconButton>
-                                                    </InputAdornment>
-                                                }
-                                            />
-                                        </Grid> */}
+                                                            Update Password
+                                                        </Button>
+                                                    </AccordionDetails>
+                                                </Accordion>
+                                            </Grid>
+                                        }
                                     </Grid>
                                 </div>
                             </div>
