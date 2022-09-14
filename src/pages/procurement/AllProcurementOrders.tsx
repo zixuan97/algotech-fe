@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import SortIcon from '@mui/icons-material/Sort';
 import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
@@ -8,6 +9,7 @@ import { Button, Chip, ChipProps, Divider } from '@mui/material';
 import { ProcurementOrder } from 'src/models/types';
 import { getAllProcurementOrders } from 'src/services/procurementService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import ViewOrderButton from 'src/components/procurement/ViewOrderButton';
 
 function getChipProps(params: GridRenderCellParams): ChipProps {
   return {
@@ -22,7 +24,6 @@ const columns: GridColDef[] = [
   {
     field: 'payment_status',
     headerName: 'Payment Status',
-    type: 'number',
     flex: 1,
     renderCell: (params) => {
       return (
@@ -33,7 +34,6 @@ const columns: GridColDef[] = [
   {
     field: 'fulfilment_status',
     headerName: 'Fulfilment Status',
-    type: 'number',
     flex: 1,
     renderCell: (params) => {
       return (
@@ -41,31 +41,19 @@ const columns: GridColDef[] = [
       );
     }
   },
-  { field: 'order_total', headerName: 'Order Total', type: 'number', flex: 1 }
-];
-
-const data = [
+  { field: 'order_total', headerName: 'Order Total', type: 'number', flex: 1 },
   {
-    id: 1,
-    orderId: 1234,
-    date: '03/03/12 22:43',
-    supplierId: 456,
-    paymentStatus: 'Paid',
-    fulfilmentStatus: 'Complete',
-    orderTotal: 4500
-  },
-  {
-    id: 2,
-    orderId: 1234,
-    date: '03/03/12 22:43',
-    supplierId: 456,
-    paymentStatus: 'Not Paid',
-    fulfilmentStatus: 'Arrived',
-    orderTotal: 4500
+    field: 'action',
+    headerName: 'Action',
+    type: 'number',
+    flex: 1,
+    renderCell: ViewOrderButton
   }
 ];
 
 const AllProcurementOrders = () => {
+  const navigate = useNavigate();
+
   const [procurementOrders, setProcurementOrders] = React.useState<
     ProcurementOrder[]
   >([]);
@@ -73,8 +61,6 @@ const AllProcurementOrders = () => {
   React.useEffect(() => {
     asyncFetchCallback(getAllProcurementOrders(), setProcurementOrders);
   }, []);
-
-  console.log(procurementOrders);
 
   return (
     <div className='procurement-orders'>
@@ -92,7 +78,7 @@ const AllProcurementOrders = () => {
           variant='contained'
           size='medium'
           sx={{ height: 'fit-content' }}
-          onClick={() => {}}
+          onClick={() => navigate({ pathname: 'createProcurementOrder' })}
         >
           Add New Order
         </Button>
