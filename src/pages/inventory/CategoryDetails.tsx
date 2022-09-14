@@ -79,19 +79,19 @@ const CategoryDetails = () => {
     }
   }, [id]);
 
-//   React.useEffect(() => {
-//     if (originalCategory) {
-//       Promise.all(
-//         originalCategory.productCategory.map(async (qty) => {
-//           const product = await getProductById(qty.product_id);
-//           return {
-//             id: qty.product_id,
-//             productName: product.name,
-//           };
-//         })
-//       ).then((res) => setProductDetails(res));
-//     }
-//   }, [originalCategory]);
+  React.useEffect(() => {
+    if (originalCategory) {
+      Promise.all(
+        originalCategory.productCategory.map(async (qty) => {
+          const product = await getProductById(qty.product_id);
+          return {
+            id: qty.product_id,
+            productName: product.name,
+          };
+        })
+      ).then((res) => setProductDetails(res));
+    }
+  }, [originalCategory]);
 
   React.useEffect(() => {
     asyncFetchCallback(getAllProductCategories(), setCategories);
@@ -157,7 +157,7 @@ const CategoryDetails = () => {
         (res) => {
           setLoading(false);
           // TODO: print out success
-          navigate({ pathname: '/inventory/allProducts' });
+          navigate({ pathname: '/inventory/allCategories' });
         },
         () => setLoading(false)
       );

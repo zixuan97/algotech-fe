@@ -28,6 +28,7 @@ import {
   updateBrand,
   deleteBrand,
   getBrandById,
+  getProductById,
 } from 'src/services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 // import { intersectionWith } from 'lodash';
@@ -66,7 +67,7 @@ const BrandDetails = () => {
   const [productDetails, setProductDetails] = React.useState<
     ProductDetails[]
   >([]);
-  const [brands, setBrands] = React.useState<Brand[]>([]);
+  // const [brands, setBrands] = React.useState<Brand[]>([]);
   const [edit, setEdit] = React.useState<boolean>(false);
 
   React.useEffect(() => {
@@ -79,25 +80,25 @@ const BrandDetails = () => {
     }
   }, [id]);
 
-//   React.useEffect(() => {
-//     if (originalCategory) {
-//       Promise.all(
-//         originalCategory.productCategory.map(async (qty) => {
-//           const product = await getProductById(qty.product_id);
-//           return {
-//             id: qty.product_id,
-//             productName: product.name,
-//           };
-//         })
-//       ).then((res) => setProductDetails(res));
-//     }
-//   }, [originalCategory]);
-
-React.useEffect(() => {
-  asyncFetchCallback(getAllBrands(), setBrands);
-}, []);
+  React.useEffect(() => {
+    if (originalBrand) {
+      Promise.all(
+        originalBrand.product.map(async (qty) => {
+          const product = await getProductById(qty.id);
+          return {
+            id: qty.id,
+            productName: product.name,
+          };
+        })
+      ).then((res) => setProductDetails(res));
+    }
+  }, [originalBrand]);
 
 console.log(editBrand);
+
+// React.useEffect(() => {
+//   asyncFetchCallback(getAllBrands(), setBrands);
+// }, []);
 
 const handleEditBrand = (e: React.ChangeEvent<HTMLInputElement>) => {
   setEditBrand((prev) => {
@@ -144,11 +145,11 @@ const handleSave = async () => {
   }
 };
 
-const handleDeleteCategory = async () => {
+const handleDeleteBrand = async () => {
   setLoading(true);
   if (originalBrand?.product.length) {
       //TODO: print failure; unable to delete toast
-    navigate({ pathname: '/inventory/allCategories' });
+    navigate({ pathname: '/inventory/allBrands' });
     setLoading(false);
   }
   else if (originalBrand) {
@@ -157,14 +158,14 @@ const handleDeleteCategory = async () => {
       (res) => {
         setLoading(false);
         // TODO: print out success
-        navigate({ pathname: '/inventory/allProducts' });
+        navigate({ pathname: '/inventory/allBrands' });
       },
       () => setLoading(false)
     );
   }
 };
 
-const title = `${edit ? 'Edit' : ''} Category Details`;
+const title = `${edit ? 'Edit' : ''} Brand Details`;
 
 return (
   <div>
@@ -222,7 +223,7 @@ return (
             <ConfirmationModal
               open={modalOpen}
               onClose={() => setModalOpen(false)}
-              onConfirm={handleDeleteCategory}
+              onConfirm={handleDeleteBrand}
               title='Delete Brand'
               body='Are you sure you want to delete this brand?'
             />

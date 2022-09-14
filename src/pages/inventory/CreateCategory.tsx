@@ -109,7 +109,12 @@ const CreateCategory = () => {
                     />
                   </div>
                 <div className='button-group'>
-                  <Button variant='text' className='cancel-btn' color='primary'>
+                  <Button 
+                    variant='text'
+                    className='cancel-btn'
+                    color='primary'
+                    onClick={() => navigate({ pathname: '/inventory/allCategories' })}
+                    >
                     CANCEL
                   </Button>
                   <Button
