@@ -2,7 +2,7 @@
  * Used to make all API calls to location-related services
  */
 import axios from 'axios';
-import { Location } from 'src/models/types';
+import { Location, StockQuantity } from 'src/models/types';
 import { NewLocation } from 'src/pages/inventory/CreateWarehouse';
 import apiRoot from './util/apiRoot';
 
@@ -20,8 +20,12 @@ export const createLocation = async (location: NewLocation): Promise<void> => {
   return axios.post(`${apiRoot}/location`, location);
 }
 
-export const updateLocation = async (location: Location): Promise<void> => {
-  return axios.put(`${apiRoot}/location`, location);
+// export const updateLocation = async (location: Location): Promise<void> => {
+//   return axios.put(`${apiRoot}/location`, location);
+// };
+
+export const updateLocation = async (id: number, name: string, products: StockQuantity[], address: string): Promise<void> => {
+  return axios.put(`${apiRoot}/location`, {id, name, products, address});
 };
 
 export const deleteLocation = async (id: string | number): Promise<void> => {

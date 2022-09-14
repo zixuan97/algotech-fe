@@ -1,22 +1,16 @@
 import React from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Box,
   FormGroup,
   TextField,
   Paper,
-  // MenuItem,
   Button,
   IconButton,
   Tooltip,
   Typography,
-  // Select,
-  // OutlinedInput,
-  // FormControl,
-  // InputLabel,
-  // Chip,
-  // SelectChangeEvent,
   CircularProgress,
+  Snackbar,
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -32,6 +26,7 @@ import {
 import { getProductById } from 'src/services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import { toast } from 'react-toastify';
 
 const columns: GridColDef[] = [
   {
@@ -59,14 +54,16 @@ const BrandDetails = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
 
+  const current = useLocation();
+  const brand = current.state as Brand;
+
   const [loading, setLoading] = React.useState<boolean>(true);
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [originalBrand, setOriginalBrand] = React.useState<Brand>();
-  const [editBrand, setEditBrand] = React.useState<Brand>();
+  const [editBrand, setEditBrand] = React.useState<Brand>(brand);
   const [productDetails, setProductDetails] = React.useState<
     ProductDetails[]
   >([]);
-  // const [brands, setBrands] = React.useState<Brand[]>([]);
   const [edit, setEdit] = React.useState<boolean>(false);
 
   React.useEffect(() => {
@@ -93,51 +90,85 @@ const BrandDetails = () => {
     }
   }, [originalBrand]);
 
-console.log(editBrand);
-
-// React.useEffect(() => {
-//   asyncFetchCallback(getAllBrands(), setBrands);
-// }, []);
-
-const handleEditBrand = (e: React.ChangeEvent<HTMLInputElement>) => {
-  setEditBrand((prev) => {
-    if (prev) {
-      return { ...prev, [e.target.name]: e.target.value };
-    } else {
-      return prev;
-    }
+const handleFieldOnChange = (
+  event: React.ChangeEvent<HTMLInputElement>,
+  key: string
+) => {
+  setEditBrand((brand: Brand) => {
+      return {
+          ...brand,
+          [key]: event.target.value
+      };
   });
 };
 
-const handleSave = async () => {
+const handleSave = async() => {
   setLoading(true);
   if (editBrand) {
-    await asyncFetchCallback(updateBrand(editBrand), (res) => {
-      setLoading(false);
-    });
+    setLoading(false);
+    asyncFetchCallback(
+      updateBrand(editBrand),
+      () => {
+        toast.success('Brand successfully edited.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        // navigate('/inventory/allBrands');
+      },
+      () => {
+        toast.error('Error editing brand! Try again later.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        // navigate('/inventory/allBrands');
+      }
+    );
   }
-};
+}
 
-// const handleDeleteBrand = async () => {
-//   setLoading(true);
-//   // if (originalBrand?.product.length) {
-//   //     //TODO: print failure; unable to delete toast
-//   //   navigate({ pathname: '/inventory/allBrands' });
-//   //   setLoading(false);
-//   // }
-//   // else
-//   if (originalBrand) {
-//     await asyncFetchCallback(
-//       deleteBrand(originalBrand.id),
-//       (res) => {
-//         setLoading(false);
-//         // TODO: print out success
-//         navigate({ pathname: '/inventory/allBrands' });
-//       },
-//       () => setLoading(false)
-//     );
-//   }
-// };
+const handleDeleteBrand = async () => {
+  setLoading(true);
+  if (originalBrand) {
+    setLoading(false);
+    asyncFetchCallback(
+      deleteBrand(originalBrand.id),
+      () => {
+        toast.success('Brand successfully deleted.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        navigate('/inventory/allBrands');
+      },
+      () => {
+        toast.error('Error deleting brand! Try again later.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        navigate('/inventory/allBrands');
+      }
+    );
+  }
+}
 
 
 const title = `${edit ? 'Edit' : ''} Brand Details`;
@@ -180,24 +211,23 @@ return (
                 color='primary'
                 onClick={() => {
                   setEdit(false);
-                  setEditBrand(originalBrand);
+                  // setEditBrand(originalBrand);
                 }}
               >
                 Discard Changes
               </Button>
             )}
-            {/* <Button
+            <Button
               // disabled={!!productDetails.length}
-              disabled
               variant='contained'
               className='create-btn'
               color='primary'
-              // onClick={() => setModalOpen(true)}
+              onClick={() => setModalOpen(true)}
             >
-              DELETE
-            </Button> */}
+              Delete
+            </Button>
 
-            <Tooltip title={"Contact Zac to delete any brands."}>
+            {/* <Tooltip title={"Contact Zac to delete any brands."}>
               <span>
                 <Button
                   disabled
@@ -208,15 +238,16 @@ return (
                     Delete
                   </Button>
               </span>
-            </Tooltip>
+            </Tooltip> */}
 
-            {/* <ConfirmationModal
+            <ConfirmationModal
               open={modalOpen}
               onClose={() => setModalOpen(false)}
-              // onConfirm={handleDeleteBrand}
+              onConfirm={handleDeleteBrand}
               title='Delete Brand'
-              body='Are you sure you want to delete this brand?'
-            /> */}
+              body='Are you sure you want to delete this brand?
+              Note that deleting brands with associated products will cause the associated products to be deleted too.'
+            />
           </div>
         </div>
         <Paper elevation={2}>
@@ -232,7 +263,9 @@ return (
                       label='Brand Name'
                       name='name'
                       value={editBrand?.name}
-                      onChange={handleEditBrand}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleFieldOnChange(e, 'name')
+                      }
                       placeholder='eg.: Kettle Gourmet'
                     />
                   ) : (
