@@ -1,10 +1,8 @@
 import React from 'react';
 import AppBar from '@mui/material/AppBar';
 import { IconButton, Menu, MenuItem, Toolbar } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import { AccountCircle } from '@mui/icons-material';
 import AuthContext from 'src/context/auth/authContext';
-import 'src/styles/pages/home.scss';
 import { useNavigate } from 'react-router-dom';
 
 type AppbarProps = {
@@ -23,9 +21,9 @@ const Appbar = ({ sidebarWidth }: AppbarProps) => {
   };
 
   const handleViewProfile = () => {
-    handleClose();;
+    handleClose();
     navigate(`accounts/viewMyAccount?id=${user?.id}`);
-  }
+  };
 
   const handleClose = () => {
     setAnchorEl(null);

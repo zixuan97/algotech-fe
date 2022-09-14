@@ -3,6 +3,7 @@
  */
 import axios from 'axios';
 import { Category, Product, Brand } from 'src/models/types';
+import { NewProduct } from 'src/pages/inventory/CreateProduct';
 import apiRoot from './util/apiRoot';
 
 export const getAllProducts = async (): Promise<Product[]> => {
@@ -13,7 +14,7 @@ export const getProductById = async (id: string | number): Promise<Product> => {
   return axios.get(`${apiRoot}/product/${id}`).then((res) => res.data);
 };
 
-export const create = async (product: Product): Promise<void> => {
+export const createProduct = async (product: NewProduct): Promise<void> => {
   return axios.post(`${apiRoot}/product`, product);
 };
 export const updateProduct = async (product: Product): Promise<void> => {
@@ -29,7 +30,9 @@ export const getAllProductCategories = async (): Promise<Category[]> => {
   return axios.get(`${apiRoot}/category/all`).then((res) => res.data);
 };
 
-export const getCategoryById = async (id: string | number): Promise<Category> => {
+export const getCategoryById = async (
+  id: string | number
+): Promise<Category> => {
   return axios.get(`${apiRoot}/category/${id}`).then((res) => res.data);
 };
 
@@ -44,11 +47,10 @@ export const deleteCategory = async (id: string | number): Promise<void> => {
   return axios.delete(`${apiRoot}/category/${id}`);
 };
 
-
 //brands
-export const getAllBrands = async(): Promise<Brand[]> => {
+export const getAllBrands = async (): Promise<Brand[]> => {
   return axios.get(`${apiRoot}/brand/all`).then((res) => res.data);
-}
+};
 
 export const getBrandById = async (id: string | number): Promise<Brand> => {
   return axios.get(`${apiRoot}/brand/${id}`).then((res) => res.data);

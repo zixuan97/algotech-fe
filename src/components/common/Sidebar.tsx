@@ -1,24 +1,15 @@
 import {
   AccountBox,
-  ChevronLeft,
   Inventory,
   LocalGroceryStore,
   People,
   Receipt
 } from '@mui/icons-material';
-import {
-  Button,
-  Divider,
-  Drawer,
-  IconButton,
-  List,
-  Toolbar
-} from '@mui/material';
+import { Button, Divider, Drawer, List, Toolbar } from '@mui/material';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ListItemLink from './ListItemLink';
 import NestedList from './NestedList';
-import 'src/styles/pages/home.scss';
 
 type SidebarProps = {
   sidebarWidth: string;
@@ -54,7 +45,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             to='/'
             style={{ textDecoration: 'none', color: 'inherit' }}
           >
-            Admin Portal
+            The Kettle Gourmet{' '}
           </Button>
           {/* <IconButton onClick={() => toggleOpen(false)}>
             <ChevronLeft />

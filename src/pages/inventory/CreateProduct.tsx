@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { FormEvent } from 'react';
 import {
   Box,
   FormGroup,
@@ -6,43 +6,94 @@ import {
   Paper,
   MenuItem,
   Button,
-  CircularProgress,
   Tooltip,
   IconButton,
-  Typography,
   FormControl,
   InputLabel,
   Select,
   OutlinedInput,
-  Chip,
-  SelectChangeEvent
+  SelectChangeEvent,
+  Toolbar,
+  Alert,
+  Backdrop,
+  CircularProgress
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
-import { ChevronLeft } from '@mui/icons-material';
-import { DataGrid } from '@mui/x-data-grid';
+import { ChevronLeft, Delete } from '@mui/icons-material';
+import { GridRowId } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router';
-import { Category, Product, ProductCategory } from 'src/models/types';
+import { Category, Product, Brand, Location } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getAllProductCategories } from 'src/services/productService';
-import { intersectionWith } from 'lodash';
+import {
+  createProduct,
+  getAllProductCategories
+} from 'src/services/productService';
+import { intersectionWith, omit } from 'lodash';
+import { getAllBrands } from 'src/services/brandService';
+import { getBase64 } from 'src/utils/fileUtils';
+import { getAllLocations } from 'src/services/locationService';
+import LocationGrid from 'src/components/inventory/LocationGrid';
+import { randomId } from '@mui/x-data-grid-generator';
+import { AlertType } from 'src/components/common/Alert';
 
-type NewProduct = Partial<Product> & {
+export type NewProduct = Partial<Product> & {
   categories?: Category[];
+  locations: ProductLocation[];
 };
 
+export interface ProductLocation {
+  id: number;
+  price: number;
+  quantity: number;
+  isNew?: boolean;
+}
+
+export interface ProductLocationRow extends ProductLocation {
+  gridId: GridRowId;
+}
+
+// TODO: this page needs major refactoring
 const CreateProduct = () => {
   const navigate = useNavigate();
 
-  const [newProduct, setNewProduct] = React.useState<NewProduct>({});
+  const imgRef = React.useRef<HTMLInputElement | null>(null);
+
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [newProduct, setNewProduct] = React.useState<NewProduct>({
+    locations: []
+  });
+  const [productLocations, setProductLocations] = React.useState<
+    ProductLocationRow[]
+  >(
+    newProduct.locations.map((location) => {
+      return { ...location, gridId: randomId() };
+    })
+  );
   const [categories, setCategories] = React.useState<Category[]>([]);
+  const [brands, setBrands] = React.useState<Brand[]>([]);
+  const [locations, setLocations] = React.useState<Location[]>([]);
 
   React.useEffect(() => {
     asyncFetchCallback(getAllProductCategories(), setCategories);
+    asyncFetchCallback(getAllBrands(), setBrands);
+    asyncFetchCallback(getAllLocations(), setLocations);
   }, []);
 
-  console.log(newProduct);
+  React.useEffect(() => {
+    setNewProduct((prev) => {
+      return {
+        ...prev,
+        locations: productLocations.map((location) => {
+          return {
+            ...omit(location, ['gridId'])
+          };
+        })
+      };
+    });
+  }, [productLocations]);
 
-  const handleEditProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEditProductString = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewProduct((prev) => {
       if (prev) {
         return { ...prev, [e.target.name]: e.target.value };
@@ -70,21 +121,73 @@ const CreateProduct = () => {
     });
   };
 
-  const handleSave = async () => {
+  const handleEditBrand = (e: SelectChangeEvent<number>) => {
+    setNewProduct((prev) => {
+      if (prev) {
+        return { ...prev, brand_id: e.target.value as number };
+      } else {
+        return prev;
+      }
+    });
+  };
+
+  const handleEditProductNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewProduct((prev) => {
+      if (prev) {
+        return { ...prev, [e.target.name]: parseInt(e.target.value) };
+      } else {
+        return prev;
+      }
+    });
+  };
+
+  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      getBase64(
+        e.target.files[0],
+        (res) =>
+          setNewProduct((prev) => {
+            console.log(res);
+            if (prev) {
+              return { ...prev, image: res as string };
+            } else {
+              return prev;
+            }
+          }),
+        (err) => console.log(err)
+      );
+    }
+  };
+
+  const handleSave = async (e: FormEvent) => {
+    e.preventDefault();
+
     if (newProduct) {
-      // await asyncFetchCallback(updateProduct(newProduct), (res) => {
-      //   setLoading(false);
-      // });
+      setLoading(true);
+      await asyncFetchCallback(
+        createProduct(newProduct),
+        () => {
+          setLoading(false);
+          setAlert({
+            severity: 'success',
+            message: 'Product successfully created!'
+          });
+        },
+        (err) => {
+          setLoading(false);
+          setAlert({
+            severity: 'error',
+            message: `Error creating product: ${err.message}`
+          });
+        }
+      );
     }
   };
 
   return (
     <div>
       <Tooltip title='Return to Previous Page' enterDelay={300}>
-        <IconButton
-          size='large'
-          onClick={() => navigate(-1)}
-        >
+        <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
         </IconButton>
       </Tooltip>
@@ -93,21 +196,73 @@ const CreateProduct = () => {
           <div className='header-content'>
             <h1>Create Product</h1>
           </div>
+          {alert && (
+            <Alert severity={alert.severity} onClose={() => setAlert(null)}>
+              {alert.message}
+            </Alert>
+          )}
           <Paper elevation={2}>
-            <form>
+            <Backdrop
+              sx={{
+                color: '#fff',
+                zIndex: (theme) => theme.zIndex.drawer + 1
+              }}
+              open={loading}
+            >
+              <CircularProgress color='inherit' />
+            </Backdrop>
+            <form onSubmit={handleSave}>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
-                  <Box
-                    sx={{
-                      width: 200,
-                      height: 200,
-                      backgroundColor: 'primary.dark',
-                      '&:hover': {
-                        backgroundColor: 'primary.main',
-                        opacity: [0.9, 0.8, 0.7]
-                      }
-                    }}
-                  />
+                  <div>
+                    <Box
+                      sx={{
+                        width: 200,
+                        maxWidth: 300,
+                        height: 300,
+                        maxHeight: 500
+                        // backgroundColor: 'primary.dark',
+                        // '&:hover': {
+                        //   backgroundColor: 'primary.main',
+                        //   opacity: [0.9, 0.8, 0.7]
+                        // }
+                      }}
+                    >
+                      <img
+                        src={newProduct.image}
+                        alt='Product'
+                        style={{ maxWidth: '100%', maxHeight: '100%' }}
+                      />
+                    </Box>
+                    <Toolbar>
+                      <Button variant='outlined' component='label' size='small'>
+                        Upload Image
+                        <input
+                          ref={imgRef}
+                          hidden
+                          accept='image/*'
+                          type='file'
+                          onChange={handleImage}
+                        />
+                      </Button>
+                      {newProduct.image && (
+                        <IconButton
+                          onClick={() => {
+                            // @ts-ignore
+                            imgRef.current.value = null;
+                            setNewProduct((prev) => {
+                              if (prev) {
+                                return omit(prev, ['image']);
+                              }
+                              return prev;
+                            });
+                          }}
+                        >
+                          <Delete />
+                        </IconButton>
+                      )}
+                    </Toolbar>
+                  </div>
                   <div className='text-fields'>
                     <TextField
                       required
@@ -116,7 +271,7 @@ const CreateProduct = () => {
                       label='SKU'
                       name='sku'
                       value={newProduct?.sku}
-                      onChange={handleEditProduct}
+                      onChange={handleEditProductString}
                       placeholder='eg.: SKU12345678'
                     />
 
@@ -127,10 +282,9 @@ const CreateProduct = () => {
                       label='Product Name'
                       name='name'
                       value={newProduct?.name}
-                      onChange={handleEditProduct}
+                      onChange={handleEditProductString}
                       placeholder='eg.: Nasi Lemak Popcorn'
                     />
-
                     <FormControl>
                       <InputLabel id='productCategories-label'>
                         Categories
@@ -152,24 +306,39 @@ const CreateProduct = () => {
                         ))}
                       </Select>
                     </FormControl>
+                    <FormControl>
+                      <InputLabel id='brand-label'>Brand</InputLabel>
+                      <Select
+                        labelId='brand-label'
+                        id='brand'
+                        value={newProduct?.brand_id}
+                        onChange={handleEditBrand}
+                        input={<OutlinedInput label='Brand' />}
+                      >
+                        {brands.map((option) => (
+                          <MenuItem key={option.id} value={option.id}>
+                            {option.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
                     <TextField
                       required
                       id='outlined-required'
                       label='Quantity Threshold'
                       name='qtyThreshold'
                       placeholder='e.g. 10'
-                      onChange={handleEditProduct}
+                      type='number'
+                      onChange={handleEditProductNumber}
                       value={newProduct?.qtyThreshold}
                     />
                   </div>
                 </div>
-                {/* <DataGrid
-					columns={columns}
-					rows={locationDetails}
-					getRowId={(row) => row.locationName}
-					autoHeight
-					pageSize={5}
-				  /> */}
+                <LocationGrid
+                  locations={locations}
+                  productLocations={productLocations}
+                  updateProductLocations={setProductLocations}
+                />
                 <div className='button-group'>
                   <Button variant='text' className='cancel-btn' color='primary'>
                     CANCEL
