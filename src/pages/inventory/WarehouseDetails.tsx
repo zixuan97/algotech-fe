@@ -35,15 +35,9 @@ import {
   getProductById
 } from 'src/services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-// import { intersectionWith } from 'lodash';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 
 const columns: GridColDef[] = [
-  // {
-  //   field: 'id',
-  //   headerName: 'Product ID',
-  //   flex: 1
-  // },
   {
     field: 'productName',
     headerName: 'Product Name',
@@ -143,50 +137,6 @@ const LocationDetails = () => {
     }
   };
 
-  // const [snackPack, setSnackPack] = React.useState<readonly SnackbarMessage[]>([]);
-  // const [open, setOpen] = React.useState(false);
-  // const [messageInfo, setMessageInfo] = React.useState<SnackbarMessage | undefined>(
-  //   undefined,
-  // );
-
-  // interface SnackbarMessage {
-  //   message: string;
-  //   key: number;
-  // }
-  
-  // interface State {
-  //   open: boolean;
-  //   snackPack: readonly SnackbarMessage[];
-  //   messageInfo?: SnackbarMessage;
-  // }
-
-  // React.useEffect(() => {
-  //   if (snackPack.length && !messageInfo) {
-  //     // Set a new snack when we don't have an active one
-  //     setMessageInfo({ ...snackPack[0] });
-  //     setSnackPack((prev) => prev.slice(1));
-  //     setOpen(true);
-  //   } else if (snackPack.length && messageInfo && open) {
-  //     // Close an active snack when a new one is added
-  //     setOpen(false);
-  //   }
-  // }, [snackPack, messageInfo, open]);
-
-  // const handleClick = (message: string) => () => {
-  //   setSnackPack((prev) => [...prev, { message, key: new Date().getTime() }]);
-  // };
-
-  // const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-  //   if (reason === 'clickaway') {
-  //     return;
-  //   }
-  //   setOpen(false);
-  // };
-
-  // const handleExited = () => {
-  //   setMessageInfo(undefined);
-  // };
-
   const [open, setOpen] = React.useState(false);
 
   const handleClick = () => {
@@ -218,6 +168,7 @@ const LocationDetails = () => {
           setLoading(false);
           handleClick();
           // navigate({ pathname: '/inventory/warehouseDetails' });
+          
 
           // TODO: print out success
           // <Alert severity="success">This is a success alert — check it out!</Alert>
@@ -271,14 +222,6 @@ const LocationDetails = () => {
       <div className='create-product'>
         <Box className='create-product-box'>
           <div className='header-content'>
-            {/* <Tooltip title='Return to Manage Warehouses' enterDelay={300}>
-              <IconButton
-                size='large'
-                onClick={() => navigate({ pathname: '/inventory/warehouses' })}
-              >
-                <ChevronLeft />
-              </IconButton>
-            </Tooltip> */}
             <h1>{title}</h1>
             <div className='button-group'>
               {loading && <CircularProgress color='secondary' />}
@@ -334,17 +277,6 @@ const LocationDetails = () => {
             <form>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
-                  {/* <Box
-                    sx={{
-                      width: 200,
-                      height: 200,
-                      backgroundColor: 'primary.dark',
-                      '&:hover': {
-                        backgroundColor: 'primary.main',
-                        opacity: [0.9, 0.8, 0.7]
-                      }
-                    }}
-                  /> */}
                   <div className='text-fields'>
                     {edit ? (
                       <TextField
@@ -381,9 +313,6 @@ const LocationDetails = () => {
                     )}
 
                   </div>
-
-                  
-
                 </div>
                 {/*product table*/}
                 <DataGrid
@@ -397,8 +326,6 @@ const LocationDetails = () => {
           </Paper>
         </Box>
       </div>
-
-
     </div>
   )
 

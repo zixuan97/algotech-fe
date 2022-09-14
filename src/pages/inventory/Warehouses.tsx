@@ -60,6 +60,7 @@ const Warehouses = () => {
   console.log(filteredData);
 
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // here 
     setSearchField(e.target.value);
   };
   return (
