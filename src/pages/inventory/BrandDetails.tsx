@@ -28,8 +28,8 @@ import {
   updateBrand,
   deleteBrand,
   getBrandById,
-  getProductById,
-} from 'src/services/productService';
+} from 'src/services/brandService';
+import { getProductById } from 'src/services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 

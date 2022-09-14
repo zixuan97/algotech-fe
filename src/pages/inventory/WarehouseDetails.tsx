@@ -1,22 +1,14 @@
 import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
-  // Alert,
   Box,
   FormGroup,
   TextField,
   Paper,
-  // MenuItem,
   Button,
   IconButton,
   Tooltip,
   Typography,
-  // Select,
-  // OutlinedInput,
-  // FormControl,
-  // InputLabel,
-  // Chip,
-  // SelectChangeEvent,
   CircularProgress,
   Snackbar,
 } from '@mui/material';
@@ -36,6 +28,7 @@ import {
 } from 'src/services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import { toast } from 'react-toastify';
 
 const columns: GridColDef[] = [
   {
@@ -90,6 +83,40 @@ const LocationDetails = () => {
   >([]);
   const [edit, setEdit] = React.useState<boolean>(false);
 
+  const handleDeleteButtonClick = () => {
+    setLoading(true);
+    if (originalLocation) {
+      setLoading(false);
+      asyncFetchCallback(
+      deleteLocation(originalLocation.id),
+      () => {
+        toast.success('Warehouse successfully deleted.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        navigate('/inventory/warehouses');
+      },
+      () => {
+        toast.error('Error deleting warehouse! Try again later.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        navigate('/inventory/warehouses');
+      });
+    }
+  }
+
+
   React.useEffect(() => {
     if (id) {
       asyncFetchCallback(getLocationById(id), (res) => {
@@ -139,78 +166,10 @@ const LocationDetails = () => {
 
   const [open, setOpen] = React.useState(false);
 
-  const handleClick = () => {
-    setOpen(true);
-  };
-
-  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setOpen(false);
-  };
-
-
-  const handleDeleteLocation = async () => {
-    setLoading(true);
-    // if (originalLocation?.stockQuantity.length) {
-    //   // navigate({ pathname: '/inventory/warehouses' });
-    //   setLoading(false);
-
-    //   //TODO: print failure; unable to delete toast
-    //   <Alert severity="error">This is an error alert — check it out!</Alert>
-    // }
-    // else
-    if (originalLocation) {
-      await asyncFetchCallback(
-        deleteLocation(originalLocation.id),
-        (res) => {
-          setLoading(false);
-          handleClick();
-          // navigate({ pathname: '/inventory/warehouseDetails' });
-          
-
-          // TODO: print out success
-          // <Alert severity="success">This is a success alert — check it out!</Alert>
-        },
-        () => setLoading(false)
-      );
-    }
-    else {
-      // navigate({ pathname: '/inventory/warehouses' });
-      setLoading(false);
-
-      //TODO: print failure; unable to delete toast
-      <Alert severity="error">This is an error alert — check it out!</Alert>
-    }
-  };
-
   const title = `${edit ? 'Edit' : ''} Warehouse Details`;
 
   return (
     <div>
-      <Snackbar
-        anchorOrigin={{vertical: 'top', horizontal: 'right' }}
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        >
-        <Alert onClose={handleClose} severity="success">
-          Warehouse Successfully Deleted!
-        </Alert>
-        
-      </Snackbar>
-      {/* <Snackbar
-        anchorOrigin={{vertical: 'top', horizontal: 'right' }}
-        key={messageInfo ? messageInfo.key : undefined}
-        open={open}
-        autoHideDuration={6000}
-        onClose={handleClose}
-        TransitionProps={{ onExited: handleExited }}
-        message={messageInfo ? messageInfo.message : undefined}
-      /> */}
-
       <Tooltip title='Return to Previous Page' enterDelay={300}>
         <IconButton
           size='large'
@@ -240,7 +199,7 @@ const LocationDetails = () => {
                   }
                 }}
               >
-                {edit ? 'SAVE CHANGES' : 'EDIT'}
+                {edit ? 'Save Changes' : 'Edit'}
               </Button>
               {edit && (
                 <Button
@@ -252,7 +211,7 @@ const LocationDetails = () => {
                     setEditLocation(originalLocation);
                   }}
                 >
-                  DISCARD CHANGES
+                  Discard Changes
                 </Button>
               )}
               <Button
@@ -263,12 +222,12 @@ const LocationDetails = () => {
                 color='primary'
                 onClick={() => setModalOpen(true)}
               >
-                DELETE
+                Delete
               </Button>
               <ConfirmationModal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
-                onConfirm={handleDeleteLocation}
+                onConfirm={handleDeleteButtonClick}
                 title='Delete Warehouse'
                 body='Are you sure you want to delete this warehouse?'
               />
