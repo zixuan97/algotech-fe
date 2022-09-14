@@ -14,7 +14,7 @@ const Home = () => {
         style={{
           width: `calc(100% - ${sidebarWidth})`,
           boxSizing: 'border-box',
-          marginLeft: sidebarWidth,
+          margin: `64px 0 0 ${sidebarWidth}`,
           padding: '0 1em'
         }}
       >
