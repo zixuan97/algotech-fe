@@ -11,7 +11,11 @@ import { Link } from 'react-router-dom';
 import ProductDashboardCellAction from 'src/components/inventory/ProductDashboardCellAction';
 import { Bar } from 'react-chartjs-2';
 import InventoryLevelsChart from 'src/components/inventory/InventoryTurnoverChart';
-import { getHtml2Canvas } from 'src/utils/fileUtils';
+import {
+  createPdfWithHeaderImage,
+  downloadFile,
+  createImageFromComponent
+} from 'src/utils/fileUtils';
 
 const columns: GridColDef[] = [
   { field: 'sku', headerName: 'SKU', flex: 1 },
@@ -60,10 +64,14 @@ const InventoryDashboard = () => {
     return count;
   };
 
-  const getGraphImage = React.useCallback(() => {
-    console.log(pdfRef.current);
+  const generateChartPdf = React.useCallback(async () => {
     if (pdfRef.current) {
-      getHtml2Canvas(pdfRef.current, 'image.png');
+      const fileName = 'inventory-chart-levels.pdf';
+      const pdf = createPdfWithHeaderImage(
+        'Inventory Levels Chart',
+        await createImageFromComponent(pdfRef.current)
+      );
+      downloadFile(pdf, fileName);
     }
   }, [pdfRef]);
 
@@ -107,7 +115,11 @@ const InventoryDashboard = () => {
       </div>
       {/* <h4>Overall Inventory Turnover</h4> */}
       <h4>Current Inventory Levels by Product</h4>
+<<<<<<< HEAD
       <Button onClick={() => getGraphImage()}>Download Chart</Button>
+=======
+      <Button onClick={() => generateChartPdf()}>Download</Button>
+>>>>>>> main
       <InventoryLevelsChart productData={productData} ref={pdfRef} />
     </div>
   );
