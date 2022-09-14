@@ -222,6 +222,18 @@ const ViewAccount = () => {
             <h1>View User Account </h1>
             <div className='button-group'>
               {loading && <CircularProgress color='secondary' />}
+              {edit && (
+                <Button
+                  variant='contained'
+                  className='create-btn'
+                  color='primary'
+                  onClick={() => {
+                    setEdit(false);
+                  }}
+                >
+                  DISCARD CHANGES
+                </Button>
+              )}
               <Button
                 variant='contained'
                 className='create-btn'
@@ -235,7 +247,7 @@ const ViewAccount = () => {
                   }
                 }}
               >
-                EDIT
+                {edit ? 'SAVE CHANGES' : 'EDIT'}
               </Button>
               <Button
                 type='submit'
