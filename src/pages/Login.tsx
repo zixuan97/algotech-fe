@@ -12,6 +12,7 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
+  Link,
   OutlinedInput,
   TextField
 } from '@mui/material';
@@ -20,6 +21,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import AuthContext from 'src/context/auth/authContext';
 import { useNavigate } from 'react-router-dom';
 import { UserInput } from 'src/services/authService';
+import PasswordModal from './account/PasswordModal';
 
 const Login = () => {
   const authContext = React.useContext(AuthContext);
@@ -35,6 +37,7 @@ const Login = () => {
     }
   }, [isAuthenticated, error, navigate, clearErrors]);
 
+  const [showDialog, setShowDialog] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [userInput, setUserInput] = React.useState<UserInput>({
     email: '',
@@ -114,10 +117,15 @@ const Login = () => {
               </Alert>
             )}
             {/* the checkbox does nothing; i just followed the wireframe first lols */}
-            <FormControlLabel
-              control={<Checkbox defaultChecked />}
-              label='Stay signed in'
-            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <FormControlLabel
+                control={<Checkbox defaultChecked />}
+                label='Stay signed in'
+              />
+
+              <Link href="#" onClick={() => setShowDialog(true)}>Forget Password</Link>
+            </div>
+
             <div style={{ marginTop: '2vh' }}>
               <Button
                 type='submit'
@@ -131,6 +139,12 @@ const Login = () => {
           </FormGroup>
         </form>
       </Box>
+      <PasswordModal
+        open={showDialog}
+        onClose={() => setShowDialog(false)}
+        title='Forget Password'
+        body='Enter the your login email. An email will be sent to you to reset your password.'
+      />
     </div>
   );
 };
