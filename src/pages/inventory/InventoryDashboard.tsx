@@ -93,7 +93,7 @@ const InventoryDashboard = () => {
         />
         {/* <NumberCard number={20} text='Days of supply left on average' /> */}
       </div>
-      <div style={{ width: '100%', display:'flex', justifyContent:'space-between' }}>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
         <Link
           to='/inventory/allProducts'
           style={{ textDecoration: 'none', color: 'inherit' }}
@@ -102,7 +102,7 @@ const InventoryDashboard = () => {
             <h4>Products</h4>
           </Tooltip>
         </Link>
-        <Button onClick={() => getGraphImage()}>Export Inventory Data</Button>
+        <Button onClick={() => generateChartPdf()}>Export Inventory Data</Button>
       </div>
       <div style={{ width: '100%' }}>
         <DataGrid
@@ -114,12 +114,11 @@ const InventoryDashboard = () => {
         />
       </div>
       {/* <h4>Overall Inventory Turnover</h4> */}
-      <h4>Current Inventory Levels by Product</h4>
-<<<<<<< HEAD
-      <Button onClick={() => getGraphImage()}>Download Chart</Button>
-=======
-      <Button onClick={() => generateChartPdf()}>Download</Button>
->>>>>>> main
+
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+        <h4>Current Inventory Levels by Product</h4>
+        <Button onClick={() => generateChartPdf()}>Download</Button>
+      </div>
       <InventoryLevelsChart productData={productData} ref={pdfRef} />
     </div>
   );
