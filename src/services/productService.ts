@@ -3,6 +3,7 @@
  */
 import axios from 'axios';
 import { Category, Product } from 'src/models/types';
+import { NewProduct } from 'src/pages/inventory/CreateProduct';
 import apiRoot from './util/apiRoot';
 
 export const getAllProducts = async (): Promise<Product[]> => {
@@ -13,7 +14,7 @@ export const getProductById = async (id: string | number): Promise<Product> => {
   return axios.get(`${apiRoot}/product/${id}`).then((res) => res.data);
 };
 
-export const create = async (product: Product): Promise<void> => {
+export const createProduct = async (product: NewProduct): Promise<void> => {
   return axios.post(`${apiRoot}/product`, product);
 };
 export const updateProduct = async (product: Product): Promise<void> => {
