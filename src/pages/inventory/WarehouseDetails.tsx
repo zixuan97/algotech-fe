@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
+  // Alert,
   Box,
   FormGroup,
   TextField,
@@ -16,8 +17,10 @@ import {
   // InputLabel,
   // Chip,
   // SelectChangeEvent,
-  CircularProgress
+  CircularProgress,
+  Snackbar,
 } from '@mui/material';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
@@ -71,6 +74,13 @@ interface ProductDetails {
   quantity: number;
   price: number;
 };
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref,
+) {
+  return <MuiAlert elevation={6} ref={ref} {...props} />;
+});
 
 const LocationDetails = () => {
   const navigate = useNavigate();
@@ -133,23 +143,94 @@ const LocationDetails = () => {
     }
   };
 
+  // const [snackPack, setSnackPack] = React.useState<readonly SnackbarMessage[]>([]);
+  // const [open, setOpen] = React.useState(false);
+  // const [messageInfo, setMessageInfo] = React.useState<SnackbarMessage | undefined>(
+  //   undefined,
+  // );
+
+  // interface SnackbarMessage {
+  //   message: string;
+  //   key: number;
+  // }
+  
+  // interface State {
+  //   open: boolean;
+  //   snackPack: readonly SnackbarMessage[];
+  //   messageInfo?: SnackbarMessage;
+  // }
+
+  // React.useEffect(() => {
+  //   if (snackPack.length && !messageInfo) {
+  //     // Set a new snack when we don't have an active one
+  //     setMessageInfo({ ...snackPack[0] });
+  //     setSnackPack((prev) => prev.slice(1));
+  //     setOpen(true);
+  //   } else if (snackPack.length && messageInfo && open) {
+  //     // Close an active snack when a new one is added
+  //     setOpen(false);
+  //   }
+  // }, [snackPack, messageInfo, open]);
+
+  // const handleClick = (message: string) => () => {
+  //   setSnackPack((prev) => [...prev, { message, key: new Date().getTime() }]);
+  // };
+
+  // const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+  //   if (reason === 'clickaway') {
+  //     return;
+  //   }
+  //   setOpen(false);
+  // };
+
+  // const handleExited = () => {
+  //   setMessageInfo(undefined);
+  // };
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+
   const handleDeleteLocation = async () => {
     setLoading(true);
     if (originalLocation?.stockQuantity.length) {
-      //TODO: print failure; unable to delete toast
-      navigate({ pathname: '/inventory/warehouses' });
+      // navigate({ pathname: '/inventory/warehouses' });
       setLoading(false);
+
+      //TODO: print failure; unable to delete toast
+      <Alert severity="error">This is an error alert — check it out!</Alert>
     }
     else if (originalLocation) {
       await asyncFetchCallback(
         deleteLocation(originalLocation.id),
         (res) => {
           setLoading(false);
+          handleClick();
+          // navigate({ pathname: '/inventory/warehouseDetails' });
+
           // TODO: print out success
-          navigate({ pathname: '/inventory/warehouses' });
+          // <Alert severity="success">This is a success alert — check it out!</Alert>
         },
         () => setLoading(false)
       );
+    }
+    else {
+      // navigate({ pathname: '/inventory/warehouses' });
+      setLoading(false);
+
+      //TODO: print failure; unable to delete toast
+      <Alert severity="error">This is an error alert — check it out!</Alert>
     }
   };
 
@@ -157,6 +238,27 @@ const LocationDetails = () => {
 
   return (
     <div>
+      <Snackbar
+        anchorOrigin={{vertical: 'top', horizontal: 'right' }}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        >
+        <Alert onClose={handleClose} severity="success">
+          Warehouse Successfully Deleted!
+        </Alert>
+        
+      </Snackbar>
+      {/* <Snackbar
+        anchorOrigin={{vertical: 'top', horizontal: 'right' }}
+        key={messageInfo ? messageInfo.key : undefined}
+        open={open}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        TransitionProps={{ onExited: handleExited }}
+        message={messageInfo ? messageInfo.message : undefined}
+      /> */}
+
       <Tooltip title='Return to Previous Page' enterDelay={300}>
         <IconButton
           size='large'
