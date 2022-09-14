@@ -1,36 +1,33 @@
-import React, { useState } from 'react';
+import React, { FormEvent } from 'react';
 import {
   Box,
   FormGroup,
   TextField,
   Paper,
-  // MenuItem,
   Button,
-  // CircularProgress,
   Tooltip,
   IconButton,
-  // Typography,
-  // FormControl,
-  // InputLabel,
-  // Select,
-  // OutlinedInput,
-  // Chip,
-  // SelectChangeEvent
+  Alert,
+  Backdrop,
+  CircularProgress
+  // Snackbar,
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
 import { Location } from 'src/models/types';
-// import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { createLocation } from 'src/services/locationService';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { AlertType } from 'src/components/common/Alert';
 
-type NewLocation = Partial<Location>;
+export type NewLocation = Partial<Location>;
 
 const CreateWarehouse = () => {
   const navigate = useNavigate();
 
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [newLocation, setNewLocation] = React.useState<NewLocation>({});
-  
-  console.log(newLocation);
 
   const handleEditLocation = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewLocation((prev) => {
@@ -42,13 +39,30 @@ const CreateWarehouse = () => {
     });
   };
 
-  const handleSave = async () => {
-      if (newLocation) {
-        // await asyncFetchCallback(updateLocation(newLocation), (res) => {
-        //   setLoading(false);
-        // });
-      }
-    };
+  const handleSave = async (e: FormEvent) => {
+    e.preventDefault();
+
+    if (newLocation) {
+      setLoading(true);
+      await asyncFetchCallback(
+        createLocation(newLocation),
+        () => {
+          setLoading(false);
+          setAlert({
+            severity: 'success',
+            message: 'Warehouse successfully created!'
+          });
+        },
+        (err) => {
+          setLoading(false);
+          setAlert({
+            severity: 'error',
+            message: `Error creating warehouse: ${err.message}`
+          });
+        }
+      );
+    }
+  };
 
   return (
     <div>
@@ -66,57 +80,70 @@ const CreateWarehouse = () => {
         <div className='header-content'>
           <h1>Create Warehouse</h1>
         </div>
+        {alert && (
+            <Alert
+              severity={alert.severity}
+              onClose={() => setAlert(null)}
+            >
+              {alert.message}
+            </Alert>
+          )}
         <Paper elevation={2}>
-            <form>
-              <FormGroup className='create-product-form'>
-                <div className='top-content'>
-                  <div className='text-fields'>
-                      <TextField
-                        required
-                        fullWidth
-                        id='outlined-required'
-                        label='Warehouse Name'
-                        name='name'
-                        value={newLocation?.name}
-                        onChange={handleEditLocation}
-                        placeholder='eg.: Chai Chee Warehouse'
-                      />
-                      <TextField
-                        required
-                        fullWidth
-                        id='outlined-required'
-                        label='Address'
-                        name='address'
-                        value={newLocation?.address}
-                        onChange={handleEditLocation}
-                        placeholder='eg.: 123 Chai Chee Road, #01-02, Singapore 12345'
-                      />
-                  </div>
+          <Backdrop
+            sx={{
+              color: '#fff',
+              zIndex: (theme) => theme.zIndex.drawer + 1
+            }}
+            open={loading}
+          >
+            <CircularProgress color='inherit' />
+          </Backdrop>
+          <form onSubmit={handleSave}>
+            <FormGroup className='create-product-form'>
+              <div className='top-content'>
+                <div className='text-fields'>
+                    <TextField
+                      required
+                      fullWidth
+                      id='outlined-required'
+                      label='Warehouse Name'
+                      name='name'
+                      value={newLocation?.name}
+                      onChange={handleEditLocation}
+                      placeholder='eg.: Chai Chee Warehouse'
+                    />
+                    <TextField
+                      required
+                      fullWidth
+                      id='outlined-required'
+                      label='Address'
+                      name='address'
+                      value={newLocation?.address}
+                      onChange={handleEditLocation}
+                      placeholder='eg.: 123 Chai Chee Road, #01-02, Singapore 12345'
+                    />
                 </div>
-                <div className='button-group'>
-                  <Button
-                    variant='text'
-                    className='cancel-btn'
-                    color='primary'
-                    onClick={() => navigate({ pathname: '/inventory/warehouses' })}
-                    >
-                    CANCEL
-                  </Button>
-                  <Button
-                    type='submit'
-                    variant='contained'
-                    className='create-btn'
-                    color='primary'
-                    onClick={() => {
-                      // setEdit(false);
-                      setNewLocation(newLocation);
-                    }}
+              </div>
+              <div className='button-group'>
+                <Button
+                  variant='text'
+                  className='cancel-btn'
+                  color='primary'
+                  onClick={() => navigate({ pathname: '/inventory/warehouses' })}
                   >
-                    CREATE WAREHOUSE
-                  </Button>
-                </div>
-              </FormGroup>
-            </form>
+                  Cancel
+                </Button>
+                <Button
+                  type='submit'
+                  variant='contained'
+                  className='create-btn'
+                  color='primary'
+                >
+                  Create Warehouse
+                </Button>
+              </div>
+            </FormGroup>
+          </form>
         </Paper>
       </Box>
       </div>

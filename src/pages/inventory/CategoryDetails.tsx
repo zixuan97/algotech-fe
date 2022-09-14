@@ -5,34 +5,31 @@ import {
   FormGroup,
   TextField,
   Paper,
-  MenuItem,
   Button,
   IconButton,
   Tooltip,
   Typography,
-  Select,
-  OutlinedInput,
-  FormControl,
-  InputLabel,
-  Chip,
-  SelectChangeEvent,
-  CircularProgress
+  CircularProgress,
+  Snackbar,
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { Category, Product, ProductCategory } from 'src/models/types';
 import ProductCellAction from 'src/components/inventory/ProductCellAction';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
-  getAllProductCategories,
-  getProductById,
   getCategoryById,
   updateCategory,
   deleteCategory,
+} from 'src/services/categoryService';
+import {
+  getAllProductCategories,
+  getProductById,
 } from 'src/services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { intersectionWith } from 'lodash';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import { intersectionWith } from 'lodash';
+import { toast } from 'react-toastify';
 
 const columns: GridColDef[] = [
   {
@@ -69,6 +66,41 @@ const CategoryDetails = () => {
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [edit, setEdit] = React.useState<boolean>(false);
 
+  const handleDeleteButtonClick = () => {
+    setLoading(true);
+    if (originalCategory) {
+      setLoading(false);
+      asyncFetchCallback(
+        deleteCategory(originalCategory.id),
+        () => {
+          toast.success('Category successfully deleted.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          navigate('/inventory/allCategories');
+        },
+        () => {
+          toast.error('Error deleting category! Try again later.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          navigate('/inventory/allCategories');
+        }
+      );
+    }
+  }
+
+
   React.useEffect(() => {
     if (id) {
       asyncFetchCallback(getCategoryById(id), (res) => {
@@ -79,19 +111,19 @@ const CategoryDetails = () => {
     }
   }, [id]);
 
-//   React.useEffect(() => {
-//     if (originalCategory) {
-//       Promise.all(
-//         originalCategory.productCategory.map(async (qty) => {
-//           const product = await getProductById(qty.product_id);
-//           return {
-//             id: qty.product_id,
-//             productName: product.name,
-//           };
-//         })
-//       ).then((res) => setProductDetails(res));
-//     }
-//   }, [originalCategory]);
+  React.useEffect(() => {
+    if (originalCategory) {
+      Promise.all(
+        originalCategory.productCategory.map(async (qty) => {
+          const product = await getProductById(qty.product_id);
+          return {
+            id: qty.product_id,
+            productName: product.name,
+          };
+        })
+      ).then((res) => setProductDetails(res));
+    }
+  }, [originalCategory]);
 
   React.useEffect(() => {
     asyncFetchCallback(getAllProductCategories(), setCategories);
@@ -109,31 +141,31 @@ const CategoryDetails = () => {
     });
   };
 
-  const handleEditCategories = (e: SelectChangeEvent<string[]>) => {
-    const inputCategories = e.target.value;
-    setEditCategory((prev) => {
-      if (prev) {
-        return {
-          ...prev,
-          productCategory: intersectionWith(
-            categories,
-            inputCategories,
-            (a, b) => a.name === b
-          ).map((cat) => {
-            return {
-            //   product_sku: editCategory?.sku,
-              category_id: cat.id,
-              category_name: cat.name,
-              category: cat,
-              product: editCategory
-            } as ProductCategory;
-          })
-        };
-      } else {
-        return prev;
-      }
-    });
-  };
+  // const handleEditCategories = (e: SelectChangeEvent<string[]>) => {
+  //   const inputCategories = e.target.value;
+  //   setEditCategory((prev) => {
+  //     if (prev) {
+  //       return {
+  //         ...prev,
+  //         productCategory: intersectionWith(
+  //           categories,
+  //           inputCategories,
+  //           (a, b) => a.name === b
+  //         ).map((cat) => {
+  //           return {
+  //           //   product_sku: editCategory?.sku,
+  //             category_id: cat.id,
+  //             category_name: cat.name,
+  //             category: cat,
+  //             product: editCategory
+  //           } as ProductCategory;
+  //         })
+  //       };
+  //     } else {
+  //       return prev;
+  //     }
+  //   });
+  // };
 
   const handleSave = async () => {
     setLoading(true);
@@ -146,18 +178,19 @@ const CategoryDetails = () => {
 
   const handleDeleteCategory = async () => {
     setLoading(true);
-    if (originalCategory?.productCategory.length) {
-        //TODO: print failure; unable to delete toast
-      navigate({ pathname: '/inventory/allCategories' });
-      setLoading(false);
-    }
-    else if (originalCategory) {
+    // if (originalCategory?.productCategory.length) {
+    //     //TODO: print failure; unable to delete toast
+    //   navigate({ pathname: '/inventory/allCategories' });
+    //   setLoading(false);
+    // }
+    // else
+    if (originalCategory) {
       await asyncFetchCallback(
         deleteCategory(originalCategory.id),
         (res) => {
           setLoading(false);
           // TODO: print out success
-          navigate({ pathname: '/inventory/allProducts' });
+          navigate({ pathname: '/inventory/allCategories' });
         },
         () => setLoading(false)
       );
@@ -195,7 +228,7 @@ const CategoryDetails = () => {
                   }
                 }}
               >
-                {edit ? 'SAVE CHANGES' : 'EDIT'}
+                {edit ? 'Save Changes' : 'Edit'}
               </Button>
               {edit && (
                 <Button
@@ -207,22 +240,22 @@ const CategoryDetails = () => {
                     setEditCategory(originalCategory);
                   }}
                 >
-                  DISCARD CHANGES
+                  Discard Changes
                 </Button>
               )}
               <Button
-                disabled={!!productDetails.length}
+                // disabled={!!productDetails.length}
                 variant='contained'
                 className='create-btn'
                 color='primary'
                 onClick={() => setModalOpen(true)}
               >
-                DELETE
+                Delete
               </Button>
               <ConfirmationModal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
-                onConfirm={handleDeleteCategory}
+                onConfirm={handleDeleteButtonClick}
                 title='Delete Category'
                 body='Are you sure you want to delete this category?'
               />

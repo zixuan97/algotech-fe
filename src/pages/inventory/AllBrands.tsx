@@ -7,7 +7,9 @@ import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { Brand } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getAllBrands } from 'src/services/productService';
+import {
+  getAllBrands,
+} from 'src/services/brandService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [

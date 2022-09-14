@@ -5,19 +5,14 @@ import {
   FormGroup,
   TextField,
   Paper,
-  // MenuItem,
   Button,
   IconButton,
   Tooltip,
   Typography,
-  // Select,
-  // OutlinedInput,
-  // FormControl,
-  // InputLabel,
-  // Chip,
-  // SelectChangeEvent,
-  CircularProgress
+  CircularProgress,
+  Snackbar,
 } from '@mui/material';
+import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
@@ -32,15 +27,10 @@ import {
   getProductById
 } from 'src/services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-// import { intersectionWith } from 'lodash';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import { toast } from 'react-toastify';
 
 const columns: GridColDef[] = [
-  // {
-  //   field: 'id',
-  //   headerName: 'Product ID',
-  //   flex: 1
-  // },
   {
     field: 'productName',
     headerName: 'Product Name',
@@ -72,6 +62,13 @@ interface ProductDetails {
   price: number;
 };
 
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
+  props,
+  ref,
+) {
+  return <MuiAlert elevation={6} ref={ref} {...props} />;
+});
+
 const LocationDetails = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -85,6 +82,40 @@ const LocationDetails = () => {
     ProductDetails[]
   >([]);
   const [edit, setEdit] = React.useState<boolean>(false);
+
+  const handleDeleteButtonClick = () => {
+    setLoading(true);
+    if (originalLocation) {
+      setLoading(false);
+      asyncFetchCallback(
+      deleteLocation(originalLocation.id),
+      () => {
+        toast.success('Warehouse successfully deleted.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        navigate('/inventory/warehouses');
+      },
+      () => {
+        toast.error('Error deleting warehouse! Try again later.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        navigate('/inventory/warehouses');
+      });
+    }
+  }
+
 
   React.useEffect(() => {
     if (id) {
@@ -133,25 +164,7 @@ const LocationDetails = () => {
     }
   };
 
-  const handleDeleteLocation = async () => {
-    setLoading(true);
-    if (originalLocation?.stockQuantity.length) {
-      //TODO: print failure; unable to delete toast
-      navigate({ pathname: '/inventory/warehouses' });
-      setLoading(false);
-    }
-    else if (originalLocation) {
-      await asyncFetchCallback(
-        deleteLocation(originalLocation.id),
-        (res) => {
-          setLoading(false);
-          // TODO: print out success
-          navigate({ pathname: '/inventory/warehouses' });
-        },
-        () => setLoading(false)
-      );
-    }
-  };
+  const [open, setOpen] = React.useState(false);
 
   const title = `${edit ? 'Edit' : ''} Warehouse Details`;
 
@@ -169,14 +182,6 @@ const LocationDetails = () => {
       <div className='create-product'>
         <Box className='create-product-box'>
           <div className='header-content'>
-            {/* <Tooltip title='Return to Manage Warehouses' enterDelay={300}>
-              <IconButton
-                size='large'
-                onClick={() => navigate({ pathname: '/inventory/warehouses' })}
-              >
-                <ChevronLeft />
-              </IconButton>
-            </Tooltip> */}
             <h1>{title}</h1>
             <div className='button-group'>
               {loading && <CircularProgress color='secondary' />}
@@ -194,7 +199,7 @@ const LocationDetails = () => {
                   }
                 }}
               >
-                {edit ? 'SAVE CHANGES' : 'EDIT'}
+                {edit ? 'Save Changes' : 'Edit'}
               </Button>
               {edit && (
                 <Button
@@ -206,23 +211,23 @@ const LocationDetails = () => {
                     setEditLocation(originalLocation);
                   }}
                 >
-                  DISCARD CHANGES
+                  Discard Changes
                 </Button>
               )}
               <Button
                 //disable --> if array !empty, disabled = true
-                disabled={!!productDetails.length}
+                // disabled={!!productDetails.length}
                 variant='contained'
                 className='create-btn'
                 color='primary'
                 onClick={() => setModalOpen(true)}
               >
-                DELETE
+                Delete
               </Button>
               <ConfirmationModal
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
-                onConfirm={handleDeleteLocation}
+                onConfirm={handleDeleteButtonClick}
                 title='Delete Warehouse'
                 body='Are you sure you want to delete this warehouse?'
               />
@@ -232,17 +237,6 @@ const LocationDetails = () => {
             <form>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
-                  {/* <Box
-                    sx={{
-                      width: 200,
-                      height: 200,
-                      backgroundColor: 'primary.dark',
-                      '&:hover': {
-                        backgroundColor: 'primary.main',
-                        opacity: [0.9, 0.8, 0.7]
-                      }
-                    }}
-                  /> */}
                   <div className='text-fields'>
                     {edit ? (
                       <TextField
@@ -279,9 +273,6 @@ const LocationDetails = () => {
                     )}
 
                   </div>
-
-                  
-
                 </div>
                 {/*product table*/}
                 <DataGrid
@@ -295,8 +286,6 @@ const LocationDetails = () => {
           </Paper>
         </Box>
       </div>
-
-
     </div>
   )
 

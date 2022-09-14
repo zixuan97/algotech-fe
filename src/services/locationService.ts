@@ -3,6 +3,7 @@
  */
 import axios from 'axios';
 import { Location } from 'src/models/types';
+import { NewLocation } from 'src/pages/inventory/CreateWarehouse';
 import apiRoot from './util/apiRoot';
 
 export const getAllLocations = async (): Promise<Location[]> => {
@@ -15,7 +16,7 @@ export const getLocationById = async (
   return axios.get(`${apiRoot}/location/${id}`).then((res) => res.data);
 };
 
-export const create = async (location: Location): Promise<void> => {
+export const createLocation = async (location: NewLocation): Promise<void> => {
   return axios.post(`${apiRoot}/location`, location);
 }
 
