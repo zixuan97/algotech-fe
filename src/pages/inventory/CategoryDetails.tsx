@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Box,
   FormGroup,
@@ -52,14 +52,18 @@ interface ProductDetails {
 };
 
 const CategoryDetails = () => {
+
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
 
+  const current = useLocation();
+  const category = current.state as Category;
+
   const [loading, setLoading] = React.useState<boolean>(true);
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [originalCategory, setOriginalCategory] = React.useState<Category>();
-  const [editCategory, setEditCategory] = React.useState<Category>();
+  const [editCategory, setEditCategory] = React.useState<Category>(category);
   const [productDetails, setProductDetails] = React.useState<
     ProductDetails[]
   >([]);
@@ -129,73 +133,52 @@ const CategoryDetails = () => {
     asyncFetchCallback(getAllProductCategories(), setCategories);
   }, []);
 
-  console.log(editCategory);
-
-  const handleEditCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditCategory((prev) => {
-      if (prev) {
-        return { ...prev, [e.target.name]: e.target.value };
-      } else {
-        return prev;
-      }
+  const handleFieldOnChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    key: string
+  ) => {
+    setEditCategory((category: Category) => {
+        return {
+            ...category,
+            [key]: event.target.value
+        };
     });
   };
 
-  // const handleEditCategories = (e: SelectChangeEvent<string[]>) => {
-  //   const inputCategories = e.target.value;
-  //   setEditCategory((prev) => {
-  //     if (prev) {
-  //       return {
-  //         ...prev,
-  //         productCategory: intersectionWith(
-  //           categories,
-  //           inputCategories,
-  //           (a, b) => a.name === b
-  //         ).map((cat) => {
-  //           return {
-  //           //   product_sku: editCategory?.sku,
-  //             category_id: cat.id,
-  //             category_name: cat.name,
-  //             category: cat,
-  //             product: editCategory
-  //           } as ProductCategory;
-  //         })
-  //       };
-  //     } else {
-  //       return prev;
-  //     }
-  //   });
-  // };
 
   const handleSave = async () => {
     setLoading(true);
     if (editCategory) {
-      await asyncFetchCallback(updateCategory(editCategory), (res) => {
-        setLoading(false);
-      });
-    }
-  };
-
-  const handleDeleteCategory = async () => {
-    setLoading(true);
-    // if (originalCategory?.productCategory.length) {
-    //     //TODO: print failure; unable to delete toast
-    //   navigate({ pathname: '/inventory/allCategories' });
-    //   setLoading(false);
-    // }
-    // else
-    if (originalCategory) {
-      await asyncFetchCallback(
-        deleteCategory(originalCategory.id),
-        (res) => {
-          setLoading(false);
-          // TODO: print out success
-          navigate({ pathname: '/inventory/allCategories' });
+      setLoading(false);
+      asyncFetchCallback(
+        updateCategory(editCategory),
+        () => {
+          toast.success('Category successfully edited.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          // navigate('/inventory/allCategories');
         },
-        () => setLoading(false)
+        () => {
+          toast.error('Error editing category! Try again later.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          // navigate('/inventory/allCategories');
+        }
       );
     }
-  };
+  }
 
   const title = `${edit ? 'Edit' : ''} Category Details`;
 
@@ -237,7 +220,6 @@ const CategoryDetails = () => {
                   color='primary'
                   onClick={() => {
                     setEdit(false);
-                    setEditCategory(originalCategory);
                   }}
                 >
                   Discard Changes
@@ -274,7 +256,9 @@ const CategoryDetails = () => {
                         label='Category Name'
                         name='name'
                         value={editCategory?.name}
-                        onChange={handleEditCategory}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          handleFieldOnChange(e, 'name')
+                        }
                         placeholder='eg.: Asian Favourites'
                       />
                     ) : (

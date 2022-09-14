@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Box,
@@ -12,7 +12,6 @@ import {
   CircularProgress,
   Snackbar,
 } from '@mui/material';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
@@ -23,9 +22,7 @@ import {
   getLocationById,
   updateLocation
 } from 'src/services/locationService';
-import {
-  getProductById
-} from 'src/services/productService';
+import { getProductById } from 'src/services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import { toast } from 'react-toastify';
@@ -62,22 +59,19 @@ interface ProductDetails {
   price: number;
 };
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  props,
-  ref,
-) {
-  return <MuiAlert elevation={6} ref={ref} {...props} />;
-});
-
 const LocationDetails = () => {
+
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
 
+  const current = useLocation();
+  const location = current.state as Location;
+
   const [loading, setLoading] = React.useState<boolean>(true);
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [originalLocation, setOriginalLocation] = React.useState<Location>();
-  const [editLocation, setEditLocation] = React.useState<Location>();
+  const [editLocation, setEditLocation] = React.useState<Location>(location);
   const [productDetails, setProductDetails] = React.useState<
     ProductDetails[]
   >([]);
@@ -145,15 +139,13 @@ const LocationDetails = () => {
   }, [originalLocation]);
 
 
-  const current = useLocation();
-  const location = current.state as Location;
-  const [currentLocation, setCurrentLocation] = useState<Location>(location);
+
 
   const handleFieldOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     key: string
   ) => {
-    setCurrentLocation((location: Location) => {
+    setEditLocation((location: Location) => {
         return {
             ...location,
             [key]: event.target.value
@@ -161,34 +153,12 @@ const LocationDetails = () => {
     });
   };
 
-
-  // console.log(editLocation);
-
-  // const handleFieldOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setEditLocation((prev) => {
-  //     if (prev) {
-  //       return { ...prev, [e.target.name]: e.target.value };
-  //     } else {
-  //       return prev;
-  //     }
-  //   });
-  // };
-
-  // const handleSave = async () => {
-  //   setLoading(true);
-  //   if (editLocation) {
-  //     await asyncFetchCallback(updateLocation(editLocation), (res) => {
-  //       setLoading(false);
-  //     });
-  //   }
-  // };
-
   const handleSave = async() => {
     setLoading(true);
-    if (originalLocation) {
+    if (editLocation) {
       setLoading(false);
       asyncFetchCallback(
-        updateLocation(currentLocation),
+        updateLocation(editLocation.id, editLocation.name, editLocation.stockQuantity, editLocation.address),
         () => {
           toast.success('Warehouse successfully edited.', {
             position: 'top-right',
@@ -261,7 +231,6 @@ const LocationDetails = () => {
                   color='primary'
                   onClick={() => {
                     setEdit(false);
-                    setEditLocation(originalLocation);
                   }}
                 >
                   Discard Changes
@@ -299,7 +268,6 @@ const LocationDetails = () => {
                       label='Warehouse Name'
                       name='name'
                       value={editLocation?.name}
-                      // onChange={handleFieldOnChange}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         handleFieldOnChange(e, 'name')
                       }
@@ -319,7 +287,6 @@ const LocationDetails = () => {
                       label='Address'
                       name='address'
                       value={editLocation?.address}
-                      // onChange={handleFieldOnChange}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         handleFieldOnChange(e, 'address')
                       }

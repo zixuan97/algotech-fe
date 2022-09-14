@@ -1,22 +1,16 @@
 import React from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Box,
   FormGroup,
   TextField,
   Paper,
-  // MenuItem,
   Button,
   IconButton,
   Tooltip,
   Typography,
-  // Select,
-  // OutlinedInput,
-  // FormControl,
-  // InputLabel,
-  // Chip,
-  // SelectChangeEvent,
   CircularProgress,
+  Snackbar,
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -60,14 +54,16 @@ const BrandDetails = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
 
+  const current = useLocation();
+  const brand = current.state as Brand;
+
   const [loading, setLoading] = React.useState<boolean>(true);
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [originalBrand, setOriginalBrand] = React.useState<Brand>();
-  const [editBrand, setEditBrand] = React.useState<Brand>();
+  const [editBrand, setEditBrand] = React.useState<Brand>(brand);
   const [productDetails, setProductDetails] = React.useState<
     ProductDetails[]
   >([]);
-  // const [brands, setBrands] = React.useState<Brand[]>([]);
   const [edit, setEdit] = React.useState<boolean>(false);
 
   React.useEffect(() => {
@@ -94,30 +90,51 @@ const BrandDetails = () => {
     }
   }, [originalBrand]);
 
-console.log(editBrand);
-
-// React.useEffect(() => {
-//   asyncFetchCallback(getAllBrands(), setBrands);
-// }, []);
-
-const handleEditBrand = (e: React.ChangeEvent<HTMLInputElement>) => {
-  setEditBrand((prev) => {
-    if (prev) {
-      return { ...prev, [e.target.name]: e.target.value };
-    } else {
-      return prev;
-    }
+const handleFieldOnChange = (
+  event: React.ChangeEvent<HTMLInputElement>,
+  key: string
+) => {
+  setEditBrand((brand: Brand) => {
+      return {
+          ...brand,
+          [key]: event.target.value
+      };
   });
 };
 
-const handleSave = async () => {
+const handleSave = async() => {
   setLoading(true);
   if (editBrand) {
-    await asyncFetchCallback(updateBrand(editBrand), (res) => {
-      setLoading(false);
-    });
+    setLoading(false);
+    asyncFetchCallback(
+      updateBrand(editBrand),
+      () => {
+        toast.success('Brand successfully edited.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        // navigate('/inventory/allBrands');
+      },
+      () => {
+        toast.error('Error editing brand! Try again later.', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        // navigate('/inventory/allBrands');
+      }
+    );
   }
-};
+}
 
 const handleDeleteBrand = async () => {
   setLoading(true);
@@ -152,26 +169,6 @@ const handleDeleteBrand = async () => {
     );
   }
 }
-
-
-//   // if (originalBrand?.product.length) {
-//   //     //TODO: print failure; unable to delete toast
-//   //   navigate({ pathname: '/inventory/allBrands' });
-//   //   setLoading(false);
-//   // }
-//   // else
-//   if (originalBrand) {
-//     await asyncFetchCallback(
-//       deleteBrand(originalBrand.id),
-//       (res) => {
-//         setLoading(false);
-//         // TODO: print out success
-//         navigate({ pathname: '/inventory/allBrands' });
-//       },
-//       () => setLoading(false)
-//     );
-//   }
-// };
 
 
 const title = `${edit ? 'Edit' : ''} Brand Details`;
@@ -214,7 +211,7 @@ return (
                 color='primary'
                 onClick={() => {
                   setEdit(false);
-                  setEditBrand(originalBrand);
+                  // setEditBrand(originalBrand);
                 }}
               >
                 Discard Changes
@@ -266,7 +263,9 @@ return (
                       label='Brand Name'
                       name='name'
                       value={editBrand?.name}
-                      onChange={handleEditBrand}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleFieldOnChange(e, 'name')
+                      }
                       placeholder='eg.: Kettle Gourmet'
                     />
                   ) : (
