@@ -21,7 +21,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import AuthContext from 'src/context/auth/authContext';
 import { useNavigate } from 'react-router-dom';
 import { UserInput } from 'src/services/authService';
-import PasswordModal from './account/PasswordModal';
+import PasswordModal from '../pages/account/PasswordModal';
 
 const Login = () => {
   const authContext = React.useContext(AuthContext);
