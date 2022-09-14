@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Box,
   FormGroup,
@@ -88,31 +88,32 @@ const LocationDetails = () => {
     if (originalLocation) {
       setLoading(false);
       asyncFetchCallback(
-      deleteLocation(originalLocation.id),
-      () => {
-        toast.success('Warehouse successfully deleted.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined
-        });
-        navigate('/inventory/warehouses');
-      },
-      () => {
-        toast.error('Error deleting warehouse! Try again later.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined
-        });
-        navigate('/inventory/warehouses');
-      });
+        deleteLocation(originalLocation.id),
+        () => {
+          toast.success('Warehouse successfully deleted.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          navigate('/inventory/warehouses');
+        },
+        () => {
+          toast.error('Error deleting warehouse! Try again later.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          navigate('/inventory/warehouses');
+        }
+      );
     }
   }
 
@@ -143,26 +144,78 @@ const LocationDetails = () => {
     }
   }, [originalLocation]);
 
-  console.log(editLocation);
 
-  const handleEditLocation = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditLocation((prev) => {
-      if (prev) {
-        return { ...prev, [e.target.name]: e.target.value };
-      } else {
-        return prev;
-      }
+  const current = useLocation();
+  const location = current.state as Location;
+  const [currentLocation, setCurrentLocation] = useState<Location>(location);
+
+  const handleFieldOnChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    key: string
+  ) => {
+    setCurrentLocation((location: Location) => {
+        return {
+            ...location,
+            [key]: event.target.value
+        };
     });
   };
 
-  const handleSave = async () => {
+
+  // console.log(editLocation);
+
+  // const handleFieldOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setEditLocation((prev) => {
+  //     if (prev) {
+  //       return { ...prev, [e.target.name]: e.target.value };
+  //     } else {
+  //       return prev;
+  //     }
+  //   });
+  // };
+
+  // const handleSave = async () => {
+  //   setLoading(true);
+  //   if (editLocation) {
+  //     await asyncFetchCallback(updateLocation(editLocation), (res) => {
+  //       setLoading(false);
+  //     });
+  //   }
+  // };
+
+  const handleSave = async() => {
     setLoading(true);
-    if (editLocation) {
-      await asyncFetchCallback(updateLocation(editLocation), (res) => {
-        setLoading(false);
-      });
+    if (originalLocation) {
+      setLoading(false);
+      asyncFetchCallback(
+        updateLocation(currentLocation),
+        () => {
+          toast.success('Warehouse successfully edited.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          // navigate('/inventory/warehouses');
+        },
+        () => {
+          toast.error('Error editing warehouse! Try again later.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          // navigate('/inventory/warehouses');
+        }
+      );
     }
-  };
+  }
 
   const [open, setOpen] = React.useState(false);
 
@@ -246,7 +299,10 @@ const LocationDetails = () => {
                       label='Warehouse Name'
                       name='name'
                       value={editLocation?.name}
-                      onChange={handleEditLocation}
+                      // onChange={handleFieldOnChange}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleFieldOnChange(e, 'name')
+                      }
                       placeholder='eg.: Chai Chee Warehouse'
                       />
                     ) : (
@@ -263,7 +319,10 @@ const LocationDetails = () => {
                       label='Address'
                       name='address'
                       value={editLocation?.address}
-                      onChange={handleEditLocation}
+                      // onChange={handleFieldOnChange}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleFieldOnChange(e, 'address')
+                      }
                       placeholder='eg.: 123 Chai Chee Road, #01-02, Singapore 12345'
                       />
                     ) : (
