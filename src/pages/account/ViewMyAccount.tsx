@@ -295,6 +295,8 @@ const ViewMyAccount = () => {
                                                                 <TextField
                                                                     fullWidth
                                                                     required
+                                                                    error={newPassword === currentPassword}
+                                                                    helperText={newPassword === currentPassword ? "Current Password same as new password!" : ''}
                                                                     id='outlined-quantity'
                                                                     label='Current Password'
                                                                     name='currPwd'
@@ -307,7 +309,8 @@ const ViewMyAccount = () => {
                                                                 <TextField
                                                                     fullWidth
                                                                     required
-                                                                    error={confirmPassword !== newPassword}
+                                                                    error={confirmPassword !== newPassword || newPassword===currentPassword}
+                                                                    helperText={newPassword !== confirmPassword ? "New passwords don't match!" : ''}
                                                                     id='outlined-quantity'
                                                                     label='New Password'
                                                                     name='newPwd'
@@ -320,7 +323,7 @@ const ViewMyAccount = () => {
                                                                 <TextField
                                                                     fullWidth
                                                                     required
-                                                                    error={confirmPassword !== newPassword}
+                                                                    error={confirmPassword !== newPassword || confirmPassword===currentPassword}
                                                                     id='outlined-quantity'
                                                                     label='Confirm New Password'
                                                                     name='cfmNewPwd'
@@ -335,7 +338,8 @@ const ViewMyAccount = () => {
                                                             variant='contained'
                                                             className='create-btn'
                                                             color='primary'
-                                                            onClick={()=> updatePassword}
+                                                            onClick={updatePassword}
+                                                            disabled={!currentPassword || !newPassword || !confirmPassword}
                                                         >
                                                             Update Password
                                                         </Button>
