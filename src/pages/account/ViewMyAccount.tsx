@@ -17,7 +17,7 @@ import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import { roles } from 'src/components/account/accountTypes';
 import BottomButton from 'src/components/common/BottomButton';
-import { editUserSvc, getUserDetailsSvc } from 'src/services/account/accountService';
+import { editUserSvc, getUserDetailsSvc } from 'src/services/accountService';
 import { toast } from 'react-toastify';
 
 const placeholderUser: User = {
@@ -28,7 +28,8 @@ const placeholderUser: User = {
     status: '',
     first_name: '',
     last_name: '',
-    password: ''
+    password: '',
+    isVerified: true
 };
 
 const ViewMyAccount = () => {

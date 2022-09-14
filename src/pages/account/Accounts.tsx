@@ -5,13 +5,12 @@ import AccountCellAction from 'src/components/account/AccountCellAction';
 import '../../styles/pages/accounts.scss';
 import { Button, TextField } from '@mui/material';
 import { User } from 'src/models/types';
-import { getAllUserSvc } from 'src/services/account/accountService';
+import { getAllUserSvc } from 'src/services/accountService';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { Search } from '@mui/icons-material';
 
 //TODO: Include avatar
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'User ID', flex: 1 },
   { field: 'first_name', headerName: 'First Name', flex: 1 },
   { field: 'last_name', headerName: 'Last Name', flex: 1 },
   { field: 'email', headerName: 'Email', flex: 1 },

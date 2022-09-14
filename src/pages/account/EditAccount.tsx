@@ -16,7 +16,7 @@ import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import { roles } from 'src/components/account/accountTypes';
 import BottomButton from 'src/components/common/BottomButton';
-import { editUserSvc } from 'src/services/account/accountService';
+import { editUserSvc } from 'src/services/accountService';
 import { toast } from 'react-toastify';
 
 const EditAccount = () => {
@@ -84,36 +84,6 @@ const EditAccount = () => {
                                     <Grid container spacing={2}>
                                         <Grid item xs={6}>
                                             <TextField
-                                                disabled
-                                                fullWidth
-                                                id='outlined-quantity'
-                                                label='User ID'
-                                                name='userId'
-                                                value={currentUser?.id}
-                                                placeholder='eg.: 12'
-                                            />
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <TextField
-                                                required
-                                                fullWidth
-                                                id='outlined-field'
-                                                select
-                                                label='Role'
-                                                value={currentUser?.role}
-                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                                    userFieldOnChange(e, 'role')
-                                                }
-                                            >
-                                                {roles.map((option) => (
-                                                    <MenuItem key={option.value} value={option.value}>
-                                                        {option.label}
-                                                    </MenuItem>
-                                                ))}
-                                            </TextField>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <TextField
                                                 fullWidth
                                                 required
                                                 id='outlined-quantity'
@@ -153,6 +123,25 @@ const EditAccount = () => {
                                                     userFieldOnChange(e, 'email')
                                                 }
                                             />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <TextField
+                                                required
+                                                fullWidth
+                                                id='outlined-field'
+                                                select
+                                                label='Role'
+                                                value={currentUser?.role}
+                                                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                                                    userFieldOnChange(e, 'role')
+                                                }
+                                            >
+                                                {roles.map((option) => (
+                                                    <MenuItem key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </MenuItem>
+                                                ))}
+                                            </TextField>
                                         </Grid>
                                     </Grid>
                                 </div>

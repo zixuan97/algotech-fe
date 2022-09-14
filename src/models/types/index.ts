@@ -33,8 +33,9 @@ export interface User {
     last_name: string,
     email: string,
     password: string,
-    role: UserRole,
-    status: UserStatus,
+    role: string,
+    status: string,
+    isVerified: boolean,
 }
 
 export interface Category {
@@ -88,7 +89,7 @@ export interface StockQuantity {
     price: number,
     createdAt: Date,
     updatedAt: Date,
-    product_qtyThreshold?: number,
+    location_name: string,
     location: Location,
     product: Product,
 }
@@ -117,6 +118,7 @@ export interface ProcurementOrder {
     payment_status: PaymentStatus,
     fulfilment_status: FulfilmentStatus,
     supplier_id: number,
+    total_amount: number,
     supplier: Supplier,
     proc_order_items: ProcurementOrderItem[],
 }
