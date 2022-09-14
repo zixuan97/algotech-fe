@@ -3,7 +3,6 @@ import AppBar from '@mui/material/AppBar';
 import { IconButton, Menu, MenuItem, Toolbar } from '@mui/material';
 import { AccountCircle } from '@mui/icons-material';
 import AuthContext from 'src/context/auth/authContext';
-import 'src/styles/pages/home.scss';
 import { useNavigate } from 'react-router-dom';
 
 type AppbarProps = {
