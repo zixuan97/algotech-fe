@@ -21,6 +21,7 @@
     "@types/react-dom": "^18.0.6",
     "axios": "^0.27.2",
     "chart.js": "^3.9.1",
+    "html2canvas": "^1.4.1",
     "js-file-download": "^0.4.12",
     "lodash": "^4.17.21",
     "node-polyfill-webpack-plugin": "^2.0.1",

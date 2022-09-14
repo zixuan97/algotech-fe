@@ -17,10 +17,7 @@ import {
   GridValueFormatterParams
 } from '@mui/x-data-grid';
 import { Location } from 'src/models/types';
-import {
-  ProductLocation,
-  ProductLocationRow
-} from 'src/pages/inventory/CreateProduct';
+import { ProductLocationRow } from 'src/pages/inventory/CreateProduct';
 import EditToolbarCellAction from './EditToolbarCellAction';
 import LocationSelectCellAction from './LocationSelectCellAction';
 
