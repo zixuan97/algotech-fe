@@ -24,7 +24,11 @@ const options = {
   }
 };
 
-const InventoryLevelsChart = ({ productData }: InventoryTurnoverChartProps) => {
+const InventoryLevelsChart = React.forwardRef<
+  HTMLDivElement,
+  InventoryTurnoverChartProps
+>((props: InventoryTurnoverChartProps, ref) => {
+  const { productData } = props;
   const labels = React.useMemo(
     () => productData.map((product) => product.name),
     [productData]
@@ -53,10 +57,10 @@ const InventoryLevelsChart = ({ productData }: InventoryTurnoverChartProps) => {
   };
 
   return (
-    <div className='container-center' style={{ width: '100%' }}>
+    <div className='container-center' style={{ width: '100%' }} ref={ref}>
       <Bar data={data} options={options} />
     </div>
   );
-};
+});
 
 export default InventoryLevelsChart;
