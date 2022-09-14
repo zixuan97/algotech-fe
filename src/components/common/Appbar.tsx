@@ -31,7 +31,7 @@ const Appbar = ({ sidebarWidth }: AppbarProps) => {
 
   return (
     <AppBar
-      position='static'
+      position='fixed'
       sx={{ width: `calc(100% - ${sidebarWidth})`, ml: sidebarWidth }}
     >
       <Toolbar style={{ justifyContent: 'flex-end' }}>
