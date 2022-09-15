@@ -29,7 +29,8 @@
 .create-procurement-order-heading {
   display: flex;
   flex-direction: row;
-  padding: 2rem;
+  padding-top: 2rem;
+  padding-left: 2rem;
 }
 
 .alert {
@@ -57,6 +58,10 @@
   flex-direction: column;
   gap: 15px 20px;
   margin: 2% 2% 2% 2%;
+}
+
+.order-items-section {
+  padding-top: 2rem;
 }
 
 .text-fields {
