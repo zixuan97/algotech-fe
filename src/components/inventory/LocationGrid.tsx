@@ -77,7 +77,11 @@ export default function LocationGrid({
 
   const processRowUpdate = (newRow: ProductLocationRow) => {
     console.log(newRow);
-    const updatedRow = { ...newRow, isNew: false };
+    const updatedRow = {
+      ...newRow,
+      name: locations.find((location) => location.id === newRow.id)?.name!,
+      isNew: false
+    };
     updateProductLocations(
       productLocations.map((row) =>
         row.gridId === newRow.gridId ? updatedRow : row

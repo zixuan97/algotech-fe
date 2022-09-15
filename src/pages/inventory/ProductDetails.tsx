@@ -169,10 +169,7 @@ const ProductDetails = () => {
   return (
     <div>
       <Tooltip title='Return to Previous Page' enterDelay={300}>
-        <IconButton
-          size='large'
-          onClick={() => navigate(-1)}
-        >
+        <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
         </IconButton>
       </Tooltip>
@@ -234,15 +231,18 @@ const ProductDetails = () => {
                   <Box
                     sx={{
                       width: 200,
-                      height: 200,
-                      backgroundColor: 'primary.dark',
-                      '&:hover': {
-                        backgroundColor: 'primary.main',
-                        opacity: [0.9, 0.8, 0.7]
-                      }
+                      maxWidth: 300,
+                      height: 300,
+                      maxHeight: 500
                     }}
-                  />
-                  <div className='text-fields'>
+                  >
+                    <img
+                      src={editProduct?.image}
+                      alt='Product'
+                      style={{ maxWidth: '100%', maxHeight: '100%' }}
+                    />
+                  </Box>
+                  <div className='product-text-fields'>
                     {edit ? (
                       <TextField
                         required
