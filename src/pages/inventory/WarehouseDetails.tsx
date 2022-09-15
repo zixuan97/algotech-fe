@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Box,
   FormGroup,
@@ -12,7 +12,6 @@ import {
   CircularProgress,
   Snackbar,
 } from '@mui/material';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
@@ -23,9 +22,7 @@ import {
   getLocationById,
   updateLocation
 } from 'src/services/locationService';
-import {
-  getProductById
-} from 'src/services/productService';
+import { getProductById } from 'src/services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import { toast } from 'react-toastify';
@@ -62,22 +59,19 @@ interface ProductDetails {
   price: number;
 };
 
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
-  props,
-  ref,
-) {
-  return <MuiAlert elevation={6} ref={ref} {...props} />;
-});
-
 const LocationDetails = () => {
+
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
 
+  const current = useLocation();
+  const location = current.state as Location;
+
   const [loading, setLoading] = React.useState<boolean>(true);
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [originalLocation, setOriginalLocation] = React.useState<Location>();
-  const [editLocation, setEditLocation] = React.useState<Location>();
+  const [editLocation, setEditLocation] = React.useState<Location>(location);
   const [productDetails, setProductDetails] = React.useState<
     ProductDetails[]
   >([]);
@@ -88,31 +82,32 @@ const LocationDetails = () => {
     if (originalLocation) {
       setLoading(false);
       asyncFetchCallback(
-      deleteLocation(originalLocation.id),
-      () => {
-        toast.success('Warehouse successfully deleted.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined
-        });
-        navigate('/inventory/warehouses');
-      },
-      () => {
-        toast.error('Error deleting warehouse! Try again later.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined
-        });
-        navigate('/inventory/warehouses');
-      });
+        deleteLocation(originalLocation.id),
+        () => {
+          toast.success('Warehouse successfully deleted.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          navigate('/inventory/warehouses');
+        },
+        () => {
+          toast.error('Error deleting warehouse! Try again later.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          navigate('/inventory/warehouses');
+        }
+      );
     }
   }
 
@@ -143,26 +138,54 @@ const LocationDetails = () => {
     }
   }, [originalLocation]);
 
-  console.log(editLocation);
 
-  const handleEditLocation = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditLocation((prev) => {
-      if (prev) {
-        return { ...prev, [e.target.name]: e.target.value };
-      } else {
-        return prev;
-      }
+
+
+  const handleFieldOnChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    key: string
+  ) => {
+    setEditLocation((location: Location) => {
+        return {
+            ...location,
+            [key]: event.target.value
+        };
     });
   };
 
-  const handleSave = async () => {
+  const handleSave = async() => {
     setLoading(true);
     if (editLocation) {
-      await asyncFetchCallback(updateLocation(editLocation), (res) => {
-        setLoading(false);
-      });
+      setLoading(false);
+      asyncFetchCallback(
+        updateLocation(editLocation.id, editLocation.name, editLocation.stockQuantity, editLocation.address),
+        () => {
+          toast.success('Warehouse successfully edited.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          // navigate('/inventory/warehouses');
+        },
+        () => {
+          toast.error('Error editing warehouse! Try again later.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          // navigate('/inventory/warehouses');
+        }
+      );
     }
-  };
+  }
 
   const [open, setOpen] = React.useState(false);
 
@@ -208,7 +231,6 @@ const LocationDetails = () => {
                   color='primary'
                   onClick={() => {
                     setEdit(false);
-                    setEditLocation(originalLocation);
                   }}
                 >
                   Discard Changes
@@ -246,7 +268,9 @@ const LocationDetails = () => {
                       label='Warehouse Name'
                       name='name'
                       value={editLocation?.name}
-                      onChange={handleEditLocation}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleFieldOnChange(e, 'name')
+                      }
                       placeholder='eg.: Chai Chee Warehouse'
                       />
                     ) : (
@@ -263,7 +287,9 @@ const LocationDetails = () => {
                       label='Address'
                       name='address'
                       value={editLocation?.address}
-                      onChange={handleEditLocation}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleFieldOnChange(e, 'address')
+                      }
                       placeholder='eg.: 123 Chai Chee Road, #01-02, Singapore 12345'
                       />
                     ) : (
