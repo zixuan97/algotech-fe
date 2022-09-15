@@ -28,6 +28,7 @@ const columns: GridColDef[] = [
     field: 'action',
     headerName: 'Action',
     headerAlign: 'right',
+    align: 'right',
     flex: 1,
     renderCell: WarehouseCellAction
   }

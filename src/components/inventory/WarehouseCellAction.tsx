@@ -8,7 +8,7 @@ import { createSearchParams } from 'react-router-dom';
 const WarehouseCellAction = ({ id }: GridRenderCellParams) => {
   const navigate = useNavigate();
   return (
-      <div className='action-cell'>
+      <div className='action-cell-fit-content'>
         <Button
           variant='contained'
           onClick={() =>
