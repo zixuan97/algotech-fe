@@ -41,6 +41,6 @@ export const forgetPasswordSvc = (recipientEmail: string): Promise<any> => {
 
 export const updatePasswordSvc = (userEmail: string, currentPassword: string, newPassword: string): Promise<any> => {
   return axios
-    .post(`${apiRoot}/user/updatePassword`, {userEmail, currentPassword, newPassword })
+    .post(`${apiRoot}/user/updatepw`, {userEmail, currentPassword, newPassword })
     .then((res) => res.data);
 };

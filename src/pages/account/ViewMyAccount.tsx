@@ -6,7 +6,6 @@ import {
     IconButton,
     Tooltip,
     TextField,
-    MenuItem,
     Grid,
     Button,
     Alert,
@@ -20,9 +19,9 @@ import '../../styles/pages/accounts.scss';
 import { ChevronLeft, ExpandMore } from '@mui/icons-material';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
-import { roles } from 'src/components/account/accountTypes';
 import { editUserSvc, getUserDetailsSvc, updatePasswordSvc } from 'src/services/accountService';
 import { AlertType } from 'src/components/common/Alert';
+import validator from 'validator';
 
 
 const placeholderUser: User = {
@@ -50,11 +49,13 @@ const ViewMyAccount = () => {
     const [confirmPassword, setConfirmPassword] = useState<string>('');
 
     useEffect(() => {
+        setLoading(true);
         id &&
             asyncFetchCallback(
                 getUserDetailsSvc(id),
                 (user: User) => {
                     setUser(user);
+                    setLoading(false);
                 },
                 () => {
                     //handle error here
@@ -108,14 +109,24 @@ const ViewMyAccount = () => {
                     severity: 'success',
                     message: 'Password Updated.'
                 });
+                setCurrentPassword('');
+                setNewPassword('');
+                setConfirmPassword('');
                 navigate(`/accounts/viewMyAccount?id=${id}`);
             },
             (err) => {
+                if(err.message === 'Passwords do not match') {
+                    setAlert({
+                        severity: 'error',
+                        message: 'Your current password is wrong. Try again.'
+                    });
+                } else {
+                    setAlert({
+                        severity: 'error',
+                        message: 'The password cannot be updated at this time. Try Again Later.'
+                    });
+                }
                 setLoading(false);
-                setAlert({
-                    severity: 'error',
-                    message: 'The password cannot be updated at this time. Try Again Later.'
-                });
             }
         );
     };
@@ -150,6 +161,7 @@ const ViewMyAccount = () => {
                                 variant='contained'
                                 className='create-btn'
                                 color='primary'
+                                disabled={!validator.isEmail(user.email) || !user.first_name || !user.last_name}
                                 onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                                     if (!edit) {
                                         setEdit(true);
@@ -173,7 +185,7 @@ const ViewMyAccount = () => {
                         <form>
                             <div className='content-body'>
                                 <div className='right-content'>
-                                    <Grid container spacing={2}>
+                                    {loading ? <CircularProgress color='secondary' /> : <Grid container spacing={2}>
                                         <Grid item xs={6}>
                                             {edit ? (
                                                 <TextField
@@ -182,6 +194,8 @@ const ViewMyAccount = () => {
                                                     id='outlined-quantity'
                                                     label='First Name'
                                                     name='firstName'
+                                                    error={!user.first_name}
+                                                    helperText={!user.first_name ? 'First Name is empty!' : ''}
                                                     placeholder='eg.: John'
                                                     value={user?.first_name}
                                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -205,6 +219,8 @@ const ViewMyAccount = () => {
                                                     id='outlined-quantity'
                                                     label='Last Name'
                                                     name='lastName'
+                                                    error={!user.last_name}
+                                                    helperText={!user.last_name ? 'Last Name is empty!' : ''}
                                                     placeholder='eg.: Tan'
                                                     value={user?.last_name}
                                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -226,13 +242,15 @@ const ViewMyAccount = () => {
                                                     required
                                                     fullWidth
                                                     id='outlined-quantity'
+                                                    error={!validator.isEmail(user.email)}
                                                     label='Email'
                                                     name='email'
                                                     placeholder='eg.: johntan@gmail.com'
                                                     value={user?.email}
+                                                    helperText={validator.isEmail(user.email) ? '' : 'Enter a valid email: example@email.com'}
                                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                                         userFieldOnChange(e, 'email')
-                                                    }
+                                                    }   
                                                 />
                                             ) : (
                                                 <div>
@@ -244,25 +262,7 @@ const ViewMyAccount = () => {
                                             )}
                                         </Grid>
                                         <Grid item xs={edit ? 12 : 6}>
-                                            {edit ? (
-                                                <TextField
-                                                    required
-                                                    fullWidth
-                                                    id='outlined-field'
-                                                    select
-                                                    label='Role'
-                                                    value={user?.role}
-                                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                                        userFieldOnChange(e, 'role')
-                                                    }
-                                                >
-                                                    {roles.map((option) => (
-                                                        <MenuItem key={option.value} value={option.value}>
-                                                            {option.label}
-                                                        </MenuItem>
-                                                    ))}
-                                                </TextField>
-                                            ) : (
+                                            {!edit && (
                                                 <div>
                                                     <h4>Role</h4>
                                                     <Typography>
@@ -309,8 +309,8 @@ const ViewMyAccount = () => {
                                                                 <TextField
                                                                     fullWidth
                                                                     required
-                                                                    error={confirmPassword !== newPassword || newPassword===currentPassword}
-                                                                    helperText={newPassword !== confirmPassword ? "New passwords don't match!" : ''}
+                                                                    error={confirmPassword !== newPassword || newPassword === currentPassword || !validator.isLength(newPassword, {min:8, max: undefined})}
+                                                                    helperText={newPassword !== confirmPassword ? "New passwords don't match!" : (!validator.isLength(newPassword, {min:8, max: undefined}) ? 'Password length needs 8 characters': '')}
                                                                     id='outlined-quantity'
                                                                     label='New Password'
                                                                     name='newPwd'
@@ -323,7 +323,8 @@ const ViewMyAccount = () => {
                                                                 <TextField
                                                                     fullWidth
                                                                     required
-                                                                    error={confirmPassword !== newPassword || confirmPassword===currentPassword}
+                                                                    error={confirmPassword !== newPassword || confirmPassword === currentPassword || !validator.isLength(confirmPassword, {min:8, max: undefined})}
+                                                                    helperText={(!validator.isLength(newPassword, {min:8, max: undefined}) ? 'Password length needs 8 characters': '')}
                                                                     id='outlined-quantity'
                                                                     label='Confirm New Password'
                                                                     name='cfmNewPwd'
@@ -339,7 +340,7 @@ const ViewMyAccount = () => {
                                                             className='create-btn'
                                                             color='primary'
                                                             onClick={updatePassword}
-                                                            disabled={!currentPassword || !newPassword || !confirmPassword}
+                                                            disabled={!currentPassword || !newPassword || !confirmPassword || newPassword !== confirmPassword || currentPassword === newPassword || !validator.isLength(confirmPassword, {min:8, max: undefined})}
                                                         >
                                                             Update Password
                                                         </Button>
@@ -348,6 +349,7 @@ const ViewMyAccount = () => {
                                             </Grid>
                                         }
                                     </Grid>
+                                    }
                                 </div>
                             </div>
                         </form>

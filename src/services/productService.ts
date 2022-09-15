@@ -4,6 +4,7 @@
 import axios from 'axios';
 import { Category, Product, Brand } from 'src/models/types';
 import { NewProduct } from 'src/pages/inventory/CreateProduct';
+// import { blob } from 'stream/consumers';
 import apiRoot from './util/apiRoot';
 
 export const getAllProducts = async (): Promise<Product[]> => {
@@ -33,4 +34,9 @@ export const deleteProduct = async (id: string | number): Promise<void> => {
 //categories
 export const getAllProductCategories = async (): Promise<Category[]> => {
   return axios.get(`${apiRoot}/category/all`).then((res) => res.data);
+};
+
+//Returns a blob
+export const generateExcelSvc = async (): Promise<any> => {
+  return axios.post(`${apiRoot}/product/excel`, {responseType: "blob"}).then((res) => res.data);
 };

@@ -6,10 +6,11 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  Backdrop
+  Alert,
+  CircularProgress,
 } from '@mui/material';
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { AlertType } from 'src/components/common/Alert';
 import { forgetPasswordSvc } from 'src/services/accountService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 
@@ -30,21 +31,28 @@ const PasswordModal = ({
 }: PasswordModalProps) => {
 
   const [loading, setLoading] = useState<boolean>(false);
+  const [alert, setAlert] = useState<AlertType | null>(null);
   const [recipientEmail, setRecipientEmail] = useState<string>('');
-  const navigate = useNavigate();
 
   const handleForgetPassword = async () => {
     setLoading(true);
     if (recipientEmail) {
-      console.log("page, email", recipientEmail);
       await asyncFetchCallback(
         forgetPasswordSvc(recipientEmail),
         () => {
-          onClose()
-          navigate({ pathname: '/login' });
-          
+          setLoading(false);
+          setAlert({
+            severity: 'success',
+            message: 'A reset password email has been sent to your provided email.'
+          });
         },
-        () => setLoading(false)
+        () => {
+          setLoading(false);
+          setAlert({
+            severity: 'error',
+            message: 'Error resetting password. Try again later.'
+          });
+        }
       );
     }
   };
@@ -55,7 +63,6 @@ const PasswordModal = ({
 
   return (
     <div>
-
       <Dialog
         open={open}
         onClose={onClose}
@@ -67,6 +74,11 @@ const PasswordModal = ({
           <DialogContentText id='alert-dialog-description'>
             {body}
           </DialogContentText>
+          {alert && (
+            <Alert severity={alert.severity} onClose={() => setAlert(null)} style={{ margin: '1%' }}>
+              {alert.message}
+            </Alert>
+          )}
           <TextField
             autoFocus
             margin="dense"
@@ -79,6 +91,7 @@ const PasswordModal = ({
           />
         </DialogContent>
         <DialogActions>
+          {loading && <CircularProgress color='secondary' />}
           <Button onClick={onClose} autoFocus={!focusPassthrough}>
             Close
           </Button>
