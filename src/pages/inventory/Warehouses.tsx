@@ -28,6 +28,7 @@ const columns: GridColDef[] = [
     field: 'action',
     headerName: 'Action',
     headerAlign: 'right',
+    align: 'right',
     flex: 1,
     renderCell: WarehouseCellAction
   }
@@ -63,6 +64,7 @@ const Warehouses = () => {
     // here 
     setSearchField(e.target.value);
   };
+  
   return (
     <div className='product-inventory'>
       <h1>Manage Warehouses</h1>

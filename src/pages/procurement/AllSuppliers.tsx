@@ -1,61 +1,63 @@
 import React from 'react';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import CategoryCellAction from '../../components/inventory/CategoryCellAction';
+import SupplierCellAction from 'src/components/procurement/SupplierCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
 import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
-import { Category } from '../../models/types';
-import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { getAllProductCategories } from '../../services/productService';
+import { Supplier } from '../../models/types';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { getAllSuppliers } from 'src/services/supplierService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  {field: 'id', headerName: 'Category ID', flex:1},
-  {field: 'name', headerName: 'Category Name', flex:1},
+  {field: 'id', headerName: 'Supplier ID', flex:1},
+  {field: 'name', headerName: 'Supplier Name', flex:1},
+  {field: 'email', headerName: 'Supplier Email', flex:1},
   {
     field: 'action',
     headerName: 'Action',
     headerAlign: 'right',
     align: 'right',
     flex: 1,
-    renderCell: CategoryCellAction
+    renderCell: SupplierCellAction
   }
 ];
 
-const AllCategories = () => {
+const AllSuppliers = () => {
   const navigate = useNavigate();
 
   const [searchField, setSearchField] = React.useState<string>('');
-  const [categoryData, setCategoryData] = React.useState<Category[]>([]);
-  const [filteredData, setFilteredData] = React.useState<Category[]>([]);
+  const [supplierData, setSupplierData] = React.useState<Supplier[]>([]);
+  const [filteredData, setFilteredData] = React.useState<Supplier[]>([]);
 
   React.useEffect(() => {
     // TODO: implement error callback
-    // to do; write the categoryServices ts... vv this is WRONG
-    asyncFetchCallback(getAllProductCategories(), setCategoryData);
+    asyncFetchCallback(getAllSuppliers(), setSupplierData);
   }, []);
 
   React.useEffect(() => {
     setFilteredData(
       searchField
-        ? categoryData.filter((category) =>
+        ? supplierData.filter((category) =>
             Object.values(category).some((value) =>
               String(value).toLowerCase().match(searchField.toLowerCase())
             )
           )
-        : categoryData
+        : supplierData
     );
-  }, [searchField, categoryData]);
+  }, [searchField, supplierData]);
 
   console.log(filteredData);
 
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // here 
     setSearchField(e.target.value);
   };
+
   return (
     <div className='product-inventory'>
-      <h1>Manage Categories</h1>
+      <h1>Manage Suppliers</h1>
       <div className='grid-toolbar'>
         <div className='search-bar'>
           <Search />
@@ -71,9 +73,9 @@ const AllCategories = () => {
           variant='contained'
           size='large'
           sx={{ height: 'fit-content' }}
-          onClick={() => navigate({ pathname: '/inventory/createCategory' })}
+          onClick={() => navigate({ pathname: '/orders/createSupplier' })}
         >
-          Create Category
+          Create Supplier
         </Button>
       </div>
       <DataGrid columns={columns} rows={filteredData} autoHeight />
@@ -81,4 +83,4 @@ const AllCategories = () => {
   );
 };
 
-export default AllCategories;
+export default AllSuppliers;

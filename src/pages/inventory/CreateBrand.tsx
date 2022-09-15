@@ -15,10 +15,11 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import { Brand } from 'src/models/types';
-import { createBrand } from 'src/services/brandService';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { AlertType } from 'src/components/common/Alert';
+import { Brand } from '../../models/types';
+import { createBrand } from '../../services/brandService';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
+import { AlertType } from '../../components/common/Alert';
+import { toast } from 'react-toastify';
 
 export type NewBrand = Partial<Brand>;
 
@@ -48,10 +49,23 @@ const CreateBrand = () => {
         createBrand(newBrand),
         () => {
           setLoading(false);
-          setAlert({
-            severity: 'success',
-            message: 'Brand successfully created!'
-          });
+          toast.success(
+            'Brand successfully created!',
+            {
+              position: 'top-right',
+              autoClose: 6000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined
+            }
+          );
+          navigate('/inventory/allBrands');
+          // setAlert({
+          //   severity: 'success',
+          //   message: 'Brand successfully created!'
+          // });
         },
         (err) => {
           setLoading(false);
@@ -100,7 +114,7 @@ const CreateBrand = () => {
           <form onSubmit={handleSave}>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
-                  <div className='text-fields'>
+                  <div className='product-text-fields'>
                       <TextField
                         required
                         fullWidth

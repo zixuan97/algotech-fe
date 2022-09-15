@@ -14,21 +14,21 @@ import {
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { Category, Product, ProductCategory } from 'src/models/types';
-import ProductCellAction from 'src/components/inventory/ProductCellAction';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
+import { Category, Product, ProductCategory } from '../../models/types';
+import ProductCellAction from '../../components/inventory/ProductCellAction';
 import {
   getCategoryById,
   updateCategory,
-  deleteCategory
+  deleteCategory,
 } from '../../services/categoryService';
 import {
   getAllProductCategories,
-  getProductById
-} from 'src/services/productService';
+  getProductById,
+} from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import ConfirmationModal from 'src/components/common/ConfirmationModal';
-import { intersectionWith } from 'lodash';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
+// import { intersectionWith } from 'lodash';
 import { toast } from 'react-toastify';
 
 const columns: GridColDef[] = [
@@ -241,7 +241,7 @@ const CategoryDetails = () => {
             <form>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
-                  <div className='text-fields'>
+                  <div className='product-text-fields'>
                     {edit ? (
                       <TextField
                         required
