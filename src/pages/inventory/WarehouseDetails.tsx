@@ -14,17 +14,17 @@ import {
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { Location } from 'src/models/types';
-import ProductCellAction from 'src/components/inventory/ProductCellAction';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
+import { Location } from '../../models/types';
+import ProductCellAction from '../../components/inventory/ProductCellAction';
 import {
   deleteLocation,
   getLocationById,
   updateLocation
-} from 'src/services/locationService';
-import { getProductById } from 'src/services/productService';
+} from '../../services/locationService';
+import { getProductById } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { toast } from 'react-toastify';
 
 const columns: GridColDef[] = [

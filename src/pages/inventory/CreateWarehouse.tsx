@@ -15,9 +15,9 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import { Location } from 'src/models/types';
-import { createLocation } from 'src/services/locationService';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { Location } from '../../models/types';
+import { createLocation } from '../../services/locationService';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import { AlertType } from '../../components/common/Alert';
 
 export type NewLocation = Partial<Location>;

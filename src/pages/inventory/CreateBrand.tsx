@@ -15,10 +15,10 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import { Brand } from 'src/models/types';
-import { createBrand } from 'src/services/brandService';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { AlertType } from 'src/components/common/Alert';
+import { Brand } from '../../models/types';
+import { createBrand } from '../../services/brandService';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
+import { AlertType } from '../../components/common/Alert';
 
 export type NewBrand = Partial<Brand>;
 

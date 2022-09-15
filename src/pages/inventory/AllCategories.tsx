@@ -1,13 +1,13 @@
 import React from 'react';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import CategoryCellAction from 'src/components/inventory/CategoryCellAction';
+import CategoryCellAction from '../../components/inventory/CategoryCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
 import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { Category } from '../../models/types';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getAllProductCategories } from 'src/services/productService';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
+import { getAllProductCategories } from '../../services/productService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
