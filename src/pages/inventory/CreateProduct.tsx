@@ -34,7 +34,7 @@ import { getBase64 } from 'src/utils/fileUtils';
 import { getAllLocations } from 'src/services/locationService';
 import LocationGrid from 'src/components/inventory/LocationGrid';
 import { randomId } from '@mui/x-data-grid-generator';
-import { AlertType } from 'src/components/common/Alert';
+import { AlertType } from '../../components/common/Alert';
 
 export type NewProduct = Partial<Product> & {
   categories?: Category[];

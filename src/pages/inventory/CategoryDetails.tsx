@@ -10,7 +10,7 @@ import {
   Tooltip,
   Typography,
   CircularProgress,
-  Snackbar,
+  Snackbar
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -20,11 +20,11 @@ import ProductCellAction from 'src/components/inventory/ProductCellAction';
 import {
   getCategoryById,
   updateCategory,
-  deleteCategory,
-} from 'src/services/categoryService';
+  deleteCategory
+} from '../../services/categoryService';
 import {
   getAllProductCategories,
-  getProductById,
+  getProductById
 } from 'src/services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
@@ -47,12 +47,11 @@ const columns: GridColDef[] = [
 ];
 
 interface ProductDetails {
-    id: number
-    productName: string;
-};
+  id: number;
+  productName: string;
+}
 
 const CategoryDetails = () => {
-
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
@@ -64,9 +63,9 @@ const CategoryDetails = () => {
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [originalCategory, setOriginalCategory] = React.useState<Category>();
   const [editCategory, setEditCategory] = React.useState<Category>(category);
-  const [productDetails, setProductDetails] = React.useState<
-    ProductDetails[]
-  >([]);
+  const [productDetails, setProductDetails] = React.useState<ProductDetails[]>(
+    []
+  );
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [edit, setEdit] = React.useState<boolean>(false);
 
@@ -102,8 +101,7 @@ const CategoryDetails = () => {
         }
       );
     }
-  }
-
+  };
 
   React.useEffect(() => {
     if (id) {
@@ -122,7 +120,7 @@ const CategoryDetails = () => {
           const product = await getProductById(qty.product_id);
           return {
             id: qty.product_id,
-            productName: product.name,
+            productName: product.name
           };
         })
       ).then((res) => setProductDetails(res));
@@ -138,13 +136,12 @@ const CategoryDetails = () => {
     key: string
   ) => {
     setEditCategory((category: Category) => {
-        return {
-            ...category,
-            [key]: event.target.value
-        };
+      return {
+        ...category,
+        [key]: event.target.value
+      };
     });
   };
-
 
   const handleSave = async () => {
     setLoading(true);
@@ -178,17 +175,14 @@ const CategoryDetails = () => {
         }
       );
     }
-  }
+  };
 
   const title = `${edit ? 'Edit' : ''} Category Details`;
 
   return (
     <div>
       <Tooltip title='Return to Previous Page' enterDelay={300}>
-        <IconButton
-          size='large'
-          onClick={() => navigate(-1)}
-        >
+        <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
         </IconButton>
       </Tooltip>
@@ -266,7 +260,6 @@ const CategoryDetails = () => {
                         sx={{ padding: '15px' }}
                       >{`Category Name: ${editCategory?.name}`}</Typography>
                     )}
-                    
                   </div>
                 </div>
                 {/* product table */}
