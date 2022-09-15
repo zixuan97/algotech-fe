@@ -33,6 +33,16 @@ export default function LocationGrid({
   productLocations,
   updateProductLocations
 }: LocationGridProps) {
+  const availableLocations = React.useMemo(
+    () =>
+      locations.filter(
+        (location) =>
+          !productLocations.find(
+            (prodLocation) => prodLocation.id === location.id
+          )
+      ),
+    [locations, productLocations]
+  );
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
     {}
   );
@@ -81,7 +91,8 @@ export default function LocationGrid({
     console.log(newRow);
     const updatedRow = {
       ...newRow,
-      name: locations.find((location) => location.id === newRow.id)?.name!,
+      name: availableLocations.find((location) => location.id === newRow.id)
+        ?.name!,
       isNew: false
     };
     updateProductLocations(
@@ -102,7 +113,10 @@ export default function LocationGrid({
         return locations.find((location) => location.id === params.value)?.name;
       },
       renderEditCell: (params: GridRenderEditCellParams<number>) => (
-        <LocationSelectCellAction params={params} locations={locations} />
+        <LocationSelectCellAction
+          params={params}
+          locations={availableLocations}
+        />
       )
     },
     {
