@@ -1,4 +1,5 @@
 import React from 'react';
+import '../App.css';
 import {
   Alert,
   Backdrop,
@@ -76,7 +77,7 @@ const Login = () => {
         <CircularProgress color='inherit' />
       </Backdrop>
       <Box className='logo-box'>
-        <img src={logo} width={300} height={270} className="App-logo" />
+        <img src={logo} className="App-logo" width={350} height={300}  />
         
         <h1>The Kettle Gourmet</h1>
         <p>Enterprise Resource Planning System</p>
