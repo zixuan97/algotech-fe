@@ -9,7 +9,7 @@ export type AuthStateAttr = {
 };
 
 export type AuthStateInit = AuthStateAttr & {
-  loadUser: () => Promise<void>;
+  loadUser: () => void;
   login: (userInput: UserInput) => Promise<void>;
   logout: () => void;
   clearErrors: () => void;

@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 import React from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import AuthRoute from './components/auth/AuthRoute';
+import AuthRoute from './components/routing/AuthRoute';
 import AuthState from './context/auth/AuthState';
 import Login from './pages/Login';
 import CreateProduct from './pages/inventory/CreateProduct';
@@ -38,6 +38,8 @@ import ViewMyAccount from './pages/account/ViewMyAccount';
 import AllCategories from './pages/inventory/AllCategories';
 import CreateCategory from './pages/inventory/CreateCategory';
 import CategoryDetails from './pages/inventory/CategoryDetails';
+import RoleRoute from './components/routing/RoleRoute';
+import Restricted from './pages/Restricted';
 
 const theme = createTheme({
   palette: {
@@ -81,6 +83,7 @@ const App = () => {
                 </AuthRoute>
               }
             >
+              <Route path='restricted' element={<Restricted />} />
               <Route
                 index
                 element={<Navigate replace to='/inventory/dashboard' />}
@@ -123,18 +126,9 @@ const App = () => {
                 path='inventory/categoryDetails'
                 element={<CategoryDetails />}
               />
-              <Route
-                path='inventory/allBrands'
-                element={<AllBrands />}
-              />
-              <Route
-                path='inventory/createBrand'
-                element={<CreateBrand />}
-              />
-              <Route
-                path='inventory/brandDetails'
-                element={<BrandDetails />}
-              />
+              <Route path='inventory/allBrands' element={<AllBrands />} />
+              <Route path='inventory/createBrand' element={<CreateBrand />} />
+              <Route path='inventory/brandDetails' element={<BrandDetails />} />
               <Route path='inventory/warehouses' element={<AllWarehouses />} />
               <Route
                 path='inventory/warehouseDetails'
@@ -145,14 +139,16 @@ const App = () => {
                 element={<CreateWarehouse />}
               />
 
-              <Route path='accounts' element={<Accounts />} />
-              <Route path='accounts/viewAccount' element={<ViewAccount />} />
-              <Route path='accounts/editAccount' element={<EditAccount />} />
               <Route
-                path='accounts/createNewUser'
-                element={<CreateNewUser />}
-              />
-              <Route path='accounts/viewMyAccount' element={<ViewMyAccount />} />
+                path='accounts'
+                element={<RoleRoute allowedRoles={['ADMIN']} />}
+              >
+                <Route index element={<Accounts />} />
+                <Route path='viewAccount' element={<ViewAccount />} />
+                <Route path='editAccount' element={<EditAccount />} />
+                <Route path='createNewUser' element={<CreateNewUser />} />
+                <Route path='viewMyAccount' element={<ViewMyAccount />} />
+              </Route>
             </Route>
           </Routes>
         </Router>
