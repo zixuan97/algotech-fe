@@ -173,6 +173,7 @@ const CreateProduct = () => {
             severity: 'success',
             message: 'Product successfully created!'
           });
+          setTimeout(() => navigate('/inventory/allProducts'), 3000);
         },
         (err) => {
           setLoading(false);
@@ -305,6 +306,7 @@ const CreateProduct = () => {
                     <FormControl>
                       <InputLabel id='brand-label'>Brand</InputLabel>
                       <Select
+                        required
                         labelId='brand-label'
                         id='brand'
                         value={newProduct?.brand_id}

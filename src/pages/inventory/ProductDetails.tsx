@@ -270,14 +270,18 @@ const ProductDetails = () => {
   };
 
   const handleDeleteProduct = async () => {
+    setModalOpen(false);
     setLoading(true);
     if (originalProduct) {
       await asyncFetchCallback(
         deleteProduct(originalProduct.id!),
         (res) => {
           setLoading(false);
-          // TODO: print out success
-          navigate({ pathname: '/inventory/allProducts' });
+          setAlert({
+            message: `Successfully deleted product with SKU: ${originalProduct.sku}`,
+            severity: 'success'
+          });
+          setTimeout(() => navigate('/inventory/allProducts'), 3000);
         },
         () => setLoading(false)
       );

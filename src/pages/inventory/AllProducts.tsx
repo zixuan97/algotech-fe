@@ -46,13 +46,22 @@ const columns: GridColDef[] = [
 const AllProducts = () => {
   const navigate = useNavigate();
 
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
   const [productData, setProductData] = React.useState<Product[]>([]);
   const [filteredData, setFilteredData] = React.useState<Product[]>([]);
 
   React.useEffect(() => {
     // TODO: implement error callback
-    asyncFetchCallback(getAllProducts(), setProductData);
+    setLoading(true);
+    asyncFetchCallback(
+      getAllProducts(),
+      (res) => {
+        setLoading(false);
+        setProductData(res);
+      },
+      () => setLoading(false)
+    );
   }, []);
 
   React.useEffect(() => {
@@ -93,7 +102,12 @@ const AllProducts = () => {
           Create Product
         </Button>
       </div>
-      <DataGrid columns={columns} rows={filteredData} autoHeight />
+      <DataGrid
+        columns={columns}
+        rows={filteredData}
+        loading={loading}
+        autoHeight
+      />
     </div>
   );
 };

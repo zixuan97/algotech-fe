@@ -138,7 +138,7 @@ const ViewMyAccount = () => {
   return (
     <>
       <Tooltip title='Return to Accounts' enterDelay={300}>
-        <IconButton size='large' onClick={() => navigate('/accounts')}>
+        <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
         </IconButton>
       </Tooltip>
