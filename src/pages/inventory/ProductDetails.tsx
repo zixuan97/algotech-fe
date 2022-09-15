@@ -28,14 +28,17 @@ import {
   getProductById,
   updateProduct
 } from 'src/services/productService';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { getLocationById } from 'src/services/locationService';
-import { intersectionWith } from 'lodash';
+import { DataGrid, GridColDef, GridRowId } from '@mui/x-data-grid';
+import { getAllLocations, getLocationById } from 'src/services/locationService';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import { Location } from 'src/models/types';
+import LocationGrid from 'src/components/inventory/LocationGrid';
+import { randomId } from '@mui/x-data-grid-generator';
+import { intersectionWith, omit } from 'lodash';
 
 const columns: GridColDef[] = [
   {
-    field: 'locationName',
+    field: 'name',
     headerName: 'Warehouse Location',
     flex: 2
   },
@@ -52,10 +55,25 @@ const columns: GridColDef[] = [
 ];
 
 interface LocationDetails {
-  locationName: string;
+  id: number;
+  name: string;
   quantity: number;
   price: number;
 }
+
+export interface ProductLocationRow extends LocationDetails {
+  gridId: GridRowId;
+}
+
+interface CategoryInterface {
+  id: number;
+  name: string;
+}
+
+export type EditProduct = Partial<Product> & {
+  categories: CategoryInterface[];
+  locations: LocationDetails[];
+};
 
 // i apologise in advance for the long winded code, was rushing it out LOL
 const ProductDetails = () => {
@@ -65,19 +83,62 @@ const ProductDetails = () => {
 
   const [loading, setLoading] = React.useState<boolean>(true);
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
-  const [originalProduct, setOriginalProduct] = React.useState<Product>();
-  const [editProduct, setEditProduct] = React.useState<Product>();
+  const [originalProduct, setOriginalProduct] = React.useState<EditProduct>();
+  const [editProduct, setEditProduct] = React.useState<EditProduct>();
   const [locationDetails, setLocationDetails] = React.useState<
     LocationDetails[]
   >([]);
-  const [categories, setCategories] = React.useState<Category[]>([]);
+  const [categories, setCategories] = React.useState<CategoryInterface[]>([]);
   const [edit, setEdit] = React.useState<boolean>(false);
+
+
+  const [locations, setLocations] = React.useState<Location[]>([]);
+  const [productLocations, setProductLocations] = React.useState<
+    ProductLocationRow[]
+  >([]);
 
   React.useEffect(() => {
     if (id) {
+      asyncFetchCallback(getAllLocations(), setLocations);
       asyncFetchCallback(getProductById(id), (res) => {
-        setOriginalProduct(res);
-        setEditProduct(res);
+        setOriginalProduct(() => {
+          return {
+            ...res,
+            locations: res.stockQuantity.map((location) => {
+              return {
+                id: location.location_id,
+                name: location.location_name,
+                quantity: location.quantity,
+                price: location.price
+              };
+            }),
+            categories: res.productCategory.map((category) => {
+              return {
+                id: category.category_id,
+                name: category.category_name
+              }
+            })
+          };
+        });
+        setEditProduct(() => {
+          return {
+            ...res,
+            locations: res.stockQuantity.map((location) => {
+              return {
+                id: location.location_id,
+                name: location.location_name,
+                quantity: location.quantity,
+                price: location.price
+              };
+            }),
+            categories: res.productCategory.map((category) => {
+              return {
+                id: category.category_id,
+                name: category.category_name
+              }
+            })
+          };
+        });
         setLoading(false);
       });
     }
@@ -86,23 +147,45 @@ const ProductDetails = () => {
   React.useEffect(() => {
     if (originalProduct) {
       Promise.all(
-        originalProduct.stockQuantity.map(async (qty) => {
-          const location = await getLocationById(qty.location_id);
+        originalProduct.locations.map(async (qty) => {
+          const location = await getLocationById(qty.id);
           return {
-            locationName: location.name,
+            id: location.id,
+            name: location.name,
             quantity: qty.quantity,
             price: qty.price
           };
         })
-      ).then((res) => setLocationDetails(res));
+      ).then((res) => {
+        if (productLocations.length === 0) {
+          setLocationDetails(res);
+          res.map((location) => {
+            setProductLocations(productLocation =>
+              [...productLocation, {
+                id: location.id,
+                name: location.name,
+                quantity: location.quantity,
+                price: location.price,
+                gridId: randomId()
+              }]);
+          })
+        }
+      });
     }
   }, [originalProduct]);
 
   React.useEffect(() => {
-    asyncFetchCallback(getAllProductCategories(), setCategories);
+    asyncFetchCallback(getAllProductCategories(), (res) => {
+      setCategories(
+        res.map((cat) => {
+          return {
+            id: cat.id,
+            name: cat.name
+          };
+        })
+      );
+    })
   }, []);
-
-  console.log(editProduct);
 
   const handleEditProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditProduct((prev) => {
@@ -120,18 +203,15 @@ const ProductDetails = () => {
       if (prev) {
         return {
           ...prev,
-          productCategory: intersectionWith(
+          categories: intersectionWith(
             categories,
             inputCategories,
             (a, b) => a.name === b
           ).map((cat) => {
             return {
-              product_sku: editProduct?.sku,
-              category_id: cat.id,
-              category_name: cat.name,
-              category: cat,
-              product: editProduct
-            } as ProductCategory;
+              id: cat.id,
+              name: cat.name
+            } as CategoryInterface;
           })
         };
       } else {
@@ -143,9 +223,49 @@ const ProductDetails = () => {
   const handleSave = async () => {
     setLoading(true);
     if (editProduct) {
-      await asyncFetchCallback(updateProduct(editProduct), (res) => {
-        setLoading(false);
-      });
+      setEditProduct(
+        (prev) =>
+        ({
+          ...prev, categories, locations:
+            productLocations.map((item) => ({
+              id: item.id,
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price
+            }))
+        })
+      )
+      await asyncFetchCallback(
+        updateProduct({
+          ...editProduct, categories, locations: productLocations.map((item) => ({
+            id: item.id,
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price
+          }))
+        }),
+        () => {
+          setOriginalProduct({
+            ...editProduct, categories, locations: productLocations.map((item) => ({
+              id: item.id,
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price
+            }))
+          });
+          setLocationDetails(productLocations.map((item) => ({
+            id: item.id,
+            name: item.name,
+            quantity: item.quantity,
+            price: item.price
+          })))
+          setLoading(false);
+        },
+        (err) => {
+          setLoading(false);
+        }
+      );
+      setLoading(false);
     }
   };
 
@@ -153,7 +273,7 @@ const ProductDetails = () => {
     setLoading(true);
     if (originalProduct) {
       await asyncFetchCallback(
-        deleteProduct(originalProduct.id),
+        deleteProduct(originalProduct.id!),
         (res) => {
           setLoading(false);
           // TODO: print out success
@@ -202,6 +322,16 @@ const ProductDetails = () => {
                   onClick={() => {
                     setEdit(false);
                     setEditProduct(originalProduct);
+                    setProductLocations([]);
+                    locationDetails.map((location) => {
+                      setProductLocations(productLocation => [...productLocation, {
+                        id: location.id,
+                        name: location.name,
+                        quantity: location.quantity,
+                        price: location.price,
+                        gridId: randomId()
+                      }])
+                    })
                   }}
                 >
                   DISCARD CHANGES
@@ -257,7 +387,7 @@ const ProductDetails = () => {
                     ) : (
                       <Typography
                         sx={{ padding: '15px' }}
-                      >{`SKU: ${editProduct?.sku}`}</Typography>
+                      >{`SKU: ${originalProduct?.sku}`}</Typography>
                     )}
                     {edit ? (
                       <TextField
@@ -273,7 +403,7 @@ const ProductDetails = () => {
                     ) : (
                       <Typography
                         sx={{ padding: '15px' }}
-                      >{`Name: ${editProduct?.name}`}</Typography>
+                      >{`Name: ${originalProduct?.name}`}</Typography>
                     )}
                     {edit ? (
                       <FormControl>
@@ -285,8 +415,10 @@ const ProductDetails = () => {
                           id='ProductCategories'
                           multiple
                           value={
-                            editProduct?.productCategory.map(
-                              (cat) => cat.category_name
+                            editProduct?.categories.map(
+                              (cat) => {
+                                return cat.name
+                              }
                             ) ?? []
                           }
                           onChange={handleEditCategories}
@@ -300,17 +432,17 @@ const ProductDetails = () => {
                         </Select>
                       </FormControl>
                     ) : (
-                      editProduct && (
+                      originalProduct && (
                         <div className='horizontal-inline-bar'>
                           <Typography sx={{ padding: '15px' }}>
                             Categories:
                           </Typography>
-                          {editProduct.productCategory.map((category) => (
+                          {originalProduct.categories.map((category) => (
                             <Chip
-                              key={category.category_name}
+                              key={category.name}
                               label={
                                 <Typography sx={{ fontSize: 'inherit' }}>
-                                  {category.category_name}
+                                  {category.name}
                                 </Typography>
                               }
                               color='secondary'
@@ -332,17 +464,26 @@ const ProductDetails = () => {
                     ) : (
                       <Typography
                         sx={{ padding: '15px' }}
-                      >{`Quantity Threshold for Low Stock: ${editProduct?.qtyThreshold}`}</Typography>
+                      >{`Quantity Threshold for Low Stock: ${originalProduct?.qtyThreshold}`}</Typography>
                     )}
                   </div>
                 </div>
-                <DataGrid
-                  columns={columns}
-                  rows={locationDetails}
-                  getRowId={(row) => row.locationName}
-                  autoHeight
-                  pageSize={5}
-                />
+                {edit ? (
+                  <LocationGrid
+                    locations={locations}
+                    productLocations={productLocations}
+                    updateProductLocations={setProductLocations}
+                  />
+                ) : (
+                  <DataGrid
+                    columns={columns}
+                    rows={locationDetails}
+                    getRowId={(row) => row.name}
+                    autoHeight
+                    pageSize={5}
+                  />
+                )}
+
               </FormGroup>
             </form>
           </Paper>

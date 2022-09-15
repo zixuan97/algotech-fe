@@ -4,6 +4,7 @@
 import axios from 'axios';
 import { Category, Product, Brand } from 'src/models/types';
 import { NewProduct } from 'src/pages/inventory/CreateProduct';
+import { EditProduct } from 'src/pages/inventory/ProductDetails';
 // import { blob } from 'stream/consumers';
 import apiRoot from './util/apiRoot';
 
@@ -23,7 +24,7 @@ export const createProduct = async (product: NewProduct): Promise<void> => {
   return axios.post(`${apiRoot}/product`, product);
 };
 
-export const updateProduct = async (product: Product): Promise<void> => {
+export const updateProduct = async (product: EditProduct): Promise<void> => {
   return axios.put(`${apiRoot}/product`, product);
 };
 
