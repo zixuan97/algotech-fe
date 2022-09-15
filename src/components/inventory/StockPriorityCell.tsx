@@ -1,25 +1,18 @@
 import { Chip } from '@mui/material';
 import { GridRenderCellParams } from '@mui/x-data-grid';
 import React from 'react';
-import { Product, StockQuantity } from 'src/models/types';
+import { StockPriorityType } from 'src/pages/inventory/InventoryDashboard';
 
-const StockPriorityCell = ({ row }: GridRenderCellParams) => {
-  const { qtyThreshold, stockQuantity } = row as Product;
-  if (!qtyThreshold) {
-    return <Chip label='No Threshold Set' color='info' />;
+const StockPriorityCell = (params: GridRenderCellParams) => {
+  const value = params.value as StockPriorityType;
+
+  if (value === StockPriorityType.LOW) {
+    return <Chip label='Sufficient Stock' color='success' />;
+  } else if (value === StockPriorityType.MEDIUM) {
+    return <Chip label='Should Restock' color='warning' />;
+  } else {
+    return <Chip label='Low Stock' color='error' />;
   }
-  const totalQty =
-    stockQuantity.reduce(
-      (prev: number, curr: StockQuantity) => prev + curr.quantity,
-      0
-    ) ?? 0;
-  return totalQty === qtyThreshold ? (
-    <Chip label='Should Restock' color='warning' />
-  ) : totalQty > qtyThreshold ? (
-    <Chip label='Sufficient Stock' color='success' />
-  ) : (
-    <Chip label='Low Stock' color='error' />
-  );
 };
 
 export default StockPriorityCell;
