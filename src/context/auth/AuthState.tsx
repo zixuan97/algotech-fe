@@ -12,6 +12,7 @@ import {
 import useNext from 'src/hooks/useNext';
 import { User } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { setAuthToken } from 'src/utils/authUtils';
 
 const AuthState = (props: PropsWithChildren) => {
   const initialState: AuthStateAttr = {
@@ -23,8 +24,19 @@ const AuthState = (props: PropsWithChildren) => {
 
   const [state, dispatch] = useReducer(authReducer, initialState);
   const nextState = useNext(state);
+
+  React.useEffect(() => {
+    if (initialState.token) {
+      loadUser();
+    }
+  }, [initialState.token]);
+
   // load user - check which user is logged in and get user data
-  const loadUser = () =>
+  const loadUser = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setAuthToken(token);
+    }
     asyncFetchCallback(
       getUserSvc(),
       (user: User) =>
@@ -35,6 +47,7 @@ const AuthState = (props: PropsWithChildren) => {
         }),
       () => dispatch({ type: AuthActionTypes.AUTH_ERROR })
     );
+  };
 
   // login user
   const login = async (userInput: UserInput) =>

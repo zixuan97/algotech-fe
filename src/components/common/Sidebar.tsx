@@ -8,6 +8,7 @@ import {
 import { Button, Divider, Drawer, List, Toolbar } from '@mui/material';
 import React from 'react';
 import { Link } from 'react-router-dom';
+import RoleComponent from '../auth/RoleComponent';
 import ListItemLink from './ListItemLink';
 import NestedList from './NestedList';
 
@@ -100,11 +101,13 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             disabled
           />
           <ListItemLink icon={<AccountBox />} primary='HR' to='/hr' disabled />
-          <ListItemLink
-            icon={<People />}
-            primary='User Accounts'
-            to='/accounts'
-          />
+          <RoleComponent allowedRoles={['ADMIN']}>
+            <ListItemLink
+              icon={<People />}
+              primary='User Accounts'
+              to='/accounts'
+            />
+          </RoleComponent>
         </List>
       </Drawer>
     </div>
