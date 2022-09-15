@@ -1,10 +1,7 @@
 import {
   Button,
-  Card,
-  Chip,
   Divider,
-  Tooltip,
-  Typography
+  Tooltip
 } from '@mui/material';
 import React from 'react';
 import '../../styles/pages/inventory/inventoryDashboard.scss';
@@ -16,7 +13,6 @@ import { generateExcelSvc, getAllProducts } from 'src/services/productService';
 import {
   DataGrid,
   GridColDef,
-  GridRenderCellParams,
   GridValueGetterParams
 } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
@@ -29,7 +25,7 @@ import {
 } from 'src/utils/fileUtils';
 import apiRoot from '../../services/util/apiRoot';
 import StockPriorityCell from 'src/components/inventory/StockPriorityCell';
-
+import DownloadIcon from '@mui/icons-material/Download';
 
 const columns: GridColDef[] = [
   { field: 'sku', headerName: 'SKU', flex: 1 },
@@ -134,7 +130,7 @@ const InventoryDashboard = () => {
         />
         {/* <NumberCard number={20} text='Days of supply left on average' /> */}
       </div>
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', marginBottom: '1%' }}>
         <Link
           to='/inventory/allProducts'
           style={{ textDecoration: 'none', color: 'inherit' }}
@@ -143,7 +139,7 @@ const InventoryDashboard = () => {
             <h4>Products</h4>
           </Tooltip>
         </Link>
-        <Button onClick={() => generateInventoryExcel()}>Export Inventory Data</Button>
+        <Button startIcon={<DownloadIcon />} variant="outlined" onClick={() => generateInventoryExcel()}>Export Inventory Data</Button>
       </div>
       <div style={{ width: '100%' }}>
         <DataGrid
@@ -156,9 +152,9 @@ const InventoryDashboard = () => {
       </div>
       {/* <h4>Overall Inventory Turnover</h4> */}
 
-      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', marginTop: '1%' }}>
         <h4>Current Inventory Levels by Product</h4>
-        <Button onClick={() => generateChartPdf()}>Download</Button>
+        <Button startIcon={<DownloadIcon />} variant="outlined" onClick={() => generateChartPdf()}>Download Chart</Button>
       </div>
       <InventoryLevelsChart productData={productData} ref={pdfRef} />
     </div>
