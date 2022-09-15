@@ -5,17 +5,17 @@ import '../../styles/common/common.scss';
 import NumberCard from 'src/components/common/NumberCard';
 import { Product, StockQuantity } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getAllProducts } from 'src/services/productService';
+import { generateExcelSvc, getAllProducts } from 'src/services/productService';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
 import ProductDashboardCellAction from 'src/components/inventory/ProductDashboardCellAction';
-import { Bar } from 'react-chartjs-2';
 import InventoryLevelsChart from 'src/components/inventory/InventoryTurnoverChart';
 import {
   createPdfWithHeaderImage,
   downloadFile,
   createImageFromComponent
 } from 'src/utils/fileUtils';
+import apiRoot from '../../services/util/apiRoot';
 
 const columns: GridColDef[] = [
   { field: 'sku', headerName: 'SKU', flex: 1 },
@@ -64,6 +64,27 @@ const InventoryDashboard = () => {
     return count;
   };
 
+  const generateInventoryExcel = () => {
+    asyncFetchCallback(generateExcelSvc(), (res) => {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', `${apiRoot}/product/excel`, true);
+      xhr.responseType = 'arraybuffer';
+      xhr.onload = function (e) {
+        if (this.status == 200) {
+          var blob = new Blob([this.response], {
+            type: 'application/octet-stream'
+          });
+          var link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          link.download = 'Invoice.xlsx';
+          link.click();
+        }
+      };
+      xhr.send();
+    });
+
+  }
+
   const generateChartPdf = React.useCallback(async () => {
     if (pdfRef.current) {
       const fileName = 'inventory-chart-levels.pdf';
@@ -102,7 +123,7 @@ const InventoryDashboard = () => {
             <h4>Products</h4>
           </Tooltip>
         </Link>
-        <Button onClick={() => generateChartPdf()}>Export Inventory Data</Button>
+        <Button onClick={() => generateInventoryExcel()}>Export Inventory Data</Button>
       </div>
       <div style={{ width: '100%' }}>
         <DataGrid
@@ -125,3 +146,4 @@ const InventoryDashboard = () => {
 };
 
 export default InventoryDashboard;
+
