@@ -31,7 +31,7 @@ import ProcurementOrderDetails from './pages/procurement/ProcurementOrderDetails
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EditAccount from './pages/account/EditAccount';
 import ViewMyAccount from './pages/account/ViewMyAccount';
@@ -147,8 +147,9 @@ const App = () => {
                 <Route path='viewAccount' element={<ViewAccount />} />
                 <Route path='editAccount' element={<EditAccount />} />
                 <Route path='createNewUser' element={<CreateNewUser />} />
-                <Route path='viewMyAccount' element={<ViewMyAccount />} />
               </Route>
+              
+              <Route path='accounts/viewMyAccount' element={<ViewMyAccount />} />
             </Route>
           </Routes>
         </Router>
