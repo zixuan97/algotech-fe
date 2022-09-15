@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router';
 import { Location } from 'src/models/types';
 import { createLocation } from 'src/services/locationService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { AlertType } from 'src/components/common/Alert';
+import { AlertType } from '../../components/common/Alert';
 
 export type NewLocation = Partial<Location>;
 
@@ -67,41 +67,35 @@ const CreateWarehouse = () => {
   return (
     <div>
       <Tooltip title='Return to Previous Page' enterDelay={300}>
-        <IconButton
-          size='large'
-          onClick={() => navigate(-1)}
-        >
+        <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
         </IconButton>
       </Tooltip>
 
       <div className='create-product'>
-      <Box className='create-product-box'>
-        <div className='header-content'>
-          <h1>Create Warehouse</h1>
-        </div>
-        {alert && (
-            <Alert
-              severity={alert.severity}
-              onClose={() => setAlert(null)}
-            >
+        <Box className='create-product-box'>
+          <div className='header-content'>
+            <h1>Create Warehouse</h1>
+          </div>
+          {alert && (
+            <Alert severity={alert.severity} onClose={() => setAlert(null)}>
               {alert.message}
             </Alert>
           )}
-        <Paper elevation={2}>
-          <Backdrop
-            sx={{
-              color: '#fff',
-              zIndex: (theme) => theme.zIndex.drawer + 1
-            }}
-            open={loading}
-          >
-            <CircularProgress color='inherit' />
-          </Backdrop>
-          <form onSubmit={handleSave}>
-            <FormGroup className='create-product-form'>
-              <div className='top-content'>
-                <div className='text-fields'>
+          <Paper elevation={2}>
+            <Backdrop
+              sx={{
+                color: '#fff',
+                zIndex: (theme) => theme.zIndex.drawer + 1
+              }}
+              open={loading}
+            >
+              <CircularProgress color='inherit' />
+            </Backdrop>
+            <form onSubmit={handleSave}>
+              <FormGroup className='create-product-form'>
+                <div className='top-content'>
+                  <div className='text-fields'>
                     <TextField
                       required
                       fullWidth
@@ -122,32 +116,34 @@ const CreateWarehouse = () => {
                       onChange={handleEditLocation}
                       placeholder='eg.: 123 Chai Chee Road, #01-02, Singapore 12345'
                     />
+                  </div>
                 </div>
-              </div>
-              <div className='button-group'>
-                <Button
-                  variant='text'
-                  className='cancel-btn'
-                  color='primary'
-                  onClick={() => navigate({ pathname: '/inventory/warehouses' })}
+                <div className='button-group'>
+                  <Button
+                    variant='text'
+                    className='cancel-btn'
+                    color='primary'
+                    onClick={() =>
+                      navigate({ pathname: '/inventory/warehouses' })
+                    }
                   >
-                  Cancel
-                </Button>
-                <Button
-                  type='submit'
-                  variant='contained'
-                  className='create-btn'
-                  color='primary'
-                >
-                  Create Warehouse
-                </Button>
-              </div>
-            </FormGroup>
-          </form>
-        </Paper>
-      </Box>
+                    Cancel
+                  </Button>
+                  <Button
+                    type='submit'
+                    variant='contained'
+                    className='create-btn'
+                    color='primary'
+                  >
+                    Create Warehouse
+                  </Button>
+                </div>
+              </FormGroup>
+            </form>
+          </Paper>
+        </Box>
       </div>
-    </div> 
+    </div>
   );
 };
 

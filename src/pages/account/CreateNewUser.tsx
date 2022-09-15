@@ -91,7 +91,11 @@ const CreateNewUser = () => {
         <Box className='center-box'>
           <h1>Create New User Account</h1>
           {alert && (
-            <Alert severity={alert.severity} onClose={() => setAlert(null)} style={{margin: '1%'}}>
+            <Alert
+              severity={alert.severity}
+              onClose={() => setAlert(null)}
+              style={{ margin: '1%' }}
+            >
               {alert.message}
             </Alert>
           )}
