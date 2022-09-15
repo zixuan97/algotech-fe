@@ -1,4 +1,11 @@
-import { Button, Card, Divider, Tooltip, Typography } from '@mui/material';
+import {
+  Button,
+  Card,
+  Chip,
+  Divider,
+  Tooltip,
+  Typography
+} from '@mui/material';
 import React from 'react';
 import '../../styles/pages/inventory/inventoryDashboard.scss';
 import '../../styles/common/common.scss';
@@ -6,7 +13,12 @@ import NumberCard from 'src/components/common/NumberCard';
 import { Product, StockQuantity } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { getAllProducts } from 'src/services/productService';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridValueGetterParams
+} from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
 import ProductDashboardCellAction from 'src/components/inventory/ProductDashboardCellAction';
 import { Bar } from 'react-chartjs-2';
@@ -16,6 +28,7 @@ import {
   downloadFile,
   createImageFromComponent
 } from 'src/utils/fileUtils';
+import StockPriorityCell from 'src/components/inventory/StockPriorityCell';
 
 const columns: GridColDef[] = [
   { field: 'sku', headerName: 'SKU', flex: 1 },
@@ -35,7 +48,13 @@ const columns: GridColDef[] = [
     }
   },
   //   { last restock date },
-  { field: 'qtyThreshold', headerName: 'Priority', type: 'number', flex: 1 },
+  {
+    field: 'qtyThreshold',
+    headerName: 'Priority',
+    type: 'number',
+    flex: 1,
+    renderCell: StockPriorityCell
+  },
   {
     field: 'action',
     headerName: 'Action',
