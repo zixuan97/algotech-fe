@@ -9,11 +9,20 @@ import { Product, StockQuantity } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { getAllProducts } from 'src/services/productService';
 import { useNavigate } from 'react-router';
+import { ProductCategory } from 'src/models/types';
 
 const columns: GridColDef[] = [
   { field: 'sku', headerName: 'SKU', flex: 1 },
-  { field: 'category', headerName: 'Category', flex: 1 },
   { field: 'name', headerName: 'Product Name', flex: 1 },
+  {
+    field: 'productCategory',
+    headerName: 'Category',
+    flex: 2,
+    valueGetter: (params: GridValueGetterParams) =>
+      params.value
+        .map((category: ProductCategory) => category.category_name)
+        .join(', ')
+  },
   {
     field: 'stockQuantity',
     headerName: 'Total Quantity',
