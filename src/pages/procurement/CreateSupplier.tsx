@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router';
 import { Supplier } from '../../models/types';
 import { createLocation } from '../../services/locationService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { AlertType } from '../../components/common/Alert';
+import { AlertType } from '../../components/common/TimeoutAlert';
 import { toast } from 'react-toastify';
 
 export type NewSupplier = Partial<Supplier>;

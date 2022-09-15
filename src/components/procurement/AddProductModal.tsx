@@ -16,7 +16,7 @@ import { Product } from 'src/models/types';
 import { getAllProducts } from 'src/services/productService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import '../../styles/pages/procurement.scss';
-import { AlertType } from '../common/Alert';
+import { AlertType } from '../common/TimeoutAlert';
 
 type AddProductModalPops = {
   open: boolean;

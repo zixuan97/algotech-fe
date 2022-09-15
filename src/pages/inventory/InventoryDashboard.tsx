@@ -61,7 +61,7 @@ const columns: GridColDef[] = [
     },
     renderCell: StockPriorityCell,
     sortComparator: (a: StockPriorityType, b: StockPriorityType) => {
-      return a - b;
+      return b - a;
     }
   },
   {

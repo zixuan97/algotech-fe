@@ -21,7 +21,7 @@ import {
   createCategory,
   getAllProductCategories
 } from '../../services/categoryService';
-import { AlertType } from '../../components/common/TimeoutAlert';
+import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
 import { toast } from 'react-toastify';
 
 export type NewCategory = Partial<Category>;
