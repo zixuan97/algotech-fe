@@ -214,7 +214,7 @@ const CreateProcurementOrder = () => {
       (res) => {
         setLoading(false);
         toast.success(
-          'Procurement Order created! A confirmation email has been sent to the supplier.',
+          'Order created! A confirmation email has been sent to the supplier.',
           {
             position: 'top-right',
             autoClose: 6000,
