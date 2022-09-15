@@ -24,7 +24,7 @@ import AddProductModal from 'src/components/procurement/AddProductModal';
 import '../../styles/pages/procurement.scss';
 import { getProductBySku } from 'src/services/productService';
 import { ProcurementOrderItem } from 'src/models/types';
-import { AlertType } from 'src/components/common/Alert';
+import { AlertType } from 'src/components/common/TimeoutAlert';
 import { getAllLocations } from 'src/services/locationService';
 import { toast } from 'react-toastify';
 import DeleteIcon from '@mui/icons-material/Delete';

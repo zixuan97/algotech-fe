@@ -6,13 +6,7 @@ import NumberCard from 'src/components/common/NumberCard';
 import { Product, StockQuantity } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { generateExcelSvc, getAllProducts } from 'src/services/productService';
-import {
-  DataGrid,
-  GridColDef,
-  GridRowTreeNodeConfig,
-  GridSortCellParams,
-  GridValueGetterParams
-} from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
 import ProductDashboardCellAction from 'src/components/inventory/ProductDashboardCellAction';
 import InventoryLevelsChart from 'src/components/inventory/InventoryTurnoverChart';
@@ -37,7 +31,7 @@ const getTotalQty = (stockQty: StockQuantity[] | undefined) =>
     0
   ) ?? 0;
 
-const columns = (productData: Product[]): GridColDef[] => [
+const columns: GridColDef[] = [
   { field: 'sku', headerName: 'SKU', flex: 1 },
   { field: 'name', headerName: 'Product Name', flex: 1 },
   {
@@ -67,7 +61,7 @@ const columns = (productData: Product[]): GridColDef[] => [
     },
     renderCell: StockPriorityCell,
     sortComparator: (a: StockPriorityType, b: StockPriorityType) => {
-      return a - b;
+      return b - a;
     }
   },
   {
@@ -99,23 +93,21 @@ const InventoryDashboard = () => {
   };
 
   const generateInventoryExcel = () => {
-    asyncFetchCallback(generateExcelSvc(), (res) => {
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', `${apiRoot}/product/excel`, true);
-      xhr.responseType = 'arraybuffer';
-      xhr.onload = function (e) {
-        if (this.status == 200) {
-          var blob = new Blob([this.response], {
-            type: 'application/octet-stream'
-          });
-          var link = document.createElement('a');
-          link.href = window.URL.createObjectURL(blob);
-          link.download = 'Invoice.xlsx';
-          link.click();
-        }
-      };
-      xhr.send();
-    });
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', `${apiRoot}/product/excel`, true);
+    xhr.responseType = 'arraybuffer';
+    xhr.onload = function (e) {
+      if (this.status === 200) {
+        var blob = new Blob([this.response], {
+          type: 'application/octet-stream'
+        });
+        var link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = 'Invoice.xlsx';
+        link.click();
+      }
+    };
+    xhr.send();
   };
 
   const generateChartPdf = React.useCallback(async () => {
@@ -132,8 +124,6 @@ const InventoryDashboard = () => {
   React.useEffect(() => {
     asyncFetchCallback(getAllProducts(), setProductData);
   }, []);
-
-  console.log(productData);
 
   return (
     <div className='inventory-dashboard'>
@@ -174,7 +164,7 @@ const InventoryDashboard = () => {
       <div style={{ width: '100%' }}>
         <DataGrid
           sx={{ fontSize: '0.8em' }}
-          columns={columns(productData)}
+          columns={columns}
           rows={productData}
           autoHeight
           pageSize={5}

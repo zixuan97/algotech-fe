@@ -34,7 +34,7 @@ import { getBase64 } from 'src/utils/fileUtils';
 import { getAllLocations } from 'src/services/locationService';
 import LocationGrid from 'src/components/inventory/LocationGrid';
 import { randomId } from '@mui/x-data-grid-generator';
-import { AlertType } from '../../components/common/Alert';
+import { AlertType } from '../../components/common/TimeoutAlert';
 
 export type NewProduct = Partial<Product> & {
   categories?: Category[];
@@ -173,6 +173,7 @@ const CreateProduct = () => {
             severity: 'success',
             message: 'Product successfully created!'
           });
+          setTimeout(() => navigate('/inventory/allProducts'), 3000);
         },
         (err) => {
           setLoading(false);
@@ -305,6 +306,7 @@ const CreateProduct = () => {
                     <FormControl>
                       <InputLabel id='brand-label'>Brand</InputLabel>
                       <Select
+                        required
                         labelId='brand-label'
                         id='brand'
                         value={newProduct?.brand_id}

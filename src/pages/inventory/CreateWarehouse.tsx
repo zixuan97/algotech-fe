@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router';
 import { Location } from '../../models/types';
 import { createLocation } from '../../services/locationService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { AlertType } from '../../components/common/Alert';
+import { AlertType } from '../../components/common/TimeoutAlert';
 import { toast } from 'react-toastify';
 
 export type NewLocation = Partial<Location>;
@@ -49,18 +49,15 @@ const CreateWarehouse = () => {
         createLocation(newLocation),
         () => {
           setLoading(false);
-          toast.success(
-            'Warehouse successfully created!',
-            {
-              position: 'top-right',
-              autoClose: 6000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined
-            }
-          );
+          toast.success('Warehouse successfully created!', {
+            position: 'top-right',
+            autoClose: 6000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
           navigate('/inventory/warehouses');
           // setAlert({
           //   severity: 'success',

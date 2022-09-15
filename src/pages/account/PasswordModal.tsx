@@ -7,10 +7,10 @@ import {
   DialogTitle,
   TextField,
   Alert,
-  CircularProgress,
+  CircularProgress
 } from '@mui/material';
 import React, { useState } from 'react';
-import { AlertType } from 'src/components/common/Alert';
+import { AlertType } from 'src/components/common/TimeoutAlert';
 import { forgetPasswordSvc } from 'src/services/accountService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 
@@ -29,7 +29,6 @@ const PasswordModal = ({
   body,
   focusPassthrough = false
 }: PasswordModalProps) => {
-
   const [loading, setLoading] = useState<boolean>(false);
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [recipientEmail, setRecipientEmail] = useState<string>('');
@@ -43,7 +42,8 @@ const PasswordModal = ({
           setLoading(false);
           setAlert({
             severity: 'success',
-            message: 'A reset password email has been sent to your provided email.'
+            message:
+              'A reset password email has been sent to your provided email.'
           });
         },
         () => {
@@ -75,18 +75,22 @@ const PasswordModal = ({
             {body}
           </DialogContentText>
           {alert && (
-            <Alert severity={alert.severity} onClose={() => setAlert(null)} style={{ margin: '1%' }}>
+            <Alert
+              severity={alert.severity}
+              onClose={() => setAlert(null)}
+              style={{ margin: '1%' }}
+            >
               {alert.message}
             </Alert>
           )}
           <TextField
             autoFocus
-            margin="dense"
-            id="name"
-            label="Email Address"
-            type="email"
+            margin='dense'
+            id='name'
+            label='Email Address'
+            type='email'
             fullWidth
-            variant="standard"
+            variant='standard'
             onChange={handleChange}
           />
         </DialogContent>
@@ -95,13 +99,16 @@ const PasswordModal = ({
           <Button onClick={onClose} autoFocus={!focusPassthrough}>
             Close
           </Button>
-          <Button onClick={() => handleForgetPassword()} autoFocus={focusPassthrough}>
+          <Button
+            onClick={() => handleForgetPassword()}
+            autoFocus={focusPassthrough}
+          >
             Send Email
           </Button>
         </DialogActions>
       </Dialog>
     </div>
   );
-}
+};
 
 export default PasswordModal;
