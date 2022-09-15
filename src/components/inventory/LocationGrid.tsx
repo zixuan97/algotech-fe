@@ -60,7 +60,7 @@ export default function LocationGrid({
   };
 
   const handleDeleteClick = (id: GridRowId) => () => {
-    updateProductLocations(productLocations.filter((row) => row.id !== id));
+    updateProductLocations(productLocations.filter((row) => row.gridId !== id));
   };
 
   const handleCancelClick = (id: GridRowId) => () => {
@@ -69,9 +69,11 @@ export default function LocationGrid({
       [id]: { mode: GridRowModes.View, ignoreModifications: true }
     });
 
-    const editedRow = productLocations.find((row) => row.id === id);
+    const editedRow = productLocations.find((row) => row.gridId === id);
     if (editedRow!.isNew) {
-      updateProductLocations(productLocations.filter((row) => row.id !== id));
+      updateProductLocations(
+        productLocations.filter((row) => row.gridId !== id)
+      );
     }
   };
 
