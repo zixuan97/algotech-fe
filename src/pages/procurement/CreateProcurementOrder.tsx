@@ -1,10 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
 import {
-  FormGroup,
   Tooltip,
   IconButton,
-  Paper,
   TextField,
   MenuItem,
   Button,
@@ -21,7 +19,7 @@ import {
   createProcurementOrder,
   getAllSuppliers
 } from 'src/services/procurementService';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import AddProductModal from 'src/components/procurement/AddProductModal';
 import '../../styles/pages/procurement.scss';
 import { getProductBySku } from 'src/services/productService';
@@ -29,13 +27,7 @@ import { ProcurementOrderItem } from 'src/models/types';
 import { AlertType } from 'src/components/common/Alert';
 import { getAllLocations } from 'src/services/locationService';
 import { toast } from 'react-toastify';
-
-const columns: GridColDef[] = [
-  { field: 'product_sku', headerName: 'SKU', flex: 1 },
-  { field: 'product_name', headerName: 'Product Name', flex: 1 },
-  { field: 'rate', headerName: 'Rate per Unit', flex: 1 },
-  { field: 'quantity', headerName: 'Quantity', flex: 1 }
-];
+import DeleteIcon from '@mui/icons-material/Delete';
 
 export type NewProcurementOrder = Partial<ProcurementOrder> & {};
 type NewProcurementOrderItem = Partial<ProcurementOrderItem>;
@@ -74,6 +66,13 @@ const CreateProcurementOrder = () => {
     });
   };
 
+  const removeOrderItem = (id: string) => {
+    const updatedOrderItems = orderItems.filter(
+      (item) => item.id?.toString() != id
+    );
+    setOrderItems(updatedOrderItems);
+  };
+
   const handleAddOrderItem = async (
     sku: string,
     rate: string,
@@ -101,6 +100,29 @@ const CreateProcurementOrder = () => {
       }
     );
   };
+
+  const columns: GridColDef[] = [
+    { field: 'product_sku', headerName: 'SKU', flex: 1 },
+    { field: 'product_name', headerName: 'Product Name', flex: 1 },
+    { field: 'rate', headerName: 'Rate per Unit', flex: 1 },
+    { field: 'quantity', headerName: 'Quantity', flex: 1 },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      flex: 1,
+      renderCell: ({ id }: GridRenderCellParams) => {
+        return (
+          <Button
+            variant='outlined'
+            startIcon={<DeleteIcon />}
+            onClick={() => removeOrderItem(id.toString())}
+          >
+            Delete
+          </Button>
+        );
+      }
+    }
+  ];
 
   const handleSuccessClose = (
     event?: React.SyntheticEvent | Event,
@@ -137,7 +159,6 @@ const CreateProcurementOrder = () => {
 
   const handleOrderCreation = async () => {
     if (newProcurementOrder.supplier_id === undefined) {
-      setOpenWarning(true);
       setAlert({
         severity: 'warning',
         message: 'Please Select a Supplier!'
@@ -146,7 +167,6 @@ const CreateProcurementOrder = () => {
     }
 
     if (newProcurementOrder.description === undefined) {
-      setOpenWarning(true);
       setAlert({
         severity: 'warning',
         message: 'Please Enter a Description!'
@@ -155,7 +175,6 @@ const CreateProcurementOrder = () => {
     }
 
     if (newProcurementOrder.warehouse_address === undefined) {
-      setOpenWarning(true);
       setAlert({
         severity: 'warning',
         message: 'Please Select a Warehouse Address!'
@@ -164,7 +183,6 @@ const CreateProcurementOrder = () => {
     }
 
     if (orderItems.length === 0) {
-      setOpenWarning(true);
       setAlert({
         severity: 'warning',
         message: 'Please Add Order Items!'
@@ -232,6 +250,15 @@ const CreateProcurementOrder = () => {
         <h1>Create Procurement Order</h1>
       </div>
       <div className='alert'>
+        {alert && (
+          <Alert
+            onClose={() => setAlert(null)}
+            severity={alert?.severity}
+            sx={{ width: '100%' }}
+          >
+            {alert?.message}
+          </Alert>
+        )}
         <Snackbar
           open={openWarning}
           autoHideDuration={6000}
@@ -257,79 +284,71 @@ const CreateProcurementOrder = () => {
       </Backdrop>
       <div className='create-procurement-order-section'>
         <div>
-          <Paper elevation={2} className='create-procurement-order-paper'>
-            <form>
-              <FormGroup className='create-procurement-order-form'>
-                <div className='text-fields'>
-                  <Grid container direction={'column'} spacing={3}>
-                    <Grid item>
-                      <TextField
-                        id='payment-status-select-label'
-                        label='Payment Status'
-                        defaultValue='PENDING'
-                        variant='filled'
-                        disabled
-                        fullWidth
-                      ></TextField>
-                    </Grid>
-                    <Grid item>
-                      <TextField
-                        id='supplier-select-label'
-                        label='Supplier'
-                        name='supplier_id'
-                        value={newProcurementOrder?.supplier_id}
-                        onChange={handleEditProcurementOrder}
-                        select
-                        required
-                        fullWidth
-                      >
-                        {suppliers.map((option) => (
-                          <MenuItem key={option.id} value={option.id}>
-                            {option.name}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                    </Grid>
-                  </Grid>
-                  <Grid container direction={'column'} spacing={3}>
-                    <Grid item>
-                      <TextField
-                        id='warehouse-address-select-label'
-                        label='Warehouse Name'
-                        name='warehouse_address'
-                        value={newProcurementOrder?.warehouse_address}
-                        onChange={handleEditProcurementOrder}
-                        select
-                        required
-                        fullWidth
-                      >
-                        {warehouseData.map((option) => (
-                          <MenuItem key={option.id} value={option.address}>
-                            {option.name}
-                          </MenuItem>
-                        ))}
-                      </TextField>
-                    </Grid>
-                    <Grid item>
-                      <TextField
-                        id='outlined-required'
-                        label='Description'
-                        name='description'
-                        value={newProcurementOrder?.description}
-                        onChange={handleEditProcurementOrder}
-                        placeholder='Enter any description here.'
-                        required
-                        fullWidth
-                        multiline
-                        maxRows={4}
-                      />
-                    </Grid>
-                  </Grid>
-                </div>
-              </FormGroup>
-            </form>
-          </Paper>
-          <div>
+          <form>
+            <Grid container spacing={3}>
+              <Grid item xs={6}>
+                <TextField
+                  id='payment-status-select-label'
+                  label='Payment Status'
+                  defaultValue='PENDING'
+                  variant='filled'
+                  disabled
+                  fullWidth
+                ></TextField>
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  id='supplier-select-label'
+                  label='Supplier'
+                  name='supplier_id'
+                  value={newProcurementOrder?.supplier_id}
+                  onChange={handleEditProcurementOrder}
+                  select
+                  required
+                  fullWidth
+                >
+                  {suppliers.map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  id='warehouse-address-select-label'
+                  label='Warehouse Name'
+                  name='warehouse_address'
+                  value={newProcurementOrder?.warehouse_address}
+                  onChange={handleEditProcurementOrder}
+                  select
+                  required
+                  fullWidth
+                >
+                  {warehouseData.map((option) => (
+                    <MenuItem key={option.id} value={option.address}>
+                      {option.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  id='outlined-required'
+                  label='Description'
+                  name='description'
+                  value={newProcurementOrder?.description}
+                  onChange={handleEditProcurementOrder}
+                  placeholder='Enter any description here.'
+                  required
+                  fullWidth
+                  multiline
+                  maxRows={4}
+                />
+              </Grid>
+            </Grid>
+          </form>
+          <div className='order-items-section'>
             <h2>Order Items</h2>
             <Snackbar
               open={openSuccess}
