@@ -32,6 +32,7 @@ const EditToolbarCellAction = (props: EditToolbarProps) => {
       {
         gridId,
         id: locations[0].id,
+        name: '',
         price: 0,
         quantity: 0,
         isNew: true

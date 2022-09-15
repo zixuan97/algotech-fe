@@ -17,9 +17,11 @@ import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
 import { Category } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { createCategory } from 'src/services/categoryService';
-import { getAllProductCategories } from 'src/services/categoryService';
-import { AlertType } from 'src/components/common/Alert';
+import {
+  createCategory,
+  getAllProductCategories
+} from '../../services/categoryService';
+import { AlertType } from '../../components/common/Alert';
 
 export type NewCategory = Partial<Category>;
 
@@ -73,24 +75,18 @@ const CreateCategory = () => {
   return (
     <div>
       <Tooltip title='Return to Previous Page' enterDelay={300}>
-        <IconButton
-          size='large'
-          onClick={() => navigate(-1)}
-        >
+        <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
         </IconButton>
       </Tooltip>
-      
+
       <div className='create-product'>
         <Box className='create-product-box'>
           <div className='header-content'>
             <h1>Create Category</h1>
           </div>
           {alert && (
-            <Alert
-              severity={alert.severity}
-              onClose={() => setAlert(null)}
-            >
+            <Alert severity={alert.severity} onClose={() => setAlert(null)}>
               {alert.message}
             </Alert>
           )}
@@ -107,24 +103,26 @@ const CreateCategory = () => {
             <form onSubmit={handleSave}>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
-                    <TextField
-                      required
-                      fullWidth
-                      id='outlined-required'
-                      label='Category Name'
-                      name='name'
-                      value={newCategory?.name}
-                      onChange={handleEditCategory}
-                      placeholder='eg.: Asian Favourites'
-                    />
-                  </div>
+                  <TextField
+                    required
+                    fullWidth
+                    id='outlined-required'
+                    label='Category Name'
+                    name='name'
+                    value={newCategory?.name}
+                    onChange={handleEditCategory}
+                    placeholder='eg.: Asian Favourites'
+                  />
+                </div>
                 <div className='button-group'>
-                  <Button 
+                  <Button
                     variant='text'
                     className='cancel-btn'
                     color='primary'
-                    onClick={() => navigate({ pathname: '/inventory/allCategories' })}
-                    >
+                    onClick={() =>
+                      navigate({ pathname: '/inventory/allCategories' })
+                    }
+                  >
                     Cancel
                   </Button>
                   <Button

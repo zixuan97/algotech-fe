@@ -1,6 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Box, Paper, Button, IconButton, Tooltip, Grid, CircularProgress, Typography, Alert, TextField, MenuItem, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import {
+  Box,
+  Paper,
+  Button,
+  IconButton,
+  Tooltip,
+  Grid,
+  CircularProgress,
+  Typography,
+  Alert,
+  TextField,
+  MenuItem,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails
+} from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import {
@@ -13,18 +28,18 @@ import {
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
-import { AlertType } from 'src/components/common/Alert';
+import { AlertType } from '../../components/common/Alert';
 import { roles } from 'src/components/account/accountTypes';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 interface ModalProps {
-  wrapperParam: wrapperParam,
-  modalOpen: boolean,
-  onClose: () => void
+  wrapperParam: wrapperParam;
+  modalOpen: boolean;
+  onClose: () => void;
 }
 interface wrapperParam {
-  title: string,
-  body: string,
-  funct: () => void,
+  title: string;
+  body: string;
+  funct: () => void;
 }
 
 const WrapperModal = ({ wrapperParam, modalOpen, onClose }: ModalProps) => {
@@ -36,7 +51,7 @@ const WrapperModal = ({ wrapperParam, modalOpen, onClose }: ModalProps) => {
       open={modalOpen}
       onClose={onClose}
     />
-  )
+  );
 };
 
 const placeholderUser: User = {
@@ -62,32 +77,32 @@ const ViewAccount = () => {
   const [wrapParam, setWrapParam] = useState<wrapperParam>({
     title: '',
     body: '',
-    funct: () => { }
-  })
+    funct: () => {}
+  });
 
   const loaded = useRef(false);
   const id = params.get('id');
 
   const handleDisableButtonClick = () => {
     setWrapParam({
-      title: "Disable Account",
-      body: "Are you sure you want to disable this account?",
+      title: 'Disable Account',
+      body: 'Are you sure you want to disable this account?',
       funct: disableAccount
     });
   };
 
   const handleEnableButtonClick = () => {
     setWrapParam({
-      title: "Enable Account",
-      body: "Are you sure you want to enable this account?",
+      title: 'Enable Account',
+      body: 'Are you sure you want to enable this account?',
       funct: enableAccount
     });
   };
 
   const handleDeleteButtonClick = () => {
     setWrapParam({
-      title: "Delete Account",
-      body: "Are you sure you want to delete this account?",
+      title: 'Delete Account',
+      body: 'Are you sure you want to delete this account?',
       funct: deleteAccount
     });
   };
@@ -103,7 +118,8 @@ const ViewAccount = () => {
           });
           setModalOpen(false);
           navigate('/accounts');
-        }, () => {
+        },
+        () => {
           setAlert({
             severity: 'error',
             message: 'Cannot delete user at this point. Try again later.'
@@ -115,33 +131,27 @@ const ViewAccount = () => {
 
   const disableAccount = () => {
     id &&
-      asyncFetchCallback(
-        disableUserSvc(id),
-        () => {
-          setAlert({
-            severity: 'success',
-            message: 'Account disabled.'
-          });
-          setModalOpen(false);
-          navigate(`/accounts/viewAccount?id=${id}`);
-        }
-      );
+      asyncFetchCallback(disableUserSvc(id), () => {
+        setAlert({
+          severity: 'success',
+          message: 'Account disabled.'
+        });
+        setModalOpen(false);
+        navigate(`/accounts/viewAccount?id=${id}`);
+      });
     setModalOpen(false);
   };
 
   const enableAccount = () => {
     id &&
-      asyncFetchCallback(
-        enableUserSvc(id),
-        () => {
-          setAlert({
-            severity: 'success',
-            message: 'Account enabled.'
-          });
-          setModalOpen(false);
-          navigate(`/accounts/viewAccount?id=${id}`);
-        }
-      );
+      asyncFetchCallback(enableUserSvc(id), () => {
+        setAlert({
+          severity: 'success',
+          message: 'Account enabled.'
+        });
+        setModalOpen(false);
+        navigate(`/accounts/viewAccount?id=${id}`);
+      });
     setModalOpen(false);
   };
 
@@ -206,7 +216,7 @@ const ViewAccount = () => {
       <WrapperModal
         modalOpen={modalOpen}
         onClose={() => {
-          setModalOpen(false)
+          setModalOpen(false);
         }}
         wrapperParam={wrapParam}
       />
@@ -264,14 +274,22 @@ const ViewAccount = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
-                onClick={user?.status === "ACTIVE" ? handleDisableButtonClick : handleEnableButtonClick}
+                onClick={
+                  user?.status === 'ACTIVE'
+                    ? handleDisableButtonClick
+                    : handleEnableButtonClick
+                }
               >
-                {user?.status === "ACTIVE" ? "DISABLE" : "ENABLE"}
+                {user?.status === 'ACTIVE' ? 'DISABLE' : 'ENABLE'}
               </Button>
             </div>
           </div>
           {alert && (
-            <Alert severity={alert.severity} onClose={() => setAlert(null)} style={{ margin: '1%' }}>
+            <Alert
+              severity={alert.severity}
+              onClose={() => setAlert(null)}
+              style={{ margin: '1%' }}
+            >
               {alert.message}
             </Alert>
           )}
@@ -296,9 +314,7 @@ const ViewAccount = () => {
                     ) : (
                       <div>
                         <h4>First Name</h4>
-                        <Typography>
-                          {user?.first_name}
-                        </Typography>
+                        <Typography>{user?.first_name}</Typography>
                       </div>
                     )}
                   </Grid>
@@ -320,9 +336,7 @@ const ViewAccount = () => {
                     ) : (
                       <div>
                         <h4>Last Name</h4>
-                        <Typography>
-                          {user?.last_name}
-                        </Typography>
+                        <Typography>{user?.last_name}</Typography>
                       </div>
                     )}
                   </Grid>
@@ -343,9 +357,7 @@ const ViewAccount = () => {
                     ) : (
                       <div>
                         <h4>Email</h4>
-                        <Typography>
-                          {user?.email}
-                        </Typography>
+                        <Typography>{user?.email}</Typography>
                       </div>
                     )}
                   </Grid>
@@ -371,9 +383,7 @@ const ViewAccount = () => {
                     ) : (
                       <div>
                         <h4>Role</h4>
-                        <Typography>
-                          {user?.role}
-                        </Typography>
+                        <Typography>{user?.role}</Typography>
                       </div>
                     )}
                   </Grid>

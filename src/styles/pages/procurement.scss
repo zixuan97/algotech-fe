@@ -32,6 +32,13 @@
   padding: 2rem;
 }
 
+.alert {
+  display: flex;
+  flex-direction: row;
+  padding-left: 4rem;
+  padding-bottom: 2rem;
+}
+
 .create-procurement-order-section {
   display: flex;
   justify-content: center;
@@ -54,9 +61,10 @@
 
 .text-fields {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   padding: 2rem;
-  gap: 15px 20px;
+  justify-content: space-around;
+  width: 100%;
 }
 
 .horizontal-text-fields {
@@ -98,9 +106,26 @@
 }
 
 .view-order-details-heading {
+  width: 100%;
   display: flex;
   flex-direction: row;
   padding: 2rem;
+}
+
+.section-header {
+  display: flex;
+  flex-direction: row;
+  padding-left: 2rem;
+  padding-top: 2rem;
+  width: 100%;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  width: max-content;
+  padding-right: 4rem;
+  gap: 10px 10px;
 }
 
 .order-details-section {
@@ -110,6 +135,13 @@
   padding-left: 4rem;
 }
 
+.pdf-container {
+  background-color: gray;
+  width: 20px;
+  height: 5px;
+  padding-left: 8rem;
+}
+
 .order-details-paper {
   width: 50%;
   display: flex;
@@ -117,6 +149,11 @@
   flex-direction: column;
   padding: 1rem;
   margin: 2% 2% 2% 2%;
+}
+
+.status-button-container {
+  display: flex;
+  justify-content: center;
 }
 
 .data-table-section {

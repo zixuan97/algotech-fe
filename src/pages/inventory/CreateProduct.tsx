@@ -34,7 +34,7 @@ import { getBase64 } from 'src/utils/fileUtils';
 import { getAllLocations } from 'src/services/locationService';
 import LocationGrid from 'src/components/inventory/LocationGrid';
 import { randomId } from '@mui/x-data-grid-generator';
-import { AlertType } from 'src/components/common/Alert';
+import { AlertType } from '../../components/common/Alert';
 
 export type NewProduct = Partial<Product> & {
   categories?: Category[];
@@ -43,6 +43,7 @@ export type NewProduct = Partial<Product> & {
 
 export interface ProductLocation {
   id: number;
+  name: string;
   price: number;
   quantity: number;
   isNew?: boolean;
@@ -221,11 +222,6 @@ const CreateProduct = () => {
                         maxWidth: 300,
                         height: 300,
                         maxHeight: 500
-                        // backgroundColor: 'primary.dark',
-                        // '&:hover': {
-                        //   backgroundColor: 'primary.main',
-                        //   opacity: [0.9, 0.8, 0.7]
-                        // }
                       }}
                     >
                       <img
@@ -263,7 +259,7 @@ const CreateProduct = () => {
                       )}
                     </Toolbar>
                   </div>
-                  <div className='text-fields'>
+                  <div className='product-text-fields'>
                     <TextField
                       required
                       fullWidth

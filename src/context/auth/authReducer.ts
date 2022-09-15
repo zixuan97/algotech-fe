@@ -15,7 +15,6 @@ const authReducer: Reducer<AuthStateAttr, AuthAction> = (
       };
     case AuthActionTypes.LOGIN_SUCCESS:
       localStorage.setItem('token', action.payload.token);
-      setAuthToken(action.payload.token);
       return {
         ...state,
         ...action.payload,

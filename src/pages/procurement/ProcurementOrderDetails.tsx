@@ -1,6 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router';
-import { Tooltip, IconButton, Paper } from '@mui/material';
+import {
+  Tooltip,
+  IconButton,
+  Paper,
+  Button,
+  Backdrop,
+  CircularProgress,
+  TextField,
+  MenuItem,
+  Icon
+} from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import DisplayedField from 'src/components/common/DisplayedField';
 import Timeline from '@mui/lab/Timeline';
@@ -13,8 +23,13 @@ import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useSearchParams } from 'react-router-dom';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getProcurementOrderById } from 'src/services/procurementService';
+import {
+  editProcurementOrder,
+  getProcurementOrderById
+} from 'src/services/procurementService';
 import { ProcurementOrder, ProcurementOrderItem } from 'src/models/types';
+import { FulfilmentStatus } from 'src/models/types';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
 const order = {
   order_id: '123456',
@@ -43,6 +58,11 @@ const data = [
   }
 ];
 
+const paymentStatusOptions = [
+  { id: 1, value: 'PAID' },
+  { id: 2, value: 'PENDING' }
+];
+
 const ProcurementOrderDetails = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -53,6 +73,8 @@ const ProcurementOrderDetails = () => {
     ProcurementOrderItem[]
   >([]);
   const [originalOrderDate, setOriginalOrderDate] = React.useState('');
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [edit, setEdit] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (id) {
@@ -66,16 +88,123 @@ const ProcurementOrderDetails = () => {
     }
   }, [id]);
 
+  const handleDownloadInvoice = async () => {
+    if (id) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', `http://localhost:4000/procurement/pdf/${id}`, true);
+      xhr.responseType = 'arraybuffer';
+      xhr.onload = function (e) {
+        if (this.status == 200) {
+          var blob = new Blob([this.response], {
+            type: 'application/pdf'
+          });
+          var link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          link.download = 'Invoice.pdf';
+          link.click();
+        }
+      };
+      xhr.send();
+    }
+  };
+
+  const handleEditProcurementOrder = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    await setOriginalOrder((prev) => {
+      if (prev) {
+        return { ...prev, [e.target.name]: e.target.value };
+      } else {
+        return prev;
+      }
+    });
+  };
+
+  const handleOrderUpdate = async () => {
+    setLoading(true);
+
+    console.log(originalOrder?.description);
+
+    let reqBody = {
+      id: originalOrder?.id,
+      description: originalOrder?.description,
+      payment_status: originalOrder?.payment_status,
+      fulfilment_status:
+        originalOrder?.fulfilment_status === 'CREATED' ? 'ARRIVED' : 'COMPLETED'
+    };
+
+    await asyncFetchCallback(
+      editProcurementOrder(reqBody),
+      (res) => {
+        setOriginalOrder((originalOrder) => {
+          if (originalOrder) {
+            return {
+              ...originalOrder,
+              fulfilment_status:
+                originalOrder?.fulfilment_status === FulfilmentStatus.CREATED
+                  ? FulfilmentStatus.ARRIVED
+                  : FulfilmentStatus.COMPLETED
+            };
+          } else {
+            return originalOrder;
+          }
+        });
+        setLoading(false);
+      },
+      (err) => {}
+    );
+  };
+
   return (
     <div className='view-order-details'>
       <div className='view-order-details-heading'>
-        <Tooltip title='Return to Previous Page' enterDelay={300}>
-          <IconButton size='large' onClick={() => navigate(-1)}>
-            <ChevronLeft />
-          </IconButton>
-        </Tooltip>
-        <h1>View Procurement Order</h1>
+        <div className='section-header'>
+          <Tooltip title='Return to Previous Page' enterDelay={300}>
+            <IconButton size='large' onClick={() => navigate(-1)}>
+              <ChevronLeft />
+            </IconButton>
+          </Tooltip>
+          <h1>View Procurement Order ID: #{originalOrder?.id}</h1>
+        </div>
+        <div className='button-container'>
+          <Button
+            variant='contained'
+            size='medium'
+            sx={{ width: 'fit-content' }}
+            onClick={() => {
+              if (!edit) {
+                setEdit(true);
+              } else {
+                handleOrderUpdate();
+                setEdit(false);
+              }
+            }}
+          >
+            {edit ? 'Save Changes' : 'Edit'}
+          </Button>
+          {edit && (
+            <Button
+              variant='contained'
+              size='medium'
+              sx={{ width: 'fit-content' }}
+              onClick={() => {
+                setEdit(false);
+              }}
+            >
+              Cancel
+            </Button>
+          )}
+        </div>
       </div>
+      <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={loading}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop>
       <div className='order-details-section'>
         <Paper elevation={2} className='order-details-paper'>
           <div className='horizontal-text-fields'>
@@ -87,18 +216,94 @@ const ProcurementOrderDetails = () => {
             />
           </div>
           <div className='horizontal-text-fields-two'>
-            <DisplayedField
-              label='Payment Status'
-              value={originalOrder?.payment_status}
-            />
+            {edit ? (
+              <div
+                style={{
+                  width: '50%',
+                  padding: '2rem',
+                  paddingBottom: '0'
+                }}
+              >
+                <TextField
+                  id='payment-status-select-label'
+                  label='Payment Status'
+                  name='payment_status'
+                  value={originalOrder?.payment_status}
+                  // defaultValue={originalOrder?.payment_status}
+                  onChange={handleEditProcurementOrder}
+                  select
+                  fullWidth
+                >
+                  {paymentStatusOptions.map((option) => (
+                    <MenuItem key={option.id} value={option.value}>
+                      {option.value}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </div>
+            ) : (
+              <DisplayedField
+                label='Payment Status'
+                value={originalOrder?.payment_status}
+              />
+            )}
             <DisplayedField label='Order Total' value={order.order_total} />
           </div>
           <div className='horizontal-text-fields'>
-            <DisplayedField
-              label='Comments'
-              value={originalOrder?.description}
-            />
+            {edit ? (
+              <div
+                style={{
+                  flexDirection: 'column',
+                  padding: '2rem',
+                  paddingBottom: '0'
+                }}
+              >
+                <TextField
+                  id='outlined-required'
+                  label='Description'
+                  name='description'
+                  value={originalOrder?.description}
+                  onChange={handleEditProcurementOrder}
+                  placeholder='Enter updated description here.'
+                  fullWidth
+                  multiline
+                  maxRows={4}
+                />
+              </div>
+            ) : (
+              <DisplayedField
+                label='Comments'
+                value={originalOrder?.description}
+              />
+            )}
           </div>
+          <div className='horizontal-text-fields'>
+            <DisplayedField label='Procurement Order Invoice' value='' />
+          </div>
+          <div
+            style={{
+              paddingLeft: '3rem',
+              paddingBottom: '0'
+            }}
+          >
+            <Button
+              variant='outlined'
+              startIcon={<PictureAsPdfIcon />}
+              onClick={handleDownloadInvoice}
+            >
+              Invoice.pdf
+            </Button>
+          </div>
+          {/* <div
+            style={{
+              flexDirection: 'row',
+              paddingLeft: '2rem',
+              paddingBottom: '0'
+            }}
+          >
+            <PictureAsPdfIcon />
+            <small>Invoice.pdf</small>
+          </div> */}
         </Paper>
         <Paper elevation={2} className='order-details-paper'>
           <h3>View Order Status</h3>
@@ -125,7 +330,9 @@ const ProcurementOrderDetails = () => {
                     originalOrder?.fulfilment_status === 'COMPLETED') && (
                     <TimelineDot color='primary' />
                   )}
-                  <TimelineDot variant='outlined' />
+                  {originalOrder?.fulfilment_status === 'CREATED' && (
+                    <TimelineDot variant='outlined' />
+                  )}
                   <TimelineConnector />
                 </TimelineSeparator>
                 <TimelineContent color='text.secondary'>
@@ -140,7 +347,9 @@ const ProcurementOrderDetails = () => {
                   {originalOrder?.fulfilment_status === 'COMPLETED' && (
                     <TimelineDot color='primary' />
                   )}
-                  <TimelineDot variant='outlined' />
+                  {originalOrder?.fulfilment_status !== 'COMPLETED' && (
+                    <TimelineDot variant='outlined' />
+                  )}
                 </TimelineSeparator>
                 <TimelineContent color='text.secondary'>
                   Shipment Verified
@@ -148,11 +357,25 @@ const ProcurementOrderDetails = () => {
               </TimelineItem>
             </Timeline>
           </React.Fragment>
+          <div className='status-button-container'>
+            {originalOrder?.fulfilment_status !== 'COMPLETED' && (
+              <Button
+                variant='contained'
+                size='medium'
+                sx={{ width: 'fit-content' }}
+                onClick={handleOrderUpdate}
+              >
+                {originalOrder?.fulfilment_status === 'CREATED'
+                  ? 'Order Arrived'
+                  : 'Order Completed'}
+              </Button>
+            )}
+          </div>
         </Paper>
       </div>
       <div className='data-table-section'>
         <h2>Order Items</h2>
-        <DataGrid columns={columns} rows={data} autoHeight />
+        <DataGrid columns={columns} rows={originalOrderItems} autoHeight />
       </div>
     </div>
   );
