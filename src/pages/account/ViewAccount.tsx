@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Paper,
@@ -67,7 +67,7 @@ const ViewAccount = () => {
   let params = new URLSearchParams(window.location.search);
   const navigate = useNavigate();
   const [user, setUser] = useState<User>(placeholderUser);
-  const [modalOpen, setModalOpen] = useState<boolean>(true);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [edit, setEdit] = useState<boolean>(false);
@@ -76,11 +76,10 @@ const ViewAccount = () => {
     body: '',
     funct: () => {}
   });
-
-  const loaded = useRef(false);
   const id = params.get('id');
 
   const handleDisableButtonClick = () => {
+    setModalOpen(true);
     setWrapParam({
       title: 'Disable Account',
       body: 'Are you sure you want to disable this account?',
@@ -89,6 +88,7 @@ const ViewAccount = () => {
   };
 
   const handleEnableButtonClick = () => {
+    setModalOpen(true);
     setWrapParam({
       title: 'Enable Account',
       body: 'Are you sure you want to enable this account?',
@@ -97,6 +97,7 @@ const ViewAccount = () => {
   };
 
   const handleDeleteButtonClick = () => {
+    setModalOpen(true);
     setWrapParam({
       title: 'Delete Account',
       body: 'Are you sure you want to delete this account?',
@@ -117,13 +118,13 @@ const ViewAccount = () => {
           navigate('/accounts');
         },
         () => {
+          setModalOpen(false);
           setAlert({
             severity: 'error',
             message: 'Cannot delete user at this point. Try again later.'
           });
         }
       );
-    setModalOpen(false);
   };
 
   const disableAccount = () => {
@@ -135,6 +136,11 @@ const ViewAccount = () => {
         });
         setModalOpen(false);
         navigate(`/accounts/viewAccount?id=${id}`);
+        setUser((oldUser) => {
+          return {
+           ...oldUser, status: 'DISABLED'
+          } 
+         })
       });
     setModalOpen(false);
   };
@@ -148,17 +154,14 @@ const ViewAccount = () => {
         });
         setModalOpen(false);
         navigate(`/accounts/viewAccount?id=${id}`);
+        setUser((oldUser) => {
+         return {
+          ...oldUser, status: 'ACTIVE'
+         } 
+        })
       });
     setModalOpen(false);
   };
-
-  useEffect(() => {
-    if (loaded.current) {
-      setModalOpen(!modalOpen);
-    } else {
-      loaded.current = true;
-    }
-  }, [wrapParam]);
 
   useEffect(() => {
     id &&

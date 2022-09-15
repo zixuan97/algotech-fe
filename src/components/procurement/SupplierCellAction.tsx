@@ -5,7 +5,7 @@ import '../../styles/common/actionCells.scss';
 import { useNavigate } from 'react-router';
 import { createSearchParams } from 'react-router-dom';
 
-const WarehouseCellAction = ({ id }: GridRenderCellParams) => {
+const SupplierCellAction = ({ id }: GridRenderCellParams) => {
   const navigate = useNavigate();
   return (
       <div className='action-cell-fit-content'>
@@ -13,17 +13,17 @@ const WarehouseCellAction = ({ id }: GridRenderCellParams) => {
           variant='contained'
           onClick={() =>
             navigate({
-              pathname: '/inventory/warehouseDetails',
+              pathname: '/orders/supplierDetails',
               search: createSearchParams({
                 id: id.toString()
               }).toString()
             })
           }
           >
-            View Warehouse
+            View Supplier
           </Button>
       </div>
   );
 };
 
-export default WarehouseCellAction;
+export default SupplierCellAction;

@@ -1,4 +1,5 @@
 import React from 'react';
+import '../App.css';
 import {
   Alert,
   Backdrop,
@@ -22,6 +23,9 @@ import AuthContext from 'src/context/auth/authContext';
 import { useNavigate } from 'react-router-dom';
 import { UserInput } from 'src/services/authService';
 import PasswordModal from '../pages/account/PasswordModal';
+
+import logo from '../logo brown.png';
+
 
 const Login = () => {
   const authContext = React.useContext(AuthContext);
@@ -73,6 +77,8 @@ const Login = () => {
         <CircularProgress color='inherit' />
       </Backdrop>
       <Box className='logo-box'>
+        <img src={logo} className="App-logo" width={350} height={300}  />
+        
         <h1>The Kettle Gourmet</h1>
         <p>Enterprise Resource Planning System</p>
       </Box>

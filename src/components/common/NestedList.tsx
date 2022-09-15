@@ -9,19 +9,21 @@ import {
 import React from 'react';
 
 type NestedListProps = {
+  title: string;
   icon: React.ReactElement;
   open: boolean;
   toggleOpen: (open: boolean) => void;
   children: React.ReactNode;
 };
 
-const NestedList = ({ icon, open, toggleOpen, children }: NestedListProps) => {
+const NestedList = ({ title, icon, open, toggleOpen, children }: NestedListProps) => {
   return (
     <>
       <ListItem button onClick={() => toggleOpen(!open)}>
         <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText
-          primary='Inventory'
+          primary={title}
+
           primaryTypographyProps={{ fontWeight: 'bold' }}
         />
         {open ? <ExpandLess /> : <ExpandMore />}

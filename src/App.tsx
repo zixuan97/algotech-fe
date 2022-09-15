@@ -28,10 +28,15 @@ import CreateWarehouse from './pages/inventory/CreateWarehouse';
 import AllOrders from './pages/procurement/AllProcurementOrders';
 import CreateProcurementOrder from './pages/procurement/CreateProcurementOrder';
 import ProcurementOrderDetails from './pages/procurement/ProcurementOrderDetails';
+
+import AllSuppliers from './pages/procurement/AllSuppliers';
+import SupplierDetails from './pages/procurement/SupplierDetails';
+import CreateSupplier from './pages/procurement/CreateSupplier';
+
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import EditAccount from './pages/account/EditAccount';
 import ViewMyAccount from './pages/account/ViewMyAccount';
@@ -105,7 +110,10 @@ const App = () => {
                 path='inventory/productDetails'
                 element={<ProductDetails />}
               />
-              <Route path='orders' element={<AllOrders />} />
+              <Route
+                path='orders'
+                element={<AllOrders />}
+              />
               <Route
                 path='orders/createProcurementOrder'
                 element={<CreateProcurementOrder />}
@@ -113,6 +121,18 @@ const App = () => {
               <Route
                 path='orders/procurementOrderDetails'
                 element={<ProcurementOrderDetails />}
+              />
+              <Route
+                path='orders/allSuppliers'
+                element={<AllSuppliers />}
+              />
+              <Route
+                path='orders/createSupplier'
+                element={<CreateSupplier />}
+              />
+              <Route
+                path='orders/supplierDetails'
+                element={<SupplierDetails />}
               />
               <Route
                 path='inventory/allCategories'
@@ -126,10 +146,22 @@ const App = () => {
                 path='inventory/categoryDetails'
                 element={<CategoryDetails />}
               />
-              <Route path='inventory/allBrands' element={<AllBrands />} />
-              <Route path='inventory/createBrand' element={<CreateBrand />} />
-              <Route path='inventory/brandDetails' element={<BrandDetails />} />
-              <Route path='inventory/warehouses' element={<AllWarehouses />} />
+              <Route
+                path='inventory/allBrands'
+                element={<AllBrands />}
+              />
+              <Route
+                path='inventory/createBrand'
+                element={<CreateBrand />}
+              />
+              <Route
+                path='inventory/brandDetails'
+                element={<BrandDetails />}
+              />
+              <Route
+                path='inventory/warehouses'
+                element={<AllWarehouses />}
+              />
               <Route
                 path='inventory/warehouseDetails'
                 element={<WarehouseDetails />}
@@ -147,8 +179,9 @@ const App = () => {
                 <Route path='viewAccount' element={<ViewAccount />} />
                 <Route path='editAccount' element={<EditAccount />} />
                 <Route path='createNewUser' element={<CreateNewUser />} />
-                <Route path='viewMyAccount' element={<ViewMyAccount />} />
               </Route>
+              
+              <Route path='accounts/viewMyAccount' element={<ViewMyAccount />} />
             </Route>
           </Routes>
         </Router>

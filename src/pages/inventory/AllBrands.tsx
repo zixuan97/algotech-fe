@@ -1,12 +1,12 @@
 import React from 'react';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import BrandCellAction from 'src/components/inventory/BrandCellAction';
+import BrandCellAction from '../../components/inventory/BrandCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
 import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { Brand } from '../../models/types';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import {
   getAllBrands,
 } from 'src/services/brandService';
@@ -19,6 +19,7 @@ const columns: GridColDef[] = [
     field: 'action',
     headerName: 'Action',
     headerAlign: 'right',
+    align: 'right',
     flex: 1,
     renderCell: BrandCellAction
   }

@@ -15,31 +15,23 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import { Category } from 'src/models/types';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import {
-  createCategory,
-  getAllProductCategories
-} from '../../services/categoryService';
-import { AlertType } from '../../components/common/TimeoutAlert';
+import { Supplier } from '../../models/types';
+import { createLocation } from '../../services/locationService';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
+import { AlertType } from '../../components/common/Alert';
 import { toast } from 'react-toastify';
 
-export type NewCategory = Partial<Category>;
+export type NewSupplier = Partial<Supplier>;
 
-const CreateCategory = () => {
+const CreateSupplier = () => {
   const navigate = useNavigate();
 
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [newCategory, setNewCategory] = React.useState<NewCategory>({});
-  const [categories, setCategories] = React.useState<Category[]>([]);
+  const [newSupplier, setNewSupplier] = React.useState<NewSupplier>({});
 
-  React.useEffect(() => {
-    asyncFetchCallback(getAllProductCategories(), setCategories);
-  }, []);
-
-  const handleEditCategory = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewCategory((prev) => {
+  const handleEditSupplier = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewSupplier((prev) => {
       if (prev) {
         return { ...prev, [e.target.name]: e.target.value };
       } else {
@@ -51,13 +43,13 @@ const CreateCategory = () => {
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (newCategory) {
+    if (newSupplier) {
       setLoading(true);
       await asyncFetchCallback(
-        createCategory(newCategory),
+        createLocation(newSupplier),
         () => {
           setLoading(false);
-          toast.success('Category successfully created!', {
+          toast.success('Supplier successfully created!', {
             position: 'top-right',
             autoClose: 6000,
             hideProgressBar: false,
@@ -66,17 +58,18 @@ const CreateCategory = () => {
             draggable: true,
             progress: undefined
           });
-          navigate('/inventory/allCategories');
+          navigate('/orders/allSuppliers');
           // setAlert({
           //   severity: 'success',
-          //   message: 'Category successfully created!'
+          //   message: 'Warehouse successfully created!'
           // });
+          // setTimeout(() => {navigate('/inventory/warehouses')}, 3000);
         },
         (err) => {
           setLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error creating category: ${err.message}`
+            message: `Error creating supplier: ${err.message}`
           });
         }
       );
@@ -94,9 +87,13 @@ const CreateCategory = () => {
       <div className='create-product'>
         <Box className='create-product-box'>
           <div className='header-content'>
-            <h1>Create Category</h1>
+            <h1>Create Supplier</h1>
           </div>
-          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
+          {alert && (
+            <Alert severity={alert.severity} onClose={() => setAlert(null)}>
+              {alert.message}
+            </Alert>
+          )}
           <Paper elevation={2}>
             <Backdrop
               sx={{
@@ -110,16 +107,38 @@ const CreateCategory = () => {
             <form onSubmit={handleSave}>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
-                  <TextField
-                    required
-                    fullWidth
-                    id='outlined-required'
-                    label='Category Name'
-                    name='name'
-                    value={newCategory?.name}
-                    onChange={handleEditCategory}
-                    placeholder='eg.: Asian Favourites'
-                  />
+                  <div className='product-text-fields'>
+                    <TextField
+                      required
+                      fullWidth
+                      id='outlined-required'
+                      label='Supplier Name'
+                      name='name'
+                      value={newSupplier?.name}
+                      onChange={handleEditSupplier}
+                      placeholder='eg.: Chai Chee Warehouse'
+                    />
+                    <TextField
+                      required
+                      fullWidth
+                      id='outlined-required'
+                      label='Supplier Email'
+                      name='email'
+                      value={newSupplier?.email}
+                      onChange={handleEditSupplier}
+                      placeholder='eg.: john@gmail.com'
+                    />
+                    <TextField
+                      required
+                      fullWidth
+                      id='outlined-required'
+                      label='Supplier Address'
+                      name='address'
+                      value={newSupplier?.address}
+                      onChange={handleEditSupplier}
+                      placeholder='eg.: 123 Clementi Road, #01-01, Singapore 12345'
+                    />
+                  </div>
                 </div>
                 <div className='button-group'>
                   <Button
@@ -127,7 +146,7 @@ const CreateCategory = () => {
                     className='cancel-btn'
                     color='primary'
                     onClick={() =>
-                      navigate({ pathname: '/inventory/allCategories' })
+                      navigate({ pathname: '/orders/allSuppliers' })
                     }
                   >
                     Cancel
@@ -138,7 +157,7 @@ const CreateCategory = () => {
                     className='create-btn'
                     color='primary'
                   >
-                    Create Category
+                    Create Supplier
                   </Button>
                 </div>
               </FormGroup>
@@ -150,4 +169,4 @@ const CreateCategory = () => {
   );
 };
 
-export default CreateCategory;
+export default CreateSupplier;

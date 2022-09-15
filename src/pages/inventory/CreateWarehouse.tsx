@@ -15,10 +15,11 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import { Location } from 'src/models/types';
-import { createLocation } from 'src/services/locationService';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { Location } from '../../models/types';
+import { createLocation } from '../../services/locationService';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import { AlertType } from '../../components/common/TimeoutAlert';
+import { toast } from 'react-toastify';
 
 export type NewLocation = Partial<Location>;
 
@@ -48,10 +49,21 @@ const CreateWarehouse = () => {
         createLocation(newLocation),
         () => {
           setLoading(false);
-          setAlert({
-            severity: 'success',
-            message: 'Warehouse successfully created!'
+          toast.success('Warehouse successfully created!', {
+            position: 'top-right',
+            autoClose: 6000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
           });
+          navigate('/inventory/warehouses');
+          // setAlert({
+          //   severity: 'success',
+          //   message: 'Warehouse successfully created!'
+          // });
+          // setTimeout(() => {navigate('/inventory/warehouses')}, 3000);
         },
         (err) => {
           setLoading(false);
@@ -95,7 +107,7 @@ const CreateWarehouse = () => {
             <form onSubmit={handleSave}>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
-                  <div className='text-fields'>
+                  <div className='product-text-fields'>
                     <TextField
                       required
                       fullWidth

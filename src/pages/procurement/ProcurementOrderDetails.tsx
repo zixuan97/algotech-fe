@@ -8,8 +8,7 @@ import {
   Backdrop,
   CircularProgress,
   TextField,
-  MenuItem,
-  Icon
+  MenuItem
 } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import DisplayedField from 'src/components/common/DisplayedField';
@@ -30,6 +29,8 @@ import {
 import { ProcurementOrder, ProcurementOrderItem } from 'src/models/types';
 import { FulfilmentStatus } from 'src/models/types';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import apiRoot from 'src/services/util/apiRoot';
+import { toast } from 'react-toastify';
 
 const order = {
   order_id: '123456',
@@ -46,16 +47,6 @@ const columns: GridColDef[] = [
   { field: 'product_name', headerName: 'Product Name', flex: 1 },
   { field: 'rate', headerName: 'Rate per Unit', flex: 1 },
   { field: 'quantity', headerName: 'Quantity', flex: 1 }
-];
-
-const data = [
-  {
-    id: 1,
-    product_sku: '12345',
-    product_name: 'Nasi Lemak Popcorn',
-    rate: 5,
-    quantity: 10000
-  }
 ];
 
 const paymentStatusOptions = [
@@ -91,7 +82,7 @@ const ProcurementOrderDetails = () => {
   const handleDownloadInvoice = async () => {
     if (id) {
       var xhr = new XMLHttpRequest();
-      xhr.open('POST', `http://localhost:4000/procurement/pdf/${id}`, true);
+      xhr.open('POST', `${apiRoot}/procurement/pdf/${id}`, true);
       xhr.responseType = 'arraybuffer';
       xhr.onload = function (e) {
         if (this.status == 200) {
@@ -120,10 +111,8 @@ const ProcurementOrderDetails = () => {
     });
   };
 
-  const handleOrderUpdate = async () => {
+  const handleOrderStatusUpdate = async () => {
     setLoading(true);
-
-    console.log(originalOrder?.description);
 
     let reqBody = {
       id: originalOrder?.id,
@@ -148,6 +137,52 @@ const ProcurementOrderDetails = () => {
           } else {
             return originalOrder;
           }
+        });
+        toast.success('Fulfilment Status Updated Succesfully.', {
+          position: 'top-right',
+          autoClose: 6000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        setLoading(false);
+      },
+      (err) => {}
+    );
+  };
+
+  const handleOrderUpdate = async () => {
+    setLoading(true);
+
+    let reqBody = {
+      id: originalOrder?.id,
+      description: originalOrder?.description,
+      payment_status: originalOrder?.payment_status,
+      fulfilment_status: originalOrder?.fulfilment_status
+    };
+
+    await asyncFetchCallback(
+      editProcurementOrder(reqBody),
+      (res) => {
+        setOriginalOrder((originalOrder) => {
+          if (originalOrder) {
+            return {
+              ...originalOrder
+            };
+          } else {
+            return originalOrder;
+          }
+        });
+        toast.success('Procurement Order Updated Successfully.', {
+          position: 'top-right',
+          autoClose: 6000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
         });
         setLoading(false);
       },
@@ -363,7 +398,7 @@ const ProcurementOrderDetails = () => {
                 variant='contained'
                 size='medium'
                 sx={{ width: 'fit-content' }}
-                onClick={handleOrderUpdate}
+                onClick={handleOrderStatusUpdate}
               >
                 {originalOrder?.fulfilment_status === 'CREATED'
                   ? 'Order Arrived'
