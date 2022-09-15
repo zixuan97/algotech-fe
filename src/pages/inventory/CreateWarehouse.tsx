@@ -62,7 +62,6 @@ const CreateWarehouse = () => {
             }
           );
           navigate('/inventory/warehouses');
-
           // setAlert({
           //   severity: 'success',
           //   message: 'Warehouse successfully created!'

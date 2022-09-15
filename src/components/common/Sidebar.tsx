@@ -55,6 +55,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
         <Divider />
         <List>
           <NestedList
+            title={'Inventory'}
             open={inventoryOpen}
             toggleOpen={setInventoryOpen}
             icon={<Inventory />}
@@ -87,13 +88,32 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
               />
             </List>
           </NestedList>
+          
           <ListItemLink
             icon={<LocalGroceryStore />}
             primary='Sales'
             to='/sales'
             disabled
           />
-          <ListItemLink icon={<Receipt />} primary='Orders' to='/orders' />
+
+          <NestedList
+          title={'Procurement'}
+            open={ordersOpen}
+            toggleOpen={setOrdersOpen}
+            icon={<Receipt />}
+          >
+            <ListItemLink
+              primary='Orders'
+              to='/orders'
+              typographyProps={submenuTypographyProps}
+            />
+            <ListItemLink
+              primary='All Suppliers'
+              to='/orders/allSuppliers'
+              typographyProps={submenuTypographyProps}
+            />
+          </NestedList>
+
           <ListItemLink
             icon={<People />}
             primary='Customers'

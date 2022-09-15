@@ -259,7 +259,7 @@ const LocationDetails = () => {
             <form>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
-                  <div className='text-fields'>
+                  <div className='product-text-fields'>
                     {edit ? (
                       <TextField
                       required
