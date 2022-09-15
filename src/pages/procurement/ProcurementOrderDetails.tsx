@@ -30,6 +30,7 @@ import { ProcurementOrder, ProcurementOrderItem } from 'src/models/types';
 import { FulfilmentStatus } from 'src/models/types';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import apiRoot from 'src/services/util/apiRoot';
+import { toast } from 'react-toastify';
 
 const order = {
   order_id: '123456',
@@ -137,6 +138,15 @@ const ProcurementOrderDetails = () => {
             return originalOrder;
           }
         });
+        toast.success('Fulfilment Status Updated Succesfully.', {
+          position: 'top-right',
+          autoClose: 6000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
         setLoading(false);
       },
       (err) => {}
@@ -164,6 +174,15 @@ const ProcurementOrderDetails = () => {
           } else {
             return originalOrder;
           }
+        });
+        toast.success('Procurement Order Updated Successfully.', {
+          position: 'top-right',
+          autoClose: 6000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
         });
         setLoading(false);
       },
