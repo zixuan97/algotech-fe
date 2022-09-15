@@ -67,8 +67,6 @@ const AllProducts = () => {
     );
   }, [searchField, productData]);
 
-  console.log(filteredData);
-
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchField(e.target.value);
   };

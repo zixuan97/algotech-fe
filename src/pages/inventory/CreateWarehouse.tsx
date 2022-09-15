@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router';
 import { Location } from 'src/models/types';
 import { createLocation } from 'src/services/locationService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { AlertType } from '../../components/common/Alert';
+import { AlertType } from '../../components/common/TimeoutAlert';
 
 export type NewLocation = Partial<Location>;
 

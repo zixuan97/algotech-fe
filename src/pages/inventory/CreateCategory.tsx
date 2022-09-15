@@ -21,7 +21,7 @@ import {
   createCategory,
   getAllProductCategories
 } from '../../services/categoryService';
-import { AlertType } from '../../components/common/Alert';
+import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
 
 export type NewCategory = Partial<Category>;
 
@@ -85,11 +85,7 @@ const CreateCategory = () => {
           <div className='header-content'>
             <h1>Create Category</h1>
           </div>
-          {alert && (
-            <Alert severity={alert.severity} onClose={() => setAlert(null)}>
-              {alert.message}
-            </Alert>
-          )}
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <Backdrop
               sx={{

@@ -18,7 +18,7 @@ import { User } from 'src/models/types';
 import { roles } from 'src/components/account/accountTypes';
 import BottomButton from 'src/components/common/BottomButton';
 import { createUserSvc } from 'src/services/accountService';
-import { AlertType } from 'src/components/common/Alert';
+import { AlertType } from 'src/components/common/TimeoutAlert';
 
 const CreateNewUser = () => {
   const placeholderUser: User = {

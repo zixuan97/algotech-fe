@@ -11,7 +11,7 @@ import {
   Typography,
   Alert,
   TextField,
-  MenuItem,
+  MenuItem
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -25,7 +25,7 @@ import {
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
-import { AlertType } from '../../components/common/Alert';
+import { AlertType } from '../../components/common/TimeoutAlert';
 import { roles } from 'src/components/account/accountTypes';
 import validator from 'validator';
 interface ModalProps {
@@ -74,7 +74,7 @@ const ViewAccount = () => {
   const [wrapParam, setWrapParam] = useState<wrapperParam>({
     title: '',
     body: '',
-    funct: () => { }
+    funct: () => {}
   });
 
   const loaded = useRef(false);
@@ -304,7 +304,9 @@ const ViewAccount = () => {
                         name='firstName'
                         placeholder='eg.: John'
                         error={!user.first_name}
-                        helperText={!user.first_name ? 'First Name is empty!' : ''}
+                        helperText={
+                          !user.first_name ? 'First Name is empty!' : ''
+                        }
                         value={user?.first_name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           userFieldOnChange(e, 'first_name')
@@ -328,7 +330,9 @@ const ViewAccount = () => {
                         name='lastName'
                         placeholder='eg.: Tan'
                         error={!user.last_name}
-                        helperText={!user.last_name ? 'Last Name is empty!' : ''}
+                        helperText={
+                          !user.last_name ? 'Last Name is empty!' : ''
+                        }
                         value={user?.last_name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           userFieldOnChange(e, 'last_name')
@@ -350,7 +354,11 @@ const ViewAccount = () => {
                         label='Email'
                         name='email'
                         placeholder='eg.: johntan@gmail.com'
-                        helperText={validator.isEmail(user.email) ? '' : 'Enter a valid email: example@email.com'}
+                        helperText={
+                          validator.isEmail(user.email)
+                            ? ''
+                            : 'Enter a valid email: example@email.com'
+                        }
                         error={!validator.isEmail(user.email)}
                         value={user?.email}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>

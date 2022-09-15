@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router';
 import { Brand } from 'src/models/types';
 import { createBrand } from 'src/services/brandService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { AlertType } from 'src/components/common/Alert';
+import { AlertType } from 'src/components/common/TimeoutAlert';
 
 export type NewBrand = Partial<Brand>;
 
@@ -66,51 +66,45 @@ const CreateBrand = () => {
   return (
     <div>
       <Tooltip title='Return to Previous Page' enterDelay={300}>
-        <IconButton
-          size='large'
-          onClick={() => navigate(-1)}
-        >
+        <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
         </IconButton>
       </Tooltip>
 
       <div className='create-product'>
-      <Box className='create-product-box'>
-        <div className='header-content'>
-          <h1>Create Brand</h1>
-        </div>
-        {alert && (
-            <Alert
-              severity={alert.severity}
-              onClose={() => setAlert(null)}
-            >
+        <Box className='create-product-box'>
+          <div className='header-content'>
+            <h1>Create Brand</h1>
+          </div>
+          {alert && (
+            <Alert severity={alert.severity} onClose={() => setAlert(null)}>
               {alert.message}
             </Alert>
           )}
-        <Paper elevation={2}>
-          <Backdrop
-            sx={{
-              color: '#fff',
-              zIndex: (theme) => theme.zIndex.drawer + 1
-            }}
-            open={loading}
-          >
-            <CircularProgress color='inherit' />
-          </Backdrop>
-          <form onSubmit={handleSave}>
+          <Paper elevation={2}>
+            <Backdrop
+              sx={{
+                color: '#fff',
+                zIndex: (theme) => theme.zIndex.drawer + 1
+              }}
+              open={loading}
+            >
+              <CircularProgress color='inherit' />
+            </Backdrop>
+            <form onSubmit={handleSave}>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
                   <div className='text-fields'>
-                      <TextField
-                        required
-                        fullWidth
-                        id='outlined-required'
-                        label='Brand Name'
-                        name='name'
-                        value={newBrand?.name}
-                        onChange={handleEditBrand}
-                        placeholder='eg.: Kettle Gourmet'
-                      />
+                    <TextField
+                      required
+                      fullWidth
+                      id='outlined-required'
+                      label='Brand Name'
+                      name='name'
+                      value={newBrand?.name}
+                      onChange={handleEditBrand}
+                      placeholder='eg.: Kettle Gourmet'
+                    />
                   </div>
                 </div>
                 <div className='button-group'>
@@ -118,8 +112,10 @@ const CreateBrand = () => {
                     variant='text'
                     className='cancel-btn'
                     color='primary'
-                    onClick={() => navigate({ pathname: '/inventory/allBrands' })}
-                    >
+                    onClick={() =>
+                      navigate({ pathname: '/inventory/allBrands' })
+                    }
+                  >
                     Cancel
                   </Button>
                   <Button
@@ -133,13 +129,11 @@ const CreateBrand = () => {
                 </div>
               </FormGroup>
             </form>
-        </Paper>
-      </Box>
+          </Paper>
+        </Box>
       </div>
-    </div> 
+    </div>
   );
-
-
 };
 
 export default CreateBrand;

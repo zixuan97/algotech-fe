@@ -16,7 +16,9 @@ import {
   InputLabel,
   Chip,
   SelectChangeEvent,
-  CircularProgress
+  CircularProgress,
+  Alert,
+  Backdrop
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -35,6 +37,7 @@ import { Location } from 'src/models/types';
 import LocationGrid from 'src/components/inventory/LocationGrid';
 import { randomId } from '@mui/x-data-grid-generator';
 import { intersectionWith, omit } from 'lodash';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 const columns: GridColDef[] = [
   {
@@ -81,7 +84,8 @@ const ProductDetails = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
 
-  const [loading, setLoading] = React.useState<boolean>(true);
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [originalProduct, setOriginalProduct] = React.useState<EditProduct>();
   const [editProduct, setEditProduct] = React.useState<EditProduct>();
@@ -90,7 +94,6 @@ const ProductDetails = () => {
   >([]);
   const [categories, setCategories] = React.useState<CategoryInterface[]>([]);
   const [edit, setEdit] = React.useState<boolean>(false);
-
 
   const [locations, setLocations] = React.useState<Location[]>([]);
   const [productLocations, setProductLocations] = React.useState<
@@ -116,7 +119,7 @@ const ProductDetails = () => {
               return {
                 id: category.category_id,
                 name: category.category_name
-              }
+              };
             })
           };
         });
@@ -135,7 +138,7 @@ const ProductDetails = () => {
               return {
                 id: category.category_id,
                 name: category.category_name
-              }
+              };
             })
           };
         });
@@ -159,20 +162,22 @@ const ProductDetails = () => {
       ).then((res) => {
         if (productLocations.length === 0) {
           setLocationDetails(res);
-          res.map((location) => {
-            setProductLocations(productLocation =>
-              [...productLocation, {
+          res.forEach((location) => {
+            setProductLocations((productLocation) => [
+              ...productLocation,
+              {
                 id: location.id,
                 name: location.name,
                 quantity: location.quantity,
                 price: location.price,
                 gridId: randomId()
-              }]);
-          })
+              }
+            ]);
+          });
         }
       });
     }
-  }, [originalProduct]);
+  }, [originalProduct, productLocations.length]);
 
   React.useEffect(() => {
     asyncFetchCallback(getAllProductCategories(), (res) => {
@@ -184,7 +189,7 @@ const ProductDetails = () => {
           };
         })
       );
-    })
+    });
   }, []);
 
   const handleEditProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -199,6 +204,7 @@ const ProductDetails = () => {
 
   const handleEditCategories = (e: SelectChangeEvent<string[]>) => {
     const inputCategories = e.target.value;
+    console.log(inputCategories);
     setEditProduct((prev) => {
       if (prev) {
         return {
@@ -207,12 +213,7 @@ const ProductDetails = () => {
             categories,
             inputCategories,
             (a, b) => a.name === b
-          ).map((cat) => {
-            return {
-              id: cat.id,
-              name: cat.name
-            } as CategoryInterface;
-          })
+          )
         };
       } else {
         return prev;
@@ -221,23 +222,12 @@ const ProductDetails = () => {
   };
 
   const handleSave = async () => {
-    setLoading(true);
     if (editProduct) {
-      setEditProduct(
-        (prev) =>
-        ({
-          ...prev, categories, locations:
-            productLocations.map((item) => ({
-              id: item.id,
-              name: item.name,
-              quantity: item.quantity,
-              price: item.price
-            }))
-        })
-      )
+      setLoading(true);
       await asyncFetchCallback(
         updateProduct({
-          ...editProduct, categories, locations: productLocations.map((item) => ({
+          ...editProduct,
+          locations: productLocations.map((item) => ({
             id: item.id,
             name: item.name,
             quantity: item.quantity,
@@ -246,26 +236,36 @@ const ProductDetails = () => {
         }),
         () => {
           setOriginalProduct({
-            ...editProduct, categories, locations: productLocations.map((item) => ({
+            ...editProduct,
+            locations: productLocations.map((item) => ({
               id: item.id,
               name: item.name,
               quantity: item.quantity,
               price: item.price
             }))
           });
-          setLocationDetails(productLocations.map((item) => ({
-            id: item.id,
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price
-          })))
+          setLocationDetails(
+            productLocations.map((item) => ({
+              id: item.id,
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price
+            }))
+          );
+          setAlert({
+            message: 'Product edited successfully',
+            severity: 'success'
+          });
           setLoading(false);
         },
         (err) => {
+          setAlert({
+            message: `An error occured: ${err.message}`,
+            severity: 'error'
+          });
           setLoading(false);
         }
       );
-      setLoading(false);
     }
   };
 
@@ -288,6 +288,15 @@ const ProductDetails = () => {
 
   return (
     <div>
+      <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={loading}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop>
       <Tooltip title='Return to Previous Page' enterDelay={300}>
         <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
@@ -298,7 +307,7 @@ const ProductDetails = () => {
           <div className='header-content'>
             <h1>{title}</h1>
             <div className='button-group'>
-              {loading && <CircularProgress color='secondary' />}
+              {/* {loading && <CircularProgress color='secondary' />} */}
               <Button
                 variant='contained'
                 className='create-btn'
@@ -324,14 +333,17 @@ const ProductDetails = () => {
                     setEditProduct(originalProduct);
                     setProductLocations([]);
                     locationDetails.map((location) => {
-                      setProductLocations(productLocation => [...productLocation, {
-                        id: location.id,
-                        name: location.name,
-                        quantity: location.quantity,
-                        price: location.price,
-                        gridId: randomId()
-                      }])
-                    })
+                      setProductLocations((productLocation) => [
+                        ...productLocation,
+                        {
+                          id: location.id,
+                          name: location.name,
+                          quantity: location.quantity,
+                          price: location.price,
+                          gridId: randomId()
+                        }
+                      ]);
+                    });
                   }}
                 >
                   DISCARD CHANGES
@@ -354,6 +366,7 @@ const ProductDetails = () => {
               />
             </div>
           </div>
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <form>
               <FormGroup className='create-product-form'>
@@ -415,11 +428,7 @@ const ProductDetails = () => {
                           id='ProductCategories'
                           multiple
                           value={
-                            editProduct?.categories.map(
-                              (cat) => {
-                                return cat.name
-                              }
-                            ) ?? []
+                            editProduct?.categories.map((cat) => cat.name) ?? []
                           }
                           onChange={handleEditCategories}
                           input={<OutlinedInput label='Categories' />}
@@ -483,7 +492,6 @@ const ProductDetails = () => {
                     pageSize={5}
                   />
                 )}
-
               </FormGroup>
             </form>
           </Paper>
