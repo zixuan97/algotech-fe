@@ -43,6 +43,7 @@ export type NewProduct = Partial<Product> & {
 
 export interface ProductLocation {
   id: number;
+  name: string;
   price: number;
   quantity: number;
   isNew?: boolean;
@@ -221,11 +222,6 @@ const CreateProduct = () => {
                         maxWidth: 300,
                         height: 300,
                         maxHeight: 500
-                        // backgroundColor: 'primary.dark',
-                        // '&:hover': {
-                        //   backgroundColor: 'primary.main',
-                        //   opacity: [0.9, 0.8, 0.7]
-                        // }
                       }}
                     >
                       <img
@@ -263,7 +259,7 @@ const CreateProduct = () => {
                       )}
                     </Toolbar>
                   </div>
-                  <div className='text-fields'>
+                  <div className='product-text-fields'>
                     <TextField
                       required
                       fullWidth
