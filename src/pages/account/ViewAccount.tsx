@@ -249,6 +249,7 @@ const ViewAccount = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
+                disabled={!validator.isEmail(user.email) || validator.isEmpty(user?.last_name) || validator.isEmpty(user?.first_name)}
                 onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   if (!edit) {
                     setEdit(true);
