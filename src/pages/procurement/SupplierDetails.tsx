@@ -79,7 +79,7 @@ const SupplierDetails = () => {
             setBackdropLoading(false);
             setAlert({
               severity: 'success',
-              message: 'Supplier successfully deleted. You will be redirected back to the All Brands page now.'
+              message: 'Supplier successfully deleted. You will be redirected back to the All Suppliers page now.'
             });
             setTimeout(() => navigate('/orders/allSuppliers'), 3500);
             

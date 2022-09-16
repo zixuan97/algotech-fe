@@ -49,7 +49,7 @@ const CreateWarehouse = () => {
           setLoading(false);
           setAlert({
             severity: 'success',
-            message: 'Warehouse successfully created! You will be redirected back to the All Categories page now.'
+            message: 'Warehouse successfully created! You will be redirected back to the All Warehouses page now.'
           });
           setTimeout(() => {navigate('/inventory/warehouses')}, 3000);
         },
