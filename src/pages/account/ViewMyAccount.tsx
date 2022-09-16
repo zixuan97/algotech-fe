@@ -24,7 +24,7 @@ import {
   getUserDetailsSvc,
   updatePasswordSvc
 } from 'src/services/accountService';
-import { AlertType } from 'src/components/common/TimeoutAlert';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
 
 const placeholderUser: User = {
@@ -50,6 +50,10 @@ const ViewMyAccount = () => {
   const [currentPassword, setCurrentPassword] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
+  const [showCurrPwdError, setShowCurrPwdError] = useState<boolean>(false);
+  const [showNewPwdError, setShowNewPwdError] = useState<boolean>(false);
+  const [showCfmPwdError, setShowCfmPwdError] = useState<boolean>(false);
+
 
   useEffect(() => {
     setLoading(true);
@@ -115,10 +119,13 @@ const ViewMyAccount = () => {
         setCurrentPassword('');
         setNewPassword('');
         setConfirmPassword('');
+        setShowNewPwdError(false);
+        setShowCurrPwdError(false);
+        setShowCfmPwdError(false);
         navigate(`/accounts/viewMyAccount?id=${id}`);
       },
       (err) => {
-        if (err.message === 'Passwords do not match') {
+        if (err.message === 'Request failed with status code 400') {
           setAlert({
             severity: 'error',
             message: 'Your current password is wrong. Try again.'
@@ -183,240 +190,234 @@ const ViewMyAccount = () => {
               </Button>
             </div>
           </div>
-
-          {alert && (
-            <Alert
-              severity={alert.severity}
-              onClose={() => setAlert(null)}
-              style={{ margin: '1%' }}
-            >
-              {alert.message}
-            </Alert>
-          )}
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <form>
               <div className='content-body'>
                 <div className='right-content'>
-                  {loading ? (
-                    <CircularProgress color='secondary' />
-                  ) : (
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        {edit ? (
-                          <TextField
-                            fullWidth
-                            required
-                            id='outlined-quantity'
-                            label='First Name'
-                            name='firstName'
-                            error={!user.first_name}
-                            helperText={
-                              !user.first_name ? 'First Name is empty!' : ''
-                            }
-                            placeholder='eg.: John'
-                            value={user?.first_name}
-                            onChange={(
-                              e: React.ChangeEvent<HTMLInputElement>
-                            ) => userFieldOnChange(e, 'first_name')}
-                          />
-                        ) : (
-                          <div>
-                            <h4>First Name</h4>
-                            <Typography>{user?.first_name}</Typography>
-                          </div>
-                        )}
-                      </Grid>
-                      <Grid item xs={6}>
-                        {edit ? (
-                          <TextField
-                            fullWidth
-                            required
-                            id='outlined-quantity'
-                            label='Last Name'
-                            name='lastName'
-                            error={!user.last_name}
-                            helperText={
-                              !user.last_name ? 'Last Name is empty!' : ''
-                            }
-                            placeholder='eg.: Tan'
-                            value={user?.last_name}
-                            onChange={(
-                              e: React.ChangeEvent<HTMLInputElement>
-                            ) => userFieldOnChange(e, 'last_name')}
-                          />
-                        ) : (
-                          <div>
-                            <h4>Last Name</h4>
-                            <Typography>{user?.last_name}</Typography>
-                          </div>
-                        )}
-                      </Grid>
-                      <Grid item xs={edit ? 12 : 6}>
-                        {edit ? (
-                          <TextField
-                            required
-                            fullWidth
-                            id='outlined-quantity'
-                            error={!validator.isEmail(user.email)}
-                            label='Email'
-                            name='email'
-                            placeholder='eg.: johntan@gmail.com'
-                            value={user?.email}
-                            helperText={
-                              validator.isEmail(user.email)
-                                ? ''
-                                : 'Enter a valid email: example@email.com'
-                            }
-                            onChange={(
-                              e: React.ChangeEvent<HTMLInputElement>
-                            ) => userFieldOnChange(e, 'email')}
-                          />
-                        ) : (
-                          <div>
-                            <h4>Email</h4>
-                            <Typography>{user?.email}</Typography>
-                          </div>
-                        )}
-                      </Grid>
-                      <Grid item xs={edit ? 12 : 6}>
-                        {!edit && (
-                          <div>
-                            <h4>Role</h4>
-                            <Typography>{user?.role}</Typography>
-                          </div>
-                        )}
-                      </Grid>
-                      {!edit && (
-                        <Grid item xs={12}>
-                          <Accordion>
-                            <AccordionSummary
-                              expandIcon={<ExpandMore />}
-                              aria-controls='panel1a-content'
-                              id='panel1a-header'
-                            >
-                              <h4>Change Password</h4>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                              <Grid container spacing={2}>
-                                <Grid item xs={12}>
-                                  <Typography>
-                                    Enter your password details below to change
-                                    your password.
-                                  </Typography>
-                                </Grid>
-                                <Grid item xs={12}>
-                                  <TextField
-                                    fullWidth
-                                    required
-                                    error={newPassword === currentPassword}
-                                    helperText={
-                                      newPassword === currentPassword
-                                        ? 'Current Password same as new password!'
-                                        : ''
-                                    }
-                                    id='outlined-quantity'
-                                    label='Current Password'
-                                    name='currPwd'
-                                    placeholder='*********'
-                                    value={currentPassword}
-                                    onChange={(e: any) =>
-                                      setCurrentPassword(e.target.value)
-                                    }
-                                  />
-                                </Grid>
-                                <Grid item xs={12}>
-                                  <TextField
-                                    fullWidth
-                                    required
-                                    error={
-                                      confirmPassword !== newPassword ||
-                                      newPassword === currentPassword ||
-                                      !validator.isLength(newPassword, {
-                                        min: 8,
-                                        max: undefined
-                                      })
-                                    }
-                                    helperText={
-                                      newPassword !== confirmPassword
-                                        ? "New passwords don't match!"
-                                        : !validator.isLength(newPassword, {
-                                            min: 8,
-                                            max: undefined
-                                          })
-                                        ? 'Password length needs 8 characters'
-                                        : ''
-                                    }
-                                    id='outlined-quantity'
-                                    label='New Password'
-                                    name='newPwd'
-                                    placeholder='*********'
-                                    value={newPassword}
-                                    onChange={(e: any) =>
-                                      setNewPassword(e.target.value)
-                                    }
-                                  />
-                                </Grid>
-                                <Grid item xs={12}>
-                                  <TextField
-                                    fullWidth
-                                    required
-                                    error={
-                                      confirmPassword !== newPassword ||
-                                      confirmPassword === currentPassword ||
-                                      !validator.isLength(confirmPassword, {
-                                        min: 8,
-                                        max: undefined
-                                      })
-                                    }
-                                    helperText={
-                                      !validator.isLength(newPassword, {
-                                        min: 8,
-                                        max: undefined
-                                      })
-                                        ? 'Password length needs 8 characters'
-                                        : ''
-                                    }
-                                    id='outlined-quantity'
-                                    label='Confirm New Password'
-                                    name='cfmNewPwd'
-                                    placeholder='*********'
-                                    value={confirmPassword}
-                                    onChange={(e: any) =>
-                                      setConfirmPassword(e.target.value)
-                                    }
-                                  />
-                                </Grid>
-                              </Grid>
-                              <Button
-                                style={{
-                                  margin: '1%',
-                                  display: 'flex',
-                                  justifyContent: 'flex-end'
-                                }}
-                                variant='contained'
-                                className='create-btn'
-                                color='primary'
-                                onClick={updatePassword}
-                                disabled={
-                                  !currentPassword ||
-                                  !newPassword ||
-                                  !confirmPassword ||
-                                  newPassword !== confirmPassword ||
-                                  currentPassword === newPassword ||
-                                  !validator.isLength(confirmPassword, {
-                                    min: 8,
-                                    max: undefined
-                                  })
-                                }
-                              >
-                                Update Password
-                              </Button>
-                            </AccordionDetails>
-                          </Accordion>
-                        </Grid>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      {edit ? (
+                        <TextField
+                          fullWidth
+                          required
+                          id='outlined-quantity'
+                          label='First Name'
+                          name='firstName'
+                          error={!user.first_name}
+                          helperText={
+                            !user.first_name ? 'First Name is empty!' : ''
+                          }
+                          placeholder='eg.: John'
+                          value={user?.first_name}
+                          onChange={(
+                            e: React.ChangeEvent<HTMLInputElement>
+                          ) => userFieldOnChange(e, 'first_name')}
+                        />
+                      ) : (
+                        <div>
+                          <h4>First Name</h4>
+                          <Typography>{user?.first_name}</Typography>
+                        </div>
                       )}
                     </Grid>
-                  )}
+                    <Grid item xs={6}>
+                      {edit ? (
+                        <TextField
+                          fullWidth
+                          required
+                          id='outlined-quantity'
+                          label='Last Name'
+                          name='lastName'
+                          error={!user.last_name}
+                          helperText={
+                            !user.last_name ? 'Last Name is empty!' : ''
+                          }
+                          placeholder='eg.: Tan'
+                          value={user?.last_name}
+                          onChange={(
+                            e: React.ChangeEvent<HTMLInputElement>
+                          ) => userFieldOnChange(e, 'last_name')}
+                        />
+                      ) : (
+                        <div>
+                          <h4>Last Name</h4>
+                          <Typography>{user?.last_name}</Typography>
+                        </div>
+                      )}
+                    </Grid>
+                    <Grid item xs={edit ? 12 : 6}>
+                      {edit ? (
+                        <TextField
+                          required
+                          fullWidth
+                          id='outlined-quantity'
+                          error={!validator.isEmail(user.email)}
+                          label='Email'
+                          name='email'
+                          placeholder='eg.: johntan@gmail.com'
+                          value={user?.email}
+                          helperText={
+                            validator.isEmail(user.email)
+                              ? ''
+                              : 'Enter a valid email: example@email.com'
+                          }
+                          onChange={(
+                            e: React.ChangeEvent<HTMLInputElement>
+                          ) => userFieldOnChange(e, 'email')}
+                        />
+                      ) : (
+                        <div>
+                          <h4>Email</h4>
+                          <Typography>{user?.email}</Typography>
+                        </div>
+                      )}
+                    </Grid>
+                    <Grid item xs={edit ? 12 : 6}>
+                      {!edit && (
+                        <div>
+                          <h4>Role</h4>
+                          <Typography>{user?.role}</Typography>
+                        </div>
+                      )}
+                    </Grid>
+                    {!edit && (
+                      <Grid item xs={12}>
+                        <Accordion>
+                          <AccordionSummary
+                            expandIcon={<ExpandMore />}
+                            aria-controls='panel1a-content'
+                            id='panel1a-header'
+                          >
+                            <h4>Change Password</h4>
+                          </AccordionSummary>
+                          <AccordionDetails>
+                            <Grid container spacing={2}>
+                              <Grid item xs={12}>
+                                <Typography>
+                                  Enter your password details below to change
+                                  your password.
+                                </Typography>
+                              </Grid>
+                              <Grid item xs={12}>
+                                <TextField
+                                  fullWidth
+                                  required
+                                  error={(newPassword === currentPassword || validator.isEmpty(currentPassword)) && showNewPwdError}
+                                  helperText={
+                                    newPassword === currentPassword && showNewPwdError
+                                      ? 'Current Password same as new password!'
+                                      : (validator.isEmpty(currentPassword) && showNewPwdError ? 'Current Password field is empty' : '')
+                                  }
+                                  id='outlined-quantity'
+                                  label='Current Password'
+                                  name='currPwd'
+                                  placeholder='*********'
+                                  value={currentPassword}
+                                  onChange={(e: any) => {
+                                    setCurrentPassword(e.target.value)
+                                    setShowCurrPwdError(true);
+                                  }
+                                  }
+                                />
+                              </Grid>
+                              <Grid item xs={12}>
+                                <TextField
+                                  fullWidth
+                                  required
+                                  error={(confirmPassword !== newPassword ||
+                                    newPassword === currentPassword ||
+                                    !validator.isLength(newPassword, {
+                                      min: 8,
+                                      max: undefined
+                                    }))
+                                    && showNewPwdError
+                                  }
+                                  helperText={
+                                    newPassword !== confirmPassword && showNewPwdError
+                                      ? "New passwords don't match!"
+                                      : !validator.isLength(newPassword, {
+                                        min: 8,
+                                        max: undefined
+                                      }) && showNewPwdError
+                                        ? 'Password length needs 8 characters'
+                                        : ''
+                                  }
+                                  id='outlined-quantity'
+                                  label='New Password'
+                                  name='newPwd'
+                                  placeholder='*********'
+                                  value={newPassword}
+                                  onChange={(e: any) => {
+                                    setNewPassword(e.target.value);
+                                    setShowNewPwdError(true);
+                                  }
+                                  }
+                                />
+                              </Grid>
+                              <Grid item xs={12}>
+                                <TextField
+                                  fullWidth
+                                  required
+                                  error={
+                                   ( confirmPassword !== newPassword ||
+                                    confirmPassword === currentPassword ||
+                                    !validator.isLength(confirmPassword, {
+                                      min: 8,
+                                      max: undefined
+                                    })) && showCfmPwdError
+                                  }
+                                  helperText={
+                                    !validator.isLength(newPassword, {
+                                      min: 8,
+                                      max: undefined
+                                    }) && showCfmPwdError
+                                      ? 'Password length needs 8 characters'
+                                      : ''
+                                  }
+                                  id='outlined-quantity'
+                                  label='Confirm New Password'
+                                  name='cfmNewPwd'
+                                  placeholder='*********'
+                                  value={confirmPassword}
+                                  onChange={(e: any) => {
+                                    setConfirmPassword(e.target.value);
+                                    setShowCfmPwdError(true);
+                                  }
+                                  }
+                                />
+                              </Grid>
+                            </Grid>
+                            <Button
+                              style={{
+                                margin: '1%',
+                                display: 'flex',
+                                justifyContent: 'flex-end'
+                              }}
+                              variant='contained'
+                              className='create-btn'
+                              color='primary'
+                              onClick={updatePassword}
+                              disabled={
+                                !currentPassword ||
+                                !newPassword ||
+                                !confirmPassword ||
+                                newPassword !== confirmPassword ||
+                                currentPassword === newPassword ||
+                                !validator.isLength(confirmPassword, {
+                                  min: 8,
+                                  max: undefined
+                                })
+                              }
+                            >
+                              Update Password
+                            </Button>
+                          </AccordionDetails>
+                        </Accordion>
+                      </Grid>
+                    )}
+                  </Grid>
+
                 </div>
               </div>
             </form>

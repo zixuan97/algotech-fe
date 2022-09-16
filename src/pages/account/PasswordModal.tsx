@@ -6,11 +6,10 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  Alert,
   CircularProgress
 } from '@mui/material';
 import React, { useState } from 'react';
-import { AlertType } from 'src/components/common/TimeoutAlert';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { forgetPasswordSvc } from 'src/services/accountService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 
@@ -74,15 +73,7 @@ const PasswordModal = ({
           <DialogContentText id='alert-dialog-description'>
             {body}
           </DialogContentText>
-          {alert && (
-            <Alert
-              severity={alert.severity}
-              onClose={() => setAlert(null)}
-              style={{ margin: '1%' }}
-            >
-              {alert.message}
-            </Alert>
-          )}
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <TextField
             autoFocus
             margin='dense'
