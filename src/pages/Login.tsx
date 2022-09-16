@@ -76,8 +76,13 @@ const Login = () => {
         <CircularProgress color='inherit' />
       </Backdrop>
       <Box className='logo-box'>
-
-        <img src={logo} className="App-logo" width={300} height={340}  />
+        <img
+          src={logo}
+          alt='logo'
+          className='App-logo'
+          width={350}
+          height={300}
+        />
         <h1>The Kettle Gourmet</h1>
         <p>Enterprise Resource Planning System</p>
       </Box>
