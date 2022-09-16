@@ -10,10 +10,19 @@ import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { getAllProducts } from 'src/services/productService';
 import { useNavigate } from 'react-router';
 import { ProductCategory } from 'src/models/types';
+import { getAllBrands, getBrandById } from 'src/services/brandService';
+import { Brand } from '../../models/types';
 
-const columns: GridColDef[] = [
+const columns = (brands: Brand[]): GridColDef[] => [
   { field: 'sku', headerName: 'SKU', flex: 1 },
   { field: 'name', headerName: 'Product Name', flex: 1 },
+  {
+    field: 'brand_id',
+    headerName: 'Brand',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) =>
+      brands.find((brand) => brand.id === params.value)?.name ?? ''
+  },
   {
     field: 'productCategory',
     headerName: 'Category',
@@ -50,6 +59,7 @@ const AllProducts = () => {
   const [searchField, setSearchField] = React.useState<string>('');
   const [productData, setProductData] = React.useState<Product[]>([]);
   const [filteredData, setFilteredData] = React.useState<Product[]>([]);
+  const [brands, setBrands] = React.useState<Brand[]>([]);
 
   React.useEffect(() => {
     // TODO: implement error callback
@@ -62,6 +72,7 @@ const AllProducts = () => {
       },
       () => setLoading(false)
     );
+    asyncFetchCallback(getAllBrands(), setBrands);
   }, []);
 
   React.useEffect(() => {
@@ -90,6 +101,7 @@ const AllProducts = () => {
             label='Search'
             margin='normal'
             fullWidth
+            placeholder='SKU, Product Name'
             onChange={handleSearchFieldChange}
           />
         </div>
@@ -103,7 +115,7 @@ const AllProducts = () => {
         </Button>
       </div>
       <DataGrid
-        columns={columns}
+        columns={columns(brands)}
         rows={filteredData}
         loading={loading}
         autoHeight

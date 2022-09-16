@@ -18,11 +18,12 @@ import {
   SelectChangeEvent,
   CircularProgress,
   Alert,
-  Backdrop
+  Backdrop,
+  Toolbar
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
-import { ChevronLeft } from '@mui/icons-material';
-import { Category, Product, ProductCategory } from 'src/models/types';
+import { ChevronLeft, Delete } from '@mui/icons-material';
+import { Brand, Category, Product, ProductCategory } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   deleteProduct,
@@ -38,6 +39,8 @@ import LocationGrid from 'src/components/inventory/LocationGrid';
 import { randomId } from '@mui/x-data-grid-generator';
 import { intersectionWith, omit } from 'lodash';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import { getBase64 } from 'src/utils/fileUtils';
+import { getBrandById } from 'src/services/brandService';
 
 const columns: GridColDef[] = [
   {
@@ -84,6 +87,9 @@ const ProductDetails = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
 
+  const imgRef = React.useRef<HTMLInputElement | null>(null);
+
+  const [disableSave, setDisableSave] = React.useState<boolean>(true);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
@@ -99,6 +105,30 @@ const ProductDetails = () => {
   const [productLocations, setProductLocations] = React.useState<
     ProductLocationRow[]
   >([]);
+
+  // this is cancerous code, to remove this when we get the schema right
+  const [brand, setBrand] = React.useState<Brand>();
+
+  React.useEffect(() => {
+    const shouldDisable = !(
+      editProduct?.sku &&
+      editProduct?.name &&
+      editProduct?.brand_id &&
+      editProduct?.qtyThreshold
+    );
+    setDisableSave(shouldDisable);
+  }, [
+    editProduct?.sku,
+    editProduct?.name,
+    editProduct?.brand_id,
+    editProduct?.qtyThreshold
+  ]);
+
+  React.useEffect(() => {
+    if (editProduct?.brand_id) {
+      asyncFetchCallback(getBrandById(editProduct?.brand_id), setBrand);
+    }
+  }, [editProduct?.brand_id]);
 
   React.useEffect(() => {
     if (id) {
@@ -221,6 +251,24 @@ const ProductDetails = () => {
     });
   };
 
+  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      getBase64(
+        e.target.files[0],
+        (res) =>
+          setEditProduct((prev) => {
+            console.log(res);
+            if (prev) {
+              return { ...prev, image: res as string };
+            } else {
+              return prev;
+            }
+          }),
+        (err) => console.log(err)
+      );
+    }
+  };
+
   const handleSave = async () => {
     if (editProduct) {
       setLoading(true);
@@ -316,6 +364,7 @@ const ProductDetails = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
+                disabled={edit && disableSave}
                 onClick={() => {
                   if (!edit) {
                     setEdit(true);
@@ -375,20 +424,62 @@ const ProductDetails = () => {
             <form>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
-                  <Box
-                    sx={{
-                      width: 200,
-                      maxWidth: 300,
-                      height: 300,
-                      maxHeight: 500
-                    }}
-                  >
-                    <img
-                      src={editProduct?.image}
-                      alt='Product'
-                      style={{ maxWidth: '100%', maxHeight: '100%' }}
-                    />
-                  </Box>
+                  <div>
+                    <Box
+                      sx={{
+                        width: 200,
+                        maxWidth: 300,
+                        height: 300,
+                        maxHeight: 500,
+                        border: editProduct?.image ? '' : '1px solid lightgray'
+                      }}
+                      className={editProduct?.image ? '' : 'container-center'}
+                    >
+                      {editProduct?.image ? (
+                        <img
+                          src={editProduct.image}
+                          alt='Product'
+                          style={{ maxWidth: '100%', maxHeight: '100%' }}
+                        />
+                      ) : (
+                        <Typography>Product Image</Typography>
+                      )}
+                    </Box>
+                    {edit && (
+                      <Toolbar>
+                        <Button
+                          variant='outlined'
+                          component='label'
+                          size='small'
+                        >
+                          Upload Image
+                          <input
+                            ref={imgRef}
+                            hidden
+                            accept='image/*'
+                            type='file'
+                            onChange={handleImage}
+                          />
+                        </Button>
+                        {editProduct?.image && (
+                          <IconButton
+                            onClick={() => {
+                              // @ts-ignore
+                              imgRef.current.value = null;
+                              setEditProduct((prev) => {
+                                if (prev) {
+                                  return omit(prev, ['image']);
+                                }
+                                return prev;
+                              });
+                            }}
+                          >
+                            <Delete />
+                          </IconButton>
+                        )}
+                      </Toolbar>
+                    )}
+                  </div>
                   <div className='product-text-fields'>
                     {edit ? (
                       <TextField
@@ -463,6 +554,11 @@ const ProductDetails = () => {
                           ))}
                         </div>
                       )
+                    )}
+                    {brand && (
+                      <Typography sx={{ padding: '15px' }}>
+                        {`Brand: ${brand.name}`}
+                      </Typography>
                     )}
                     {edit ? (
                       <TextField
