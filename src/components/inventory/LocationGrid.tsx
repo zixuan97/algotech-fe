@@ -14,7 +14,9 @@ import {
   GridEventListener,
   GridRowId,
   GridRenderEditCellParams,
-  GridValueFormatterParams
+  GridValueFormatterParams,
+  GridPreProcessEditCellProps,
+  GridValueSetterParams
 } from '@mui/x-data-grid';
 import { Location } from 'src/models/types';
 import { ProductLocationRow } from 'src/pages/inventory/CreateProduct';
@@ -48,7 +50,7 @@ export default function LocationGrid({
   );
 
   const handleRowEditStart = (
-    params: GridRowParams,
+    _: GridRowParams,
     event: MuiEvent<React.SyntheticEvent>
   ) => {
     event.defaultMuiPrevented = true;

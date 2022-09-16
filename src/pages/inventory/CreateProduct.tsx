@@ -16,7 +16,8 @@ import {
   Toolbar,
   Alert,
   Backdrop,
-  CircularProgress
+  CircularProgress,
+  Typography
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft, Delete } from '@mui/icons-material';
@@ -28,7 +29,7 @@ import {
   createProduct,
   getAllProductCategories
 } from 'src/services/productService';
-import { intersectionWith, omit } from 'lodash';
+import { has, intersectionWith, omit } from 'lodash';
 import { getAllBrands } from 'src/services/brandService';
 import { getBase64 } from 'src/utils/fileUtils';
 import { getAllLocations } from 'src/services/locationService';
@@ -59,6 +60,7 @@ const CreateProduct = () => {
 
   const imgRef = React.useRef<HTMLInputElement | null>(null);
 
+  const [disableCreate, setDisableCreate] = React.useState<boolean>(true);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [newProduct, setNewProduct] = React.useState<NewProduct>({
@@ -74,6 +76,21 @@ const CreateProduct = () => {
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [brands, setBrands] = React.useState<Brand[]>([]);
   const [locations, setLocations] = React.useState<Location[]>([]);
+
+  React.useEffect(() => {
+    const shouldDisable = !(
+      newProduct.sku &&
+      newProduct.name &&
+      newProduct.brand_id &&
+      newProduct.qtyThreshold
+    );
+    setDisableCreate(shouldDisable);
+  }, [
+    newProduct.sku,
+    newProduct.name,
+    newProduct.brand_id,
+    newProduct.qtyThreshold
+  ]);
 
   React.useEffect(() => {
     asyncFetchCallback(getAllProductCategories(), setCategories);
@@ -222,14 +239,20 @@ const CreateProduct = () => {
                         width: 200,
                         maxWidth: 300,
                         height: 300,
-                        maxHeight: 500
+                        maxHeight: 500,
+                        border: newProduct.image ? '' : '1px solid lightgray'
                       }}
+                      className={newProduct.image ? '' : 'container-center'}
                     >
-                      <img
-                        src={newProduct.image}
-                        alt='Product'
-                        style={{ maxWidth: '100%', maxHeight: '100%' }}
-                      />
+                      {newProduct.image ? (
+                        <img
+                          src={newProduct.image}
+                          alt='Product'
+                          style={{ maxWidth: '100%', maxHeight: '100%' }}
+                        />
+                      ) : (
+                        <Typography>Product Image</Typography>
+                      )}
                     </Box>
                     <Toolbar>
                       <Button variant='outlined' component='label' size='small'>
@@ -304,7 +327,9 @@ const CreateProduct = () => {
                       </Select>
                     </FormControl>
                     <FormControl>
-                      <InputLabel id='brand-label'>Brand</InputLabel>
+                      <InputLabel id='brand-label' required>
+                        Brand
+                      </InputLabel>
                       <Select
                         required
                         labelId='brand-label'
@@ -338,7 +363,12 @@ const CreateProduct = () => {
                   updateProductLocations={setProductLocations}
                 />
                 <div className='button-group'>
-                  <Button variant='text' className='cancel-btn' color='primary'>
+                  <Button
+                    variant='text'
+                    className='cancel-btn'
+                    color='primary'
+                    onClick={() => navigate(0)}
+                  >
                     CANCEL
                   </Button>
                   <Button
@@ -346,6 +376,7 @@ const CreateProduct = () => {
                     variant='contained'
                     className='create-btn'
                     color='primary'
+                    disabled={disableCreate}
                   >
                     CREATE PRODUCT
                   </Button>
