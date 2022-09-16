@@ -27,8 +27,9 @@ import {
 import { getProductById } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 import { omit } from 'lodash';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 const columns: GridColDef[] = [
   {
@@ -76,6 +77,7 @@ const LocationDetails = () => {
   const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
 
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
 
   const [originalLocation, setOriginalLocation] =
     React.useState<Location>(location);
@@ -148,29 +150,38 @@ const LocationDetails = () => {
         deleteLocation(originalLocation.id),
         () => {
           setBackdropLoading(false);
-          toast.success('Warehouse successfully deleted.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          // toast.success('Warehouse successfully deleted.', {
+          //   position: 'top-right',
+          //   autoClose: 5000,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined
+          // });
+          // navigate('/inventory/warehouses');
+          setAlert({
+            severity: 'success',
+            message: 'Warehouse successfully deleted. You will be redirected to the All Warehouses page now.'
           });
-          navigate('/inventory/warehouses');
+          setTimeout(() => navigate('/inventory/allWarehouses'), 3500);
         },
         () => {
-          setBackdropLoading(false);
-          toast.error('Error deleting warehouse! Try again later.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          // setBackdropLoading(false);
+          // toast.error('Error deleting warehouse! Try again later.', {
+          //   position: 'top-right',
+          //   autoClose: 5000,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined
+          // });
+          // navigate('/inventory/warehouses');
+          setAlert({
+            severity: 'error',
+            message: 'Error deleting category! Try again later.'
           });
-          navigate('/inventory/warehouses');
         }
       );
     }
@@ -197,14 +208,18 @@ const LocationDetails = () => {
           ...omit(editLocation, ['stockQuantity'])
         }),
         () => {
-          toast.success('Warehouse successfully edited.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          // toast.success('Warehouse successfully edited.', {
+          //   position: 'top-right',
+          //   autoClose: 5000,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined
+          // });
+          setAlert({
+            severity: 'success',
+            message: 'Warehouse successfully edited.'
           });
           setBackdropLoading(false);
           setEditLocation(editLocation);
@@ -212,14 +227,18 @@ const LocationDetails = () => {
           // navigate('/inventory/warehouses');
         },
         () => {
-          toast.error('Error editing warehouse! Try again later.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          // toast.error('Error editing warehouse! Try again later.', {
+          //   position: 'top-right',
+          //   autoClose: 5000,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined
+          // });
+          setAlert({
+            severity: 'error',
+            message: 'Error editing warehouse! Try again later.'
           });
           setBackdropLoading(false);
           // navigate('/inventory/warehouses');
@@ -303,6 +322,7 @@ const LocationDetails = () => {
               />
             </div>
           </div>
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <form>
               <FormGroup className='create-product-form'>
