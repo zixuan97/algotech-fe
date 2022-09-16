@@ -12,6 +12,8 @@ import RoleComponent from '../auth/RoleComponent';
 import ListItemLink from './ListItemLink';
 import NestedList from './NestedList';
 
+import logo from '../logo blue.png';
+
 type SidebarProps = {
   sidebarWidth: string;
 };
@@ -48,6 +50,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
           >
             The Kettle Gourmet{' '}
           </Button>
+          <img src={logo}  width={75} height={65}  />
           {/* <IconButton onClick={() => toggleOpen(false)}>
             <ChevronLeft />
           </IconButton> */}
