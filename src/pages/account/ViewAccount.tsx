@@ -168,12 +168,19 @@ const ViewAccount = () => {
       asyncFetchCallback(
         getUserDetailsSvc(id),
         (user: User) => {
-          setUser(user);
-          setLoading(false);
+          if(user) {
+            setUser(user);
+            setLoading(false);
+          } else {
+            setAlert({
+              severity: 'error',
+              message: 'User does not exist.'
+            });
+            navigate('/restricted');
+          }
+          
         },
-        () => {
-          //handle error here
-        }
+        () => {}
       );
   }, []);
 
