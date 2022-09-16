@@ -11,22 +11,24 @@ import {
   Tooltip,
   Typography,
   CircularProgress,
-  Snackbar,
+  Snackbar
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { Location } from '../../models/types';
+import { Location, Product } from '../../models/types';
 import ProductCellAction from '../../components/inventory/ProductCellAction';
 import {
   deleteLocation,
   getLocationById,
-  updateLocation
+  updateLocation,
+  updateLocationWithoutProducts
 } from '../../services/locationService';
 import { getProductById } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { toast } from 'react-toastify';
+import { omit } from 'lodash';
 
 const columns: GridColDef[] = [
   {
@@ -55,11 +57,11 @@ const columns: GridColDef[] = [
 ];
 
 interface ProductDetails {
-  id: number
+  id: number;
   productName: string;
   quantity: number;
   price: number;
-};
+}
 
 const LocationDetails = () => {
   const navigate = useNavigate();
@@ -75,20 +77,38 @@ const LocationDetails = () => {
 
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
 
-  const [originalLocation, setOriginalLocation] = React.useState<Location>(location);
+  const [originalLocation, setOriginalLocation] =
+    React.useState<Location>(location);
   const [editLocation, setEditLocation] = React.useState<Location>(location);
-  const [productDetails, setProductDetails] = React.useState<
-    ProductDetails[]
-  >([]);
+  const [products, setProducts] = React.useState<Product[]>([]);
+  const [productDetails, setProductDetails] = React.useState<ProductDetails[]>(
+    []
+  );
 
   const [edit, setEdit] = React.useState<boolean>(false);
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
 
   React.useEffect(() => {
-    const shouldDisable = !(
-      editLocation?.name &&
-      editLocation?.address
-    );
+    if (originalLocation?.id) {
+      setProductDetails(
+        products.map((product) => ({
+          id: product.id,
+          productName: product.name,
+          quantity:
+            product.stockQuantity.find(
+              (qty) => qty.location_id === originalLocation.id
+            )?.quantity ?? 0,
+          price:
+            product.stockQuantity.find(
+              (qty) => qty.location_id === originalLocation.id
+            )?.price ?? 0
+        }))
+      );
+    }
+  }, [originalLocation?.id, products]);
+
+  React.useEffect(() => {
+    const shouldDisable = !(editLocation?.name && editLocation?.address);
     setDisableSave(shouldDisable);
   }, [editLocation?.name, editLocation?.address]);
 
@@ -108,17 +128,12 @@ const LocationDetails = () => {
       Promise.all(
         originalLocation.stockQuantity.map(async (qty) => {
           const product = await getProductById(qty.product_id);
-          return {
-            id: qty.product_id,
-            productName: product.name,
-            quantity: qty.quantity,
-            price: qty.price
-          };
+          return product;
         })
       ).then(
         (res) => {
           setTableLoading(false);
-          setProductDetails(res);
+          setProducts(res);
         },
         () => setTableLoading(false)
       );
@@ -159,26 +174,28 @@ const LocationDetails = () => {
         }
       );
     }
-  }
+  };
 
   const handleFieldOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     key: string
   ) => {
     setEditLocation((location: Location) => {
-        return {
-            ...location,
-            [key]: event.target.value
-        };
+      return {
+        ...location,
+        [key]: event.target.value
+      };
     });
   };
 
-  const handleSave = async() => {
+  const handleSave = async () => {
     // setLoading(true);
     if (editLocation) {
       setBackdropLoading(true);
       asyncFetchCallback(
-        updateLocation(editLocation.id, editLocation.name, editLocation.stockQuantity, editLocation.address),
+        updateLocationWithoutProducts({
+          ...omit(editLocation, ['stockQuantity'])
+        }),
         () => {
           toast.success('Warehouse successfully edited.', {
             position: 'top-right',
@@ -209,7 +226,7 @@ const LocationDetails = () => {
         }
       );
     }
-  }
+  };
 
   const title = `${edit ? 'Edit' : ''} Warehouse Details`;
 
@@ -226,10 +243,7 @@ const LocationDetails = () => {
       </Backdrop>
 
       <Tooltip title='Return to Previous Page' enterDelay={300}>
-        <IconButton
-          size='large'
-          onClick={() => navigate(-1)}
-        >
+        <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
         </IconButton>
       </Tooltip>
@@ -296,60 +310,60 @@ const LocationDetails = () => {
                   <div className='product-text-fields'>
                     {edit ? (
                       <TextField
-                      required
-                      fullWidth
-                      id='outlined-required'
-                      label='Warehouse Name'
-                      name='name'
-                      value={editLocation?.name}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        handleFieldOnChange(e, 'name')
-                      }
-                      placeholder='eg.: Chai Chee Warehouse'
+                        required
+                        fullWidth
+                        id='outlined-required'
+                        label='Warehouse Name'
+                        name='name'
+                        value={editLocation?.name}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          handleFieldOnChange(e, 'name')
+                        }
+                        placeholder='eg.: Chai Chee Warehouse'
                       />
                     ) : (
                       <Typography
                         sx={{ padding: '15px' }}
-                        >{`Warehouse Name: ${editLocation?.name}`}</Typography>
+                      >{`Warehouse Name: ${editLocation?.name}`}</Typography>
                     )}
 
                     {edit ? (
                       <TextField
-                      required
-                      fullWidth
-                      id='outlined-required'
-                      label='Address'
-                      name='address'
-                      value={editLocation?.address}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        handleFieldOnChange(e, 'address')
-                      }
-                      placeholder='eg.: 123 Chai Chee Road, #01-02, Singapore 12345'
+                        required
+                        fullWidth
+                        id='outlined-required'
+                        label='Address'
+                        name='address'
+                        value={editLocation?.address}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          handleFieldOnChange(e, 'address')
+                        }
+                        placeholder='eg.: 123 Chai Chee Road, #01-02, Singapore 12345'
                       />
                     ) : (
                       <Typography
                         sx={{ padding: '15px' }}
-                        >{`Address: ${editLocation?.address}`}</Typography>
+                      >{`Address: ${editLocation?.address}`}</Typography>
                     )}
-
                   </div>
                 </div>
                 {/*product table*/}
-                <DataGrid
-                  columns={columns}
-                  rows={productDetails}
-                  loading={tableLoading}
-                  autoHeight
-                  pageSize={5}
-                />
+                {!edit && (
+                  <DataGrid
+                    columns={columns}
+                    rows={productDetails}
+                    loading={tableLoading}
+                    autoHeight
+                    pageSize={5}
+                  />
+                )}
               </FormGroup>
             </form>
           </Paper>
         </Box>
       </div>
     </div>
-  )
-
-}
+  );
+};
 
 export default LocationDetails;

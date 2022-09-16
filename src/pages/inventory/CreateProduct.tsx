@@ -164,19 +164,27 @@ const CreateProduct = () => {
 
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      getBase64(
-        e.target.files[0],
-        (res) =>
-          setNewProduct((prev) => {
-            console.log(res);
-            if (prev) {
-              return { ...prev, image: res as string };
-            } else {
-              return prev;
-            }
-          }),
-        (err) => console.log(err)
-      );
+      // limit file size greater than 3mb
+      if (e.target.files[0].size > 3145728) {
+        setAlert({
+          message: 'File size must be smaller than 3MB!',
+          severity: 'warning'
+        });
+      } else {
+        getBase64(
+          e.target.files[0],
+          (res) =>
+            setNewProduct((prev) => {
+              console.log(res);
+              if (prev) {
+                return { ...prev, image: res as string };
+              } else {
+                return prev;
+              }
+            }),
+          (err) => console.log(err)
+        );
+      }
     }
   };
 
