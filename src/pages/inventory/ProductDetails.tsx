@@ -580,7 +580,7 @@ const ProductDetails = () => {
                         error={editProduct?.qtyThreshold! < (-1) || !editProduct?.qtyThreshold}
                         helperText={
                           editProduct?.qtyThreshold! < (-1) || !editProduct?.qtyThreshold
-                            ? 'Quantity Threshold is empty!'
+                            ? 'Quantity Threshold is wrong!'
                             : ''}
                         onChange={handleEditProduct}
                         value={editProduct?.qtyThreshold}
