@@ -32,16 +32,6 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import apiRoot from 'src/services/util/apiRoot';
 import { toast } from 'react-toastify';
 
-const order = {
-  order_id: '123456',
-  order_date: '03/03/12 22:43',
-  supplier: 'Popcorn Planet',
-  payment_status: 'Paid',
-  order_total: '10000',
-  description:
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam luctus lorem turpis, vitae cursus augue maximus ut. Lorem ipsum dolor sit amet, consectetur adipiscing elit. '
-};
-
 const columns: GridColDef[] = [
   { field: 'product_sku', headerName: 'SKU', flex: 1 },
   { field: 'product_name', headerName: 'Product Name', flex: 1 },
@@ -60,6 +50,7 @@ const ProcurementOrderDetails = () => {
   const id = searchParams.get('id');
 
   const [originalOrder, setOriginalOrder] = React.useState<ProcurementOrder>();
+  const [updatedOrder, setUpdatedOrder] = React.useState<ProcurementOrder>();
   const [originalOrderItems, setOriginalOrderItems] = React.useState<
     ProcurementOrderItem[]
   >([]);
@@ -78,6 +69,7 @@ const ProcurementOrderDetails = () => {
           setOriginalOrderDate(stringOrderDate);
           setOriginalOrderItems(res.proc_order_items);
           setOriginalOrder(res);
+          setUpdatedOrder(res);
           setLoading(false);
         },
         () => setLoading(false)
@@ -108,13 +100,18 @@ const ProcurementOrderDetails = () => {
   const handleEditProcurementOrder = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    await setOriginalOrder((prev) => {
+    await setUpdatedOrder((prev) => {
       if (prev) {
         return { ...prev, [e.target.name]: e.target.value };
       } else {
         return prev;
       }
     });
+  };
+
+  const handleCancelUpdate = async () => {
+    setEdit(false);
+    setUpdatedOrder(originalOrder);
   };
 
   const handleOrderStatusUpdate = async () => {
@@ -164,19 +161,15 @@ const ProcurementOrderDetails = () => {
 
     let reqBody = {
       id: originalOrder?.id,
-      description: originalOrder?.description,
-      payment_status: originalOrder?.payment_status,
+      description: updatedOrder?.description,
+      payment_status: updatedOrder?.payment_status,
       fulfilment_status: originalOrder?.fulfilment_status
     };
 
     await asyncFetchCallback(
       editProcurementOrder(reqBody),
       (res) => {
-        setOriginalOrder((originalOrder) => {
-          if (originalOrder) {
-            return originalOrder;
-          }
-        });
+        setOriginalOrder(updatedOrder);
         toast.success('Procurement Order Updated Successfully.', {
           position: 'top-right',
           autoClose: 6000,
@@ -224,9 +217,7 @@ const ProcurementOrderDetails = () => {
               variant='contained'
               size='medium'
               sx={{ width: 'fit-content' }}
-              onClick={() => {
-                setEdit(false);
-              }}
+              onClick={handleCancelUpdate}
             >
               Cancel
             </Button>
@@ -265,7 +256,7 @@ const ProcurementOrderDetails = () => {
                   id='payment-status-select-label'
                   label='Payment Status'
                   name='payment_status'
-                  value={originalOrder?.payment_status}
+                  value={updatedOrder?.payment_status}
                   // defaultValue={originalOrder?.payment_status}
                   onChange={handleEditProcurementOrder}
                   select
@@ -302,7 +293,7 @@ const ProcurementOrderDetails = () => {
                   id='outlined-required'
                   label='Description'
                   name='description'
-                  value={originalOrder?.description}
+                  value={updatedOrder?.description}
                   onChange={handleEditProcurementOrder}
                   placeholder='Enter updated description here.'
                   fullWidth
