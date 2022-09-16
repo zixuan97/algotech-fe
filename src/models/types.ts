@@ -120,6 +120,7 @@ export interface ProcurementOrder {
   supplier: Supplier;
   total_amount: number;
   proc_order_items: ProcurementOrderItem[];
+  supplier_name: string;
 }
 
 export interface ProcurementOrderItem {
