@@ -335,14 +335,14 @@ const ProductDetails = () => {
               price: item.price
             }))
           });
-          setLocationDetails(
-            productLocations.map((item) => ({
-              id: item.id,
-              name: item.name,
-              quantity: item.quantity,
-              price: item.price
-            }))
-          );
+          //   setLocationDetails(
+          //     productLocations.map((item) => ({
+          //       id: item.id,
+          //       name: item.name,
+          //       quantity: item.quantity,
+          //       price: item.price
+          //     }))
+          //   );
           setAlert({
             message: 'Product edited successfully',
             severity: 'success'
@@ -653,7 +653,7 @@ const ProductDetails = () => {
                 ) : (
                   <DataGrid
                     columns={columns}
-                    rows={locationDetails}
+                    rows={originalProduct?.locations ?? []}
                     getRowId={(row) => row.name}
                     autoHeight
                     pageSize={5}
