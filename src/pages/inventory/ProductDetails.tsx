@@ -133,6 +133,7 @@ const ProductDetails = () => {
 
   React.useEffect(() => {
     if (id) {
+      setLoading(true);
       asyncFetchCallback(getAllLocations(), setLocations);
       asyncFetchCallback(getProductById(id), (res) => {
         setOriginalProduct(() => {

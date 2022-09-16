@@ -367,7 +367,7 @@ const CreateProduct = () => {
                     variant='text'
                     className='cancel-btn'
                     color='primary'
-                    onClick={() => navigate(0)}
+                    onClick={() => navigate('inventory/allProducts')}
                   >
                     CANCEL
                   </Button>
