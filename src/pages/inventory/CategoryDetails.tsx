@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
+  Backdrop,
   Box,
   FormGroup,
   TextField,
@@ -60,6 +61,9 @@ const CategoryDetails = () => {
   const category = current.state as Category;
 
   const [loading, setLoading] = React.useState<boolean>(true);
+  const [tableLoading, setTableLoading] = React.useState<boolean>(false);
+  const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
+
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [originalCategory, setOriginalCategory] = React.useState<Category>();
   const [editCategory, setEditCategory] = React.useState<Category>(category);
@@ -70,9 +74,9 @@ const CategoryDetails = () => {
   const [edit, setEdit] = React.useState<boolean>(false);
 
   const handleDeleteButtonClick = () => {
-    setLoading(true);
+    setBackdropLoading(true);
     if (originalCategory) {
-      setLoading(false);
+      setBackdropLoading(false);
       asyncFetchCallback(
         deleteCategory(originalCategory.id),
         () => {
@@ -104,6 +108,7 @@ const CategoryDetails = () => {
   };
 
   React.useEffect(() => {
+    setTableLoading(true);
     if (id) {
       asyncFetchCallback(getCategoryById(id), (res) => {
         setOriginalCategory(res);
@@ -123,13 +128,15 @@ const CategoryDetails = () => {
             productName: product.name
           };
         })
-      ).then((res) => setProductDetails(res));
+      ).then(
+      (res) =>  {
+        setTableLoading(false);
+        setProductDetails(res);
+      },
+      () => setTableLoading(false)
+      );
     }
   }, [originalCategory]);
-
-  React.useEffect(() => {
-    asyncFetchCallback(getAllProductCategories(), setCategories);
-  }, []);
 
   const handleFieldOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -181,6 +188,16 @@ const CategoryDetails = () => {
 
   return (
     <div>
+      <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={backdropLoading}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop>
+
       <Tooltip title='Return to Previous Page' enterDelay={300}>
         <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
@@ -266,6 +283,7 @@ const CategoryDetails = () => {
                 <DataGrid
                   columns={columns}
                   rows={productDetails}
+                  loading={tableLoading}
                   autoHeight
                   pageSize={5}
                 />

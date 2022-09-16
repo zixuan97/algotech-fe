@@ -37,13 +37,23 @@ const columns: GridColDef[] = [
 const Warehouses = () => {
   const navigate = useNavigate();
 
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
   const [warehouseData, setWarehouseData] = React.useState<Location[]>([]);
   const [filteredData, setFilteredData] = React.useState<Location[]>([]);
 
   React.useEffect(() => {
     // TODO: implement error callback
-    asyncFetchCallback(getAllLocations(), setWarehouseData);
+    // asyncFetchCallback(getAllLocations(), setWarehouseData);
+    setLoading(true);
+    asyncFetchCallback(
+      getAllLocations(),
+      (res) =>  {
+        setLoading(false);
+        setWarehouseData(res);
+      },
+      () => setLoading(false)
+      );
   }, []);
 
   React.useEffect(() => {
@@ -88,7 +98,11 @@ const Warehouses = () => {
           Create Warehouse
         </Button>
       </div>
-      <DataGrid columns={columns} rows={filteredData} autoHeight />
+      <DataGrid
+        columns={columns}
+        rows={filteredData}
+        loading={loading}
+        autoHeight />
     </div>
   );
 };
