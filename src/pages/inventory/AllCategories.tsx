@@ -26,6 +26,7 @@ const columns: GridColDef[] = [
 const AllCategories = () => {
   const navigate = useNavigate();
 
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
   const [categoryData, setCategoryData] = React.useState<Category[]>([]);
   const [filteredData, setFilteredData] = React.useState<Category[]>([]);
@@ -33,7 +34,16 @@ const AllCategories = () => {
   React.useEffect(() => {
     // TODO: implement error callback
     // to do; write the categoryServices ts... vv this is WRONG
-    asyncFetchCallback(getAllProductCategories(), setCategoryData);
+    // asyncFetchCallback(getAllProductCategories(), setCategoryData);
+    setLoading(true);
+    asyncFetchCallback(
+      getAllProductCategories(),
+      (res) =>  {
+        setLoading(false);
+        setCategoryData(res);
+      },
+      () => setLoading(false)
+      );
   }, []);
 
   React.useEffect(() => {
@@ -76,7 +86,11 @@ const AllCategories = () => {
           Create Category
         </Button>
       </div>
-      <DataGrid columns={columns} rows={filteredData} autoHeight />
+      <DataGrid
+        columns={columns}
+        rows={filteredData}
+        loading={loading}
+        autoHeight />
     </div>
   );
 };

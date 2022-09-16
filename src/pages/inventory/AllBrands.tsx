@@ -29,13 +29,22 @@ const AllBrands = () => {
 
   const navigate = useNavigate();
 
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
   const [brandData, setBrandData] = React.useState<Brand[]>([]);
   const [filteredData, setFilteredData] = React.useState<Brand[]>([]);
 
   React.useEffect(() => {
     // TODO: implement error callback
-    asyncFetchCallback(getAllBrands(), setBrandData);
+    setLoading(true);
+    asyncFetchCallback(
+      getAllBrands(),
+      (res) =>  {
+        setLoading(false);
+        setBrandData(res);
+      },
+      () => setLoading(false)
+      );
   }, []);
 
   React.useEffect(() => {
@@ -79,7 +88,11 @@ const AllBrands = () => {
           Create Brand
         </Button>
       </div>
-      <DataGrid columns={columns} rows={filteredData} autoHeight />
+      <DataGrid
+        columns={columns}
+        rows={filteredData}
+        loading={loading}
+        autoHeight />
     </div>
   );
 
