@@ -299,6 +299,7 @@ const CategoryDetails = () => {
                   </div>
                 </div>
                 {/* product table */}
+                {!edit && (
                 <DataGrid
                   columns={columns}
                   rows={productDetails}
@@ -306,6 +307,7 @@ const CategoryDetails = () => {
                   autoHeight
                   pageSize={5}
                 />
+                )}
               </FormGroup>
             </form>
           </Paper>

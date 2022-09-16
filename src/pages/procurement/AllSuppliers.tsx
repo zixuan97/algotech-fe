@@ -11,7 +11,6 @@ import { getAllSuppliers } from 'src/services/supplierService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'Supplier ID', flex: 1 },
   { field: 'name', headerName: 'Supplier Name', flex: 1 },
   { field: 'email', headerName: 'Supplier Email', flex: 1 },
   {

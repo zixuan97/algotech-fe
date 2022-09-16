@@ -3,7 +3,7 @@
  */
  import axios from 'axios';
  import { Supplier } from 'src/models/types';
- import { NewSupplier } from 'src/pages/procurement/CreateSupplier';
+//  import { NewSupplier } from 'src/pages/procurement/CreateSupplier';
  import apiRoot from './util/apiRoot';
  
  export const getAllSuppliers = async (): Promise<Supplier[]> => {
@@ -16,7 +16,7 @@
    return axios.get(`${apiRoot}/supplier/${id}`).then((res) => res.data);
  };
  
- export const createSupplier = async (supplier: NewSupplier): Promise<void> => {
+ export const createSupplier = async (supplier: Supplier): Promise<void> => {
    return axios.post(`${apiRoot}/supplier`, supplier);
  }
  

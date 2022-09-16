@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
+  Backdrop,
   Box,
   FormGroup,
   TextField,
@@ -24,6 +25,7 @@ import {
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { toast } from 'react-toastify';
 import { getAllSuppliers } from 'src/services/procurementService';
+import validator from 'validator';
 
 const SupplierDetails = () => {
     const navigate = useNavigate();
@@ -34,19 +36,48 @@ const SupplierDetails = () => {
     const supplier = current.state as Supplier;
   
     const [loading, setLoading] = React.useState<boolean>(true);
+    const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
+
     const [modalOpen, setModalOpen] = React.useState<boolean>(false);
-    const [originalSupplier, setOriginalSupplier] = React.useState<Supplier>();
+
+    const [originalSupplier, setOriginalSupplier] = React.useState<Supplier>(supplier);
     const [editSupplier, setEditSupplier] = React.useState<Supplier>(supplier);
     const [suppliers, setSuppliers] = React.useState<Supplier[]>([]);
+    
     const [edit, setEdit] = React.useState<boolean>(false);
+    const [disableSave, setDisableSave] = React.useState<boolean>(true);
+    
+    React.useEffect(() => {
+      const shouldDisable = !(
+        editSupplier?.name &&
+        editSupplier?.email &&
+        editSupplier?.address
+      );
+      setDisableSave(shouldDisable || (!validator.isEmail(editSupplier?.email) && !!editSupplier?.email));
+    }, [editSupplier?.name, editSupplier?.email, editSupplier?.address]);
+
+    React.useEffect(() => {
+      if (id) {
+        asyncFetchCallback(getSupplierById(id), (res) => {
+          setOriginalSupplier(res);
+          setEditSupplier(res);
+          setLoading(false);
+        });
+      }
+    }, [id]);
   
+    React.useEffect(() => {
+      asyncFetchCallback(getAllSuppliers(), setSuppliers);
+    }, []);
+
     const handleDeleteButtonClick = () => {
-      setLoading(true);
+      setModalOpen(false);
+      setBackdropLoading(true);
       if (originalSupplier) {
-        setLoading(false);
         asyncFetchCallback(
           deleteSupplier(originalSupplier.id),
           () => {
+            setBackdropLoading(false);
             toast.success('Supplier successfully deleted.', {
               position: 'top-right',
               autoClose: 5000,
@@ -59,6 +90,7 @@ const SupplierDetails = () => {
             navigate('/orders/allSuppliers');
           },
           () => {
+            setBackdropLoading(false);
             toast.error('Error deleting supplier! Try again later.', {
               position: 'top-right',
               autoClose: 5000,
@@ -74,20 +106,6 @@ const SupplierDetails = () => {
       }
     };
   
-    React.useEffect(() => {
-      if (id) {
-        asyncFetchCallback(getSupplierById(id), (res) => {
-          setOriginalSupplier(res);
-          setEditSupplier(res);
-          setLoading(false);
-        });
-      }
-    }, [id]);
-  
-    React.useEffect(() => {
-      asyncFetchCallback(getAllSuppliers(), setSuppliers);
-    }, []);
-  
     const handleFieldOnChange = (
       event: React.ChangeEvent<HTMLInputElement>,
       key: string
@@ -101,9 +119,9 @@ const SupplierDetails = () => {
     };
   
     const handleSave = async () => {
-      setLoading(true);
+      // setLoading(true);
       if (editSupplier) {
-        setLoading(false);
+        setBackdropLoading(true);
         asyncFetchCallback(
           updateSupplier(editSupplier),
           () => {
@@ -116,6 +134,9 @@ const SupplierDetails = () => {
               draggable: true,
               progress: undefined
             });
+            setBackdropLoading(false);
+            setEditSupplier(editSupplier);
+            setOriginalSupplier(editSupplier);
           },
           () => {
             toast.error('Error editing supplier! Try again later.', {
@@ -127,6 +148,7 @@ const SupplierDetails = () => {
               draggable: true,
               progress: undefined
             });
+            setBackdropLoading(false);
           }
         );
       }
@@ -136,6 +158,16 @@ const SupplierDetails = () => {
   
     return (
       <div>
+        <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={backdropLoading}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop>
+
         <Tooltip title='Return to Previous Page' enterDelay={300}>
           <IconButton size='large' onClick={() => navigate(-1)}>
             <ChevronLeft />
@@ -151,6 +183,7 @@ const SupplierDetails = () => {
                   variant='contained'
                   className='create-btn'
                   color='primary'
+                  disabled={edit && disableSave}
                   onClick={() => {
                     if (!edit) {
                       setEdit(true);
@@ -169,6 +202,7 @@ const SupplierDetails = () => {
                     color='primary'
                     onClick={() => {
                       setEdit(false);
+                      setEditSupplier(originalSupplier);
                     }}
                   >
                     Discard Changes
@@ -225,6 +259,11 @@ const SupplierDetails = () => {
                           label='Supplier Email'
                           name='email'
                           value={editSupplier?.email}
+                          error={!validator.isEmail(editSupplier?.email) && !!editSupplier?.email}
+                          helperText={
+                            !validator.isEmail(editSupplier?.email) && !!editSupplier?.email
+                              ? 'Enter a valid email: example@email.com'
+                              : ''}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             handleFieldOnChange(e, 'email')
                           }

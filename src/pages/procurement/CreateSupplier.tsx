@@ -20,15 +20,36 @@ import { createSupplier } from '../../services/supplierService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import { AlertType } from '../../components/common/TimeoutAlert';
 import { toast } from 'react-toastify';
+import validator from 'validator';
 
-export type NewSupplier = Partial<Supplier>;
+// export type NewSupplier = Partial<Supplier>;
 
 const CreateSupplier = () => {
+  const placeholderSupplier: Supplier = {
+    id: 0,
+    email: '',
+    name: '',
+    address: '',
+    proc_order_items: []
+  };
+
   const navigate = useNavigate();
 
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [newSupplier, setNewSupplier] = React.useState<NewSupplier>({});
+  const [newSupplier, setNewSupplier] = React.useState<Supplier>(placeholderSupplier);
+
+  const [edit, setEdit] = React.useState<boolean>(false);
+  const [disableSave, setDisableSave] = React.useState<boolean>(true);
+
+  React.useEffect(() => {
+    const shouldDisable = !(
+      newSupplier?.name &&
+      newSupplier?.email &&
+      newSupplier?.address
+    );
+    setDisableSave(shouldDisable);
+  }, [newSupplier?.name, newSupplier?.email, newSupplier?.address]);
 
   const handleEditSupplier = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewSupplier((prev) => {
@@ -43,7 +64,11 @@ const CreateSupplier = () => {
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (newSupplier) {
+    if (
+      newSupplier?.name &&
+      newSupplier?.email &&
+      newSupplier?.address
+    ) {
       setLoading(true);
       await asyncFetchCallback(
         createSupplier(newSupplier),
@@ -125,6 +150,11 @@ const CreateSupplier = () => {
                       label='Supplier Email'
                       name='email'
                       value={newSupplier?.email}
+                      error={!validator.isEmail(newSupplier?.email) && !!newSupplier?.email}
+                      helperText={
+                        !validator.isEmail(newSupplier?.email) && !!newSupplier?.email
+                          ? 'Enter a valid email: example@email.com'
+                          : ''}
                       onChange={handleEditSupplier}
                       placeholder='eg.: john@gmail.com'
                     />
@@ -156,6 +186,7 @@ const CreateSupplier = () => {
                     variant='contained'
                     className='create-btn'
                     color='primary'
+                    disabled={disableSave || (!validator.isEmail(newSupplier?.email) && !!newSupplier?.email)}
                   >
                     Create Supplier
                   </Button>

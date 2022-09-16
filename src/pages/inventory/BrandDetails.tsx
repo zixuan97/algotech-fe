@@ -315,6 +315,7 @@ return (
                 </div>
               </div>
               {/* product table */}
+              {!edit && (
               <DataGrid
                 columns={columns}
                 rows={productDetails}
@@ -322,6 +323,7 @@ return (
                 autoHeight
                 pageSize={5}
               />
+              )}
             </FormGroup>
           </form>
         </Paper>
