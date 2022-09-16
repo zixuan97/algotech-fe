@@ -11,7 +11,12 @@ import {
   Grid
 } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
-import { ProcurementOrder, Supplier, Location } from 'src/models/types';
+import {
+  ProcurementOrder,
+  Supplier,
+  Location,
+  Product
+} from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   createProcurementOrder,
@@ -20,12 +25,11 @@ import {
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import AddProductModal from 'src/components/procurement/AddProductModal';
 import '../../styles/pages/procurement.scss';
-import { getProductBySku } from 'src/services/productService';
 import { ProcurementOrderItem } from 'src/models/types';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { getAllLocations } from 'src/services/locationService';
-import { toast } from 'react-toastify';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useSearchParams } from 'react-router-dom';
 
 export type NewProcurementOrder = Partial<ProcurementOrder> & {};
 type NewProcurementOrderItem = Partial<ProcurementOrderItem>;
@@ -43,10 +47,19 @@ const CreateProcurementOrder = () => {
   const [suppliers, setSuppliers] = React.useState<Supplier[]>([]);
   const [warehouseData, setWarehouseData] = React.useState<Location[]>([]);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
+  const [addedProductsId, setAddedProductsId] = React.useState<number[]>([]);
+  const [productIdToDisplay, setProductIdToDisplay] = React.useState<number>();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
 
   React.useEffect(() => {
     asyncFetchCallback(getAllSuppliers(), setSuppliers);
     asyncFetchCallback(getAllLocations(), setWarehouseData);
+
+    if (id) {
+      setModalOpen(true);
+      setProductIdToDisplay(parseInt(id));
+    }
   }, []);
 
   const handleEditProcurementOrder = async (
@@ -71,38 +84,31 @@ const CreateProcurementOrder = () => {
   const handleAddOrderItem = async (
     sku: string,
     rate: string,
-    quantity: string
+    quantity: string,
+    selectedProduct: Product | undefined
   ) => {
     setModalOpen(false);
     setLoading(true);
-    console.log(sku);
-    await asyncFetchCallback(
-      getProductBySku(sku),
-      (res) => {
-        let newProcurementOrderItem: NewProcurementOrderItem = {
-          id: res.id,
-          quantity: parseInt(quantity),
-          product_sku: sku,
-          rate: parseInt(rate),
-          product_name: res.name
-        };
-        let updatedOrderItems = Object.assign([], orderItems);
-        updatedOrderItems.push(newProcurementOrderItem);
-        setOrderItems(updatedOrderItems);
-        setLoading(false);
-        setAlert({
-          severity: 'success',
-          message: 'Product added to order successfully!'
-        });
-      },
-      (err) => {
-        setLoading(false);
-        setAlert({
-          severity: 'error',
-          message: 'Product could not be added to order, please try again!'
-        });
-      }
-    );
+
+    if (selectedProduct) {
+      let newProcurementOrderItem: NewProcurementOrderItem = {
+        id: selectedProduct.id,
+        quantity: parseInt(quantity),
+        product_sku: sku,
+        rate: parseInt(rate),
+        product_name: selectedProduct.name
+      };
+      let updatedOrderItems = Object.assign([], orderItems);
+      setAddedProductsId((prev) => [...prev, selectedProduct.id]);
+      console.log(addedProductsId);
+      updatedOrderItems.push(newProcurementOrderItem);
+      setOrderItems(updatedOrderItems);
+      setLoading(false);
+      setAlert({
+        severity: 'success',
+        message: 'Product added to order successfully!'
+      });
+    }
   };
 
   const columns: GridColDef[] = [
@@ -138,11 +144,8 @@ const CreateProcurementOrder = () => {
     }
 
     if (newProcurementOrder.description === undefined) {
-      setAlert({
-        severity: 'warning',
-        message: 'Please Enter a Description!'
-      });
-      return;
+      newProcurementOrder.description = '';
+      setNewProcurementOrder(newProcurementOrder);
     }
 
     if (newProcurementOrder.warehouse_address === undefined) {
@@ -184,19 +187,24 @@ const CreateProcurementOrder = () => {
       createProcurementOrder(reqBody),
       (res) => {
         setLoading(false);
-        toast.success(
-          'Order created! A confirmation email has been sent to the supplier.',
-          {
-            position: 'top-right',
-            autoClose: 6000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
-          }
-        );
-        navigate('/orders');
+        // toast.success(
+        //   'Order created! A confirmation email has been sent to the supplier.',
+        //   {
+        //     position: 'top-right',
+        //     autoClose: 6000,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     progress: undefined
+        //   }
+        // );
+        // navigate('/orders');
+        setAlert({
+          severity: 'success',
+          message: 'Procurement Order successfully created!'
+        });
+        setTimeout(() => navigate('/orders'), 3000);
       },
       (err) => {
         setLoading(false);
@@ -290,12 +298,11 @@ const CreateProcurementOrder = () => {
               <Grid item xs={6}>
                 <TextField
                   id='outlined-required'
-                  label='Description'
-                  name='description'
+                  label='Comments'
+                  name='comments'
                   value={newProcurementOrder?.description}
                   onChange={handleEditProcurementOrder}
-                  placeholder='Enter any description here.'
-                  required
+                  placeholder='Enter any comments here.'
                   fullWidth
                   multiline
                   maxRows={4}
@@ -305,7 +312,12 @@ const CreateProcurementOrder = () => {
           </form>
           <div className='order-items-section'>
             <h2>Order Items</h2>
-            <DataGrid columns={columns} rows={orderItems} autoHeight />
+            <DataGrid
+              columns={columns}
+              rows={orderItems}
+              autoHeight
+              getRowId={(row) => row.product_sku}
+            />
             <div className='button-container'>
               <Button
                 variant='contained'
@@ -316,10 +328,12 @@ const CreateProcurementOrder = () => {
                 Add Product to Order
               </Button>
               <AddProductModal
+                productIdToDisplay={productIdToDisplay}
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
                 onConfirm={handleAddOrderItem}
                 title='Add Product to Order'
+                addedProductsId={addedProductsId}
               />
               <Button
                 type='submit'
