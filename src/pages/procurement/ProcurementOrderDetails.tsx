@@ -30,7 +30,7 @@ import { ProcurementOrder, ProcurementOrderItem } from 'src/models/types';
 import { FulfilmentStatus } from 'src/models/types';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import apiRoot from 'src/services/util/apiRoot';
-import { toast } from 'react-toastify';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 const columns: GridColDef[] = [
   { field: 'product_sku', headerName: 'SKU', flex: 1 },
@@ -57,6 +57,7 @@ const ProcurementOrderDetails = () => {
   const [originalOrderDate, setOriginalOrderDate] = React.useState('');
   const [loading, setLoading] = React.useState<boolean>(false);
   const [edit, setEdit] = React.useState<boolean>(false);
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
 
   React.useEffect(() => {
     setLoading(true);
@@ -141,14 +142,9 @@ const ProcurementOrderDetails = () => {
             return originalOrder;
           }
         });
-        toast.success('Fulfilment Status Updated Succesfully.', {
-          position: 'top-right',
-          autoClose: 6000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined
+        setAlert({
+          severity: 'success',
+          message: 'Fulfilment Status updated successfully.'
         });
         setLoading(false);
       },
@@ -170,14 +166,9 @@ const ProcurementOrderDetails = () => {
       editProcurementOrder(reqBody),
       (res) => {
         setOriginalOrder(updatedOrder);
-        toast.success('Procurement Order Updated Successfully.', {
-          position: 'top-right',
-          autoClose: 6000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined
+        setAlert({
+          severity: 'success',
+          message: 'Procurement Order updated successfully.'
         });
         setLoading(false);
       },
@@ -233,6 +224,15 @@ const ProcurementOrderDetails = () => {
       >
         <CircularProgress color='inherit' />
       </Backdrop>
+      {alert && (
+        <div className='alert'>
+          <TimeoutAlert
+            alert={alert}
+            timeout={6000}
+            clearAlert={() => setAlert(null)}
+          />
+        </div>
+      )}
       <div className='order-details-section'>
         <Paper elevation={2} className='order-details-paper'>
           <div className='horizontal-text-fields'>
@@ -291,11 +291,11 @@ const ProcurementOrderDetails = () => {
               >
                 <TextField
                   id='outlined-required'
-                  label='Description'
+                  label='Comments'
                   name='description'
                   value={updatedOrder?.description}
                   onChange={handleEditProcurementOrder}
-                  placeholder='Enter updated description here.'
+                  placeholder='Enter updated comments here.'
                   fullWidth
                   multiline
                   maxRows={4}

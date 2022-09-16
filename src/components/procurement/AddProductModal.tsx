@@ -7,9 +7,7 @@ import {
   Grid,
   TextField,
   ListItemText,
-  Typography,
-  Alert,
-  CircularProgress
+  Typography
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import React from 'react';
@@ -19,28 +17,56 @@ import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import '../../styles/pages/procurement.scss';
 import TimeoutAlert, { AlertType } from '../common/TimeoutAlert';
 
-type AddProductModalPops = {
+type AddProductModalProps = {
+  productIdToDisplay: number | undefined;
   open: boolean;
   onClose: () => void;
-  onConfirm: (sku: string, rate: string, quantity: string) => void;
+  onConfirm: (
+    sku: string,
+    rate: string,
+    quantity: string,
+    selectedProduct: Product | undefined
+  ) => void;
   title: string;
   focusPassthrough?: boolean;
+  addedProductsId: number[];
 };
 
 const AddProductModal = ({
+  productIdToDisplay,
   open,
   onClose,
   onConfirm,
   title,
-  focusPassthrough = false
-}: AddProductModalPops) => {
+  focusPassthrough = false,
+  addedProductsId
+}: AddProductModalProps) => {
   const [sku, setSku] = React.useState<string>('');
   const [rate, setRate] = React.useState<string>('');
   const [quantity, setQuantity] = React.useState<string>('');
   const [products, setProducts] = React.useState<Product[]>([]);
+  const [selectedProduct, setSelectedProduct] = React.useState<Product>();
   const [alert, setAlert] = React.useState<AlertType | null>(null);
 
-  const submitHandler = (sku: string, rate: string, quantity: string) => {
+  const onSkuChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSku(e.target.value);
+    setSelectedProduct(products.find((item) => item.sku === e.target.value));
+  };
+
+  const onCancelHandler = () => {
+    setSku('');
+    setRate('');
+    setQuantity('');
+
+    onClose();
+  };
+
+  const submitHandler = (
+    sku: string,
+    rate: string,
+    quantity: string,
+    selectedProduct: Product | undefined
+  ) => {
     if (sku === '' || undefined) {
       setAlert({
         severity: 'warning',
@@ -82,16 +108,26 @@ const AddProductModal = ({
       return;
     }
 
-    onConfirm(sku, rate, quantity);
-  };
+    onConfirm(sku, rate, quantity, selectedProduct);
 
-  React.useEffect(() => {
     setSku('');
     setRate('');
     setQuantity('');
+  };
+
+  React.useEffect(() => {
+    if (productIdToDisplay) {
+      let product = products.find((item) => item.id === productIdToDisplay);
+      if (product) {
+        setSku(product.sku);
+        setSelectedProduct(product);
+      }
+    }
     setAlert(null);
-    asyncFetchCallback(getAllProducts(), setProducts);
-  }, [open, onClose, onConfirm]);
+    asyncFetchCallback(getAllProducts(), (res) =>
+      setProducts(res.filter((item) => !addedProductsId.includes(item.id)))
+    );
+  }, [open, onClose, addedProductsId, productIdToDisplay]);
 
   return (
     <div>
@@ -122,7 +158,7 @@ const AddProductModal = ({
                   label='SKU'
                   name='sku'
                   value={sku}
-                  onChange={(e) => setSku(e.target.value)}
+                  onChange={onSkuChange}
                   select
                   required
                   fullWidth
@@ -166,13 +202,13 @@ const AddProductModal = ({
             </Grid>
           </div>
           <DialogActions>
-            <Button onClick={onClose} autoFocus={!focusPassthrough}>
+            <Button onClick={onCancelHandler} autoFocus={!focusPassthrough}>
               Cancel
             </Button>
             <Button
-              // type='submit'
-              // onClick={() => onConfirm(sku, rate, quantity)}
-              onClick={() => submitHandler(sku, rate, quantity)}
+              onClick={() =>
+                submitHandler(sku, rate, quantity, selectedProduct)
+              }
               autoFocus={focusPassthrough}
             >
               Confirm
