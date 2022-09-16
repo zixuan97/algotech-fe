@@ -80,6 +80,7 @@ const PasswordModal = ({
           <DialogContent>
             <DialogContentText id='alert-dialog-description'>
               {body}
+              {loading && <CircularProgress color='secondary' />}
             </DialogContentText>
             <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
             <TextField
@@ -95,7 +96,6 @@ const PasswordModal = ({
             />
           </DialogContent>
           <DialogActions>
-            {loading && <CircularProgress color='secondary' />}
             <Button onClick={onClose} autoFocus={!focusPassthrough}>
               Close
             </Button>

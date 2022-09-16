@@ -38,6 +38,7 @@ import LocationGrid from 'src/components/inventory/LocationGrid';
 import { randomId } from '@mui/x-data-grid-generator';
 import { intersectionWith, omit } from 'lodash';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import validator from 'validator';
 
 const columns: GridColDef[] = [
   {
