@@ -236,6 +236,16 @@ const ProductDetails = () => {
     });
   };
 
+  const handleEditProductNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditProduct((prev) => {
+      if (prev) {
+        return { ...prev, [e.target.name]: parseInt(e.target.value) };
+      } else {
+        return prev;
+      }
+    });
+  };
+
   const handleEditCategories = (e: SelectChangeEvent<string[]>) => {
     const inputCategories = e.target.value;
     console.log(inputCategories);
@@ -594,16 +604,16 @@ const ProductDetails = () => {
                         name='qtyThreshold'
                         placeholder='e.g. 10'
                         error={
-                          editProduct?.qtyThreshold! < -1 ||
+                          editProduct?.qtyThreshold! < 0 ||
                           !editProduct?.qtyThreshold
                         }
                         helperText={
-                          editProduct?.qtyThreshold! < -1 ||
+                          editProduct?.qtyThreshold! < 0 ||
                           !editProduct?.qtyThreshold
                             ? 'Quantity Threshold is wrong!'
                             : ''
                         }
-                        onChange={handleEditProduct}
+                        onChange={handleEditProductNumber}
                         value={editProduct?.qtyThreshold}
                       />
                     ) : (
