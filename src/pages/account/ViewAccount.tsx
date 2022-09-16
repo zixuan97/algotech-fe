@@ -22,7 +22,7 @@ import {
   getUserDetailsSvc
 } from 'src/services/accountService';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
-import { User } from 'src/models/types';
+import { User, UserRole } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
 import { roles } from 'src/components/account/accountTypes';
@@ -249,7 +249,7 @@ const ViewAccount = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
-                disabled={!validator.isEmail(user.email) || validator.isEmpty(user?.last_name) || validator.isEmpty(user?.first_name)}
+                disabled={edit && (!validator.isEmail(user.email) || validator.isEmpty(user?.last_name) || validator.isEmpty(user?.first_name))}
                 onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   if (!edit) {
                     setEdit(true);
