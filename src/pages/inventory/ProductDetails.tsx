@@ -37,7 +37,10 @@ import { Location } from 'src/models/types';
 import LocationGrid from 'src/components/inventory/LocationGrid';
 import { randomId } from '@mui/x-data-grid-generator';
 import { intersectionWith, omit } from 'lodash';
-import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import TimeoutAlert, {
+  AlertType,
+  AxiosErrDataBody
+} from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
 import { getBase64 } from 'src/utils/fileUtils';
 import { getBrandById } from 'src/services/brandService';
@@ -132,6 +135,7 @@ const ProductDetails = () => {
 
   React.useEffect(() => {
     if (id) {
+      setLoading(true);
       asyncFetchCallback(getAllLocations(), setLocations);
       asyncFetchCallback(getProductById(id), (res) => {
         setOriginalProduct(() => {
@@ -253,19 +257,27 @@ const ProductDetails = () => {
 
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      getBase64(
-        e.target.files[0],
-        (res) =>
-          setEditProduct((prev) => {
-            console.log(res);
-            if (prev) {
-              return { ...prev, image: res as string };
-            } else {
-              return prev;
-            }
-          }),
-        (err) => console.log(err)
-      );
+      // limit file size greater than 3mb
+      if (e.target.files[0].size > 3145728) {
+        setAlert({
+          message: 'File size must be smaller than 3MB!',
+          severity: 'warning'
+        });
+      } else {
+        getBase64(
+          e.target.files[0],
+          (res) =>
+            setEditProduct((prev) => {
+              console.log(res);
+              if (prev) {
+                return { ...prev, image: res as string };
+              } else {
+                return prev;
+              }
+            }),
+          (err) => console.log(err)
+        );
+      }
     }
   };
 
@@ -307,10 +319,12 @@ const ProductDetails = () => {
           setLoading(false);
         },
         (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
           setAlert({
-            message: `An error occured: ${err.message}`,
+            message: `An error occured: ${resData.message}`,
             severity: 'error'
           });
+          setEditProduct(originalProduct);
           setLoading(false);
         }
       );
@@ -493,7 +507,8 @@ const ProductDetails = () => {
                         helperText={
                           validator.isEmpty(editProduct?.sku!)
                             ? 'SKU is empty!'
-                            : ''}
+                            : ''
+                        }
                         onChange={handleEditProduct}
                         placeholder='eg.: SKU12345678'
                       />
@@ -514,7 +529,8 @@ const ProductDetails = () => {
                         helperText={
                           validator.isEmpty(editProduct?.name!)
                             ? 'Product Name is empty!'
-                            : ''}
+                            : ''
+                        }
                         onChange={handleEditProduct}
                         placeholder='eg.: Nasi Lemak Popcorn'
                       />
@@ -577,11 +593,16 @@ const ProductDetails = () => {
                         label='Quantity Threshold'
                         name='qtyThreshold'
                         placeholder='e.g. 10'
-                        error={editProduct?.qtyThreshold! < (-1) || !editProduct?.qtyThreshold}
+                        error={
+                          editProduct?.qtyThreshold! < -1 ||
+                          !editProduct?.qtyThreshold
+                        }
                         helperText={
-                          editProduct?.qtyThreshold! < (-1) || !editProduct?.qtyThreshold
+                          editProduct?.qtyThreshold! < -1 ||
+                          !editProduct?.qtyThreshold
                             ? 'Quantity Threshold is wrong!'
-                            : ''}
+                            : ''
+                        }
                         onChange={handleEditProduct}
                         value={editProduct?.qtyThreshold}
                       />

@@ -7,7 +7,7 @@ const OrderFulfilmentStatusCell = ({ row }: GridRenderCellParams) => {
   const { fulfilment_status } = row as ProcurementOrder;
   return fulfilment_status === 'CREATED' ? (
     <Chip
-      label='In Progress'
+      label='Created'
       style={{ backgroundColor: '#FBCF32', fontFamily: 'Poppins' }}
     />
   ) : fulfilment_status === 'COMPLETED' ? (

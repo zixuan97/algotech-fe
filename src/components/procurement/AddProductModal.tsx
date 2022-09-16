@@ -8,7 +8,8 @@ import {
   TextField,
   ListItemText,
   Typography,
-  Alert
+  Alert,
+  CircularProgress
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import React from 'react';
@@ -16,7 +17,7 @@ import { Product } from 'src/models/types';
 import { getAllProducts } from 'src/services/productService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import '../../styles/pages/procurement.scss';
-import { AlertType } from '../common/TimeoutAlert';
+import TimeoutAlert, { AlertType } from '../common/TimeoutAlert';
 
 type AddProductModalPops = {
   open: boolean;
@@ -56,6 +57,23 @@ const AddProductModal = ({
       return;
     }
 
+    if (parseInt(rate) <= 0) {
+      console.log(parseInt(rate));
+      setAlert({
+        severity: 'warning',
+        message: 'Please Enter a valid Rate!'
+      });
+      return;
+    }
+
+    if (parseInt(quantity) <= 0) {
+      setAlert({
+        severity: 'warning',
+        message: 'Please Enter a valid Quantity!'
+      });
+      return;
+    }
+
     if (quantity === '' || undefined) {
       setAlert({
         severity: 'warning',
@@ -63,6 +81,7 @@ const AddProductModal = ({
       });
       return;
     }
+
     onConfirm(sku, rate, quantity);
   };
 
@@ -72,13 +91,7 @@ const AddProductModal = ({
     setQuantity('');
     setAlert(null);
     asyncFetchCallback(getAllProducts(), setProducts);
-
-    let timer1 = setTimeout(() => setAlert(null), 6000);
-
-    return () => {
-      clearTimeout(timer1);
-    };
-  }, [open, onClose]);
+  }, [open, onClose, onConfirm]);
 
   return (
     <div>
@@ -93,13 +106,11 @@ const AddProductModal = ({
         <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
         <div className='modal-alert'>
           {alert && (
-            <Alert
-              onClose={() => setAlert(null)}
-              severity={alert?.severity}
-              sx={{ width: '100%' }}
-            >
-              {alert?.message}
-            </Alert>
+            <TimeoutAlert
+              alert={alert}
+              timeout={6000}
+              clearAlert={() => setAlert(null)}
+            />
           )}
         </div>
         <Box component='form'>
@@ -131,6 +142,7 @@ const AddProductModal = ({
                   id='outlined-required'
                   label='Rate per Unit'
                   name='rate'
+                  type='number'
                   value={rate}
                   onChange={(e) => setRate(e.target.value)}
                   placeholder='Eg. $5'
@@ -143,6 +155,7 @@ const AddProductModal = ({
                   id='outlined-required'
                   label='Purchase Quantity'
                   name='quantity'
+                  type='number'
                   value={quantity}
                   onChange={(e) => setQuantity(e.target.value)}
                   placeholder='Eg. 1000 units'

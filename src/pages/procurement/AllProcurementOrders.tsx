@@ -67,9 +67,18 @@ const AllProcurementOrders = () => {
   const [procurementOrders, setProcurementOrders] = React.useState<
     ProcurementOrder[]
   >([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    asyncFetchCallback(getAllProcurementOrders(), setProcurementOrders);
+    setLoading(true);
+    asyncFetchCallback(
+      getAllProcurementOrders(),
+      (res) => {
+        setLoading(false);
+        setProcurementOrders(res);
+      },
+      () => setLoading(false)
+    );
   }, []);
 
   return (
@@ -91,6 +100,7 @@ const AllProcurementOrders = () => {
           params.row.fulfilmentStatus === 'Arrived'
         }
         columns={columns}
+        loading={loading}
         rows={procurementOrders}
         autoHeight
       />

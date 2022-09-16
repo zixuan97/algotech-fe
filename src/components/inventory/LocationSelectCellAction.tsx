@@ -1,7 +1,5 @@
 import {
-  Box,
   FormControl,
-  InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent

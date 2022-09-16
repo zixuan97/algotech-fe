@@ -16,12 +16,15 @@ import {
   GridRenderEditCellParams,
   GridValueFormatterParams,
   GridPreProcessEditCellProps,
-  GridValueSetterParams
+  GridValueSetterParams,
+  useGridApiContext
 } from '@mui/x-data-grid';
 import { Location } from 'src/models/types';
 import { ProductLocationRow } from 'src/pages/inventory/CreateProduct';
 import EditToolbarCellAction from './EditToolbarCellAction';
 import LocationSelectCellAction from './LocationSelectCellAction';
+import { TextField } from '@mui/material';
+import PositiveNumberEditCellAction from './PositiveNumberEditCellAction';
 
 type LocationGridProps = {
   locations: Location[];
@@ -95,6 +98,8 @@ export default function LocationGrid({
       ...newRow,
       name: availableLocations.find((location) => location.id === newRow.id)
         ?.name!,
+      quantity: isNaN(newRow.quantity) ? 0 : newRow.quantity,
+      price: isNaN(newRow.price) ? 0 : newRow.price,
       isNew: false
     };
     updateProductLocations(
@@ -115,10 +120,7 @@ export default function LocationGrid({
         return locations.find((location) => location.id === params.value)?.name;
       },
       renderEditCell: (params: GridRenderEditCellParams<number>) => (
-        <LocationSelectCellAction
-          params={params}
-          locations={availableLocations}
-        />
+        <LocationSelectCellAction params={params} locations={locations} />
       )
     },
     {
@@ -126,14 +128,28 @@ export default function LocationGrid({
       headerName: 'Quantity',
       type: 'number',
       flex: 1,
-      editable: true
+      editable: true,
+      //   preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
+      //     const { props, hasChanged } = params;
+      //     const hasError = hasChanged && props.value < 0;
+      //     return {
+      //       ...props,
+      //       error: hasError
+      //     };
+      //   },
+      renderEditCell: (params) => (
+        <PositiveNumberEditCellAction params={params} allowDecimals={false} />
+      )
     },
     {
       field: 'price',
       headerName: 'Price',
       type: 'number',
       flex: 1,
-      editable: true
+      editable: true,
+      renderEditCell: (params) => (
+        <PositiveNumberEditCellAction params={params} />
+      )
     },
     {
       field: 'actions',

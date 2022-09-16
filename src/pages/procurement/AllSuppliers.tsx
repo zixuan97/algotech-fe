@@ -11,9 +11,9 @@ import { getAllSuppliers } from 'src/services/supplierService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  {field: 'id', headerName: 'Supplier ID', flex:1},
-  {field: 'name', headerName: 'Supplier Name', flex:1},
-  {field: 'email', headerName: 'Supplier Email', flex:1},
+  { field: 'id', headerName: 'Supplier ID', flex: 1 },
+  { field: 'name', headerName: 'Supplier Name', flex: 1 },
+  { field: 'email', headerName: 'Supplier Email', flex: 1 },
   {
     field: 'action',
     headerName: 'Action',
@@ -30,10 +30,19 @@ const AllSuppliers = () => {
   const [searchField, setSearchField] = React.useState<string>('');
   const [supplierData, setSupplierData] = React.useState<Supplier[]>([]);
   const [filteredData, setFilteredData] = React.useState<Supplier[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     // TODO: implement error callback
-    asyncFetchCallback(getAllSuppliers(), setSupplierData);
+    setLoading(true);
+    asyncFetchCallback(
+      getAllSuppliers(),
+      (res) => {
+        setLoading(false);
+        setSupplierData(res);
+      },
+      () => setLoading(false)
+    );
   }, []);
 
   React.useEffect(() => {
@@ -51,7 +60,7 @@ const AllSuppliers = () => {
   console.log(filteredData);
 
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // here 
+    // here
     setSearchField(e.target.value);
   };
 
@@ -78,7 +87,12 @@ const AllSuppliers = () => {
           Create Supplier
         </Button>
       </div>
-      <DataGrid columns={columns} rows={filteredData} autoHeight />
+      <DataGrid
+        columns={columns}
+        rows={filteredData}
+        autoHeight
+        loading={loading}
+      />
     </div>
   );
 };

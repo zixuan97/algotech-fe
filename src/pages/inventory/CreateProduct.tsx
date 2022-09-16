@@ -35,7 +35,10 @@ import { getBase64 } from 'src/utils/fileUtils';
 import { getAllLocations } from 'src/services/locationService';
 import LocationGrid from 'src/components/inventory/LocationGrid';
 import { randomId } from '@mui/x-data-grid-generator';
-import { AlertType } from '../../components/common/TimeoutAlert';
+import {
+  AlertType,
+  AxiosErrDataBody
+} from '../../components/common/TimeoutAlert';
 
 export type NewProduct = Partial<Product> & {
   categories?: Category[];
@@ -161,19 +164,27 @@ const CreateProduct = () => {
 
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      getBase64(
-        e.target.files[0],
-        (res) =>
-          setNewProduct((prev) => {
-            console.log(res);
-            if (prev) {
-              return { ...prev, image: res as string };
-            } else {
-              return prev;
-            }
-          }),
-        (err) => console.log(err)
-      );
+      // limit file size greater than 3mb
+      if (e.target.files[0].size > 3145728) {
+        setAlert({
+          message: 'File size must be smaller than 3MB!',
+          severity: 'warning'
+        });
+      } else {
+        getBase64(
+          e.target.files[0],
+          (res) =>
+            setNewProduct((prev) => {
+              console.log(res);
+              if (prev) {
+                return { ...prev, image: res as string };
+              } else {
+                return prev;
+              }
+            }),
+          (err) => console.log(err)
+        );
+      }
     }
   };
 
@@ -193,10 +204,11 @@ const CreateProduct = () => {
           setTimeout(() => navigate('/inventory/allProducts'), 3000);
         },
         (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
           setLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error creating product: ${err.message}`
+            message: `Error creating product: ${resData.message}`
           });
         }
       );
@@ -367,7 +379,7 @@ const CreateProduct = () => {
                     variant='text'
                     className='cancel-btn'
                     color='primary'
-                    onClick={() => navigate(0)}
+                    onClick={() => navigate('/inventory/allProducts')}
                   >
                     CANCEL
                   </Button>

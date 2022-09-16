@@ -6,8 +6,6 @@ import {
   TextField,
   MenuItem,
   Button,
-  Snackbar,
-  Alert,
   CircularProgress,
   Backdrop,
   Grid
@@ -24,7 +22,7 @@ import AddProductModal from 'src/components/procurement/AddProductModal';
 import '../../styles/pages/procurement.scss';
 import { getProductBySku } from 'src/services/productService';
 import { ProcurementOrderItem } from 'src/models/types';
-import { AlertType } from 'src/components/common/TimeoutAlert';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { getAllLocations } from 'src/services/locationService';
 import { toast } from 'react-toastify';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -44,9 +42,6 @@ const CreateProcurementOrder = () => {
   );
   const [suppliers, setSuppliers] = React.useState<Supplier[]>([]);
   const [warehouseData, setWarehouseData] = React.useState<Location[]>([]);
-  const [openSuccess, setOpenSuccess] = React.useState(false);
-  const [openWarning, setOpenWarning] = React.useState(false);
-  const [openFailure, setOpenFailure] = React.useState(false);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
 
   React.useEffect(() => {
@@ -78,6 +73,8 @@ const CreateProcurementOrder = () => {
     rate: string,
     quantity: string
   ) => {
+    setModalOpen(false);
+    setLoading(true);
     console.log(sku);
     await asyncFetchCallback(
       getProductBySku(sku),
@@ -92,11 +89,18 @@ const CreateProcurementOrder = () => {
         let updatedOrderItems = Object.assign([], orderItems);
         updatedOrderItems.push(newProcurementOrderItem);
         setOrderItems(updatedOrderItems);
-        setModalOpen(false);
-        setOpenSuccess(true);
+        setLoading(false);
+        setAlert({
+          severity: 'success',
+          message: 'Product added to order successfully!'
+        });
       },
       (err) => {
-        setOpenFailure(true);
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message: 'Product could not be added to order, please try again!'
+        });
       }
     );
   };
@@ -123,39 +127,6 @@ const CreateProcurementOrder = () => {
       }
     }
   ];
-
-  const handleSuccessClose = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setOpenSuccess(false);
-  };
-
-  const handleFailureClose = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setOpenFailure(false);
-  };
-
-  const handleWarningClose = (
-    event?: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setOpenWarning(false);
-  };
 
   const handleOrderCreation = async () => {
     if (newProcurementOrder.supplier_id === undefined) {
@@ -229,7 +200,6 @@ const CreateProcurementOrder = () => {
       },
       (err) => {
         setLoading(false);
-        setOpenFailure(true);
         setAlert({
           severity: 'error',
           message:
@@ -251,27 +221,12 @@ const CreateProcurementOrder = () => {
       </div>
       <div className='alert'>
         {alert && (
-          <Alert
-            onClose={() => setAlert(null)}
-            severity={alert?.severity}
-            sx={{ width: '100%' }}
-          >
-            {alert?.message}
-          </Alert>
+          <TimeoutAlert
+            alert={alert}
+            timeout={6000}
+            clearAlert={() => setAlert(null)}
+          />
         )}
-        <Snackbar
-          open={openWarning}
-          autoHideDuration={6000}
-          onClose={handleWarningClose}
-        >
-          <Alert
-            onClose={handleWarningClose}
-            severity='warning'
-            sx={{ width: '100%' }}
-          >
-            {alert?.message}
-          </Alert>
-        </Snackbar>
       </div>
       <Backdrop
         sx={{
@@ -350,32 +305,6 @@ const CreateProcurementOrder = () => {
           </form>
           <div className='order-items-section'>
             <h2>Order Items</h2>
-            <Snackbar
-              open={openSuccess}
-              autoHideDuration={6000}
-              onClose={handleSuccessClose}
-            >
-              <Alert
-                onClose={handleSuccessClose}
-                severity='success'
-                sx={{ width: '100%' }}
-              >
-                Added Product to Order Successfully!
-              </Alert>
-            </Snackbar>
-            <Snackbar
-              open={openFailure}
-              autoHideDuration={6000}
-              onClose={handleFailureClose}
-            >
-              <Alert
-                onClose={handleFailureClose}
-                severity='error'
-                sx={{ width: '100%' }}
-              >
-                {alert?.message}
-              </Alert>
-            </Snackbar>
             <DataGrid columns={columns} rows={orderItems} autoHeight />
             <div className='button-container'>
               <Button
