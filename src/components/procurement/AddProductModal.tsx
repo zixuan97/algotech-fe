@@ -91,7 +91,7 @@ const AddProductModal = ({
     setQuantity('');
     setAlert(null);
     asyncFetchCallback(getAllProducts(), setProducts);
-  }, [open, onClose]);
+  }, [open, onClose, onConfirm]);
 
   return (
     <div>
