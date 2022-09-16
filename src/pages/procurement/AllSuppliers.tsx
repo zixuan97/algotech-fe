@@ -65,7 +65,7 @@ const AllSuppliers = () => {
 
   return (
     <div className='product-inventory'>
-      <h1>Manage Suppliers</h1>
+      <h1>All Suppliers</h1>
       <div className='grid-toolbar'>
         <div className='search-bar'>
           <Search />

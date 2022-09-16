@@ -23,9 +23,10 @@ import {
   updateSupplier
 } from '../../services/supplierService';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 import { getAllSuppliers } from 'src/services/procurementService';
 import validator from 'validator';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 const SupplierDetails = () => {
     const navigate = useNavigate();
@@ -39,6 +40,7 @@ const SupplierDetails = () => {
     const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
 
     const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+    const [alert, setAlert] = React.useState<AlertType | null>(null);
 
     const [originalSupplier, setOriginalSupplier] = React.useState<Supplier>(supplier);
     const [editSupplier, setEditSupplier] = React.useState<Supplier>(supplier);
@@ -78,29 +80,37 @@ const SupplierDetails = () => {
           deleteSupplier(originalSupplier.id),
           () => {
             setBackdropLoading(false);
-            toast.success('Supplier successfully deleted.', {
-              position: 'top-right',
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined
+            // toast.success('Supplier successfully deleted.', {
+            //   position: 'top-right',
+            //   autoClose: 5000,
+            //   hideProgressBar: false,
+            //   closeOnClick: true,
+            //   pauseOnHover: true,
+            //   draggable: true,
+            //   progress: undefined
+            // });
+            setAlert({
+              severity: 'success',
+              message: 'Supplier successfully deleted. You will be redirected back to the All Brands page now.'
             });
-            navigate('/orders/allSuppliers');
+            setTimeout(() => navigate('/orders/allSuppliers'), 3500);
+            
           },
           () => {
             setBackdropLoading(false);
-            toast.error('Error deleting supplier! Try again later.', {
-              position: 'top-right',
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined
+            // toast.error('Error deleting supplier! Try again later.', {
+            //   position: 'top-right',
+            //   autoClose: 5000,
+            //   hideProgressBar: false,
+            //   closeOnClick: true,
+            //   pauseOnHover: true,
+            //   draggable: true,
+            //   progress: undefined
+            // });
+            setAlert({
+              severity: 'success',
+              message: 'Error deleting supplier! Try again later.'
             });
-            navigate('/orders/allSuppliers');
           }
         );
       }
@@ -125,28 +135,36 @@ const SupplierDetails = () => {
         asyncFetchCallback(
           updateSupplier(editSupplier),
           () => {
-            toast.success('Supplier successfully edited.', {
-              position: 'top-right',
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined
+            // toast.success('Supplier successfully edited.', {
+            //   position: 'top-right',
+            //   autoClose: 5000,
+            //   hideProgressBar: false,
+            //   closeOnClick: true,
+            //   pauseOnHover: true,
+            //   draggable: true,
+            //   progress: undefined
+            // });
+            setAlert({
+              severity: 'success',
+              message: 'Supplier successfully edited.'
             });
             setBackdropLoading(false);
             setEditSupplier(editSupplier);
             setOriginalSupplier(editSupplier);
           },
           () => {
-            toast.error('Error editing supplier! Try again later.', {
-              position: 'top-right',
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined
+            // toast.error('Error editing supplier! Try again later.', {
+            //   position: 'top-right',
+            //   autoClose: 5000,
+            //   hideProgressBar: false,
+            //   closeOnClick: true,
+            //   pauseOnHover: true,
+            //   draggable: true,
+            //   progress: undefined
+            // });
+            setAlert({
+              severity: 'error',
+              message: 'Error editing supplier! Try again later.'
             });
             setBackdropLoading(false);
           }
@@ -158,7 +176,7 @@ const SupplierDetails = () => {
   
     return (
       <div>
-        <Backdrop
+        {/* <Backdrop
         sx={{
           color: '#fff',
           zIndex: (theme) => theme.zIndex.drawer + 1
@@ -166,7 +184,7 @@ const SupplierDetails = () => {
         open={backdropLoading}
       >
         <CircularProgress color='inherit' />
-      </Backdrop>
+      </Backdrop> */}
 
         <Tooltip title='Return to Previous Page' enterDelay={300}>
           <IconButton size='large' onClick={() => navigate(-1)}>
@@ -225,6 +243,7 @@ const SupplierDetails = () => {
                 />
               </div>
             </div>
+            <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
             <Paper elevation={2}>
               <form>
                 <FormGroup className='create-product-form'>

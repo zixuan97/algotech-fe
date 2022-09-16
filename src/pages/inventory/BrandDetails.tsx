@@ -27,7 +27,8 @@ import {
 import { getProductById } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 const columns: GridColDef[] = [
   {
@@ -63,6 +64,7 @@ const BrandDetails = () => {
   const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
 
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
 
   const [originalBrand, setOriginalBrand] = React.useState<Brand>(brand);
   const [editBrand, setEditBrand] = React.useState<Brand>(brand);
@@ -120,29 +122,36 @@ const BrandDetails = () => {
         deleteBrand(originalBrand.id),
         () => {
           setBackdropLoading(false);
-          toast.success('Brand successfully deleted.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          // toast.success('Brand successfully deleted.', {
+          //   position: 'top-right',
+          //   autoClose: 5000,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined
+          // });
+          setAlert({
+            severity: 'success',
+            message: 'Brand successfully deleted. You will be redirected back to the All Brands page now.'
           });
-          navigate('/inventory/allBrands');
+          setTimeout(() => navigate('/inventory/allBrands'), 3500);
         },
         () => {
           setBackdropLoading(false);
-          toast.error('Error deleting brand! Try again later.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          // toast.error('Error deleting brand! Try again later.', {
+          //   position: 'top-right',
+          //   autoClose: 5000,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined
+          // });
+          setAlert({
+            severity: 'error',
+            message: 'Error deleting brand! Try again later.'
           });
-          navigate('/inventory/allBrands');
         }
       );
     }
@@ -167,14 +176,18 @@ const handleSave = async() => {
     asyncFetchCallback(
       updateBrand(editBrand),
       () => {
-        toast.success('Brand successfully edited.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined
+        // toast.success('Brand successfully edited.', {
+        //   position: 'top-right',
+        //   autoClose: 5000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined
+        // });
+        setAlert({
+          severity: 'success',
+          message: 'Brand successfully edited.'
         });
         setBackdropLoading(false);
         setEditBrand(editBrand);
@@ -182,14 +195,18 @@ const handleSave = async() => {
         // navigate('/inventory/allBrands');
       },
       () => {
-        toast.error('Error editing brand! Try again later.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined
+        // toast.error('Error editing brand! Try again later.', {
+        //   position: 'top-right',
+        //   autoClose: 5000,
+        //   hideProgressBar: false,
+        //   closeOnClick: true,
+        //   pauseOnHover: true,
+        //   draggable: true,
+        //   progress: undefined
+        // });
+        setAlert({
+          severity: 'error',
+          message: 'Error editing brand! Try again later.'
         });
         setBackdropLoading(false);
         // navigate('/inventory/allBrands');
@@ -288,6 +305,7 @@ return (
             />
           </div>
         </div>
+        <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
         <Paper elevation={2}>
           <form>
             <FormGroup className='create-product-form'>

@@ -18,8 +18,8 @@ import { useNavigate } from 'react-router';
 import { Brand } from '../../models/types';
 import { createBrand } from '../../services/brandService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { AlertType } from '../../components/common/TimeoutAlert';
-import { toast } from 'react-toastify';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+// import { toast } from 'react-toastify';
 
 export type NewBrand = Partial<Brand>;
 
@@ -49,26 +49,27 @@ const CreateBrand = () => {
         createBrand(newBrand),
         () => {
           setLoading(false);
-          toast.success('Brand successfully created!', {
-            position: 'top-right',
-            autoClose: 6000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
-          });
-          navigate('/inventory/allBrands');
-          // setAlert({
-          //   severity: 'success',
-          //   message: 'Brand successfully created!'
+          // toast.success('Brand successfully created!', {
+          //   position: 'top-right',
+          //   autoClose: 6000,
+          //   hideProgressBar: false,
+          //   closeOnClick: true,
+          //   pauseOnHover: true,
+          //   draggable: true,
+          //   progress: undefined
           // });
+          // navigate('/inventory/allBrands');
+          setAlert({
+            severity: 'success',
+            message: 'Brand successfully created! You will be redirected back to the All Brands page now.'
+          });
+          setTimeout(() => navigate('/inventory/allBrands'), 3500);
         },
         (err) => {
           setLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error creating brand: ${err.message}`
+            message: `Error creating supplier: ${err.message}. Try again later.`
           });
         }
       );
@@ -87,11 +88,12 @@ const CreateBrand = () => {
           <div className='header-content'>
             <h1>Create Brand</h1>
           </div>
-          {alert && (
+          {/* {alert && (
             <Alert severity={alert.severity} onClose={() => setAlert(null)}>
               {alert.message}
             </Alert>
-          )}
+          )} */}
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />          
           <Paper elevation={2}>
             <Backdrop
               sx={{
