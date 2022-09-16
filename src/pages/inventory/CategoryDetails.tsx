@@ -42,6 +42,7 @@ const columns: GridColDef[] = [
     field: 'action',
     headerName: 'Action',
     headerAlign: 'right',
+    align: 'right',
     flex: 1,
     renderCell: ProductCellAction
   }
@@ -65,7 +66,7 @@ const CategoryDetails = () => {
   const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
 
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
-  const [originalCategory, setOriginalCategory] = React.useState<Category>();
+  const [originalCategory, setOriginalCategory] = React.useState<Category>(category);
   const [editCategory, setEditCategory] = React.useState<Category>(category);
   const [productDetails, setProductDetails] = React.useState<ProductDetails[]>(
     []
@@ -73,13 +74,24 @@ const CategoryDetails = () => {
   const [categories, setCategories] = React.useState<Category[]>([]);
   const [edit, setEdit] = React.useState<boolean>(false);
 
+  const [disableSave, setDisableSave] = React.useState<boolean>(true);
+
+  React.useEffect(() => {
+    const shouldDisable = !(
+      editCategory?.name &&
+      editCategory?.productCategory
+    );
+    setDisableSave(shouldDisable);
+  }, [editCategory?.name, editCategory?.productCategory]);
+
   const handleDeleteButtonClick = () => {
+    setModalOpen(false);
     setBackdropLoading(true);
     if (originalCategory) {
-      setBackdropLoading(false);
       asyncFetchCallback(
         deleteCategory(originalCategory.id),
         () => {
+          setBackdropLoading(false);
           toast.success('Category successfully deleted.', {
             position: 'top-right',
             autoClose: 5000,
@@ -92,6 +104,7 @@ const CategoryDetails = () => {
           navigate('/inventory/allCategories');
         },
         () => {
+          setBackdropLoading(false);
           toast.error('Error deleting category! Try again later.', {
             position: 'top-right',
             autoClose: 5000,
@@ -112,6 +125,7 @@ const CategoryDetails = () => {
     if (id) {
       asyncFetchCallback(getCategoryById(id), (res) => {
         setOriginalCategory(res);
+        setEditCategory(res);
         setEditCategory(res);
         setLoading(false);
       });
@@ -151,9 +165,9 @@ const CategoryDetails = () => {
   };
 
   const handleSave = async () => {
-    setLoading(true);
+    // setLoading(true);
     if (editCategory) {
-      setLoading(false);
+      setBackdropLoading(true);
       asyncFetchCallback(
         updateCategory(editCategory),
         () => {
@@ -166,6 +180,9 @@ const CategoryDetails = () => {
             draggable: true,
             progress: undefined
           });
+          setBackdropLoading(false);
+          setEditCategory(editCategory);
+          setOriginalCategory(editCategory);
           // navigate('/inventory/allCategories');
         },
         () => {
@@ -178,6 +195,7 @@ const CategoryDetails = () => {
             draggable: true,
             progress: undefined
           });
+          setBackdropLoading(false);
           // navigate('/inventory/allCategories');
         }
       );
@@ -213,6 +231,7 @@ const CategoryDetails = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
+                disabled={edit && disableSave}
                 onClick={() => {
                   if (!edit) {
                     setEdit(true);
@@ -231,6 +250,7 @@ const CategoryDetails = () => {
                   color='primary'
                   onClick={() => {
                     setEdit(false);
+                    setEditCategory(originalCategory);
                   }}
                 >
                   Discard Changes
