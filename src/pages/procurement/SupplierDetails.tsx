@@ -9,8 +9,7 @@ import {
   IconButton,
   Tooltip,
   Typography,
-  CircularProgress,
-  Snackbar,
+  CircularProgress
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -22,8 +21,9 @@ import {
   updateSupplier
 } from '../../services/supplierService';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import { toast } from 'react-toastify';
 import { getAllSuppliers } from 'src/services/procurementService';
+import validator from 'validator';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 const SupplierDetails = () => {
     const navigate = useNavigate();
@@ -34,46 +34,27 @@ const SupplierDetails = () => {
     const supplier = current.state as Supplier;
   
     const [loading, setLoading] = React.useState<boolean>(true);
+    const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
+
     const [modalOpen, setModalOpen] = React.useState<boolean>(false);
-    const [originalSupplier, setOriginalSupplier] = React.useState<Supplier>();
+    const [alert, setAlert] = React.useState<AlertType | null>(null);
+
+    const [originalSupplier, setOriginalSupplier] = React.useState<Supplier>(supplier);
     const [editSupplier, setEditSupplier] = React.useState<Supplier>(supplier);
     const [suppliers, setSuppliers] = React.useState<Supplier[]>([]);
+    
     const [edit, setEdit] = React.useState<boolean>(false);
-  
-    const handleDeleteButtonClick = () => {
-      setLoading(true);
-      if (originalSupplier) {
-        setLoading(false);
-        asyncFetchCallback(
-          deleteSupplier(originalSupplier.id),
-          () => {
-            toast.success('Supplier successfully deleted.', {
-              position: 'top-right',
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined
-            });
-            navigate('/orders/allSuppliers');
-          },
-          () => {
-            toast.error('Error deleting supplier! Try again later.', {
-              position: 'top-right',
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined
-            });
-            navigate('/orders/allSuppliers');
-          }
-        );
-      }
-    };
-  
+    const [disableSave, setDisableSave] = React.useState<boolean>(true);
+    
+    React.useEffect(() => {
+      const shouldDisable = !(
+        editSupplier?.name &&
+        editSupplier?.email &&
+        editSupplier?.address
+      );
+      setDisableSave(shouldDisable || (!validator.isEmail(editSupplier?.email) && !!editSupplier?.email));
+    }, [editSupplier?.name, editSupplier?.email, editSupplier?.address]);
+
     React.useEffect(() => {
       if (id) {
         asyncFetchCallback(getSupplierById(id), (res) => {
@@ -87,6 +68,32 @@ const SupplierDetails = () => {
     React.useEffect(() => {
       asyncFetchCallback(getAllSuppliers(), setSuppliers);
     }, []);
+
+    const handleDeleteButtonClick = () => {
+      setModalOpen(false);
+      setBackdropLoading(true);
+      if (originalSupplier) {
+        asyncFetchCallback(
+          deleteSupplier(originalSupplier.id),
+          () => {
+            setBackdropLoading(false);
+            setAlert({
+              severity: 'success',
+              message: 'Supplier successfully deleted. You will be redirected back to the All Brands page now.'
+            });
+            setTimeout(() => navigate('/orders/allSuppliers'), 3500);
+            
+          },
+          () => {
+            setBackdropLoading(false);
+            setAlert({
+              severity: 'success',
+              message: 'Error deleting supplier! Try again later.'
+            });
+          }
+        );
+      }
+    };
   
     const handleFieldOnChange = (
       event: React.ChangeEvent<HTMLInputElement>,
@@ -101,32 +108,25 @@ const SupplierDetails = () => {
     };
   
     const handleSave = async () => {
-      setLoading(true);
       if (editSupplier) {
-        setLoading(false);
+        setBackdropLoading(true);
         asyncFetchCallback(
           updateSupplier(editSupplier),
           () => {
-            toast.success('Supplier successfully edited.', {
-              position: 'top-right',
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined
+            setAlert({
+              severity: 'success',
+              message: 'Supplier successfully edited.'
             });
+            setBackdropLoading(false);
+            setEditSupplier(editSupplier);
+            setOriginalSupplier(editSupplier);
           },
           () => {
-            toast.error('Error editing supplier! Try again later.', {
-              position: 'top-right',
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined
+            setAlert({
+              severity: 'error',
+              message: 'Error editing supplier! Try again later.'
             });
+            setBackdropLoading(false);
           }
         );
       }
@@ -151,6 +151,7 @@ const SupplierDetails = () => {
                   variant='contained'
                   className='create-btn'
                   color='primary'
+                  disabled={edit && disableSave}
                   onClick={() => {
                     if (!edit) {
                       setEdit(true);
@@ -169,6 +170,7 @@ const SupplierDetails = () => {
                     color='primary'
                     onClick={() => {
                       setEdit(false);
+                      setEditSupplier(originalSupplier);
                     }}
                   >
                     Discard Changes
@@ -191,6 +193,7 @@ const SupplierDetails = () => {
                 />
               </div>
             </div>
+            <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
             <Paper elevation={2}>
               <form>
                 <FormGroup className='create-product-form'>
@@ -225,6 +228,11 @@ const SupplierDetails = () => {
                           label='Supplier Email'
                           name='email'
                           value={editSupplier?.email}
+                          error={!validator.isEmail(editSupplier?.email) && !!editSupplier?.email}
+                          helperText={
+                            !validator.isEmail(editSupplier?.email) && !!editSupplier?.email
+                              ? 'Enter a valid email: example@email.com'
+                              : ''}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                             handleFieldOnChange(e, 'email')
                           }

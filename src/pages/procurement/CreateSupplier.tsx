@@ -10,7 +10,6 @@ import {
   Alert,
   Backdrop,
   CircularProgress
-  // Snackbar,
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -18,17 +17,36 @@ import { useNavigate } from 'react-router';
 import { Supplier } from '../../models/types';
 import { createSupplier } from '../../services/supplierService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { AlertType } from '../../components/common/TimeoutAlert';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { toast } from 'react-toastify';
-
-export type NewSupplier = Partial<Supplier>;
+import validator from 'validator';
 
 const CreateSupplier = () => {
+  const placeholderSupplier: Supplier = {
+    id: 0,
+    email: '',
+    name: '',
+    address: '',
+    proc_order_items: []
+  };
+
   const navigate = useNavigate();
 
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [newSupplier, setNewSupplier] = React.useState<NewSupplier>({});
+  const [newSupplier, setNewSupplier] = React.useState<Supplier>(placeholderSupplier);
+
+  const [edit, setEdit] = React.useState<boolean>(false);
+  const [disableSave, setDisableSave] = React.useState<boolean>(true);
+
+  React.useEffect(() => {
+    const shouldDisable = !(
+      newSupplier?.name &&
+      newSupplier?.email &&
+      newSupplier?.address
+    );
+    setDisableSave(shouldDisable);
+  }, [newSupplier?.name, newSupplier?.email, newSupplier?.address]);
 
   const handleEditSupplier = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewSupplier((prev) => {
@@ -43,33 +61,27 @@ const CreateSupplier = () => {
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (newSupplier) {
+    if (
+      newSupplier?.name &&
+      newSupplier?.email &&
+      newSupplier?.address
+    ) {
       setLoading(true);
       await asyncFetchCallback(
         createSupplier(newSupplier),
         () => {
           setLoading(false);
-          toast.success('Supplier successfully created!', {
-            position: 'top-right',
-            autoClose: 6000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          setAlert({
+            severity: 'success',
+            message: 'Supplier successfully created! You will be redirected back to the All Suppliers page now.'
           });
-          navigate('/orders/allSuppliers');
-          // setAlert({
-          //   severity: 'success',
-          //   message: 'Warehouse successfully created!'
-          // });
-          // setTimeout(() => {navigate('/inventory/warehouses')}, 3000);
+          setTimeout(() => navigate('/orders/allSuppliers'), 3500);
         },
         (err) => {
           setLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error creating supplier: ${err.message}`
+            message: `Error creating supplier: ${err.message}. Try again later.`
           });
         }
       );
@@ -89,11 +101,7 @@ const CreateSupplier = () => {
           <div className='header-content'>
             <h1>Create Supplier</h1>
           </div>
-          {alert && (
-            <Alert severity={alert.severity} onClose={() => setAlert(null)}>
-              {alert.message}
-            </Alert>
-          )}
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <Backdrop
               sx={{
@@ -116,7 +124,7 @@ const CreateSupplier = () => {
                       name='name'
                       value={newSupplier?.name}
                       onChange={handleEditSupplier}
-                      placeholder='eg.: Chai Chee Warehouse'
+                      placeholder='eg.: Packaging Supplier'
                     />
                     <TextField
                       required
@@ -125,8 +133,13 @@ const CreateSupplier = () => {
                       label='Supplier Email'
                       name='email'
                       value={newSupplier?.email}
+                      error={!validator.isEmail(newSupplier?.email) && !!newSupplier?.email}
+                      helperText={
+                        !validator.isEmail(newSupplier?.email) && !!newSupplier?.email
+                          ? 'Enter a valid email: example@email.com'
+                          : ''}
                       onChange={handleEditSupplier}
-                      placeholder='eg.: john@gmail.com'
+                      placeholder='eg.: johntan@gmail.com'
                     />
                     <TextField
                       required
@@ -156,6 +169,7 @@ const CreateSupplier = () => {
                     variant='contained'
                     className='create-btn'
                     color='primary'
+                    disabled={disableSave || (!validator.isEmail(newSupplier?.email) && !!newSupplier?.email)}
                   >
                     Create Supplier
                   </Button>

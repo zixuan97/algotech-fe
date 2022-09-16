@@ -29,8 +29,7 @@ import {
 } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-// import { intersectionWith } from 'lodash';
-import { toast } from 'react-toastify';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 const columns: GridColDef[] = [
   {
@@ -66,6 +65,7 @@ const CategoryDetails = () => {
   const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
 
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
 
   const [originalCategory, setOriginalCategory] = React.useState<Category>(category);
   const [editCategory, setEditCategory] = React.useState<Category>(category);
@@ -123,29 +123,18 @@ const CategoryDetails = () => {
         deleteCategory(originalCategory.id),
         () => {
           setBackdropLoading(false);
-          toast.success('Category successfully deleted.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          setAlert({
+            severity: 'success',
+            message: 'Category successfully deleted. You will be redirected to the All Categories page now.'
           });
-          navigate('/inventory/allCategories');
+          setTimeout(() => navigate('/inventory/allCategories'), 3500);
         },
         () => {
           setBackdropLoading(false);
-          toast.error('Error deleting category! Try again later.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          setAlert({
+            severity: 'error',
+            message: 'Error deleting category! Try again later.'
           });
-          navigate('/inventory/allCategories');
         }
       );
     }
@@ -164,38 +153,25 @@ const CategoryDetails = () => {
   };
 
   const handleSave = async () => {
-    // setLoading(true);
     if (editCategory) {
       setBackdropLoading(true);
       asyncFetchCallback(
         updateCategory(editCategory),
         () => {
-          toast.success('Category successfully edited.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          setAlert({
+            severity: 'success',
+            message: 'Category successfully edited.'
           });
           setBackdropLoading(false);
           setEditCategory(editCategory);
           setOriginalCategory(editCategory);
-          // navigate('/inventory/allCategories');
         },
         () => {
-          toast.error('Error editing category! Try again later.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          setAlert({
+            severity: 'error',
+            message: 'Error editing category! Try again later.'
           });
           setBackdropLoading(false);
-          // navigate('/inventory/allCategories');
         }
       );
     }
@@ -256,7 +232,6 @@ const CategoryDetails = () => {
                 </Button>
               )}
               <Button
-                // disabled={!!productDetails.length}
                 variant='contained'
                 className='create-btn'
                 color='primary'
@@ -273,6 +248,7 @@ const CategoryDetails = () => {
               />
             </div>
           </div>
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <form>
               <FormGroup className='create-product-form'>
@@ -299,6 +275,7 @@ const CategoryDetails = () => {
                   </div>
                 </div>
                 {/* product table */}
+                {!edit && (
                 <DataGrid
                   columns={columns}
                   rows={productDetails}
@@ -306,6 +283,7 @@ const CategoryDetails = () => {
                   autoHeight
                   pageSize={5}
                 />
+                )}
               </FormGroup>
             </form>
           </Paper>

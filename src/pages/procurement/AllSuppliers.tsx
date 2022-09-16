@@ -11,7 +11,6 @@ import { getAllSuppliers } from 'src/services/supplierService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'Supplier ID', flex: 1 },
   { field: 'name', headerName: 'Supplier Name', flex: 1 },
   { field: 'email', headerName: 'Supplier Email', flex: 1 },
   {
@@ -66,7 +65,7 @@ const AllSuppliers = () => {
 
   return (
     <div className='product-inventory'>
-      <h1>Manage Suppliers</h1>
+      <h1>All Suppliers</h1>
       <div className='grid-toolbar'>
         <div className='search-bar'>
           <Search />

@@ -10,7 +10,6 @@ import {
   Alert,
   Backdrop,
   CircularProgress
-  // Snackbar,
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -22,7 +21,6 @@ import {
   getAllProductCategories
 } from '../../services/categoryService';
 import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
-import { toast } from 'react-toastify';
 
 export type NewCategory = Partial<Category>;
 
@@ -57,20 +55,11 @@ const CreateCategory = () => {
         createCategory(newCategory),
         () => {
           setLoading(false);
-          toast.success('Category successfully created!', {
-            position: 'top-right',
-            autoClose: 6000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
+          setAlert({
+            severity: 'success',
+            message: 'Category successfully created! You will be redirected back to the All Categories page now.'
           });
-          navigate('/inventory/allCategories');
-          // setAlert({
-          //   severity: 'success',
-          //   message: 'Category successfully created!'
-          // });
+          setTimeout(() => navigate('/inventory/allCategories'), 3500);
         },
         (err) => {
           setLoading(false);
