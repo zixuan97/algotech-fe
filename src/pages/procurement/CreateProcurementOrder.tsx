@@ -73,6 +73,8 @@ const CreateProcurementOrder = () => {
     rate: string,
     quantity: string
   ) => {
+    setModalOpen(false);
+    setLoading(true);
     console.log(sku);
     await asyncFetchCallback(
       getProductBySku(sku),
@@ -87,13 +89,14 @@ const CreateProcurementOrder = () => {
         let updatedOrderItems = Object.assign([], orderItems);
         updatedOrderItems.push(newProcurementOrderItem);
         setOrderItems(updatedOrderItems);
-        setModalOpen(false);
+        setLoading(false);
         setAlert({
           severity: 'success',
           message: 'Product added to order successfully!'
         });
       },
       (err) => {
+        setLoading(false);
         setAlert({
           severity: 'error',
           message: 'Product could not be added to order, please try again!'
