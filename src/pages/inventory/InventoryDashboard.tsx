@@ -18,6 +18,7 @@ import {
 import apiRoot from '../../services/util/apiRoot';
 import StockPriorityCell from 'src/components/inventory/StockPriorityCell';
 import DownloadIcon from '@mui/icons-material/Download';
+import { DDMMYYYY, getTodayFormattedDate } from 'src/utils/dateUtils';
 
 export enum StockPriorityType {
   LOW = 1,
@@ -103,7 +104,7 @@ const InventoryDashboard = () => {
         });
         var link = document.createElement('a');
         link.href = window.URL.createObjectURL(blob);
-        link.download = 'Invoice.xlsx';
+        link.download = `InventoryData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`;
         link.click();
       }
     };
@@ -112,7 +113,9 @@ const InventoryDashboard = () => {
 
   const generateChartPdf = React.useCallback(async () => {
     if (pdfRef.current) {
-      const fileName = 'inventory-chart-levels.pdf';
+      const fileName = `InventoryTurnover-${getTodayFormattedDate(
+        DDMMYYYY
+      )}.pdf`;
       const pdf = createPdfWithHeaderImage(
         'Inventory Levels Chart',
         await createImageFromComponent(pdfRef.current)
