@@ -118,6 +118,7 @@ export interface ProcurementOrder {
   supplier_id: number;
   warehouse_address: string;
   supplier: Supplier;
+  total_amount: number;
   proc_order_items: ProcurementOrderItem[];
 }
 
