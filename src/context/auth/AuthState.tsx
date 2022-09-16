@@ -39,12 +39,18 @@ const AuthState = (props: PropsWithChildren) => {
     }
     asyncFetchCallback(
       getUserSvc(),
-      (user: User) =>
-        dispatch({
-          type: AuthActionTypes.USER_LOADED,
-          // res.data is the actual user data
-          payload: user
-        }),
+      (user: User) => {
+        if (user.status !== 'DISABLED') {
+          dispatch({
+            type: AuthActionTypes.USER_LOADED,
+            // res.data is the actual user data
+            payload: user
+          })
+        } else {
+          dispatch({ type: AuthActionTypes.AUTH_ERROR })
+        }
+      }
+      ,
       () => dispatch({ type: AuthActionTypes.AUTH_ERROR })
     );
   };

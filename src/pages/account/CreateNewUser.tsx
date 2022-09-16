@@ -8,7 +8,6 @@ import {
   TextField,
   MenuItem,
   Grid,
-  Alert,
   CircularProgress
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';

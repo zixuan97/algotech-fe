@@ -9,7 +9,6 @@ import {
   Grid,
   CircularProgress,
   Typography,
-  Alert,
   TextField,
   MenuItem
 } from '@mui/material';
@@ -106,6 +105,7 @@ const ViewAccount = () => {
   };
 
   const deleteAccount = () => {
+    setModalOpen(false);
     id &&
       asyncFetchCallback(
         deleteUserSvc(id),
@@ -115,7 +115,7 @@ const ViewAccount = () => {
             message: 'Account deleted.'
           });
           setModalOpen(false);
-          navigate('/accounts');
+          setTimeout(() => navigate('/accounts'), 3500);
         },
         () => {
           setModalOpen(false);

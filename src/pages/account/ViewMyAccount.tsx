@@ -8,7 +8,6 @@ import {
   TextField,
   Grid,
   Button,
-  Alert,
   Typography,
   CircularProgress,
   Accordion,
@@ -305,9 +304,9 @@ const ViewMyAccount = () => {
                                   required
                                   error={(newPassword === currentPassword || validator.isEmpty(currentPassword)) && showNewPwdError}
                                   helperText={
-                                    newPassword === currentPassword && showNewPwdError
+                                    newPassword === currentPassword && showCurrPwdError
                                       ? 'Current Password same as new password!'
-                                      : (validator.isEmpty(currentPassword) && showNewPwdError ? 'Current Password field is empty' : '')
+                                      : (validator.isEmpty(currentPassword) && showCurrPwdError ? 'Current Password field is empty' : '')
                                   }
                                   id='outlined-quantity'
                                   label='Current Password'
