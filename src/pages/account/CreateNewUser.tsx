@@ -16,7 +16,6 @@ import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import { roles } from 'src/components/account/accountTypes';
-import BottomButton from 'src/components/common/BottomButton';
 import { createUserSvc } from 'src/services/accountService';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
