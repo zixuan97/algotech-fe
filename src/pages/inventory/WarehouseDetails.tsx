@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
+  Backdrop,
   Box,
   FormGroup,
   TextField,
@@ -47,6 +48,7 @@ const columns: GridColDef[] = [
     field: 'action',
     headerName: 'Action',
     headerAlign: 'right',
+    align: 'right',
     flex: 1,
     renderCell: ProductCellAction
   }
@@ -60,7 +62,6 @@ interface ProductDetails {
 };
 
 const LocationDetails = () => {
-
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
@@ -69,50 +70,30 @@ const LocationDetails = () => {
   const location = current.state as Location;
 
   const [loading, setLoading] = React.useState<boolean>(true);
+  const [tableLoading, setTableLoading] = React.useState<boolean>(false);
+  const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
+
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
-  const [originalLocation, setOriginalLocation] = React.useState<Location>();
+
+  const [originalLocation, setOriginalLocation] = React.useState<Location>(location);
   const [editLocation, setEditLocation] = React.useState<Location>(location);
   const [productDetails, setProductDetails] = React.useState<
     ProductDetails[]
   >([]);
+
   const [edit, setEdit] = React.useState<boolean>(false);
-
-  const handleDeleteButtonClick = () => {
-    setLoading(true);
-    if (originalLocation) {
-      setLoading(false);
-      asyncFetchCallback(
-        deleteLocation(originalLocation.id),
-        () => {
-          toast.success('Warehouse successfully deleted.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
-          });
-          navigate('/inventory/warehouses');
-        },
-        () => {
-          toast.error('Error deleting warehouse! Try again later.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
-          });
-          navigate('/inventory/warehouses');
-        }
-      );
-    }
-  }
-
+  const [disableSave, setDisableSave] = React.useState<boolean>(true);
 
   React.useEffect(() => {
+    const shouldDisable = !(
+      editLocation?.name &&
+      editLocation?.address
+    );
+    setDisableSave(shouldDisable);
+  }, [editLocation?.name, editLocation?.address]);
+
+  React.useEffect(() => {
+    setTableLoading(true);
     if (id) {
       asyncFetchCallback(getLocationById(id), (res) => {
         setOriginalLocation(res);
@@ -134,12 +115,51 @@ const LocationDetails = () => {
             price: qty.price
           };
         })
-      ).then((res) => setProductDetails(res));
+      ).then(
+        (res) => {
+          setTableLoading(false);
+          setProductDetails(res);
+        },
+        () => setTableLoading(false)
+      );
     }
   }, [originalLocation]);
 
-
-
+  const handleDeleteButtonClick = () => {
+    setModalOpen(false);
+    setBackdropLoading(true);
+    if (originalLocation) {
+      asyncFetchCallback(
+        deleteLocation(originalLocation.id),
+        () => {
+          setBackdropLoading(false);
+          toast.success('Warehouse successfully deleted.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          navigate('/inventory/warehouses');
+        },
+        () => {
+          setBackdropLoading(false);
+          toast.error('Error deleting warehouse! Try again later.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          navigate('/inventory/warehouses');
+        }
+      );
+    }
+  }
 
   const handleFieldOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -154,9 +174,9 @@ const LocationDetails = () => {
   };
 
   const handleSave = async() => {
-    setLoading(true);
+    // setLoading(true);
     if (editLocation) {
-      setLoading(false);
+      setBackdropLoading(true);
       asyncFetchCallback(
         updateLocation(editLocation.id, editLocation.name, editLocation.stockQuantity, editLocation.address),
         () => {
@@ -169,6 +189,9 @@ const LocationDetails = () => {
             draggable: true,
             progress: undefined
           });
+          setBackdropLoading(false);
+          setEditLocation(editLocation);
+          setOriginalLocation(editLocation);
           // navigate('/inventory/warehouses');
         },
         () => {
@@ -181,18 +204,27 @@ const LocationDetails = () => {
             draggable: true,
             progress: undefined
           });
+          setBackdropLoading(false);
           // navigate('/inventory/warehouses');
         }
       );
     }
   }
 
-  const [open, setOpen] = React.useState(false);
-
   const title = `${edit ? 'Edit' : ''} Warehouse Details`;
 
   return (
     <div>
+      <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={backdropLoading}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop>
+
       <Tooltip title='Return to Previous Page' enterDelay={300}>
         <IconButton
           size='large'
@@ -213,6 +245,7 @@ const LocationDetails = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
+                disabled={edit && disableSave}
                 onClick={() => {
                   if (!edit) {
                     setEdit(true);
@@ -231,6 +264,7 @@ const LocationDetails = () => {
                   color='primary'
                   onClick={() => {
                     setEdit(false);
+                    setEditLocation(originalLocation);
                   }}
                 >
                   Discard Changes
@@ -304,6 +338,7 @@ const LocationDetails = () => {
                 <DataGrid
                   columns={columns}
                   rows={productDetails}
+                  loading={tableLoading}
                   autoHeight
                   pageSize={5}
                 />

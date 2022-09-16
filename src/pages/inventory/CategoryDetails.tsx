@@ -66,14 +66,14 @@ const CategoryDetails = () => {
   const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
 
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+
   const [originalCategory, setOriginalCategory] = React.useState<Category>(category);
   const [editCategory, setEditCategory] = React.useState<Category>(category);
-  const [productDetails, setProductDetails] = React.useState<ProductDetails[]>(
-    []
-  );
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [edit, setEdit] = React.useState<boolean>(false);
+  const [productDetails, setProductDetails] = React.useState<
+    ProductDetails[]
+  >([]);
 
+  const [edit, setEdit] = React.useState<boolean>(false);
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
 
   React.useEffect(() => {
@@ -83,6 +83,37 @@ const CategoryDetails = () => {
     );
     setDisableSave(shouldDisable);
   }, [editCategory?.name, editCategory?.productCategory]);
+
+  React.useEffect(() => {
+    setTableLoading(true);
+    if (id) {
+      asyncFetchCallback(getCategoryById(id), (res) => {
+        setOriginalCategory(res);
+        setEditCategory(res);
+        setLoading(false);
+      });
+    }
+  }, [id]);
+
+  React.useEffect(() => {
+    if (originalCategory) {
+      Promise.all(
+        originalCategory.productCategory.map(async (qty) => {
+          const product = await getProductById(qty.product_id);
+          return {
+            id: qty.product_id,
+            productName: product.name
+          };
+        })
+      ).then(
+      (res) =>  {
+        setTableLoading(false);
+        setProductDetails(res);
+      },
+      () => setTableLoading(false)
+      );
+    }
+  }, [originalCategory]);
 
   const handleDeleteButtonClick = () => {
     setModalOpen(false);
@@ -119,38 +150,6 @@ const CategoryDetails = () => {
       );
     }
   };
-
-  React.useEffect(() => {
-    setTableLoading(true);
-    if (id) {
-      asyncFetchCallback(getCategoryById(id), (res) => {
-        setOriginalCategory(res);
-        setEditCategory(res);
-        setEditCategory(res);
-        setLoading(false);
-      });
-    }
-  }, [id]);
-
-  React.useEffect(() => {
-    if (originalCategory) {
-      Promise.all(
-        originalCategory.productCategory.map(async (qty) => {
-          const product = await getProductById(qty.product_id);
-          return {
-            id: qty.product_id,
-            productName: product.name
-          };
-        })
-      ).then(
-      (res) =>  {
-        setTableLoading(false);
-        setProductDetails(res);
-      },
-      () => setTableLoading(false)
-      );
-    }
-  }, [originalCategory]);
 
   const handleFieldOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
