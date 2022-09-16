@@ -19,7 +19,6 @@ const LocationSelectCellAction = ({
   locations
 }: LocationSelectCellActionProps) => {
   const { id: gridId, field, value } = params;
-  console.log(field);
   const apiRef = useGridApiContext();
 
   const handleChange = (e: SelectChangeEvent<number>) => {
