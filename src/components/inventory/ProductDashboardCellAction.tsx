@@ -9,9 +9,6 @@ const ProductDashboardCellAction = ({ id }: GridRenderCellParams) => {
       <Button variant='contained' sx={{ fontSize: '0.75rem' }}>
         Place Procurement Order
       </Button>
-      <Button variant='contained' sx={{ fontSize: '0.75rem' }}>
-        Generate Inventory History
-      </Button>
     </div>
   );
 };

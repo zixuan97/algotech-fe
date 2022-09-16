@@ -10,10 +10,19 @@ import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { getAllProducts } from 'src/services/productService';
 import { useNavigate } from 'react-router';
 import { ProductCategory } from 'src/models/types';
+import { getAllBrands, getBrandById } from 'src/services/brandService';
+import { Brand } from '../../models/types';
 
-const columns: GridColDef[] = [
+const columns = (brands: Brand[]): GridColDef[] => [
   { field: 'sku', headerName: 'SKU', flex: 1 },
   { field: 'name', headerName: 'Product Name', flex: 1 },
+  {
+    field: 'brand_id',
+    headerName: 'Brand',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) =>
+      brands.find((brand) => brand.id === params.value)?.name ?? ''
+  },
   {
     field: 'productCategory',
     headerName: 'Category',
@@ -46,13 +55,24 @@ const columns: GridColDef[] = [
 const AllProducts = () => {
   const navigate = useNavigate();
 
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
   const [productData, setProductData] = React.useState<Product[]>([]);
   const [filteredData, setFilteredData] = React.useState<Product[]>([]);
+  const [brands, setBrands] = React.useState<Brand[]>([]);
 
   React.useEffect(() => {
     // TODO: implement error callback
-    asyncFetchCallback(getAllProducts(), setProductData);
+    setLoading(true);
+    asyncFetchCallback(
+      getAllProducts(),
+      (res) => {
+        setLoading(false);
+        setProductData(res);
+      },
+      () => setLoading(false)
+    );
+    asyncFetchCallback(getAllBrands(), setBrands);
   }, []);
 
   React.useEffect(() => {
@@ -66,8 +86,6 @@ const AllProducts = () => {
         : productData
     );
   }, [searchField, productData]);
-
-  console.log(filteredData);
 
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchField(e.target.value);
@@ -83,6 +101,7 @@ const AllProducts = () => {
             label='Search'
             margin='normal'
             fullWidth
+            placeholder='SKU, Product Name'
             onChange={handleSearchFieldChange}
           />
         </div>
@@ -95,7 +114,12 @@ const AllProducts = () => {
           Create Product
         </Button>
       </div>
-      <DataGrid columns={columns} rows={filteredData} autoHeight />
+      <DataGrid
+        columns={columns(brands)}
+        rows={filteredData}
+        loading={loading}
+        autoHeight
+      />
     </div>
   );
 };

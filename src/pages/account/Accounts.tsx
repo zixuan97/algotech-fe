@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AccountCellAction from 'src/components/account/AccountCellAction';
 import '../../styles/pages/accounts.scss';
-import { Button, TextField } from '@mui/material';
+import { Button, CircularProgress, TextField } from '@mui/material';
 import { User } from 'src/models/types';
 import { getAllUserSvc } from 'src/services/accountService';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
@@ -31,13 +31,15 @@ const Accounts = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredData, setFilteredData] = React.useState<User[]>([]);
   const [searchField, setSearchField] = React.useState<string>('');
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<boolean>(true);
 
   useEffect(() => {
+    setLoading(true);
     asyncFetchCallback(
       getAllUserSvc(),
       (users: Array<User>) => {
         setUsers(users);
+        setLoading(false);
       }
     );
   }, []);
@@ -63,7 +65,7 @@ const Accounts = () => {
   return (
     <div className='accounts'>
       <h1>User Accounts</h1>
-      <div className='grid-toolbar'>
+      <div className='grid-toolbar' >
         <div className='search-bar'>
           <Search />
           <TextField
@@ -73,17 +75,18 @@ const Accounts = () => {
             fullWidth
             onChange={handleSearchFieldChange}
           />
-        </div>
-        <Button
-          variant='contained'
-          size='large'
-          sx={{ height: 'fit-content' }}
-          onClick={() => {
-            navigate('/accounts/createNewUser');
-          }}
-        >
-          Create New User
-        </Button>
+          {loading && <CircularProgress color='secondary' />}
+        </div>          
+          <Button
+            variant='contained'
+            size='large'
+            sx={{ height: 'fit-content' }}
+            onClick={() => {
+              navigate('/accounts/createNewUser');
+            }}
+          >
+            Create New User
+          </Button>
       </div>
       <DataGrid columns={columns} rows={filteredData} autoHeight />
     </div>

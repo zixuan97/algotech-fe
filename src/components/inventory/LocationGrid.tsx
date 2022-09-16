@@ -14,12 +14,17 @@ import {
   GridEventListener,
   GridRowId,
   GridRenderEditCellParams,
-  GridValueFormatterParams
+  GridValueFormatterParams,
+  GridPreProcessEditCellProps,
+  GridValueSetterParams,
+  useGridApiContext
 } from '@mui/x-data-grid';
 import { Location } from 'src/models/types';
 import { ProductLocationRow } from 'src/pages/inventory/CreateProduct';
 import EditToolbarCellAction from './EditToolbarCellAction';
 import LocationSelectCellAction from './LocationSelectCellAction';
+import { TextField } from '@mui/material';
+import PositiveNumberEditCellAction from './PositiveNumberEditCellAction';
 
 type LocationGridProps = {
   locations: Location[];
@@ -33,12 +38,22 @@ export default function LocationGrid({
   productLocations,
   updateProductLocations
 }: LocationGridProps) {
+  const availableLocations = React.useMemo(
+    () =>
+      locations.filter(
+        (location) =>
+          !productLocations.find(
+            (prodLocation) => prodLocation.id === location.id
+          )
+      ),
+    [locations, productLocations]
+  );
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
     {}
   );
 
   const handleRowEditStart = (
-    params: GridRowParams,
+    _: GridRowParams,
     event: MuiEvent<React.SyntheticEvent>
   ) => {
     event.defaultMuiPrevented = true;
@@ -81,7 +96,10 @@ export default function LocationGrid({
     console.log(newRow);
     const updatedRow = {
       ...newRow,
-      name: locations.find((location) => location.id === newRow.id)?.name!,
+      name: availableLocations.find((location) => location.id === newRow.id)
+        ?.name!,
+      quantity: isNaN(newRow.quantity) ? 0 : newRow.quantity,
+      price: isNaN(newRow.price) ? 0 : newRow.price,
       isNew: false
     };
     updateProductLocations(
@@ -110,14 +128,28 @@ export default function LocationGrid({
       headerName: 'Quantity',
       type: 'number',
       flex: 1,
-      editable: true
+      editable: true,
+      //   preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
+      //     const { props, hasChanged } = params;
+      //     const hasError = hasChanged && props.value < 0;
+      //     return {
+      //       ...props,
+      //       error: hasError
+      //     };
+      //   },
+      renderEditCell: (params) => (
+        <PositiveNumberEditCellAction params={params} allowDecimals={false} />
+      )
     },
     {
       field: 'price',
       headerName: 'Price',
       type: 'number',
       flex: 1,
-      editable: true
+      editable: true,
+      renderEditCell: (params) => (
+        <PositiveNumberEditCellAction params={params} />
+      )
     },
     {
       field: 'actions',

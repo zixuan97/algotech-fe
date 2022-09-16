@@ -6,11 +6,10 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  Alert,
-  CircularProgress,
+  CircularProgress
 } from '@mui/material';
 import React, { useState } from 'react';
-import { AlertType } from 'src/components/common/Alert';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { forgetPasswordSvc } from 'src/services/accountService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 
@@ -29,7 +28,6 @@ const PasswordModal = ({
   body,
   focusPassthrough = false
 }: PasswordModalProps) => {
-
   const [loading, setLoading] = useState<boolean>(false);
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [recipientEmail, setRecipientEmail] = useState<string>('');
@@ -43,7 +41,8 @@ const PasswordModal = ({
           setLoading(false);
           setAlert({
             severity: 'success',
-            message: 'A reset password email has been sent to your provided email.'
+            message:
+              'A reset password email has been sent to your provided email.'
           });
         },
         () => {
@@ -61,47 +60,57 @@ const PasswordModal = ({
     setRecipientEmail(e.target.value);
   };
 
+  const keyDownHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleForgetPassword();
+    }
+  };
+
   return (
     <div>
-      <Dialog
-        open={open}
-        onClose={onClose}
-        aria-labelledby='alert-dialog-title'
-        aria-describedby='alert-dialog-description'
-      >
-        <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id='alert-dialog-description'>
-            {body}
-          </DialogContentText>
-          {alert && (
-            <Alert severity={alert.severity} onClose={() => setAlert(null)} style={{ margin: '1%' }}>
-              {alert.message}
-            </Alert>
-          )}
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Email Address"
-            type="email"
-            fullWidth
-            variant="standard"
-            onChange={handleChange}
-          />
-        </DialogContent>
-        <DialogActions>
-          {loading && <CircularProgress color='secondary' />}
-          <Button onClick={onClose} autoFocus={!focusPassthrough}>
-            Close
-          </Button>
-          <Button onClick={() => handleForgetPassword()} autoFocus={focusPassthrough}>
-            Send Email
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <form onSubmit={(handleForgetPassword)}>
+        <Dialog
+          open={open}
+          onClose={onClose}
+          aria-labelledby='alert-dialog-title'
+          aria-describedby='alert-dialog-description'
+        >
+          <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id='alert-dialog-description'>
+              {body}
+              {loading && <CircularProgress color='secondary' />}
+            </DialogContentText>
+            <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
+            <TextField
+              autoFocus
+              margin='dense'
+              id='name'
+              label='Email Address'
+              type='email'
+              fullWidth
+              variant='standard'
+              onChange={handleChange}
+              onKeyDown={keyDownHandler}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={onClose} autoFocus={!focusPassthrough}>
+              Close
+            </Button>
+            <Button
+              type="submit"
+              onClick={() => handleForgetPassword()}
+              autoFocus={focusPassthrough}
+            >
+              Send Email
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </form>
     </div>
   );
-}
+};
 
 export default PasswordModal;

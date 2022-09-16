@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Paper,
@@ -9,9 +9,8 @@ import {
   Grid,
   CircularProgress,
   Typography,
-  Alert,
   TextField,
-  MenuItem,
+  MenuItem
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -25,7 +24,7 @@ import {
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
-import { AlertType } from '../../components/common/Alert';
+import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
 import { roles } from 'src/components/account/accountTypes';
 import validator from 'validator';
 interface ModalProps {
@@ -67,7 +66,7 @@ const ViewAccount = () => {
   let params = new URLSearchParams(window.location.search);
   const navigate = useNavigate();
   const [user, setUser] = useState<User>(placeholderUser);
-  const [modalOpen, setModalOpen] = useState<boolean>(true);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [edit, setEdit] = useState<boolean>(false);
@@ -76,11 +75,10 @@ const ViewAccount = () => {
     body: '',
     funct: () => { }
   });
-
-  const loaded = useRef(false);
   const id = params.get('id');
 
   const handleDisableButtonClick = () => {
+    setModalOpen(true);
     setWrapParam({
       title: 'Disable Account',
       body: 'Are you sure you want to disable this account?',
@@ -89,6 +87,7 @@ const ViewAccount = () => {
   };
 
   const handleEnableButtonClick = () => {
+    setModalOpen(true);
     setWrapParam({
       title: 'Enable Account',
       body: 'Are you sure you want to enable this account?',
@@ -97,6 +96,7 @@ const ViewAccount = () => {
   };
 
   const handleDeleteButtonClick = () => {
+    setModalOpen(true);
     setWrapParam({
       title: 'Delete Account',
       body: 'Are you sure you want to delete this account?',
@@ -105,36 +105,42 @@ const ViewAccount = () => {
   };
 
   const deleteAccount = () => {
+    setModalOpen(false);
     id &&
       asyncFetchCallback(
         deleteUserSvc(id),
         () => {
           setAlert({
             severity: 'success',
-            message: 'Account deleted.'
+            message: 'Account deleted. You will be redirected back to the Accounts page.'
           });
           setModalOpen(false);
-          navigate('/accounts');
+          setTimeout(() => navigate('/accounts'), 3500);
         },
         () => {
+          setModalOpen(false);
           setAlert({
             severity: 'error',
             message: 'Cannot delete user at this point. Try again later.'
           });
         }
       );
-    setModalOpen(false);
   };
 
   const disableAccount = () => {
     id &&
       asyncFetchCallback(disableUserSvc(id), () => {
         setAlert({
-          severity: 'success',
+          severity: 'warning',
           message: 'Account disabled.'
         });
         setModalOpen(false);
         navigate(`/accounts/viewAccount?id=${id}`);
+        setUser((oldUser) => {
+          return {
+            ...oldUser, status: 'DISABLED'
+          }
+        })
       });
     setModalOpen(false);
   };
@@ -148,17 +154,14 @@ const ViewAccount = () => {
         });
         setModalOpen(false);
         navigate(`/accounts/viewAccount?id=${id}`);
+        setUser((oldUser) => {
+          return {
+            ...oldUser, status: 'ACTIVE'
+          }
+        })
       });
     setModalOpen(false);
   };
-
-  useEffect(() => {
-    if (loaded.current) {
-      setModalOpen(!modalOpen);
-    } else {
-      loaded.current = true;
-    }
-  }, [wrapParam]);
 
   useEffect(() => {
     id &&
@@ -257,39 +260,37 @@ const ViewAccount = () => {
               >
                 {edit ? 'SAVE CHANGES' : 'EDIT'}
               </Button>
-              <Button
-                type='submit'
-                variant='contained'
-                className='create-btn'
-                color='primary'
-                onClick={handleDeleteButtonClick}
-              >
-                DELETE
-              </Button>
-              <Button
-                type='submit'
-                variant='contained'
-                className='create-btn'
-                color='primary'
-                onClick={
-                  user?.status === 'ACTIVE'
-                    ? handleDisableButtonClick
-                    : handleEnableButtonClick
-                }
-              >
-                {user?.status === 'ACTIVE' ? 'DISABLE' : 'ENABLE'}
-              </Button>
+              {!edit &&
+                <Button
+                  type='submit'
+                  variant='contained'
+                  className='create-btn'
+                  color='primary'
+                  onClick={handleDeleteButtonClick}
+                >
+                  DELETE
+                </Button>
+              }
+
+              {!edit &&
+                <Button
+                  type='submit'
+                  variant='contained'
+                  className='create-btn'
+                  color='primary'
+                  onClick={
+                    user?.status === 'ACTIVE'
+                      ? handleDisableButtonClick
+                      : handleEnableButtonClick
+                  }
+                >
+                  {user?.status === 'ACTIVE' ? 'DISABLE' : 'ENABLE'}
+                </Button>
+              }
             </div>
           </div>
-          {alert && (
-            <Alert
-              severity={alert.severity}
-              onClose={() => setAlert(null)}
-              style={{ margin: '1%' }}
-            >
-              {alert.message}
-            </Alert>
-          )}
+
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <div className='content-body'>
               <div className='right-content'>
@@ -304,7 +305,9 @@ const ViewAccount = () => {
                         name='firstName'
                         placeholder='eg.: John'
                         error={!user.first_name}
-                        helperText={!user.first_name ? 'First Name is empty!' : ''}
+                        helperText={
+                          !user.first_name ? 'First Name is empty!' : ''
+                        }
                         value={user?.first_name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           userFieldOnChange(e, 'first_name')
@@ -328,7 +331,9 @@ const ViewAccount = () => {
                         name='lastName'
                         placeholder='eg.: Tan'
                         error={!user.last_name}
-                        helperText={!user.last_name ? 'Last Name is empty!' : ''}
+                        helperText={
+                          !user.last_name ? 'Last Name is empty!' : ''
+                        }
                         value={user?.last_name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           userFieldOnChange(e, 'last_name')
@@ -350,7 +355,11 @@ const ViewAccount = () => {
                         label='Email'
                         name='email'
                         placeholder='eg.: johntan@gmail.com'
-                        helperText={validator.isEmail(user.email) ? '' : 'Enter a valid email: example@email.com'}
+                        helperText={
+                          validator.isEmail(user.email)
+                            ? ''
+                            : 'Enter a valid email: example@email.com'
+                        }
                         error={!validator.isEmail(user.email)}
                         value={user?.email}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -386,7 +395,7 @@ const ViewAccount = () => {
                     ) : (
                       <div>
                         <h4>Role</h4>
-                        <Typography>{user?.role}</Typography>
+                        <Typography>{user?.role} ({user?.status})</Typography>
                       </div>
                     )}
                   </Grid>

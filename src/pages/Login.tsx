@@ -26,7 +26,6 @@ import PasswordModal from '../pages/account/PasswordModal';
 
 import logo from '../logo brown.png';
 
-
 const Login = () => {
   const authContext = React.useContext(AuthContext);
   const { login, clearErrors, isAuthenticated, error } = authContext;
@@ -77,8 +76,8 @@ const Login = () => {
         <CircularProgress color='inherit' />
       </Backdrop>
       <Box className='logo-box'>
+
         <img src={logo} className="App-logo" width={300} height={340}  />
-        
         <h1>The Kettle Gourmet</h1>
         <p>Enterprise Resource Planning System</p>
       </Box>
@@ -123,13 +122,21 @@ const Login = () => {
               </Alert>
             )}
             {/* the checkbox does nothing; i just followed the wireframe first lols */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <FormControlLabel
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center'
+              }}
+            >
+              {/* <FormControlLabel
                 control={<Checkbox defaultChecked />}
                 label='Stay signed in'
-              />
+              /> */}
 
-              <Link href="#" onClick={() => setShowDialog(true)}>Forget Password</Link>
+              <Link href='#' onClick={() => setShowDialog(true)}>
+                Forget Password
+              </Link>
             </div>
 
             <div style={{ marginTop: '2vh' }}>
@@ -149,7 +156,7 @@ const Login = () => {
         open={showDialog}
         onClose={() => setShowDialog(false)}
         title='Forget Password'
-        body='Enter the your login email. An email will be sent to you to reset your password.'
+        body='Enter your login email. An email will be sent to you to reset your password.'
       />
     </div>
   );

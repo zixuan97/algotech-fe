@@ -15,23 +15,23 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import { Location } from '../../models/types';
-import { createLocation } from '../../services/locationService';
+import { Supplier } from '../../models/types';
+import { createSupplier } from '../../services/supplierService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import { AlertType } from '../../components/common/TimeoutAlert';
 import { toast } from 'react-toastify';
 
-export type NewLocation = Partial<Location>;
+export type NewSupplier = Partial<Supplier>;
 
-const CreateWarehouse = () => {
+const CreateSupplier = () => {
   const navigate = useNavigate();
 
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [newLocation, setNewLocation] = React.useState<NewLocation>({});
+  const [newSupplier, setNewSupplier] = React.useState<NewSupplier>({});
 
-  const handleEditLocation = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewLocation((prev) => {
+  const handleEditSupplier = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewSupplier((prev) => {
       if (prev) {
         return { ...prev, [e.target.name]: e.target.value };
       } else {
@@ -43,13 +43,13 @@ const CreateWarehouse = () => {
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (newLocation) {
+    if (newSupplier) {
       setLoading(true);
       await asyncFetchCallback(
-        createLocation(newLocation),
+        createSupplier(newSupplier),
         () => {
           setLoading(false);
-          toast.success('Warehouse successfully created!', {
+          toast.success('Supplier successfully created!', {
             position: 'top-right',
             autoClose: 6000,
             hideProgressBar: false,
@@ -58,7 +58,7 @@ const CreateWarehouse = () => {
             draggable: true,
             progress: undefined
           });
-          navigate('/inventory/warehouses');
+          navigate('/orders/allSuppliers');
           // setAlert({
           //   severity: 'success',
           //   message: 'Warehouse successfully created!'
@@ -69,7 +69,7 @@ const CreateWarehouse = () => {
           setLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error creating warehouse: ${err.message}`
+            message: `Error creating supplier: ${err.message}`
           });
         }
       );
@@ -87,7 +87,7 @@ const CreateWarehouse = () => {
       <div className='create-product'>
         <Box className='create-product-box'>
           <div className='header-content'>
-            <h1>Create Warehouse</h1>
+            <h1>Create Supplier</h1>
           </div>
           {alert && (
             <Alert severity={alert.severity} onClose={() => setAlert(null)}>
@@ -112,21 +112,31 @@ const CreateWarehouse = () => {
                       required
                       fullWidth
                       id='outlined-required'
-                      label='Warehouse Name'
+                      label='Supplier Name'
                       name='name'
-                      value={newLocation?.name}
-                      onChange={handleEditLocation}
+                      value={newSupplier?.name}
+                      onChange={handleEditSupplier}
                       placeholder='eg.: Chai Chee Warehouse'
                     />
                     <TextField
                       required
                       fullWidth
                       id='outlined-required'
-                      label='Address'
+                      label='Supplier Email'
+                      name='email'
+                      value={newSupplier?.email}
+                      onChange={handleEditSupplier}
+                      placeholder='eg.: john@gmail.com'
+                    />
+                    <TextField
+                      required
+                      fullWidth
+                      id='outlined-required'
+                      label='Supplier Address'
                       name='address'
-                      value={newLocation?.address}
-                      onChange={handleEditLocation}
-                      placeholder='eg.: 123 Chai Chee Road, #01-02, Singapore 12345'
+                      value={newSupplier?.address}
+                      onChange={handleEditSupplier}
+                      placeholder='eg.: 123 Clementi Road, #01-01, Singapore 12345'
                     />
                   </div>
                 </div>
@@ -136,7 +146,7 @@ const CreateWarehouse = () => {
                     className='cancel-btn'
                     color='primary'
                     onClick={() =>
-                      navigate({ pathname: '/inventory/warehouses' })
+                      navigate({ pathname: '/orders/allSuppliers' })
                     }
                   >
                     Cancel
@@ -147,7 +157,7 @@ const CreateWarehouse = () => {
                     className='create-btn'
                     color='primary'
                   >
-                    Create Warehouse
+                    Create Supplier
                   </Button>
                 </div>
               </FormGroup>
@@ -159,4 +169,4 @@ const CreateWarehouse = () => {
   );
 };
 
-export default CreateWarehouse;
+export default CreateSupplier;

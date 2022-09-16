@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
+  Backdrop,
   Box,
   FormGroup,
   TextField,
@@ -14,21 +15,21 @@ import {
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { Category, Product, ProductCategory } from 'src/models/types';
-import ProductCellAction from 'src/components/inventory/ProductCellAction';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
+import { Category, Product, ProductCategory } from '../../models/types';
+import ProductCellAction from '../../components/inventory/ProductCellAction';
 import {
   getCategoryById,
   updateCategory,
-  deleteCategory
+  deleteCategory,
 } from '../../services/categoryService';
 import {
   getAllProductCategories,
-  getProductById
-} from 'src/services/productService';
+  getProductById,
+} from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import ConfirmationModal from 'src/components/common/ConfirmationModal';
-import { intersectionWith } from 'lodash';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
+// import { intersectionWith } from 'lodash';
 import { toast } from 'react-toastify';
 
 const columns: GridColDef[] = [
@@ -41,6 +42,7 @@ const columns: GridColDef[] = [
     field: 'action',
     headerName: 'Action',
     headerAlign: 'right',
+    align: 'right',
     flex: 1,
     renderCell: ProductCellAction
   }
@@ -60,50 +62,30 @@ const CategoryDetails = () => {
   const category = current.state as Category;
 
   const [loading, setLoading] = React.useState<boolean>(true);
-  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
-  const [originalCategory, setOriginalCategory] = React.useState<Category>();
-  const [editCategory, setEditCategory] = React.useState<Category>(category);
-  const [productDetails, setProductDetails] = React.useState<ProductDetails[]>(
-    []
-  );
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [edit, setEdit] = React.useState<boolean>(false);
+  const [tableLoading, setTableLoading] = React.useState<boolean>(false);
+  const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
 
-  const handleDeleteButtonClick = () => {
-    setLoading(true);
-    if (originalCategory) {
-      setLoading(false);
-      asyncFetchCallback(
-        deleteCategory(originalCategory.id),
-        () => {
-          toast.success('Category successfully deleted.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
-          });
-          navigate('/inventory/allCategories');
-        },
-        () => {
-          toast.error('Error deleting category! Try again later.', {
-            position: 'top-right',
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined
-          });
-          navigate('/inventory/allCategories');
-        }
-      );
-    }
-  };
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+
+  const [originalCategory, setOriginalCategory] = React.useState<Category>(category);
+  const [editCategory, setEditCategory] = React.useState<Category>(category);
+  const [productDetails, setProductDetails] = React.useState<
+    ProductDetails[]
+  >([]);
+
+  const [edit, setEdit] = React.useState<boolean>(false);
+  const [disableSave, setDisableSave] = React.useState<boolean>(true);
 
   React.useEffect(() => {
+    const shouldDisable = !(
+      editCategory?.name &&
+      editCategory?.productCategory
+    );
+    setDisableSave(shouldDisable);
+  }, [editCategory?.name, editCategory?.productCategory]);
+
+  React.useEffect(() => {
+    setTableLoading(true);
     if (id) {
       asyncFetchCallback(getCategoryById(id), (res) => {
         setOriginalCategory(res);
@@ -123,13 +105,51 @@ const CategoryDetails = () => {
             productName: product.name
           };
         })
-      ).then((res) => setProductDetails(res));
+      ).then(
+        (res) =>  {
+          setTableLoading(false);
+          setProductDetails(res);
+        },
+        () => setTableLoading(false)
+      );
     }
   }, [originalCategory]);
 
-  React.useEffect(() => {
-    asyncFetchCallback(getAllProductCategories(), setCategories);
-  }, []);
+  const handleDeleteButtonClick = () => {
+    setModalOpen(false);
+    setBackdropLoading(true);
+    if (originalCategory) {
+      asyncFetchCallback(
+        deleteCategory(originalCategory.id),
+        () => {
+          setBackdropLoading(false);
+          toast.success('Category successfully deleted.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          navigate('/inventory/allCategories');
+        },
+        () => {
+          setBackdropLoading(false);
+          toast.error('Error deleting category! Try again later.', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined
+          });
+          navigate('/inventory/allCategories');
+        }
+      );
+    }
+  };
 
   const handleFieldOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -144,9 +164,9 @@ const CategoryDetails = () => {
   };
 
   const handleSave = async () => {
-    setLoading(true);
+    // setLoading(true);
     if (editCategory) {
-      setLoading(false);
+      setBackdropLoading(true);
       asyncFetchCallback(
         updateCategory(editCategory),
         () => {
@@ -159,6 +179,9 @@ const CategoryDetails = () => {
             draggable: true,
             progress: undefined
           });
+          setBackdropLoading(false);
+          setEditCategory(editCategory);
+          setOriginalCategory(editCategory);
           // navigate('/inventory/allCategories');
         },
         () => {
@@ -171,6 +194,7 @@ const CategoryDetails = () => {
             draggable: true,
             progress: undefined
           });
+          setBackdropLoading(false);
           // navigate('/inventory/allCategories');
         }
       );
@@ -181,6 +205,16 @@ const CategoryDetails = () => {
 
   return (
     <div>
+      <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={backdropLoading}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop>
+
       <Tooltip title='Return to Previous Page' enterDelay={300}>
         <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
@@ -196,6 +230,7 @@ const CategoryDetails = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
+                disabled={edit && disableSave}
                 onClick={() => {
                   if (!edit) {
                     setEdit(true);
@@ -214,6 +249,7 @@ const CategoryDetails = () => {
                   color='primary'
                   onClick={() => {
                     setEdit(false);
+                    setEditCategory(originalCategory);
                   }}
                 >
                   Discard Changes
@@ -241,7 +277,7 @@ const CategoryDetails = () => {
             <form>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
-                  <div className='text-fields'>
+                  <div className='product-text-fields'>
                     {edit ? (
                       <TextField
                         required
@@ -266,6 +302,7 @@ const CategoryDetails = () => {
                 <DataGrid
                   columns={columns}
                   rows={productDetails}
+                  loading={tableLoading}
                   autoHeight
                   pageSize={5}
                 />

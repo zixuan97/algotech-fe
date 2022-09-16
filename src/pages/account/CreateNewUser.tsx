@@ -8,7 +8,6 @@ import {
   TextField,
   MenuItem,
   Grid,
-  Alert,
   CircularProgress
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
@@ -18,7 +17,8 @@ import { User } from 'src/models/types';
 import { roles } from 'src/components/account/accountTypes';
 import BottomButton from 'src/components/common/BottomButton';
 import { createUserSvc } from 'src/services/accountService';
-import { AlertType } from 'src/components/common/Alert';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import validator from 'validator';
 
 const CreateNewUser = () => {
   const placeholderUser: User = {
@@ -35,6 +35,9 @@ const CreateNewUser = () => {
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [newUser, setNewUser] = useState<User>(placeholderUser);
+  const [showFNError, setShowFNError] = useState<boolean>(false);
+  const [showLNError, setShowLNError] = useState<boolean>(false);
+  const [showRoleError, setShowRoleError] = useState<boolean>(false);
 
   const navigate = useNavigate();
   const handleCreateButtonClick = (e: any) => {
@@ -51,10 +54,14 @@ const CreateNewUser = () => {
         () => {
           setAlert({
             severity: 'success',
-            message: 'Account created.'
+            message: 'Account created. You will be redirected to the Accounts page now.'
           });
           setNewUser(placeholderUser);
           setLoading(false);
+          setShowFNError(false);
+          setShowLNError(false);
+          setShowRoleError(false);
+          setTimeout(() => navigate('/accounts'), 3500);
         },
         () => {
           setAlert({
@@ -90,15 +97,7 @@ const CreateNewUser = () => {
       <div className='center-div'>
         <Box className='center-box'>
           <h1>Create New User Account</h1>
-          {alert && (
-            <Alert
-              severity={alert.severity}
-              onClose={() => setAlert(null)}
-              style={{ margin: '1%' }}
-            >
-              {alert.message}
-            </Alert>
-          )}
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <form>
               <div className='content-body'>
@@ -107,41 +106,58 @@ const CreateNewUser = () => {
                     <Grid item xs={6}>
                       <TextField
                         fullWidth
-                        required
                         id='outlined-quantity'
                         label='First Name'
                         name='firstName'
                         placeholder='eg.: John'
                         value={newUser?.first_name}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        error={!newUser?.first_name && showFNError}
+                        helperText={
+                          !newUser?.first_name && showFNError
+                            ? 'First Name is empty!'
+                            : ''}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           userFieldOnChange(e, 'first_name')
+                          setShowFNError(true);
+                        }
                         }
                       />
                     </Grid>
                     <Grid item xs={6}>
                       <TextField
                         fullWidth
-                        required
                         id='outlined-quantity'
                         label='Last Name'
                         name='lastName'
                         placeholder='eg.: Tan'
                         value={newUser?.last_name}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        error={validator.isEmpty(newUser?.last_name) && showLNError}
+                        helperText={
+                          !newUser?.last_name && showLNError
+                            ? 'Last Name is empty!'
+                            : ''}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           userFieldOnChange(e, 'last_name')
+                          setShowLNError(true);
+                        }
+
                         }
                       />
                     </Grid>
 
                     <Grid item xs={12}>
                       <TextField
-                        required
                         fullWidth
                         id='outlined-quantity'
                         label='Email'
                         name='email'
                         placeholder='eg.: johntan@gmail.com'
                         value={newUser?.email}
+                        error={!validator.isEmail(newUser?.email) && !!newUser?.email}
+                        helperText={
+                          !validator.isEmail(newUser?.email) && !!newUser?.email
+                            ? 'Enter a valid email: example@email.com'
+                            : ''}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           userFieldOnChange(e, 'email')
                         }
@@ -149,14 +165,20 @@ const CreateNewUser = () => {
                     </Grid>
                     <Grid item xs={12}>
                       <TextField
-                        required
                         fullWidth
                         id='outlined-field'
                         select
                         label='Role'
                         value={newUser?.role}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        error={validator.isEmpty(newUser?.role) && !newUser?.role && showRoleError}
+                        helperText={
+                          validator.isEmpty(newUser?.role) && !newUser?.role && showRoleError
+                            ? 'Please select a role'
+                            : ''}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                           userFieldOnChange(e, 'role')
+                          setShowRoleError(true);
+                        }
                         }
                       >
                         {roles.map((option) => (
@@ -169,6 +191,7 @@ const CreateNewUser = () => {
                   </Grid>
                 </div>
               </div>
+              <div className="view-button-group">
               {loading && <CircularProgress color='secondary' />}
               <BottomButton
                 location='accounts'
@@ -176,6 +199,7 @@ const CreateNewUser = () => {
                 secondButtonText='CREATE ACCOUNT'
                 secondButtonFn={handleCreateButtonClick}
               />
+              </div>
             </form>
           </Paper>
         </Box>

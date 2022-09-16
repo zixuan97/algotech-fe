@@ -8,17 +8,12 @@ import {
 } from '@mui/x-data-grid';
 import { GridRenderCellParams } from '@mui/x-data-grid';
 import '../../styles/pages/procurement.scss';
-import {
-  Backdrop,
-  Button,
-  Chip,
-  ChipProps,
-  CircularProgress
-} from '@mui/material';
+import { Button, Chip, ChipProps } from '@mui/material';
 import { ProcurementOrder } from 'src/models/types';
 import { getAllProcurementOrders } from 'src/services/procurementService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import ViewOrderButton from 'src/components/procurement/ViewOrderButton';
+import OrderFulfilmentStatusCell from 'src/components/procurement/OrderFulfilmentStatusCell';
 
 function getChipProps(params: GridRenderCellParams): ChipProps {
   return {
@@ -54,11 +49,7 @@ const columns: GridColDef[] = [
     field: 'fulfilment_status',
     headerName: 'Fulfilment Status',
     flex: 1,
-    renderCell: (params) => {
-      return (
-        <Chip {...getChipProps(params)} style={{ fontFamily: 'Poppins' }} />
-      );
-    }
+    renderCell: OrderFulfilmentStatusCell
   },
   { field: 'total_amount', headerName: 'Order Total', type: 'number', flex: 1 },
   {
@@ -76,9 +67,18 @@ const AllProcurementOrders = () => {
   const [procurementOrders, setProcurementOrders] = React.useState<
     ProcurementOrder[]
   >([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    asyncFetchCallback(getAllProcurementOrders(), setProcurementOrders);
+    setLoading(true);
+    asyncFetchCallback(
+      getAllProcurementOrders(),
+      (res) => {
+        setLoading(false);
+        setProcurementOrders(res);
+      },
+      () => setLoading(false)
+    );
   }, []);
 
   return (
@@ -100,6 +100,7 @@ const AllProcurementOrders = () => {
           params.row.fulfilmentStatus === 'Arrived'
         }
         columns={columns}
+        loading={loading}
         rows={procurementOrders}
         autoHeight
       />

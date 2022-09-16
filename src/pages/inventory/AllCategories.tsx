@@ -1,22 +1,22 @@
 import React from 'react';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import CategoryCellAction from 'src/components/inventory/CategoryCellAction';
+import CategoryCellAction from '../../components/inventory/CategoryCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
 import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { Category } from '../../models/types';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getAllProductCategories } from 'src/services/productService';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
+import { getAllProductCategories } from '../../services/productService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  {field: 'id', headerName: 'Category ID', flex:1},
   {field: 'name', headerName: 'Category Name', flex:1},
   {
     field: 'action',
     headerName: 'Action',
     headerAlign: 'right',
+    align: 'right',
     flex: 1,
     renderCell: CategoryCellAction
   }
@@ -25,6 +25,7 @@ const columns: GridColDef[] = [
 const AllCategories = () => {
   const navigate = useNavigate();
 
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
   const [categoryData, setCategoryData] = React.useState<Category[]>([]);
   const [filteredData, setFilteredData] = React.useState<Category[]>([]);
@@ -32,7 +33,16 @@ const AllCategories = () => {
   React.useEffect(() => {
     // TODO: implement error callback
     // to do; write the categoryServices ts... vv this is WRONG
-    asyncFetchCallback(getAllProductCategories(), setCategoryData);
+    // asyncFetchCallback(getAllProductCategories(), setCategoryData);
+    setLoading(true);
+    asyncFetchCallback(
+      getAllProductCategories(),
+      (res) =>  {
+        setLoading(false);
+        setCategoryData(res);
+      },
+      () => setLoading(false)
+      );
   }, []);
 
   React.useEffect(() => {
@@ -75,7 +85,11 @@ const AllCategories = () => {
           Create Category
         </Button>
       </div>
-      <DataGrid columns={columns} rows={filteredData} autoHeight />
+      <DataGrid
+        columns={columns}
+        rows={filteredData}
+        loading={loading}
+        autoHeight />
     </div>
   );
 };

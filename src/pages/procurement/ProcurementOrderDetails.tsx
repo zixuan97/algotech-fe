@@ -8,8 +8,7 @@ import {
   Backdrop,
   CircularProgress,
   TextField,
-  MenuItem,
-  Icon
+  MenuItem
 } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import DisplayedField from 'src/components/common/DisplayedField';
@@ -30,6 +29,8 @@ import {
 import { ProcurementOrder, ProcurementOrderItem } from 'src/models/types';
 import { FulfilmentStatus } from 'src/models/types';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import apiRoot from 'src/services/util/apiRoot';
+import { toast } from 'react-toastify';
 
 const order = {
   order_id: '123456',
@@ -46,16 +47,6 @@ const columns: GridColDef[] = [
   { field: 'product_name', headerName: 'Product Name', flex: 1 },
   { field: 'rate', headerName: 'Rate per Unit', flex: 1 },
   { field: 'quantity', headerName: 'Quantity', flex: 1 }
-];
-
-const data = [
-  {
-    id: 1,
-    product_sku: '12345',
-    product_name: 'Nasi Lemak Popcorn',
-    rate: 5,
-    quantity: 10000
-  }
 ];
 
 const paymentStatusOptions = [
@@ -77,21 +68,27 @@ const ProcurementOrderDetails = () => {
   const [edit, setEdit] = React.useState<boolean>(false);
 
   React.useEffect(() => {
+    setLoading(true);
     if (id) {
-      asyncFetchCallback(getProcurementOrderById(id), (res) => {
-        let currentDate = new Date(res.order_date);
-        let stringOrderDate = currentDate.toDateString();
-        setOriginalOrderDate(stringOrderDate);
-        setOriginalOrderItems(res.proc_order_items);
-        setOriginalOrder(res);
-      });
+      asyncFetchCallback(
+        getProcurementOrderById(id),
+        (res) => {
+          let currentDate = new Date(res.order_date);
+          let stringOrderDate = currentDate.toDateString();
+          setOriginalOrderDate(stringOrderDate);
+          setOriginalOrderItems(res.proc_order_items);
+          setOriginalOrder(res);
+          setLoading(false);
+        },
+        () => setLoading(false)
+      );
     }
   }, [id]);
 
   const handleDownloadInvoice = async () => {
     if (id) {
       var xhr = new XMLHttpRequest();
-      xhr.open('POST', `http://localhost:4000/procurement/pdf/${id}`, true);
+      xhr.open('POST', `${apiRoot}/procurement/pdf/${id}`, true);
       xhr.responseType = 'arraybuffer';
       xhr.onload = function (e) {
         if (this.status == 200) {
@@ -100,7 +97,7 @@ const ProcurementOrderDetails = () => {
           });
           var link = document.createElement('a');
           link.href = window.URL.createObjectURL(blob);
-          link.download = 'Invoice.pdf';
+          link.download = 'PurchaseOrder.pdf';
           link.click();
         }
       };
@@ -120,10 +117,8 @@ const ProcurementOrderDetails = () => {
     });
   };
 
-  const handleOrderUpdate = async () => {
+  const handleOrderStatusUpdate = async () => {
     setLoading(true);
-
-    console.log(originalOrder?.description);
 
     let reqBody = {
       id: originalOrder?.id,
@@ -149,6 +144,48 @@ const ProcurementOrderDetails = () => {
             return originalOrder;
           }
         });
+        toast.success('Fulfilment Status Updated Succesfully.', {
+          position: 'top-right',
+          autoClose: 6000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
+        setLoading(false);
+      },
+      (err) => {}
+    );
+  };
+
+  const handleOrderUpdate = async () => {
+    setLoading(true);
+
+    let reqBody = {
+      id: originalOrder?.id,
+      description: originalOrder?.description,
+      payment_status: originalOrder?.payment_status,
+      fulfilment_status: originalOrder?.fulfilment_status
+    };
+
+    await asyncFetchCallback(
+      editProcurementOrder(reqBody),
+      (res) => {
+        setOriginalOrder((originalOrder) => {
+          if (originalOrder) {
+            return originalOrder;
+          }
+        });
+        toast.success('Procurement Order Updated Successfully.', {
+          position: 'top-right',
+          autoClose: 6000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined
+        });
         setLoading(false);
       },
       (err) => {}
@@ -169,8 +206,8 @@ const ProcurementOrderDetails = () => {
         <div className='button-container'>
           <Button
             variant='contained'
-            size='medium'
-            sx={{ width: 'fit-content' }}
+            // size='medium'
+            // sx={{ width: '10px' }}
             onClick={() => {
               if (!edit) {
                 setEdit(true);
@@ -247,7 +284,10 @@ const ProcurementOrderDetails = () => {
                 value={originalOrder?.payment_status}
               />
             )}
-            <DisplayedField label='Order Total' value={order.order_total} />
+            <DisplayedField
+              label='Order Total'
+              value={originalOrder?.total_amount}
+            />
           </div>
           <div className='horizontal-text-fields'>
             {edit ? (
@@ -278,7 +318,7 @@ const ProcurementOrderDetails = () => {
             )}
           </div>
           <div className='horizontal-text-fields'>
-            <DisplayedField label='Procurement Order Invoice' value='' />
+            <DisplayedField label='Purchase Order Invoice' value='' />
           </div>
           <div
             style={{
@@ -291,7 +331,7 @@ const ProcurementOrderDetails = () => {
               startIcon={<PictureAsPdfIcon />}
               onClick={handleDownloadInvoice}
             >
-              Invoice.pdf
+              PurchaseOrder.pdf
             </Button>
           </div>
           {/* <div
@@ -363,7 +403,7 @@ const ProcurementOrderDetails = () => {
                 variant='contained'
                 size='medium'
                 sx={{ width: 'fit-content' }}
-                onClick={handleOrderUpdate}
+                onClick={handleOrderStatusUpdate}
               >
                 {originalOrder?.fulfilment_status === 'CREATED'
                   ? 'Order Arrived'

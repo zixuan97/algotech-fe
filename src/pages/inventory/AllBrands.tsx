@@ -1,24 +1,24 @@
 import React from 'react';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import BrandCellAction from 'src/components/inventory/BrandCellAction';
+import BrandCellAction from '../../components/inventory/BrandCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
 import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { Brand } from '../../models/types';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import {
   getAllBrands,
 } from 'src/services/brandService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  {field: 'id', headerName: 'Brand ID', flex:1},
   {field: 'name', headerName: 'Brand Name', flex: 1 },
   {
     field: 'action',
     headerName: 'Action',
     headerAlign: 'right',
+    align: 'right',
     flex: 1,
     renderCell: BrandCellAction
   }
@@ -28,13 +28,22 @@ const AllBrands = () => {
 
   const navigate = useNavigate();
 
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
   const [brandData, setBrandData] = React.useState<Brand[]>([]);
   const [filteredData, setFilteredData] = React.useState<Brand[]>([]);
 
   React.useEffect(() => {
     // TODO: implement error callback
-    asyncFetchCallback(getAllBrands(), setBrandData);
+    setLoading(true);
+    asyncFetchCallback(
+      getAllBrands(),
+      (res) =>  {
+        setLoading(false);
+        setBrandData(res);
+      },
+      () => setLoading(false)
+      );
   }, []);
 
   React.useEffect(() => {
@@ -78,7 +87,11 @@ const AllBrands = () => {
           Create Brand
         </Button>
       </div>
-      <DataGrid columns={columns} rows={filteredData} autoHeight />
+      <DataGrid
+        columns={columns}
+        rows={filteredData}
+        loading={loading}
+        autoHeight />
     </div>
   );
 

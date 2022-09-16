@@ -16,11 +16,13 @@ import {
   InputLabel,
   Chip,
   SelectChangeEvent,
-  CircularProgress
+  CircularProgress,
+  Backdrop,
+  Toolbar
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
-import { ChevronLeft } from '@mui/icons-material';
-import { Category, Product, ProductCategory } from 'src/models/types';
+import { ChevronLeft, Delete } from '@mui/icons-material';
+import { Brand, Category, Product, ProductCategory } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   deleteProduct,
@@ -35,6 +37,13 @@ import { Location } from 'src/models/types';
 import LocationGrid from 'src/components/inventory/LocationGrid';
 import { randomId } from '@mui/x-data-grid-generator';
 import { intersectionWith, omit } from 'lodash';
+import TimeoutAlert, {
+  AlertType,
+  AxiosErrDataBody
+} from 'src/components/common/TimeoutAlert';
+import validator from 'validator';
+import { getBase64 } from 'src/utils/fileUtils';
+import { getBrandById } from 'src/services/brandService';
 
 const columns: GridColDef[] = [
   {
@@ -81,7 +90,11 @@ const ProductDetails = () => {
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
 
-  const [loading, setLoading] = React.useState<boolean>(true);
+  const imgRef = React.useRef<HTMLInputElement | null>(null);
+
+  const [disableSave, setDisableSave] = React.useState<boolean>(true);
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [originalProduct, setOriginalProduct] = React.useState<EditProduct>();
   const [editProduct, setEditProduct] = React.useState<EditProduct>();
@@ -91,14 +104,38 @@ const ProductDetails = () => {
   const [categories, setCategories] = React.useState<CategoryInterface[]>([]);
   const [edit, setEdit] = React.useState<boolean>(false);
 
-
   const [locations, setLocations] = React.useState<Location[]>([]);
   const [productLocations, setProductLocations] = React.useState<
     ProductLocationRow[]
   >([]);
 
+  // this is cancerous code, to remove this when we get the schema right
+  const [brand, setBrand] = React.useState<Brand>();
+
+  React.useEffect(() => {
+    const shouldDisable = !(
+      editProduct?.sku &&
+      editProduct?.name &&
+      editProduct?.brand_id &&
+      editProduct?.qtyThreshold
+    );
+    setDisableSave(shouldDisable);
+  }, [
+    editProduct?.sku,
+    editProduct?.name,
+    editProduct?.brand_id,
+    editProduct?.qtyThreshold
+  ]);
+
+  React.useEffect(() => {
+    if (editProduct?.brand_id) {
+      asyncFetchCallback(getBrandById(editProduct?.brand_id), setBrand);
+    }
+  }, [editProduct?.brand_id]);
+
   React.useEffect(() => {
     if (id) {
+      setLoading(true);
       asyncFetchCallback(getAllLocations(), setLocations);
       asyncFetchCallback(getProductById(id), (res) => {
         setOriginalProduct(() => {
@@ -116,7 +153,7 @@ const ProductDetails = () => {
               return {
                 id: category.category_id,
                 name: category.category_name
-              }
+              };
             })
           };
         });
@@ -135,7 +172,7 @@ const ProductDetails = () => {
               return {
                 id: category.category_id,
                 name: category.category_name
-              }
+              };
             })
           };
         });
@@ -159,20 +196,22 @@ const ProductDetails = () => {
       ).then((res) => {
         if (productLocations.length === 0) {
           setLocationDetails(res);
-          res.map((location) => {
-            setProductLocations(productLocation =>
-              [...productLocation, {
+          res.forEach((location) => {
+            setProductLocations((productLocation) => [
+              ...productLocation,
+              {
                 id: location.id,
                 name: location.name,
                 quantity: location.quantity,
                 price: location.price,
                 gridId: randomId()
-              }]);
-          })
+              }
+            ]);
+          });
         }
       });
     }
-  }, [originalProduct]);
+  }, [originalProduct, productLocations.length]);
 
   React.useEffect(() => {
     asyncFetchCallback(getAllProductCategories(), (res) => {
@@ -184,7 +223,7 @@ const ProductDetails = () => {
           };
         })
       );
-    })
+    });
   }, []);
 
   const handleEditProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -199,6 +238,7 @@ const ProductDetails = () => {
 
   const handleEditCategories = (e: SelectChangeEvent<string[]>) => {
     const inputCategories = e.target.value;
+    console.log(inputCategories);
     setEditProduct((prev) => {
       if (prev) {
         return {
@@ -207,12 +247,7 @@ const ProductDetails = () => {
             categories,
             inputCategories,
             (a, b) => a.name === b
-          ).map((cat) => {
-            return {
-              id: cat.id,
-              name: cat.name
-            } as CategoryInterface;
-          })
+          )
         };
       } else {
         return prev;
@@ -220,24 +255,31 @@ const ProductDetails = () => {
     });
   };
 
+  const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      getBase64(
+        e.target.files[0],
+        (res) =>
+          setEditProduct((prev) => {
+            console.log(res);
+            if (prev) {
+              return { ...prev, image: res as string };
+            } else {
+              return prev;
+            }
+          }),
+        (err) => console.log(err)
+      );
+    }
+  };
+
   const handleSave = async () => {
-    setLoading(true);
     if (editProduct) {
-      setEditProduct(
-        (prev) =>
-        ({
-          ...prev, categories, locations:
-            productLocations.map((item) => ({
-              id: item.id,
-              name: item.name,
-              quantity: item.quantity,
-              price: item.price
-            }))
-        })
-      )
+      setLoading(true);
       await asyncFetchCallback(
         updateProduct({
-          ...editProduct, categories, locations: productLocations.map((item) => ({
+          ...editProduct,
+          locations: productLocations.map((item) => ({
             id: item.id,
             name: item.name,
             quantity: item.quantity,
@@ -246,38 +288,54 @@ const ProductDetails = () => {
         }),
         () => {
           setOriginalProduct({
-            ...editProduct, categories, locations: productLocations.map((item) => ({
+            ...editProduct,
+            locations: productLocations.map((item) => ({
               id: item.id,
               name: item.name,
               quantity: item.quantity,
               price: item.price
             }))
           });
-          setLocationDetails(productLocations.map((item) => ({
-            id: item.id,
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price
-          })))
+          setLocationDetails(
+            productLocations.map((item) => ({
+              id: item.id,
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price
+            }))
+          );
+          setAlert({
+            message: 'Product edited successfully',
+            severity: 'success'
+          });
           setLoading(false);
         },
         (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
+          setAlert({
+            message: `An error occured: ${resData.message}`,
+            severity: 'error'
+          });
+          setEditProduct(originalProduct);
           setLoading(false);
         }
       );
-      setLoading(false);
     }
   };
 
   const handleDeleteProduct = async () => {
+    setModalOpen(false);
     setLoading(true);
     if (originalProduct) {
       await asyncFetchCallback(
         deleteProduct(originalProduct.id!),
         (res) => {
           setLoading(false);
-          // TODO: print out success
-          navigate({ pathname: '/inventory/allProducts' });
+          setAlert({
+            message: `Successfully deleted product with SKU: ${originalProduct.sku}`,
+            severity: 'success'
+          });
+          setTimeout(() => navigate('/inventory/allProducts'), 3000);
         },
         () => setLoading(false)
       );
@@ -288,6 +346,15 @@ const ProductDetails = () => {
 
   return (
     <div>
+      <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={loading}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop>
       <Tooltip title='Return to Previous Page' enterDelay={300}>
         <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
@@ -298,11 +365,12 @@ const ProductDetails = () => {
           <div className='header-content'>
             <h1>{title}</h1>
             <div className='button-group'>
-              {loading && <CircularProgress color='secondary' />}
+              {/* {loading && <CircularProgress color='secondary' />} */}
               <Button
                 variant='contained'
                 className='create-btn'
                 color='primary'
+                disabled={edit && disableSave}
                 onClick={() => {
                   if (!edit) {
                     setEdit(true);
@@ -324,14 +392,17 @@ const ProductDetails = () => {
                     setEditProduct(originalProduct);
                     setProductLocations([]);
                     locationDetails.map((location) => {
-                      setProductLocations(productLocation => [...productLocation, {
-                        id: location.id,
-                        name: location.name,
-                        quantity: location.quantity,
-                        price: location.price,
-                        gridId: randomId()
-                      }])
-                    })
+                      setProductLocations((productLocation) => [
+                        ...productLocation,
+                        {
+                          id: location.id,
+                          name: location.name,
+                          quantity: location.quantity,
+                          price: location.price,
+                          gridId: randomId()
+                        }
+                      ]);
+                    });
                   }}
                 >
                   DISCARD CHANGES
@@ -354,24 +425,67 @@ const ProductDetails = () => {
               />
             </div>
           </div>
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <form>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
-                  <Box
-                    sx={{
-                      width: 200,
-                      maxWidth: 300,
-                      height: 300,
-                      maxHeight: 500
-                    }}
-                  >
-                    <img
-                      src={editProduct?.image}
-                      alt='Product'
-                      style={{ maxWidth: '100%', maxHeight: '100%' }}
-                    />
-                  </Box>
+                  <div>
+                    <Box
+                      sx={{
+                        width: 200,
+                        maxWidth: 300,
+                        height: 300,
+                        maxHeight: 500,
+                        border: editProduct?.image ? '' : '1px solid lightgray'
+                      }}
+                      className={editProduct?.image ? '' : 'container-center'}
+                    >
+                      {editProduct?.image ? (
+                        <img
+                          src={editProduct.image}
+                          alt='Product'
+                          style={{ maxWidth: '100%', maxHeight: '100%' }}
+                        />
+                      ) : (
+                        <Typography>Product Image</Typography>
+                      )}
+                    </Box>
+                    {edit && (
+                      <Toolbar>
+                        <Button
+                          variant='outlined'
+                          component='label'
+                          size='small'
+                        >
+                          Upload Image
+                          <input
+                            ref={imgRef}
+                            hidden
+                            accept='image/*'
+                            type='file'
+                            onChange={handleImage}
+                          />
+                        </Button>
+                        {editProduct?.image && (
+                          <IconButton
+                            onClick={() => {
+                              // @ts-ignore
+                              imgRef.current.value = null;
+                              setEditProduct((prev) => {
+                                if (prev) {
+                                  return omit(prev, ['image']);
+                                }
+                                return prev;
+                              });
+                            }}
+                          >
+                            <Delete />
+                          </IconButton>
+                        )}
+                      </Toolbar>
+                    )}
+                  </div>
                   <div className='product-text-fields'>
                     {edit ? (
                       <TextField
@@ -381,6 +495,11 @@ const ProductDetails = () => {
                         label='SKU'
                         name='sku'
                         value={editProduct?.sku}
+                        error={validator.isEmpty(editProduct?.sku!)}
+                        helperText={
+                          validator.isEmpty(editProduct?.sku!)
+                            ? 'SKU is empty!'
+                            : ''}
                         onChange={handleEditProduct}
                         placeholder='eg.: SKU12345678'
                       />
@@ -397,6 +516,11 @@ const ProductDetails = () => {
                         label='Product Name'
                         name='name'
                         value={editProduct?.name}
+                        error={validator.isEmpty(editProduct?.name!)}
+                        helperText={
+                          validator.isEmpty(editProduct?.name!)
+                            ? 'Product Name is empty!'
+                            : ''}
                         onChange={handleEditProduct}
                         placeholder='eg.: Nasi Lemak Popcorn'
                       />
@@ -415,11 +539,7 @@ const ProductDetails = () => {
                           id='ProductCategories'
                           multiple
                           value={
-                            editProduct?.categories.map(
-                              (cat) => {
-                                return cat.name
-                              }
-                            ) ?? []
+                            editProduct?.categories.map((cat) => cat.name) ?? []
                           }
                           onChange={handleEditCategories}
                           input={<OutlinedInput label='Categories' />}
@@ -451,6 +571,11 @@ const ProductDetails = () => {
                         </div>
                       )
                     )}
+                    {brand && (
+                      <Typography sx={{ padding: '15px' }}>
+                        {`Brand: ${brand.name}`}
+                      </Typography>
+                    )}
                     {edit ? (
                       <TextField
                         required
@@ -458,6 +583,11 @@ const ProductDetails = () => {
                         label='Quantity Threshold'
                         name='qtyThreshold'
                         placeholder='e.g. 10'
+                        error={editProduct?.qtyThreshold! < (-1) || !editProduct?.qtyThreshold}
+                        helperText={
+                          editProduct?.qtyThreshold! < (-1) || !editProduct?.qtyThreshold
+                            ? 'Quantity Threshold is wrong!'
+                            : ''}
                         onChange={handleEditProduct}
                         value={editProduct?.qtyThreshold}
                       />
@@ -483,7 +613,6 @@ const ProductDetails = () => {
                     pageSize={5}
                   />
                 )}
-
               </FormGroup>
             </form>
           </Paper>
