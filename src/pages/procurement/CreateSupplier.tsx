@@ -10,7 +10,6 @@ import {
   Alert,
   Backdrop,
   CircularProgress
-  // Snackbar,
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -21,8 +20,6 @@ import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { toast } from 'react-toastify';
 import validator from 'validator';
-
-// export type NewSupplier = Partial<Supplier>;
 
 const CreateSupplier = () => {
   const placeholderSupplier: Supplier = {
@@ -74,16 +71,6 @@ const CreateSupplier = () => {
         createSupplier(newSupplier),
         () => {
           setLoading(false);
-          // toast.success('Supplier successfully created!', {
-          //   position: 'top-right',
-          //   autoClose: 6000,
-          //   hideProgressBar: false,
-          //   closeOnClick: true,
-          //   pauseOnHover: true,
-          //   draggable: true,
-          //   progress: undefined
-          // });
-          // navigate('/orders/allSuppliers');
           setAlert({
             severity: 'success',
             message: 'Supplier successfully created! You will be redirected back to the All Suppliers page now.'
@@ -114,11 +101,6 @@ const CreateSupplier = () => {
           <div className='header-content'>
             <h1>Create Supplier</h1>
           </div>
-          {/* {alert && (
-            <Alert severity={alert.severity} onClose={() => setAlert(null)}>
-              {alert.message}
-            </Alert>
-          )} */}
           <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <Backdrop

@@ -10,7 +10,6 @@ import {
   Alert,
   Backdrop,
   CircularProgress
-  // Snackbar,
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -19,7 +18,6 @@ import { Location } from '../../models/types';
 import { createLocation } from '../../services/locationService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
-// import { toast } from 'react-toastify';
 
 export type NewLocation = Partial<Location>;
 
@@ -49,16 +47,6 @@ const CreateWarehouse = () => {
         createLocation(newLocation),
         () => {
           setLoading(false);
-          // toast.success('Warehouse successfully created!', {
-          //   position: 'top-right',
-          //   autoClose: 6000,
-          //   hideProgressBar: false,
-          //   closeOnClick: true,
-          //   pauseOnHover: true,
-          //   draggable: true,
-          //   progress: undefined
-          // });
-          // navigate('/inventory/warehouses');
           setAlert({
             severity: 'success',
             message: 'Warehouse successfully created! You will be redirected back to the All Categories page now.'
@@ -89,11 +77,6 @@ const CreateWarehouse = () => {
           <div className='header-content'>
             <h1>Create Warehouse</h1>
           </div>
-          {/* {alert && (
-            <Alert severity={alert.severity} onClose={() => setAlert(null)}>
-              {alert.message}
-            </Alert>
-          )} */}
           <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />          
           <Paper elevation={2}>
             <Backdrop

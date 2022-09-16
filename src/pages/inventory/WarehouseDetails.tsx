@@ -11,7 +11,6 @@ import {
   Tooltip,
   Typography,
   CircularProgress,
-  Snackbar
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -27,7 +26,6 @@ import {
 import { getProductById } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-// import { toast } from 'react-toastify';
 import { omit } from 'lodash';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
@@ -150,16 +148,6 @@ const LocationDetails = () => {
         deleteLocation(originalLocation.id),
         () => {
           setBackdropLoading(false);
-          // toast.success('Warehouse successfully deleted.', {
-          //   position: 'top-right',
-          //   autoClose: 5000,
-          //   hideProgressBar: false,
-          //   closeOnClick: true,
-          //   pauseOnHover: true,
-          //   draggable: true,
-          //   progress: undefined
-          // });
-          // navigate('/inventory/warehouses');
           setAlert({
             severity: 'success',
             message: 'Warehouse successfully deleted. You will be redirected to the All Warehouses page now.'
@@ -167,17 +155,6 @@ const LocationDetails = () => {
           setTimeout(() => navigate('/inventory/allWarehouses'), 3500);
         },
         () => {
-          // setBackdropLoading(false);
-          // toast.error('Error deleting warehouse! Try again later.', {
-          //   position: 'top-right',
-          //   autoClose: 5000,
-          //   hideProgressBar: false,
-          //   closeOnClick: true,
-          //   pauseOnHover: true,
-          //   draggable: true,
-          //   progress: undefined
-          // });
-          // navigate('/inventory/warehouses');
           setAlert({
             severity: 'error',
             message: 'Error deleting category! Try again later.'
@@ -200,7 +177,6 @@ const LocationDetails = () => {
   };
 
   const handleSave = async () => {
-    // setLoading(true);
     if (editLocation) {
       setBackdropLoading(true);
       asyncFetchCallback(
@@ -208,15 +184,6 @@ const LocationDetails = () => {
           ...omit(editLocation, ['stockQuantity'])
         }),
         () => {
-          // toast.success('Warehouse successfully edited.', {
-          //   position: 'top-right',
-          //   autoClose: 5000,
-          //   hideProgressBar: false,
-          //   closeOnClick: true,
-          //   pauseOnHover: true,
-          //   draggable: true,
-          //   progress: undefined
-          // });
           setAlert({
             severity: 'success',
             message: 'Warehouse successfully edited.'
@@ -224,24 +191,13 @@ const LocationDetails = () => {
           setBackdropLoading(false);
           setEditLocation(editLocation);
           setOriginalLocation(editLocation);
-          // navigate('/inventory/warehouses');
         },
         () => {
-          // toast.error('Error editing warehouse! Try again later.', {
-          //   position: 'top-right',
-          //   autoClose: 5000,
-          //   hideProgressBar: false,
-          //   closeOnClick: true,
-          //   pauseOnHover: true,
-          //   draggable: true,
-          //   progress: undefined
-          // });
           setAlert({
             severity: 'error',
             message: 'Error editing warehouse! Try again later.'
           });
           setBackdropLoading(false);
-          // navigate('/inventory/warehouses');
         }
       );
     }
@@ -304,8 +260,6 @@ const LocationDetails = () => {
                 </Button>
               )}
               <Button
-                //disable --> if array !empty, disabled = true
-                // disabled={!!productDetails.length}
                 variant='contained'
                 className='create-btn'
                 color='primary'

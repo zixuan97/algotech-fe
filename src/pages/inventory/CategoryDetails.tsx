@@ -29,8 +29,6 @@ import {
 } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-// import { intersectionWith } from 'lodash';
-// import { toast } from 'react-toastify';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 const columns: GridColDef[] = [
@@ -125,16 +123,6 @@ const CategoryDetails = () => {
         deleteCategory(originalCategory.id),
         () => {
           setBackdropLoading(false);
-          // toast.success('Category successfully deleted.', {
-          //   position: 'top-right',
-          //   autoClose: 5000,
-          //   hideProgressBar: false,
-          //   closeOnClick: true,
-          //   pauseOnHover: true,
-          //   draggable: true,
-          //   progress: undefined
-          // });
-          // navigate('/inventory/allCategories');
           setAlert({
             severity: 'success',
             message: 'Category successfully deleted. You will be redirected to the All Categories page now.'
@@ -143,16 +131,6 @@ const CategoryDetails = () => {
         },
         () => {
           setBackdropLoading(false);
-          // toast.error('Error deleting category! Try again later.', {
-          //   position: 'top-right',
-          //   autoClose: 5000,
-          //   hideProgressBar: false,
-          //   closeOnClick: true,
-          //   pauseOnHover: true,
-          //   draggable: true,
-          //   progress: undefined
-          // });
-          // navigate('/inventory/allCategories');
           setAlert({
             severity: 'error',
             message: 'Error deleting category! Try again later.'
@@ -175,21 +153,11 @@ const CategoryDetails = () => {
   };
 
   const handleSave = async () => {
-    // setLoading(true);
     if (editCategory) {
       setBackdropLoading(true);
       asyncFetchCallback(
         updateCategory(editCategory),
         () => {
-          // toast.success('Category successfully edited.', {
-          //   position: 'top-right',
-          //   autoClose: 5000,
-          //   hideProgressBar: false,
-          //   closeOnClick: true,
-          //   pauseOnHover: true,
-          //   draggable: true,
-          //   progress: undefined
-          // });
           setAlert({
             severity: 'success',
             message: 'Category successfully edited.'
@@ -197,24 +165,13 @@ const CategoryDetails = () => {
           setBackdropLoading(false);
           setEditCategory(editCategory);
           setOriginalCategory(editCategory);
-          // navigate('/inventory/allCategories');
         },
         () => {
-          // toast.error('Error editing category! Try again later.', {
-          //   position: 'top-right',
-          //   autoClose: 5000,
-          //   hideProgressBar: false,
-          //   closeOnClick: true,
-          //   pauseOnHover: true,
-          //   draggable: true,
-          //   progress: undefined
-          // });
           setAlert({
             severity: 'error',
             message: 'Error editing category! Try again later.'
           });
           setBackdropLoading(false);
-          // navigate('/inventory/allCategories');
         }
       );
     }
@@ -275,7 +232,6 @@ const CategoryDetails = () => {
                 </Button>
               )}
               <Button
-                // disabled={!!productDetails.length}
                 variant='contained'
                 className='create-btn'
                 color='primary'

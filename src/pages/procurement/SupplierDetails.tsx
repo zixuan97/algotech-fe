@@ -1,7 +1,6 @@
 import React from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
-  Backdrop,
   Box,
   FormGroup,
   TextField,
@@ -10,8 +9,7 @@ import {
   IconButton,
   Tooltip,
   Typography,
-  CircularProgress,
-  Snackbar,
+  CircularProgress
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -23,7 +21,6 @@ import {
   updateSupplier
 } from '../../services/supplierService';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-// import { toast } from 'react-toastify';
 import { getAllSuppliers } from 'src/services/procurementService';
 import validator from 'validator';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
@@ -80,15 +77,6 @@ const SupplierDetails = () => {
           deleteSupplier(originalSupplier.id),
           () => {
             setBackdropLoading(false);
-            // toast.success('Supplier successfully deleted.', {
-            //   position: 'top-right',
-            //   autoClose: 5000,
-            //   hideProgressBar: false,
-            //   closeOnClick: true,
-            //   pauseOnHover: true,
-            //   draggable: true,
-            //   progress: undefined
-            // });
             setAlert({
               severity: 'success',
               message: 'Supplier successfully deleted. You will be redirected back to the All Brands page now.'
@@ -98,15 +86,6 @@ const SupplierDetails = () => {
           },
           () => {
             setBackdropLoading(false);
-            // toast.error('Error deleting supplier! Try again later.', {
-            //   position: 'top-right',
-            //   autoClose: 5000,
-            //   hideProgressBar: false,
-            //   closeOnClick: true,
-            //   pauseOnHover: true,
-            //   draggable: true,
-            //   progress: undefined
-            // });
             setAlert({
               severity: 'success',
               message: 'Error deleting supplier! Try again later.'
@@ -129,21 +108,11 @@ const SupplierDetails = () => {
     };
   
     const handleSave = async () => {
-      // setLoading(true);
       if (editSupplier) {
         setBackdropLoading(true);
         asyncFetchCallback(
           updateSupplier(editSupplier),
           () => {
-            // toast.success('Supplier successfully edited.', {
-            //   position: 'top-right',
-            //   autoClose: 5000,
-            //   hideProgressBar: false,
-            //   closeOnClick: true,
-            //   pauseOnHover: true,
-            //   draggable: true,
-            //   progress: undefined
-            // });
             setAlert({
               severity: 'success',
               message: 'Supplier successfully edited.'
@@ -153,15 +122,6 @@ const SupplierDetails = () => {
             setOriginalSupplier(editSupplier);
           },
           () => {
-            // toast.error('Error editing supplier! Try again later.', {
-            //   position: 'top-right',
-            //   autoClose: 5000,
-            //   hideProgressBar: false,
-            //   closeOnClick: true,
-            //   pauseOnHover: true,
-            //   draggable: true,
-            //   progress: undefined
-            // });
             setAlert({
               severity: 'error',
               message: 'Error editing supplier! Try again later.'
@@ -176,16 +136,6 @@ const SupplierDetails = () => {
   
     return (
       <div>
-        {/* <Backdrop
-        sx={{
-          color: '#fff',
-          zIndex: (theme) => theme.zIndex.drawer + 1
-        }}
-        open={backdropLoading}
-      >
-        <CircularProgress color='inherit' />
-      </Backdrop> */}
-
         <Tooltip title='Return to Previous Page' enterDelay={300}>
           <IconButton size='large' onClick={() => navigate(-1)}>
             <ChevronLeft />
