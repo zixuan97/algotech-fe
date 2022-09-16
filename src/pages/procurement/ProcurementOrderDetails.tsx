@@ -68,14 +68,20 @@ const ProcurementOrderDetails = () => {
   const [edit, setEdit] = React.useState<boolean>(false);
 
   React.useEffect(() => {
+    setLoading(true);
     if (id) {
-      asyncFetchCallback(getProcurementOrderById(id), (res) => {
-        let currentDate = new Date(res.order_date);
-        let stringOrderDate = currentDate.toDateString();
-        setOriginalOrderDate(stringOrderDate);
-        setOriginalOrderItems(res.proc_order_items);
-        setOriginalOrder(res);
-      });
+      asyncFetchCallback(
+        getProcurementOrderById(id),
+        (res) => {
+          let currentDate = new Date(res.order_date);
+          let stringOrderDate = currentDate.toDateString();
+          setOriginalOrderDate(stringOrderDate);
+          setOriginalOrderItems(res.proc_order_items);
+          setOriginalOrder(res);
+          setLoading(false);
+        },
+        () => setLoading(false)
+      );
     }
   }, [id]);
 
@@ -91,7 +97,7 @@ const ProcurementOrderDetails = () => {
           });
           var link = document.createElement('a');
           link.href = window.URL.createObjectURL(blob);
-          link.download = 'Invoice.pdf';
+          link.download = 'PurchaseOrder.pdf';
           link.click();
         }
       };
@@ -168,10 +174,6 @@ const ProcurementOrderDetails = () => {
       (res) => {
         setOriginalOrder((originalOrder) => {
           if (originalOrder) {
-            return {
-              ...originalOrder
-            };
-          } else {
             return originalOrder;
           }
         });
@@ -204,8 +206,8 @@ const ProcurementOrderDetails = () => {
         <div className='button-container'>
           <Button
             variant='contained'
-            size='medium'
-            sx={{ width: 'fit-content' }}
+            // size='medium'
+            // sx={{ width: '10px' }}
             onClick={() => {
               if (!edit) {
                 setEdit(true);
@@ -282,7 +284,10 @@ const ProcurementOrderDetails = () => {
                 value={originalOrder?.payment_status}
               />
             )}
-            <DisplayedField label='Order Total' value={order.order_total} />
+            <DisplayedField
+              label='Order Total'
+              value={originalOrder?.total_amount}
+            />
           </div>
           <div className='horizontal-text-fields'>
             {edit ? (
@@ -313,7 +318,7 @@ const ProcurementOrderDetails = () => {
             )}
           </div>
           <div className='horizontal-text-fields'>
-            <DisplayedField label='Procurement Order Invoice' value='' />
+            <DisplayedField label='Purchase Order Invoice' value='' />
           </div>
           <div
             style={{
@@ -326,7 +331,7 @@ const ProcurementOrderDetails = () => {
               startIcon={<PictureAsPdfIcon />}
               onClick={handleDownloadInvoice}
             >
-              Invoice.pdf
+              PurchaseOrder.pdf
             </Button>
           </div>
           {/* <div
