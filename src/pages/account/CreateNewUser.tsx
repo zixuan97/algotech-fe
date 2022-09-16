@@ -62,6 +62,7 @@ const CreateNewUser = () => {
           setShowFNError(false);
           setShowLNError(false);
           setShowRoleError(false);
+          setTimeout(() => navigate('/accounts'), 3500);
         },
         () => {
           setAlert({

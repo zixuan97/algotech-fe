@@ -62,8 +62,6 @@ const PasswordModal = ({
   };
 
   const keyDownHandler = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    console.log('User pressed: ', event.key);
-
     if (event.key === 'Enter') {
       event.preventDefault();
       handleForgetPassword();
