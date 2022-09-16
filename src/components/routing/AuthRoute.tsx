@@ -9,7 +9,7 @@ type AuthRouteProps = {
 
 const AuthRoute = ({ children, redirectTo }: AuthRouteProps): JSX.Element => {
   const authContext = useContext(AuthContext);
-  const { isAuthenticated, user } = authContext;
+  const { isAuthenticated } = authContext;
 
   return isAuthenticated ? children : <Navigate to={redirectTo} />;
 };
