@@ -25,7 +25,7 @@ import {
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
-import { AlertType } from '../../components/common/TimeoutAlert';
+import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
 import { roles } from 'src/components/account/accountTypes';
 import validator from 'validator';
 interface ModalProps {
@@ -74,7 +74,7 @@ const ViewAccount = () => {
   const [wrapParam, setWrapParam] = useState<wrapperParam>({
     title: '',
     body: '',
-    funct: () => {}
+    funct: () => { }
   });
   const id = params.get('id');
 
@@ -131,16 +131,16 @@ const ViewAccount = () => {
     id &&
       asyncFetchCallback(disableUserSvc(id), () => {
         setAlert({
-          severity: 'success',
+          severity: 'warning',
           message: 'Account disabled.'
         });
         setModalOpen(false);
         navigate(`/accounts/viewAccount?id=${id}`);
         setUser((oldUser) => {
           return {
-           ...oldUser, status: 'DISABLED'
-          } 
-         })
+            ...oldUser, status: 'DISABLED'
+          }
+        })
       });
     setModalOpen(false);
   };
@@ -155,9 +155,9 @@ const ViewAccount = () => {
         setModalOpen(false);
         navigate(`/accounts/viewAccount?id=${id}`);
         setUser((oldUser) => {
-         return {
-          ...oldUser, status: 'ACTIVE'
-         } 
+          return {
+            ...oldUser, status: 'ACTIVE'
+          }
         })
       });
     setModalOpen(false);
@@ -260,39 +260,37 @@ const ViewAccount = () => {
               >
                 {edit ? 'SAVE CHANGES' : 'EDIT'}
               </Button>
-              <Button
-                type='submit'
-                variant='contained'
-                className='create-btn'
-                color='primary'
-                onClick={handleDeleteButtonClick}
-              >
-                DELETE
-              </Button>
-              <Button
-                type='submit'
-                variant='contained'
-                className='create-btn'
-                color='primary'
-                onClick={
-                  user?.status === 'ACTIVE'
-                    ? handleDisableButtonClick
-                    : handleEnableButtonClick
-                }
-              >
-                {user?.status === 'ACTIVE' ? 'DISABLE' : 'ENABLE'}
-              </Button>
+              {!edit &&
+                <Button
+                  type='submit'
+                  variant='contained'
+                  className='create-btn'
+                  color='primary'
+                  onClick={handleDeleteButtonClick}
+                >
+                  DELETE
+                </Button>
+              }
+
+              {!edit &&
+                <Button
+                  type='submit'
+                  variant='contained'
+                  className='create-btn'
+                  color='primary'
+                  onClick={
+                    user?.status === 'ACTIVE'
+                      ? handleDisableButtonClick
+                      : handleEnableButtonClick
+                  }
+                >
+                  {user?.status === 'ACTIVE' ? 'DISABLE' : 'ENABLE'}
+                </Button>
+              }
             </div>
           </div>
-          {alert && (
-            <Alert
-              severity={alert.severity}
-              onClose={() => setAlert(null)}
-              style={{ margin: '1%' }}
-            >
-              {alert.message}
-            </Alert>
-          )}
+
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <div className='content-body'>
               <div className='right-content'>
@@ -397,7 +395,7 @@ const ViewAccount = () => {
                     ) : (
                       <div>
                         <h4>Role</h4>
-                        <Typography>{user?.role}</Typography>
+                        <Typography>{user?.role} ({user?.status})</Typography>
                       </div>
                     )}
                   </Grid>

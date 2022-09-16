@@ -9,9 +9,9 @@ type AuthRouteProps = {
 
 const AuthRoute = ({ children, redirectTo }: AuthRouteProps): JSX.Element => {
   const authContext = useContext(AuthContext);
-  const { isAuthenticated } = authContext;
+  const { isAuthenticated, user } = authContext;
 
-  return isAuthenticated ? children : <Navigate to={redirectTo} />;
+  return isAuthenticated && user?.status==='ACTIVE'? children : <Navigate to={redirectTo} />;
 };
 
 export default AuthRoute;
