@@ -174,8 +174,10 @@ const ViewAccount = () => {
           } else {
             setAlert({
               severity: 'error',
-              message: 'User does not exist.'
+              message: 'User does not exist. You will be redirected back to the Accounts page.'
             });
+            setLoading(false);
+            setTimeout(() => navigate('/accounts'), 3500);
           }
         }
       );
