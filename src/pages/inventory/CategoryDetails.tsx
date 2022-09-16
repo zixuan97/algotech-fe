@@ -106,11 +106,11 @@ const CategoryDetails = () => {
           };
         })
       ).then(
-      (res) =>  {
-        setTableLoading(false);
-        setProductDetails(res);
-      },
-      () => setTableLoading(false)
+        (res) =>  {
+          setTableLoading(false);
+          setProductDetails(res);
+        },
+        () => setTableLoading(false)
       );
     }
   }, [originalCategory]);

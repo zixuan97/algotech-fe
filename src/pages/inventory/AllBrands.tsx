@@ -13,7 +13,6 @@ import {
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  {field: 'id', headerName: 'Brand ID', flex:1},
   {field: 'name', headerName: 'Brand Name', flex: 1 },
   {
     field: 'action',
