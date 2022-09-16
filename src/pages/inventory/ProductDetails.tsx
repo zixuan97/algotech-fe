@@ -17,7 +17,6 @@ import {
   Chip,
   SelectChangeEvent,
   CircularProgress,
-  Alert,
   Backdrop,
   Toolbar
 } from '@mui/material';
@@ -490,6 +489,11 @@ const ProductDetails = () => {
                         label='SKU'
                         name='sku'
                         value={editProduct?.sku}
+                        error={validator.isEmpty(editProduct?.sku!)}
+                        helperText={
+                          validator.isEmpty(editProduct?.sku!)
+                            ? 'SKU is empty!'
+                            : ''}
                         onChange={handleEditProduct}
                         placeholder='eg.: SKU12345678'
                       />
@@ -506,6 +510,11 @@ const ProductDetails = () => {
                         label='Product Name'
                         name='name'
                         value={editProduct?.name}
+                        error={validator.isEmpty(editProduct?.name!)}
+                        helperText={
+                          validator.isEmpty(editProduct?.name!)
+                            ? 'Product Name is empty!'
+                            : ''}
                         onChange={handleEditProduct}
                         placeholder='eg.: Nasi Lemak Popcorn'
                       />
@@ -568,6 +577,11 @@ const ProductDetails = () => {
                         label='Quantity Threshold'
                         name='qtyThreshold'
                         placeholder='e.g. 10'
+                        error={editProduct?.qtyThreshold! < (-1) || !editProduct?.qtyThreshold}
+                        helperText={
+                          editProduct?.qtyThreshold! < (-1) || !editProduct?.qtyThreshold
+                            ? 'Quantity Threshold is empty!'
+                            : ''}
                         onChange={handleEditProduct}
                         value={editProduct?.qtyThreshold}
                       />

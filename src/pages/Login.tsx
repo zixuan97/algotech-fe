@@ -156,7 +156,7 @@ const Login = () => {
         open={showDialog}
         onClose={() => setShowDialog(false)}
         title='Forget Password'
-        body='Enter the your login email. An email will be sent to you to reset your password.'
+        body='Enter your login email. An email will be sent to you to reset your password.'
       />
     </div>
   );
