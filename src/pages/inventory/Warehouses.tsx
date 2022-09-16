@@ -11,7 +11,6 @@ import { getAllLocations } from 'src/services/locationService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  {field: 'id', headerName: 'Warehouse ID', flex:1},
   {field: 'name', headerName: 'Warehouse Name', flex:1},
   {
     field: 'stockQuantity',

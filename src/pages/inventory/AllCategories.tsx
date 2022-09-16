@@ -11,7 +11,6 @@ import { getAllProductCategories } from '../../services/productService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  {field: 'id', headerName: 'Category ID', flex:1},
   {field: 'name', headerName: 'Category Name', flex:1},
   {
     field: 'action',
