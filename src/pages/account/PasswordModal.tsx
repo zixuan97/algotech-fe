@@ -6,10 +6,9 @@ import {
   DialogContentText,
   DialogTitle,
   TextField,
-  CircularProgress,
-  FormControl
+  CircularProgress
 } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { forgetPasswordSvc } from 'src/services/accountService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
