@@ -60,7 +60,7 @@ const CreateProcurementOrder = () => {
       setModalOpen(true);
       setProductIdToDisplay(parseInt(id));
     }
-  }, []);
+  }, [id]);
 
   const handleEditProcurementOrder = async (
     e: React.ChangeEvent<HTMLInputElement>

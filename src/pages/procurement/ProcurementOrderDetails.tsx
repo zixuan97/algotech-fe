@@ -240,7 +240,7 @@ const ProcurementOrderDetails = () => {
             <DisplayedField label='Date' value={originalOrderDate} />
             <DisplayedField
               label='Supplier'
-              value={originalOrder?.supplier_id}
+              value={originalOrder?.supplier_name}
             />
           </div>
           <div className='horizontal-text-fields-two'>
