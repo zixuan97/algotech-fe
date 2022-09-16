@@ -14,7 +14,7 @@ import {
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
-import { User, UserRole } from 'src/models/types';
+import { User } from 'src/models/types';
 import { roles } from 'src/components/account/accountTypes';
 import { createUserSvc } from 'src/services/accountService';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
