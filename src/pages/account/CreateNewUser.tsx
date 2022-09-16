@@ -8,7 +8,8 @@ import {
   TextField,
   MenuItem,
   Grid,
-  CircularProgress
+  CircularProgress,
+  Button
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -192,13 +193,35 @@ const CreateNewUser = () => {
                 </div>
               </div>
               <div className="view-button-group">
-              {loading && <CircularProgress color='secondary' />}
-              <BottomButton
-                location='accounts'
-                firstButtonText='CANCEL'
-                secondButtonText='CREATE ACCOUNT'
-                secondButtonFn={handleCreateButtonClick}
-              />
+                {loading && <CircularProgress color='secondary' />}
+                <Button
+                  type='submit'
+                  variant='contained'
+                  className='create-btn'
+                  color='primary'
+                  onClick={() => {
+                    navigate(`/accounts`);
+                  }}
+                >
+                  CANCEL
+                </Button>
+                <Button
+                  disabled={!validator.isEmail(newUser.email) || validator.isEmpty(newUser?.last_name) || validator.isEmpty(newUser?.first_name)}
+                  type='submit'
+                  variant='contained'
+                  className='create-btn'
+                  color='primary'
+                  onClick={handleCreateButtonClick}
+                >
+                  CREATE ACCOUNT
+                </Button>
+
+                {/* <BottomButton
+                  location='accounts'
+                  firstButtonText='CANCEL'
+                  secondButtonText='CREATE ACCOUNT'
+                  secondButtonFn={handleCreateButtonClick}
+                /> */}
               </div>
             </form>
           </Paper>
