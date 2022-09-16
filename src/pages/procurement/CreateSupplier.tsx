@@ -16,7 +16,7 @@ import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
 import { Supplier } from '../../models/types';
-import { createLocation } from '../../services/locationService';
+import { createSupplier } from '../../services/supplierService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import { AlertType } from '../../components/common/TimeoutAlert';
 import { toast } from 'react-toastify';
@@ -46,7 +46,7 @@ const CreateSupplier = () => {
     if (newSupplier) {
       setLoading(true);
       await asyncFetchCallback(
-        createLocation(newSupplier),
+        createSupplier(newSupplier),
         () => {
           setLoading(false);
           toast.success('Supplier successfully created!', {
