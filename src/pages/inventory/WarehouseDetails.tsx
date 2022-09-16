@@ -152,12 +152,12 @@ const LocationDetails = () => {
             severity: 'success',
             message: 'Warehouse successfully deleted. You will be redirected to the All Warehouses page now.'
           });
-          setTimeout(() => navigate('/inventory/allWarehouses'), 3500);
+          setTimeout(() => navigate('/inventory/warehouses'), 3500);
         },
         () => {
           setAlert({
             severity: 'error',
-            message: 'Error deleting category! Try again later.'
+            message: 'Error deleting warehouse! Try again later.'
           });
         }
       );
