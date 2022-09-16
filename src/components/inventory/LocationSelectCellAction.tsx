@@ -9,12 +9,14 @@ import { Location } from 'src/models/types';
 
 type LocationSelectCellActionProps = {
   params: GridRenderCellParams<number>;
-  locations: Location[];
+  allLocations: Location[];
+  availableLocations: Location[];
 };
 
 const LocationSelectCellAction = ({
   params,
-  locations
+  allLocations,
+  availableLocations
 }: LocationSelectCellActionProps) => {
   const { id: gridId, field, value } = params;
   const apiRef = useGridApiContext();
@@ -32,10 +34,13 @@ const LocationSelectCellAction = ({
       <Select
         id='location-select'
         value={value}
+        renderValue={(value) =>
+          allLocations.find((loc) => loc.id === value)?.name
+        }
         size='small'
         onChange={handleChange}
       >
-        {locations.map((location) => (
+        {availableLocations.map((location) => (
           <MenuItem key={location.id} value={location.id}>
             {location.name}
           </MenuItem>

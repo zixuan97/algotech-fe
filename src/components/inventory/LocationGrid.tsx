@@ -43,7 +43,8 @@ export default function LocationGrid({
       locations.filter(
         (location) =>
           !productLocations.find(
-            (prodLocation) => prodLocation.id === location.id
+            (prodLocation) =>
+              prodLocation.id === location.id && !prodLocation.isNew
           )
       ),
     [locations, productLocations]
@@ -59,10 +60,7 @@ export default function LocationGrid({
     event.defaultMuiPrevented = true;
   };
 
-  const handleRowEditStop: GridEventListener<'rowEditStop'> = (
-    params,
-    event
-  ) => {
+  const handleRowEditStop: GridEventListener<'rowEditStop'> = (_, event) => {
     event.defaultMuiPrevented = true;
   };
 
@@ -93,11 +91,10 @@ export default function LocationGrid({
   };
 
   const processRowUpdate = (newRow: ProductLocationRow) => {
-    console.log(newRow);
+    console.log(newRow, 'row update');
     const updatedRow = {
       ...newRow,
-      name: availableLocations.find((location) => location.id === newRow.id)
-        ?.name!,
+      name: locations.find((location) => location.id === newRow.id)?.name!,
       quantity: isNaN(newRow.quantity) ? 0 : newRow.quantity,
       price: isNaN(newRow.price) ? 0 : newRow.price,
       isNew: false
@@ -120,7 +117,11 @@ export default function LocationGrid({
         return locations.find((location) => location.id === params.value)?.name;
       },
       renderEditCell: (params: GridRenderEditCellParams<number>) => (
-        <LocationSelectCellAction params={params} locations={locations} />
+        <LocationSelectCellAction
+          params={params}
+          allLocations={locations}
+          availableLocations={availableLocations}
+        />
       )
     },
     {
@@ -129,14 +130,6 @@ export default function LocationGrid({
       type: 'number',
       flex: 1,
       editable: true,
-      //   preProcessEditCellProps: (params: GridPreProcessEditCellProps) => {
-      //     const { props, hasChanged } = params;
-      //     const hasError = hasChanged && props.value < 0;
-      //     return {
-      //       ...props,
-      //       error: hasError
-      //     };
-      //   },
       renderEditCell: (params) => (
         <PositiveNumberEditCellAction params={params} allowDecimals={false} />
       )
@@ -213,7 +206,7 @@ export default function LocationGrid({
         toolbar: {
           setRows: updateProductLocations,
           setRowModesModel,
-          locations
+          availableLocations
         }
       }}
       experimentalFeatures={{ newEditingApi: true }}

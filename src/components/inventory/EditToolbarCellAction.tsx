@@ -19,11 +19,11 @@ interface EditToolbarProps {
   setRowModesModel: (
     newModel: (oldModel: GridRowModesModel) => GridRowModesModel
   ) => void;
-  locations: Location[];
+  availableLocations: Location[];
 }
 
 const EditToolbarCellAction = (props: EditToolbarProps) => {
-  const { setRows, setRowModesModel, locations } = props;
+  const { setRows, setRowModesModel, availableLocations } = props;
 
   const handleClick = () => {
     const gridId = randomId();
@@ -31,8 +31,8 @@ const EditToolbarCellAction = (props: EditToolbarProps) => {
       ...oldRows,
       {
         gridId,
-        id: locations[0].id,
-        name: '',
+        id: availableLocations[0].id,
+        name: availableLocations[0].name,
         price: 0,
         quantity: 0,
         isNew: true
@@ -46,7 +46,12 @@ const EditToolbarCellAction = (props: EditToolbarProps) => {
 
   return (
     <GridToolbarContainer>
-      <Button color='primary' startIcon={<AddIcon />} onClick={handleClick}>
+      <Button
+        color='primary'
+        startIcon={<AddIcon />}
+        onClick={handleClick}
+        disabled={!availableLocations.length}
+      >
         Add warehouse
       </Button>
     </GridToolbarContainer>

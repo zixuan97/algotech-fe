@@ -183,33 +183,39 @@ const ProductDetails = () => {
 
   React.useEffect(() => {
     if (originalProduct) {
-      Promise.all(
-        originalProduct.locations.map(async (qty) => {
-          const location = await getLocationById(qty.id);
-          return {
-            id: location.id,
-            name: location.name,
-            quantity: qty.quantity,
-            price: qty.price
-          };
-        })
-      ).then((res) => {
-        if (productLocations.length === 0) {
-          setLocationDetails(res);
-          res.forEach((location) => {
-            setProductLocations((productLocation) => [
-              ...productLocation,
-              {
-                id: location.id,
-                name: location.name,
-                quantity: location.quantity,
-                price: location.price,
-                gridId: randomId()
-              }
-            ]);
-          });
-        }
-      });
+      //   Promise.all(
+      //     originalProduct.locations.map(async (qty) => {
+      //       const location = await getLocationById(qty.id);
+      //       return {
+      //         id: location.id,
+      //         name: location.name,
+      //         quantity: qty.quantity,
+      //         price: qty.price
+      //       };
+      //     })
+      //   ).then((res) => {
+      //     if (productLocations.length === 0) {
+      //       setLocationDetails(res);
+      //       res.forEach((location) => {
+      //         setProductLocations((productLocation) => [
+      //           ...productLocation,
+      //           {
+      //             id: location.id,
+      //             name: location.name,
+      //             quantity: location.quantity,
+      //             price: location.price,
+      //             gridId: randomId()
+      //           }
+      //         ]);
+      //       });
+      //     }
+      //   });
+      setProductLocations(
+        originalProduct.locations.map((loc) => ({
+          ...loc,
+          gridId: randomId()
+        }))
+      );
     }
   }, [originalProduct, productLocations.length]);
 
@@ -297,12 +303,9 @@ const ProductDetails = () => {
       await asyncFetchCallback(
         updateProduct({
           ...editProduct,
-          locations: productLocations.map((item) => ({
-            id: item.id,
-            name: item.name,
-            quantity: item.quantity,
-            price: item.price
-          }))
+          locations: productLocations.map((prodLoc) =>
+            omit(prodLoc, ['gridId'])
+          )
         }),
         () => {
           setOriginalProduct({
