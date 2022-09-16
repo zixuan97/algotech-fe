@@ -178,9 +178,7 @@ const ViewAccount = () => {
             });
             navigate('/restricted');
           }
-          
-        },
-        () => {}
+        }
       );
   }, []);
 
