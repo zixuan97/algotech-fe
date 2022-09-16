@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { AlertColor, Alert as MuiAlert } from '@mui/material';
 
+export interface AxiosErrDataBody {
+  message: string;
+}
+
 export interface AlertType {
   severity: AlertColor;
   message: string;

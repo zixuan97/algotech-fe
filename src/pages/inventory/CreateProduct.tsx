@@ -35,7 +35,10 @@ import { getBase64 } from 'src/utils/fileUtils';
 import { getAllLocations } from 'src/services/locationService';
 import LocationGrid from 'src/components/inventory/LocationGrid';
 import { randomId } from '@mui/x-data-grid-generator';
-import { AlertType } from '../../components/common/TimeoutAlert';
+import {
+  AlertType,
+  AxiosErrDataBody
+} from '../../components/common/TimeoutAlert';
 
 export type NewProduct = Partial<Product> & {
   categories?: Category[];
@@ -193,10 +196,11 @@ const CreateProduct = () => {
           setTimeout(() => navigate('/inventory/allProducts'), 3000);
         },
         (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
           setLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error creating product: ${err.message}`
+            message: `Error creating product: ${resData.message}`
           });
         }
       );
@@ -367,7 +371,7 @@ const CreateProduct = () => {
                     variant='text'
                     className='cancel-btn'
                     color='primary'
-                    onClick={() => navigate(0)}
+                    onClick={() => navigate('/inventory/allProducts')}
                   >
                     CANCEL
                   </Button>
