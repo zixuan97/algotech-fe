@@ -112,7 +112,7 @@ const ViewAccount = () => {
         () => {
           setAlert({
             severity: 'success',
-            message: 'Account deleted.'
+            message: 'Account deleted. You will be redirected back to the Accounts page.'
           });
           setModalOpen(false);
           setTimeout(() => navigate('/accounts'), 3500);

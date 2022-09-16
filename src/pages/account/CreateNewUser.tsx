@@ -54,7 +54,7 @@ const CreateNewUser = () => {
         () => {
           setAlert({
             severity: 'success',
-            message: 'Account created.'
+            message: 'Account created. You will be redirected to the Accounts page now.'
           });
           setNewUser(placeholderUser);
           setLoading(false);
@@ -106,7 +106,6 @@ const CreateNewUser = () => {
                     <Grid item xs={6}>
                       <TextField
                         fullWidth
-                        required
                         id='outlined-quantity'
                         label='First Name'
                         name='firstName'
@@ -127,7 +126,6 @@ const CreateNewUser = () => {
                     <Grid item xs={6}>
                       <TextField
                         fullWidth
-                        required
                         id='outlined-quantity'
                         label='Last Name'
                         name='lastName'
@@ -149,7 +147,6 @@ const CreateNewUser = () => {
 
                     <Grid item xs={12}>
                       <TextField
-                        required
                         fullWidth
                         id='outlined-quantity'
                         label='Email'
@@ -168,7 +165,6 @@ const CreateNewUser = () => {
                     </Grid>
                     <Grid item xs={12}>
                       <TextField
-                        required
                         fullWidth
                         id='outlined-field'
                         select
