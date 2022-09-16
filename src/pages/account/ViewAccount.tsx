@@ -176,7 +176,6 @@ const ViewAccount = () => {
               severity: 'error',
               message: 'User does not exist.'
             });
-            navigate('/restricted');
           }
         }
       );

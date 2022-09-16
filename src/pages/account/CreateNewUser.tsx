@@ -205,7 +205,7 @@ const CreateNewUser = () => {
                   CANCEL
                 </Button>
                 <Button
-                  disabled={!validator.isEmail(newUser.email) || validator.isEmpty(newUser?.last_name) || validator.isEmpty(newUser?.first_name)}
+                  disabled={!validator.isEmail(newUser.email) || validator.isEmpty(newUser?.last_name) || validator.isEmpty(newUser?.first_name) || validator.isEmpty(newUser?.role)}
                   type='submit'
                   variant='contained'
                   className='create-btn'
