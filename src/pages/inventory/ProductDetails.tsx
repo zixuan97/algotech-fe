@@ -235,7 +235,7 @@ const ProductDetails = () => {
         }))
       );
     }
-  }, [originalProduct, productLocations.length]);
+  }, [originalProduct]);
 
   React.useEffect(() => {
     asyncFetchCallback(getAllProductCategories(), (res) => {
