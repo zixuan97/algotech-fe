@@ -168,11 +168,17 @@ const ViewAccount = () => {
       asyncFetchCallback(
         getUserDetailsSvc(id),
         (user: User) => {
-          setUser(user);
-          setLoading(false);
-        },
-        () => {
-          //handle error here
+          if(user) {
+            setUser(user);
+            setLoading(false);
+          } else {
+            setAlert({
+              severity: 'error',
+              message: 'User does not exist. You will be redirected back to the Accounts page.'
+            });
+            setLoading(false);
+            setTimeout(() => navigate('/accounts'), 3500);
+          }
         }
       );
   }, []);
