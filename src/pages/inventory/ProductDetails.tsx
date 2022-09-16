@@ -113,6 +113,24 @@ const ProductDetails = () => {
   const [brand, setBrand] = React.useState<Brand>();
 
   React.useEffect(() => {
+    id &&
+      asyncFetchCallback(
+        getProductById(id),
+        (product: Product) => {
+          console.log('hello world');
+          setLoading(false);
+        }, () => {
+          setAlert({
+            severity: 'error',
+            message: 'Product does not exist. You will be redirected back to the All Products page.'
+          });
+          setLoading(false);
+          setTimeout(() => navigate('/inventory/allProducts'), 3500);
+        }
+      );
+  }, [id, navigate]);
+
+  React.useEffect(() => {
     const shouldDisable = !(
       editProduct?.sku &&
       editProduct?.name &&

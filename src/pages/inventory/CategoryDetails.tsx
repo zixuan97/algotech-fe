@@ -77,6 +77,26 @@ const CategoryDetails = () => {
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
 
   React.useEffect(() => {
+    id &&
+      asyncFetchCallback(
+        getCategoryById(id),
+        (category: Category) => {
+          if(category) {
+            setOriginalCategory(category);
+            setLoading(false);
+          } else {
+            setAlert({
+              severity: 'error',
+              message: 'Category does not exist. You will be redirected back to the Manage Categories page.'
+            });
+            setLoading(false);
+            setTimeout(() => navigate('/inventory/allCategories'), 3500);
+          }
+        }
+      );
+  }, [id, navigate]);
+
+  React.useEffect(() => {
     const shouldDisable = !(
       editCategory?.name &&
       editCategory?.productCategory
@@ -125,7 +145,7 @@ const CategoryDetails = () => {
           setBackdropLoading(false);
           setAlert({
             severity: 'success',
-            message: 'Category successfully deleted. You will be redirected to the All Categories page now.'
+            message: 'Category successfully deleted. You will be redirected to the Manage Categories page now.'
           });
           setTimeout(() => navigate('/inventory/allCategories'), 3500);
         },

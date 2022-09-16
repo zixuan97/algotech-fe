@@ -74,6 +74,26 @@ const BrandDetails = () => {
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
 
   React.useEffect(() => {
+    id &&
+      asyncFetchCallback(
+        getBrandById(id),
+        (brand: Brand) => {
+          if(brand) {
+            setOriginalBrand(brand);
+            setLoading(false);
+          } else {
+            setAlert({
+              severity: 'error',
+              message: 'Brand does not exist. You will be redirected back to the Manage Brands page.'
+            });
+            setLoading(false);
+            setTimeout(() => navigate('/inventory/AllBrands'), 3500);
+          }
+        }
+      );
+  }, [id, navigate]);
+
+  React.useEffect(() => {
     const shouldDisable = !(
       editBrand?.name
     );
@@ -122,7 +142,7 @@ const BrandDetails = () => {
           setBackdropLoading(false);
           setAlert({
             severity: 'success',
-            message: 'Brand successfully deleted. You will be redirected back to the All Brands page now.'
+            message: 'Brand successfully deleted. You will be redirected back to the Manage Brands page now.'
           });
           setTimeout(() => navigate('/inventory/allBrands'), 3500);
         },
