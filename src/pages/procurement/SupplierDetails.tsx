@@ -47,6 +47,26 @@ const SupplierDetails = () => {
     const [disableSave, setDisableSave] = React.useState<boolean>(true);
     
     React.useEffect(() => {
+      id &&
+        asyncFetchCallback(
+          getSupplierById(id),
+          (supplier: Supplier) => {
+            if(supplier) {
+              setOriginalSupplier(supplier);
+              setLoading(false);
+            } else {
+              setAlert({
+                severity: 'error',
+                message: 'Supplier does not exist. You will be redirected back to the All Suppliers page.'
+              });
+              setLoading(false);
+              setTimeout(() => navigate('/orders/allSuppliers'), 3500);
+            }
+          }
+        );
+    }, [id, navigate]);
+    
+    React.useEffect(() => {
       const shouldDisable = !(
         editSupplier?.name &&
         editSupplier?.email &&
