@@ -14,11 +14,12 @@ import {
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
-import { User } from 'src/models/types';
-import { roles } from 'src/components/account/accountTypes';
+import { User, UserRole } from 'src/models/types';
 import { createUserSvc } from 'src/services/accountService';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
+
+const roles = Object.keys(UserRole).filter((v) => isNaN(Number(v)));
 
 export type NewUserType = Partial<User>;
 
@@ -102,15 +103,15 @@ const CreateNewUser = () => {
                         label='First Name'
                         name='firstName'
                         placeholder='eg.: John'
-                        value={newUser?.first_name}
-                        error={!newUser?.first_name && showFNError}
+                        value={newUser.firstName}
+                        error={!newUser.firstName && showFNError}
                         helperText={
-                          !newUser?.first_name && showFNError
+                          !newUser.firstName && showFNError
                             ? 'First Name is empty!'
                             : ''
                         }
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          userFieldOnChange(e, 'first_name');
+                          userFieldOnChange(e, 'firstName');
                           setShowFNError(true);
                         }}
                       />
@@ -122,17 +123,15 @@ const CreateNewUser = () => {
                         label='Last Name'
                         name='lastName'
                         placeholder='eg.: Tan'
-                        value={newUser?.last_name}
-                        error={
-                          validator.isEmpty(newUser.last_name!) && showLNError
-                        }
+                        value={newUser.lastName}
+                        error={!newUser.lastName && showLNError}
                         helperText={
-                          !newUser?.last_name && showLNError
+                          !newUser.lastName && showLNError
                             ? 'Last Name is empty!'
                             : ''
                         }
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          userFieldOnChange(e, 'last_name');
+                          userFieldOnChange(e, 'lastName');
                           setShowLNError(true);
                         }}
                       />
@@ -147,10 +146,10 @@ const CreateNewUser = () => {
                         placeholder='eg.: johntan@gmail.com'
                         value={newUser?.email}
                         error={
-                          !validator.isEmail(newUser.email!) && !!newUser?.email
+                          newUser.email !== undefined && !validator.isEmail(newUser.email!) && !!newUser?.email
                         }
                         helperText={
-                          !validator.isEmail(newUser.email!) && !!newUser?.email
+                          newUser.email !== undefined && !validator.isEmail(newUser.email!) && !!newUser?.email
                             ? 'Enter a valid email: example@email.com'
                             : ''
                         }
@@ -167,12 +166,12 @@ const CreateNewUser = () => {
                         label='Role'
                         value={newUser?.role}
                         error={
-                          validator.isEmpty(newUser.role!) &&
+                          newUser.role !== undefined && validator.isEmpty(newUser.role!) &&
                           !newUser?.role &&
                           showRoleError
                         }
                         helperText={
-                          validator.isEmpty(newUser.role!) &&
+                          newUser.role !== undefined &&  validator.isEmpty(newUser.role!) &&
                           !newUser?.role &&
                           showRoleError
                             ? 'Please select a role'
@@ -184,8 +183,8 @@ const CreateNewUser = () => {
                         }}
                       >
                         {roles.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
+                          <MenuItem key={option} value={option}>
+                            {option}
                           </MenuItem>
                         ))}
                       </TextField>
@@ -208,10 +207,10 @@ const CreateNewUser = () => {
                 </Button>
                 <Button
                   disabled={
-                    !validator.isEmail(newUser.email!) ||
-                    validator.isEmpty(newUser.last_name!) ||
-                    validator.isEmpty(newUser.first_name!) ||
-                    validator.isEmpty(newUser.role!)
+                    !newUser?.email ||
+                    !newUser?.lastName ||
+                    !newUser?.firstName ||
+                    !newUser?.role
                   }
                   type='submit'
                   variant='contained'
@@ -221,13 +220,6 @@ const CreateNewUser = () => {
                 >
                   CREATE ACCOUNT
                 </Button>
-
-                {/* <BottomButton
-                  location='accounts'
-                  firstButtonText='CANCEL'
-                  secondButtonText='CREATE ACCOUNT'
-                  secondButtonFn={handleCreateButtonClick}
-                /> */}
               </div>
             </form>
           </Paper>

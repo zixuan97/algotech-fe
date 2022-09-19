@@ -26,7 +26,7 @@ export const createUserSvc = (user: NewUserType): Promise<any> => {
   return axios.post(`${apiRoot}/user`, user).then((res) => res.data);
 };
 
-export const editUserSvc = (user: NewUserType): Promise<any> => {
+export const editUserSvc = (user: User): Promise<any> => {
   return axios.put(`${apiRoot}/user`, user).then((res) => res.data);
 };
 
