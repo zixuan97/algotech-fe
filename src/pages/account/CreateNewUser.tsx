@@ -20,21 +20,12 @@ import { createUserSvc } from 'src/services/accountService';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
 
-const CreateNewUser = () => {
-  const placeholderUser: User = {
-    id: 0,
-    email: '',
-    role: '',
-    status: '',
-    first_name: '',
-    last_name: '',
-    password: '',
-    isVerified: false
-  };
+export type NewUserType = Partial<User>;
 
+const CreateNewUser = () => {
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [newUser, setNewUser] = useState<User>(placeholderUser);
+  const [newUser, setNewUser] = useState<NewUserType>({});
   const [showFNError, setShowFNError] = useState<boolean>(false);
   const [showLNError, setShowLNError] = useState<boolean>(false);
   const [showRoleError, setShowRoleError] = useState<boolean>(false);
@@ -56,7 +47,7 @@ const CreateNewUser = () => {
             severity: 'success',
             message: 'Account created. You will be redirected to the Accounts page now.'
           });
-          setNewUser(placeholderUser);
+          setNewUser({});
           setLoading(false);
           setShowFNError(false);
           setShowLNError(false);
@@ -78,7 +69,7 @@ const CreateNewUser = () => {
     event: React.ChangeEvent<HTMLInputElement>,
     key: string
   ) => {
-    setNewUser((user: User) => {
+    setNewUser((user: NewUserType) => {
       return {
         ...user,
         [key]: event.target.value
@@ -131,7 +122,7 @@ const CreateNewUser = () => {
                         name='lastName'
                         placeholder='eg.: Tan'
                         value={newUser?.last_name}
-                        error={validator.isEmpty(newUser?.last_name) && showLNError}
+                        error={validator.isEmpty(newUser.last_name!) && showLNError}
                         helperText={
                           !newUser?.last_name && showLNError
                             ? 'Last Name is empty!'
@@ -153,9 +144,9 @@ const CreateNewUser = () => {
                         name='email'
                         placeholder='eg.: johntan@gmail.com'
                         value={newUser?.email}
-                        error={!validator.isEmail(newUser?.email) && !!newUser?.email}
+                        error={!validator.isEmail(newUser.email!) && !!newUser?.email}
                         helperText={
-                          !validator.isEmail(newUser?.email) && !!newUser?.email
+                          !validator.isEmail(newUser.email!) && !!newUser?.email
                             ? 'Enter a valid email: example@email.com'
                             : ''}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -170,9 +161,9 @@ const CreateNewUser = () => {
                         select
                         label='Role'
                         value={newUser?.role}
-                        error={validator.isEmpty(newUser?.role) && !newUser?.role && showRoleError}
+                        error={validator.isEmpty(newUser.role!) && !newUser?.role && showRoleError}
                         helperText={
-                          validator.isEmpty(newUser?.role) && !newUser?.role && showRoleError
+                          validator.isEmpty(newUser.role!) && !newUser?.role && showRoleError
                             ? 'Please select a role'
                             : ''}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
@@ -205,7 +196,7 @@ const CreateNewUser = () => {
                   CANCEL
                 </Button>
                 <Button
-                  disabled={!validator.isEmail(newUser.email) || validator.isEmpty(newUser?.last_name) || validator.isEmpty(newUser?.first_name) || validator.isEmpty(newUser?.role)}
+                  disabled={!validator.isEmail(newUser.email!) || validator.isEmpty(newUser.last_name!) || validator.isEmpty(newUser.first_name!) || validator.isEmpty(newUser.role!)}
                   type='submit'
                   variant='contained'
                   className='create-btn'

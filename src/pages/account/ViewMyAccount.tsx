@@ -25,24 +25,13 @@ import {
 } from 'src/services/accountService';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
-
-const placeholderUser: User = {
-  //note: id is temp holder, BE doesn't consume id on create
-  id: 0,
-  email: '',
-  role: '',
-  status: '',
-  first_name: '',
-  last_name: '',
-  password: '',
-  isVerified: true
-};
+import { NewUserType } from '../account/CreateNewUser';
 
 const ViewMyAccount = () => {
   const navigate = useNavigate();
   let params = new URLSearchParams(window.location.search);
   const id = params.get('id');
-  const [user, setUser] = useState<User>(placeholderUser);
+  const [user, setUser] = useState<NewUserType>({});
   const [edit, setEdit] = useState<boolean>(false);
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -73,7 +62,7 @@ const ViewMyAccount = () => {
     event: React.ChangeEvent<HTMLInputElement>,
     key: string
   ) => {
-    setUser((paramUser: User) => {
+    setUser((paramUser: NewUserType) => {
       return {
         ...paramUser,
         [key]: event.target.value
@@ -108,7 +97,7 @@ const ViewMyAccount = () => {
     e.preventDefault();
     setLoading(true);
     asyncFetchCallback(
-      updatePasswordSvc(user?.email, currentPassword, newPassword),
+      updatePasswordSvc(user.email!, currentPassword, newPassword),
       () => {
         setLoading(false);
         setAlert({
@@ -172,7 +161,7 @@ const ViewMyAccount = () => {
                 className='create-btn'
                 color='primary'
                 disabled={
-                  !validator.isEmail(user.email) ||
+                  !validator.isEmail(user.email!) ||
                   !user.first_name ||
                   !user.last_name
                 }
@@ -251,13 +240,13 @@ const ViewMyAccount = () => {
                           required
                           fullWidth
                           id='outlined-quantity'
-                          error={!validator.isEmail(user.email)}
+                          error={!validator.isEmail(user.email!)}
                           label='Email'
                           name='email'
                           placeholder='eg.: johntan@gmail.com'
                           value={user?.email}
                           helperText={
-                            validator.isEmail(user.email)
+                            validator.isEmail(user.email!)
                               ? ''
                               : 'Enter a valid email: example@email.com'
                           }
@@ -359,12 +348,12 @@ const ViewMyAccount = () => {
                                   fullWidth
                                   required
                                   error={
-                                   ( confirmPassword !== newPassword ||
-                                    confirmPassword === currentPassword ||
-                                    !validator.isLength(confirmPassword, {
-                                      min: 8,
-                                      max: undefined
-                                    })) && showCfmPwdError
+                                    (confirmPassword !== newPassword ||
+                                      confirmPassword === currentPassword ||
+                                      !validator.isLength(confirmPassword, {
+                                        min: 8,
+                                        max: undefined
+                                      })) && showCfmPwdError
                                   }
                                   helperText={
                                     !validator.isLength(newPassword, {

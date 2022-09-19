@@ -22,11 +22,12 @@ import {
   getUserDetailsSvc
 } from 'src/services/accountService';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
-import { User } from 'src/models/types';
+import { User, UserStatus } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
 import { roles } from 'src/components/account/accountTypes';
 import validator from 'validator';
+import { NewUserType } from '../account/CreateNewUser';
 interface ModalProps {
   wrapperParam: wrapperParam;
   modalOpen: boolean;
@@ -50,22 +51,10 @@ const WrapperModal = ({ wrapperParam, modalOpen, onClose }: ModalProps) => {
   );
 };
 
-const placeholderUser: User = {
-  //note: id is temp holder, BE doesn't consume id on create
-  id: 0,
-  email: '',
-  role: '',
-  status: '',
-  first_name: '',
-  last_name: '',
-  password: '',
-  isVerified: true
-};
-
 const ViewAccount = () => {
   let params = new URLSearchParams(window.location.search);
   const navigate = useNavigate();
-  const [user, setUser] = useState<User>(placeholderUser);
+  const [user, setUser] = useState<NewUserType>({});
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [alert, setAlert] = useState<AlertType | null>(null);
@@ -138,7 +127,7 @@ const ViewAccount = () => {
         navigate(`/accounts/viewAccount?id=${id}`);
         setUser((oldUser) => {
           return {
-            ...oldUser, status: 'DISABLED'
+            ...oldUser, status: UserStatus.DISABLED
           }
         })
       });
@@ -156,7 +145,7 @@ const ViewAccount = () => {
         navigate(`/accounts/viewAccount?id=${id}`);
         setUser((oldUser) => {
           return {
-            ...oldUser, status: 'ACTIVE'
+            ...oldUser, status: UserStatus.ACTIVE
           }
         })
       });
@@ -168,7 +157,7 @@ const ViewAccount = () => {
       asyncFetchCallback(
         getUserDetailsSvc(id),
         (user: User) => {
-          if(user) {
+          if (user) {
             setUser(user);
             setLoading(false);
           } else {
@@ -187,7 +176,7 @@ const ViewAccount = () => {
     event: React.ChangeEvent<HTMLInputElement>,
     key: string
   ) => {
-    setUser((paramUser: User) => {
+    setUser((paramUser: NewUserType) => {
       return {
         ...paramUser,
         [key]: event.target.value
@@ -255,7 +244,7 @@ const ViewAccount = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
-                disabled={edit && (!validator.isEmail(user.email) || validator.isEmpty(user?.last_name) || validator.isEmpty(user?.first_name))}
+                disabled={edit && (!validator.isEmail(user.email!) || validator.isEmpty(user.last_name!) || validator.isEmpty(user.first_name!))}
                 onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   if (!edit) {
                     setEdit(true);
@@ -363,11 +352,11 @@ const ViewAccount = () => {
                         name='email'
                         placeholder='eg.: johntan@gmail.com'
                         helperText={
-                          validator.isEmail(user.email)
+                          validator.isEmail(user.email!)
                             ? ''
                             : 'Enter a valid email: example@email.com'
                         }
-                        error={!validator.isEmail(user.email)}
+                        error={!validator.isEmail(user.email!)}
                         value={user?.email}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           userFieldOnChange(e, 'email')
