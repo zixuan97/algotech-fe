@@ -65,10 +65,10 @@ const ProcurementOrderDetails = () => {
       asyncFetchCallback(
         getProcurementOrderById(id),
         (res) => {
-          let currentDate = new Date(res.order_date);
+          let currentDate = new Date(res.orderDate);
           let stringOrderDate = currentDate.toDateString();
           setOriginalOrderDate(stringOrderDate);
-          setOriginalOrderItems(res.proc_order_items);
+          setOriginalOrderItems(res.procOrderItems);
           setOriginalOrder(res);
           setUpdatedOrder(res);
           setLoading(false);
@@ -121,9 +121,11 @@ const ProcurementOrderDetails = () => {
     let reqBody = {
       id: originalOrder?.id,
       description: originalOrder?.description,
-      payment_status: originalOrder?.payment_status,
+      payment_status: originalOrder?.paymentStatus,
       fulfilment_status:
-        originalOrder?.fulfilment_status === 'CREATED' ? 'ARRIVED' : 'COMPLETED'
+        originalOrder?.fulfilmentStatus === FulfilmentStatus.CREATED
+          ? FulfilmentStatus.ARRIVED
+          : FulfilmentStatus.COMPLETED
     };
 
     await asyncFetchCallback(
@@ -134,7 +136,7 @@ const ProcurementOrderDetails = () => {
             return {
               ...originalOrder,
               fulfilment_status:
-                originalOrder?.fulfilment_status === FulfilmentStatus.CREATED
+                originalOrder?.fulfilmentStatus === FulfilmentStatus.CREATED
                   ? FulfilmentStatus.ARRIVED
                   : FulfilmentStatus.COMPLETED
             };
@@ -158,8 +160,8 @@ const ProcurementOrderDetails = () => {
     let reqBody = {
       id: originalOrder?.id,
       description: updatedOrder?.description,
-      payment_status: updatedOrder?.payment_status,
-      fulfilment_status: originalOrder?.fulfilment_status
+      payment_status: updatedOrder?.paymentStatus,
+      fulfilment_status: originalOrder?.fulfilmentStatus
     };
 
     await asyncFetchCallback(
@@ -240,7 +242,7 @@ const ProcurementOrderDetails = () => {
             <DisplayedField label='Date' value={originalOrderDate} />
             <DisplayedField
               label='Supplier'
-              value={originalOrder?.supplier_name}
+              value={originalOrder?.supplier!.name}
             />
           </div>
           <div className='horizontal-text-fields-two'>
@@ -256,7 +258,7 @@ const ProcurementOrderDetails = () => {
                   id='payment-status-select-label'
                   label='Payment Status'
                   name='payment_status'
-                  value={updatedOrder?.payment_status}
+                  value={updatedOrder?.paymentStatus}
                   // defaultValue={originalOrder?.payment_status}
                   onChange={handleEditProcurementOrder}
                   select
@@ -272,12 +274,12 @@ const ProcurementOrderDetails = () => {
             ) : (
               <DisplayedField
                 label='Payment Status'
-                value={originalOrder?.payment_status}
+                value={originalOrder?.paymentStatus}
               />
             )}
             <DisplayedField
               label='Order Total'
-              value={originalOrder?.total_amount}
+              value={originalOrder?.totalAmount}
             />
           </div>
           <div className='horizontal-text-fields'>
@@ -357,11 +359,11 @@ const ProcurementOrderDetails = () => {
                   Order Arrived
                 </TimelineOppositeContent>
                 <TimelineSeparator>
-                  {(originalOrder?.fulfilment_status === 'ARRIVED' ||
-                    originalOrder?.fulfilment_status === 'COMPLETED') && (
+                  {(originalOrder?.fulfilmentStatus === 'ARRIVED' ||
+                    originalOrder?.fulfilmentStatus === 'COMPLETED') && (
                     <TimelineDot color='primary' />
                   )}
-                  {originalOrder?.fulfilment_status === 'CREATED' && (
+                  {originalOrder?.fulfilmentStatus === 'CREATED' && (
                     <TimelineDot variant='outlined' />
                   )}
                   <TimelineConnector />
@@ -375,10 +377,12 @@ const ProcurementOrderDetails = () => {
                   Order Completed
                 </TimelineOppositeContent>
                 <TimelineSeparator>
-                  {originalOrder?.fulfilment_status === 'COMPLETED' && (
+                  {originalOrder?.fulfilmentStatus ===
+                    FulfilmentStatus.COMPLETED && (
                     <TimelineDot color='primary' />
                   )}
-                  {originalOrder?.fulfilment_status !== 'COMPLETED' && (
+                  {originalOrder?.fulfilmentStatus !==
+                    FulfilmentStatus.COMPLETED && (
                     <TimelineDot variant='outlined' />
                   )}
                 </TimelineSeparator>
@@ -389,14 +393,14 @@ const ProcurementOrderDetails = () => {
             </Timeline>
           </React.Fragment>
           <div className='status-button-container'>
-            {originalOrder?.fulfilment_status !== 'COMPLETED' && (
+            {originalOrder?.fulfilmentStatus !== FulfilmentStatus.COMPLETED && (
               <Button
                 variant='contained'
                 size='medium'
                 sx={{ width: 'fit-content' }}
                 onClick={handleOrderStatusUpdate}
               >
-                {originalOrder?.fulfilment_status === 'CREATED'
+                {originalOrder?.fulfilmentStatus === FulfilmentStatus.CREATED
                   ? 'Order Arrived'
                   : 'Order Completed'}
               </Button>
