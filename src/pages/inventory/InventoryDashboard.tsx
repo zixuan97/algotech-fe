@@ -34,7 +34,7 @@ const getTotalQty = (stockQty: StockQuantity[] | undefined) =>
 
 const columns: GridColDef[] = [
   { field: 'sku', headerName: 'SKU', flex: 1 },
-  { field: 'name', headerName: 'Product Name', flex: 1 },
+  { field: 'name', headerName: 'Product Name', flex: 2 },
   {
     field: 'stockQuantity',
     headerName: 'Quantity',
@@ -69,7 +69,8 @@ const columns: GridColDef[] = [
     field: 'action',
     headerName: 'Action',
     headerAlign: 'right',
-    flex: 1,
+    align: 'right',
+    minWidth: 340,
     renderCell: ProductDashboardCellAction
   }
 ];
