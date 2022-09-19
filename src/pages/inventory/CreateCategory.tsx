@@ -65,7 +65,7 @@ const CreateCategory = () => {
           setLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error creating category: ${err.message}`
+            message: `Error creating category! Try again later.`
           });
         }
       );

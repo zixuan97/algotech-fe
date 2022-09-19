@@ -57,7 +57,7 @@ const CreateBrand = () => {
           setLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error creating supplier: ${err.message}. Try again later.`
+            message: `Error creating supplier! Try again later.`
           });
         }
       );

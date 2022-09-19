@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
+  Backdrop,
   Box,
   FormGroup,
   TextField,
@@ -156,11 +157,22 @@ const SupplierDetails = () => {
   
     return (
       <div>
+        <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={backdropLoading}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop>
+
         <Tooltip title='Return to Previous Page' enterDelay={300}>
           <IconButton size='large' onClick={() => navigate(-1)}>
             <ChevronLeft />
           </IconButton>
         </Tooltip>
+
         <div className='create-product'>
           <Box className='create-product-box'>
             <div className='header-content'>
