@@ -34,7 +34,7 @@ const columns: GridColDef[] = [
       return valueFormatted;
     }
   },
-  { field: 'supplier_id', headerName: 'Supplier ID', flex: 1 },
+  { field: 'supplier_name', headerName: 'Supplier Name', flex: 1 },
   {
     field: 'payment_status',
     headerName: 'Payment Status',
@@ -95,7 +95,6 @@ const AllProcurementOrders = () => {
         </Button>
       </div>
       <DataGrid
-        // checkboxSelection
         isRowSelectable={(params: GridRowParams) =>
           params.row.fulfilmentStatus === 'Arrived'
         }
