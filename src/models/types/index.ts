@@ -50,6 +50,7 @@ export interface Product {
   image?: string;
   qtyThreshold: number;
   brand: Brand;
+  categories: Category[];
   stockQuantity: StockQuantity[];
 }
 
