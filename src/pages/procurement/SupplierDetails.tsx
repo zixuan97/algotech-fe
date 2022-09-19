@@ -24,7 +24,10 @@ import {
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { getAllSuppliers } from 'src/services/procurementService';
 import validator from 'validator';
-import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import TimeoutAlert, {
+  AlertType,
+  AxiosErrDataBody
+ } from 'src/components/common/TimeoutAlert';
 
 const SupplierDetails = () => {
     const navigate = useNavigate();
@@ -105,11 +108,12 @@ const SupplierDetails = () => {
             setTimeout(() => navigate('/orders/allSuppliers'), 3500);
             
           },
-          () => {
+          (err) => {
+            const resData = err.response?.data as AxiosErrDataBody;            
             setBackdropLoading(false);
             setAlert({
               severity: 'success',
-              message: 'Error deleting supplier! Try again later.'
+              message: `Error deleting supplier: ${resData.message}`
             });
           }
         );
@@ -142,12 +146,13 @@ const SupplierDetails = () => {
             setEditSupplier(editSupplier);
             setOriginalSupplier(editSupplier);
           },
-          () => {
+          (err) => {
+            const resData = err.response?.data as AxiosErrDataBody;
+            setBackdropLoading(false);
             setAlert({
               severity: 'error',
-              message: 'Error editing supplier! Try again later.'
+              message: `Error editing supplier: ${resData.message}`
             });
-            setBackdropLoading(false);
           }
         );
       }

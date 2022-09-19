@@ -11,12 +11,11 @@ import {
   Tooltip,
   Typography,
   CircularProgress,
-  Snackbar
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { Category, Product, ProductCategory } from '../../models/types';
+import { Category } from '../../models/types';
 import ProductCellAction from '../../components/inventory/ProductCellAction';
 import {
   getCategoryById,
@@ -24,12 +23,14 @@ import {
   deleteCategory,
 } from '../../services/categoryService';
 import {
-  getAllProductCategories,
   getProductById,
 } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import TimeoutAlert, {
+  AlertType,
+  AxiosErrDataBody
+ } from 'src/components/common/TimeoutAlert';
 
 const columns: GridColDef[] = [
   {
@@ -149,11 +150,12 @@ const CategoryDetails = () => {
           });
           setTimeout(() => navigate('/inventory/allCategories'), 3500);
         },
-        () => {
+        (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
           setBackdropLoading(false);
           setAlert({
             severity: 'error',
-            message: 'Error deleting category! Try again later.'
+            message: `Error deleting category: ${resData.message}`
           });
         }
       );
@@ -186,12 +188,13 @@ const CategoryDetails = () => {
           setEditCategory(editCategory);
           setOriginalCategory(editCategory);
         },
-        () => {
+        (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
+          setBackdropLoading(false);
           setAlert({
             severity: 'error',
-            message: 'Error editing category! Try again later.'
+            message: `Error editing category: ${resData.message}`
           });
-          setBackdropLoading(false);
         }
       );
     }

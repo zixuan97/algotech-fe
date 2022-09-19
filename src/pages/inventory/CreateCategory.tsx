@@ -7,7 +7,6 @@ import {
   Button,
   Tooltip,
   IconButton,
-  Alert,
   Backdrop,
   CircularProgress
 } from '@mui/material';
@@ -20,8 +19,11 @@ import {
   createCategory,
   getAllProductCategories
 } from '../../services/categoryService';
-import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
-
+import TimeoutAlert, {
+  AlertType,
+  AxiosErrDataBody
+ } from 'src/components/common/TimeoutAlert';
+ 
 export type NewCategory = Partial<Category>;
 
 const CreateCategory = () => {
@@ -62,10 +64,11 @@ const CreateCategory = () => {
           setTimeout(() => navigate('/inventory/allCategories'), 3500);
         },
         (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
           setLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error creating category! Try again later.`
+            message: `Error creating category: ${resData.message}`
           });
         }
       );
