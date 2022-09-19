@@ -20,4 +20,3 @@ const useNext = <T>(value: T) => {
 };
 
 export default useNext;
-//test
