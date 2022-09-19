@@ -27,7 +27,10 @@ import { getProductById } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { omit } from 'lodash';
-import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import TimeoutAlert, {
+  AlertType,
+  AxiosErrDataBody
+ } from 'src/components/common/TimeoutAlert';
 
 const columns: GridColDef[] = [
   {
@@ -174,10 +177,12 @@ const LocationDetails = () => {
           });
           setTimeout(() => navigate('/inventory/warehouses'), 3500);
         },
-        () => {
+        (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
+          setBackdropLoading(false);
           setAlert({
             severity: 'error',
-            message: 'Error deleting warehouse! Try again later.'
+            message: `Error deleting warehouse: ${resData.message}`
           });
         }
       );
@@ -212,12 +217,13 @@ const LocationDetails = () => {
           setEditLocation(editLocation);
           setOriginalLocation(editLocation);
         },
-        () => {
+        (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
+          setBackdropLoading(false);
           setAlert({
             severity: 'error',
-            message: 'Error editing warehouse! Try again later.'
+            message: `Error editing warehouse: ${resData.message}`
           });
-          setBackdropLoading(false);
         }
       );
     }

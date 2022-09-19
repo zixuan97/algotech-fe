@@ -26,7 +26,10 @@ import {
 import { getProductById } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import TimeoutAlert, {
+  AlertType,
+  AxiosErrDataBody
+ } from 'src/components/common/TimeoutAlert';
 
 const columns: GridColDef[] = [
   {
@@ -146,11 +149,12 @@ const BrandDetails = () => {
           });
           setTimeout(() => navigate('/inventory/allBrands'), 3500);
         },
-        () => {
+        (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
           setBackdropLoading(false);
           setAlert({
             severity: 'error',
-            message: 'Error deleting brand! Try again later.'
+            message: `Error deleting brand: ${resData.message}`
           });
         }
       );
@@ -183,12 +187,13 @@ const handleSave = async() => {
         setEditBrand(editBrand);
         setOriginalBrand(editBrand);
       },
-      () => {
+      (err) => {
+        const resData = err.response?.data as AxiosErrDataBody;
+        setBackdropLoading(false);
         setAlert({
           severity: 'error',
-          message: 'Error editing brand! Try again later.'
+          message: `Error editing brand: ${resData.message}`
         });
-        setBackdropLoading(false);
       }
     );
   }

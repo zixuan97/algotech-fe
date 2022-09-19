@@ -7,7 +7,6 @@ import {
   Button,
   Tooltip,
   IconButton,
-  Alert,
   Backdrop,
   CircularProgress
 } from '@mui/material';
@@ -17,7 +16,10 @@ import { useNavigate } from 'react-router';
 import { Brand } from '../../models/types';
 import { createBrand } from '../../services/brandService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import TimeoutAlert, {
+  AlertType,
+  AxiosErrDataBody
+ } from 'src/components/common/TimeoutAlert';
 
 export type NewBrand = Partial<Brand>;
 
@@ -54,10 +56,11 @@ const CreateBrand = () => {
           setTimeout(() => navigate('/inventory/allBrands'), 3500);
         },
         (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
           setLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error creating supplier: ${err.message}. Try again later.`
+            message: `Error creating supplier: ${resData.message}`
           });
         }
       );
