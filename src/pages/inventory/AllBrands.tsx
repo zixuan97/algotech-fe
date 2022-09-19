@@ -7,13 +7,11 @@ import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { Brand } from '../../models/types';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import {
-  getAllBrands,
-} from 'src/services/brandService';
+import { getAllBrands } from 'src/services/brandService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  {field: 'name', headerName: 'Brand Name', flex: 1 },
+  { field: 'name', headerName: 'Brand Name', flex: 1 },
   {
     field: 'action',
     headerName: 'Action',
@@ -25,7 +23,6 @@ const columns: GridColDef[] = [
 ];
 
 const AllBrands = () => {
-
   const navigate = useNavigate();
 
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -38,12 +35,12 @@ const AllBrands = () => {
     setLoading(true);
     asyncFetchCallback(
       getAllBrands(),
-      (res) =>  {
+      (res) => {
         setLoading(false);
         setBrandData(res);
       },
       () => setLoading(false)
-      );
+    );
   }, []);
 
   React.useEffect(() => {
@@ -91,10 +88,10 @@ const AllBrands = () => {
         columns={columns}
         rows={filteredData}
         loading={loading}
-        autoHeight />
+        autoHeight
+      />
     </div>
   );
-
 };
 
 export default AllBrands;

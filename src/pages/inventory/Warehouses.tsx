@@ -11,7 +11,7 @@ import { getAllLocations } from 'src/services/locationService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  {field: 'name', headerName: 'Warehouse Name', flex:1},
+  { field: 'name', headerName: 'Warehouse Name', flex: 1 },
   {
     field: 'stockQuantity',
     headerName: 'Total Stock Quantity',
@@ -47,12 +47,12 @@ const Warehouses = () => {
     setLoading(true);
     asyncFetchCallback(
       getAllLocations(),
-      (res) =>  {
+      (res) => {
         setLoading(false);
         setWarehouseData(res);
       },
       () => setLoading(false)
-      );
+    );
   }, []);
 
   React.useEffect(() => {
@@ -70,10 +70,10 @@ const Warehouses = () => {
   console.log(filteredData);
 
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // here 
+    // here
     setSearchField(e.target.value);
   };
-  
+
   return (
     <div className='product-inventory'>
       <h1>Manage Warehouses</h1>
@@ -101,7 +101,8 @@ const Warehouses = () => {
         columns={columns}
         rows={filteredData}
         loading={loading}
-        autoHeight />
+        autoHeight
+      />
     </div>
   );
 };
