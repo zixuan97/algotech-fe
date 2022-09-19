@@ -49,7 +49,8 @@ const CreateBrand = () => {
           setLoading(false);
           setAlert({
             severity: 'success',
-            message: 'Brand successfully created! You will be redirected back to the All Brands page now.'
+            message:
+              'Brand successfully created! You will be redirected back to the All Brands page now.'
           });
           setTimeout(() => navigate('/inventory/allBrands'), 3500);
         },
@@ -76,7 +77,7 @@ const CreateBrand = () => {
           <div className='header-content'>
             <h1>Create Brand</h1>
           </div>
-          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />          
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <Backdrop
               sx={{

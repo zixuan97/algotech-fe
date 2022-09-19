@@ -3,6 +3,7 @@
  */
 import axios from 'axios';
 import { User } from 'src/models/types';
+import { NewUserType } from '../pages/account/CreateNewUser';
 import apiRoot from './util/apiRoot';
 
 export const getAllUserSvc = (): Promise<Array<User>> => {
@@ -21,11 +22,11 @@ export const enableUserSvc = (userId: string): Promise<any> => {
   return axios.put(`${apiRoot}/user/enable/${userId}`).then((res) => res.data);
 };
 
-export const createUserSvc = (user: User): Promise<any> => {
+export const createUserSvc = (user: NewUserType): Promise<any> => {
   return axios.post(`${apiRoot}/user`, user).then((res) => res.data);
 };
 
-export const editUserSvc = (user: User): Promise<any> => {
+export const editUserSvc = (user: NewUserType): Promise<any> => {
   return axios.put(`${apiRoot}/user`, user).then((res) => res.data);
 };
 
