@@ -11,7 +11,7 @@ import { getAllProductCategories } from '../../services/productService';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  {field: 'name', headerName: 'Category Name', flex:1},
+  { field: 'name', headerName: 'Category Name', flex: 1 },
   {
     field: 'action',
     headerName: 'Action',
@@ -37,12 +37,12 @@ const AllCategories = () => {
     setLoading(true);
     asyncFetchCallback(
       getAllProductCategories(),
-      (res) =>  {
+      (res) => {
         setLoading(false);
         setCategoryData(res);
       },
       () => setLoading(false)
-      );
+    );
   }, []);
 
   React.useEffect(() => {
@@ -89,7 +89,8 @@ const AllCategories = () => {
         columns={columns}
         rows={filteredData}
         loading={loading}
-        autoHeight />
+        autoHeight
+      />
     </div>
   );
 };

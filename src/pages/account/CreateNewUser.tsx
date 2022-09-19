@@ -34,8 +34,8 @@ const CreateNewUser = () => {
   const handleCreateButtonClick = (e: any) => {
     if (
       newUser.email &&
-      newUser.first_name &&
-      newUser.last_name &&
+      newUser.firstName &&
+      newUser.lastName &&
       newUser.role
     ) {
       setLoading(true);
@@ -45,7 +45,8 @@ const CreateNewUser = () => {
         () => {
           setAlert({
             severity: 'success',
-            message: 'Account created. You will be redirected to the Accounts page now.'
+            message:
+              'Account created. You will be redirected to the Accounts page now.'
           });
           setNewUser({});
           setLoading(false);
@@ -106,12 +107,12 @@ const CreateNewUser = () => {
                         helperText={
                           !newUser?.first_name && showFNError
                             ? 'First Name is empty!'
-                            : ''}
+                            : ''
+                        }
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          userFieldOnChange(e, 'first_name')
+                          userFieldOnChange(e, 'first_name');
                           setShowFNError(true);
-                        }
-                        }
+                        }}
                       />
                     </Grid>
                     <Grid item xs={6}>
@@ -122,17 +123,18 @@ const CreateNewUser = () => {
                         name='lastName'
                         placeholder='eg.: Tan'
                         value={newUser?.last_name}
-                        error={validator.isEmpty(newUser.last_name!) && showLNError}
+                        error={
+                          validator.isEmpty(newUser.last_name!) && showLNError
+                        }
                         helperText={
                           !newUser?.last_name && showLNError
                             ? 'Last Name is empty!'
-                            : ''}
+                            : ''
+                        }
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          userFieldOnChange(e, 'last_name')
+                          userFieldOnChange(e, 'last_name');
                           setShowLNError(true);
-                        }
-
-                        }
+                        }}
                       />
                     </Grid>
 
@@ -144,11 +146,14 @@ const CreateNewUser = () => {
                         name='email'
                         placeholder='eg.: johntan@gmail.com'
                         value={newUser?.email}
-                        error={!validator.isEmail(newUser.email!) && !!newUser?.email}
+                        error={
+                          !validator.isEmail(newUser.email!) && !!newUser?.email
+                        }
                         helperText={
                           !validator.isEmail(newUser.email!) && !!newUser?.email
                             ? 'Enter a valid email: example@email.com'
-                            : ''}
+                            : ''
+                        }
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           userFieldOnChange(e, 'email')
                         }
@@ -161,16 +166,22 @@ const CreateNewUser = () => {
                         select
                         label='Role'
                         value={newUser?.role}
-                        error={validator.isEmpty(newUser.role!) && !newUser?.role && showRoleError}
+                        error={
+                          validator.isEmpty(newUser.role!) &&
+                          !newUser?.role &&
+                          showRoleError
+                        }
                         helperText={
-                          validator.isEmpty(newUser.role!) && !newUser?.role && showRoleError
+                          validator.isEmpty(newUser.role!) &&
+                          !newUser?.role &&
+                          showRoleError
                             ? 'Please select a role'
-                            : ''}
+                            : ''
+                        }
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                          userFieldOnChange(e, 'role')
+                          userFieldOnChange(e, 'role');
                           setShowRoleError(true);
-                        }
-                        }
+                        }}
                       >
                         {roles.map((option) => (
                           <MenuItem key={option.value} value={option.value}>
@@ -182,7 +193,7 @@ const CreateNewUser = () => {
                   </Grid>
                 </div>
               </div>
-              <div className="view-button-group">
+              <div className='view-button-group'>
                 {loading && <CircularProgress color='secondary' />}
                 <Button
                   type='submit'
@@ -196,7 +207,12 @@ const CreateNewUser = () => {
                   CANCEL
                 </Button>
                 <Button
-                  disabled={!validator.isEmail(newUser.email!) || validator.isEmpty(newUser.last_name!) || validator.isEmpty(newUser.first_name!) || validator.isEmpty(newUser.role!)}
+                  disabled={
+                    !validator.isEmail(newUser.email!) ||
+                    validator.isEmpty(newUser.last_name!) ||
+                    validator.isEmpty(newUser.first_name!) ||
+                    validator.isEmpty(newUser.role!)
+                  }
                   type='submit'
                   variant='contained'
                   className='create-btn'
