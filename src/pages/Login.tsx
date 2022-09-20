@@ -25,6 +25,7 @@ import { UserInput } from 'src/services/authService';
 import PasswordModal from '../pages/account/PasswordModal';
 
 import logo from '../logo brown.png';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 
 const Login = () => {
   const authContext = React.useContext(AuthContext);
@@ -60,7 +61,11 @@ const Login = () => {
       // TODO: handle error case
     } else {
       setLoading(true);
-      login(userInput);
+      asyncFetchCallback(
+        login(userInput),
+        () => void 0,
+        () => setLoading(false)
+      );
     }
   };
 

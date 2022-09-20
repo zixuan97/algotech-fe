@@ -22,20 +22,16 @@ import {
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft, Delete } from '@mui/icons-material';
-import { Brand, Category, Product } from 'src/models/types';
+import { Product } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   deleteProduct,
-  getAllProductCategories,
   getProductById,
   updateProduct
 } from 'src/services/productService';
-import { DataGrid, GridColDef, GridRowId } from '@mui/x-data-grid';
-import { getAllLocations, getLocationById } from 'src/services/locationService';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
-import { Location } from 'src/models/types';
 import LocationGrid from 'src/components/inventory/LocationGrid';
-import { randomId } from '@mui/x-data-grid-generator';
 import { intersectionWith, omit } from 'lodash';
 import TimeoutAlert, {
   AlertType,
@@ -43,7 +39,6 @@ import TimeoutAlert, {
 } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
 import { getBase64 } from 'src/utils/fileUtils';
-import { getBrandById } from 'src/services/brandService';
 import inventoryContext from 'src/context/inventory/inventoryContext';
 import { isValidProduct } from 'src/components/inventory/inventoryHelper';
 
@@ -68,7 +63,7 @@ const columns: GridColDef[] = [
 
 const ProductDetails = () => {
   const navigate = useNavigate();
-  const { locations, brands, categories } = React.useContext(inventoryContext);
+  const { categories } = React.useContext(inventoryContext);
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
 
