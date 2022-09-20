@@ -44,8 +44,8 @@ export interface User {
   lastName: string;
   email: string;
   password: string;
-  role: string;
-  status: string;
+  role: UserRole;
+  status: UserStatus;
   isVerified: boolean;
 }
 
