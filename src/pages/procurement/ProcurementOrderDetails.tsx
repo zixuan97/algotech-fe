@@ -92,8 +92,8 @@ const ProcurementOrderDetails = () => {
           });
           var link = document.createElement('a');
           link.href = window.URL.createObjectURL(blob);
-          let orderDate = moment(originalOrder?.order_date).format('DDMMYYYY');
-          link.download = `PurchaseOrder-${originalOrder?.supplier_name}-${orderDate}`;
+          let orderDate = moment(originalOrder?.orderDate).format('DDMMYYYY');
+          link.download = `PurchaseOrder-${originalOrder?.supplier.name}-${orderDate}`;
           link.click();
         }
       };
@@ -325,8 +325,8 @@ const ProcurementOrderDetails = () => {
               startIcon={<PictureAsPdfIcon />}
               onClick={handleDownloadInvoice}
             >
-              PurchaseOrder-{originalOrder?.supplier_name}-
-              {moment(originalOrder?.order_date).format('DDMMYYYY')}
+              PurchaseOrder-{originalOrder?.supplier.name}-
+              {moment(originalOrder?.orderDate).format('DDMMYYYY')}
               .pdf
             </Button>
           </div>

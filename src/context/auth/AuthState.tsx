@@ -1,7 +1,7 @@
 import React, { useReducer } from 'react';
 import AuthContext from './authContext';
 import authReducer from './authReducer';
-import { AuthActionTypes, AuthStateAttr } from './authTypes';
+import { AuthActionTypes, AuthStateAttr } from './authContextTypes';
 import { PropsWithChildren } from 'react';
 import { getAxiosErrorMsg } from 'src/utils/errorUtils';
 import {
@@ -45,12 +45,11 @@ const AuthState = (props: PropsWithChildren) => {
             type: AuthActionTypes.USER_LOADED,
             // res.data is the actual user data
             payload: user
-          })
+          });
         } else {
-          dispatch({ type: AuthActionTypes.AUTH_ERROR })
+          dispatch({ type: AuthActionTypes.AUTH_ERROR });
         }
-      }
-      ,
+      },
       () => dispatch({ type: AuthActionTypes.AUTH_ERROR })
     );
   };

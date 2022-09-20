@@ -1,6 +1,6 @@
 import { Reducer } from 'react';
 import { setAuthToken } from 'src/utils/authUtils';
-import { AuthStateAttr, AuthAction, AuthActionTypes } from './authTypes';
+import { AuthStateAttr, AuthAction, AuthActionTypes } from './authContextTypes';
 
 const authReducer: Reducer<AuthStateAttr, AuthAction> = (
   state: AuthStateAttr,

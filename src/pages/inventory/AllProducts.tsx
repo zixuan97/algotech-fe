@@ -5,30 +5,27 @@ import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
 import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
-import { Product, StockQuantity, Brand } from '../../models/types';
+import { Product, StockQuantity, Brand, Category } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { getAllProducts } from 'src/services/productService';
 import { useNavigate } from 'react-router';
 import { getAllBrands, getBrandById } from 'src/services/brandService';
+import inventoryContext from 'src/context/inventory/inventoryContext';
 
-const columns = (brands: Brand[]): GridColDef[] => [
+const columns: GridColDef[] = [
   { field: 'sku', headerName: 'SKU', flex: 1 },
   { field: 'name', headerName: 'Product Name', flex: 1 },
   {
-    field: 'brand_id',
+    field: 'brand',
     headerName: 'Brand',
-    flex: 1,
-    valueGetter: (params: GridValueGetterParams) =>
-      brands.find((brand) => brand.id === params.value)?.name ?? ''
+    flex: 1
   },
   {
-    field: 'productCategory',
+    field: 'categories',
     headerName: 'Category',
     flex: 2,
     valueGetter: (params: GridValueGetterParams) =>
-      params.value
-        .map((category: ProductCategory) => category.category_name)
-        .join(', ')
+      params.value.map((category: Category) => category.name).join(', ')
   },
   {
     field: 'stockQuantity',
@@ -53,38 +50,25 @@ const columns = (brands: Brand[]): GridColDef[] => [
 
 const AllProducts = () => {
   const navigate = useNavigate();
+  const { products } = React.useContext(inventoryContext);
 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
-  const [productData, setProductData] = React.useState<Product[]>([]);
   const [filteredData, setFilteredData] = React.useState<Product[]>([]);
-  const [brands, setBrands] = React.useState<Brand[]>([]);
-
-  React.useEffect(() => {
-    // TODO: implement error callback
-    setLoading(true);
-    asyncFetchCallback(
-      getAllProducts(),
-      (res) => {
-        setLoading(false);
-        setProductData(res);
-      },
-      () => setLoading(false)
-    );
-    asyncFetchCallback(getAllBrands(), setBrands);
-  }, []);
 
   React.useEffect(() => {
     setFilteredData(
       searchField
-        ? productData.filter((product) =>
+        ? products.filter((product) =>
             Object.values(product).some((value) =>
               String(value).toLowerCase().match(searchField.toLowerCase())
             )
           )
-        : productData
+        : products
     );
-  }, [searchField, productData]);
+  }, [searchField, products]);
+
+  console.log(filteredData);
 
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchField(e.target.value);
@@ -114,7 +98,7 @@ const AllProducts = () => {
         </Button>
       </div>
       <DataGrid
-        columns={columns(brands)}
+        columns={columns}
         rows={filteredData}
         loading={loading}
         autoHeight

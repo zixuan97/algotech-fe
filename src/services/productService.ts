@@ -3,9 +3,6 @@
  */
 import axios from 'axios';
 import { Category, Product, Brand } from 'src/models/types';
-import { NewProduct } from 'src/pages/inventory/CreateProduct';
-import { EditProduct } from 'src/pages/inventory/ProductDetails';
-// import { blob } from 'stream/consumers';
 import apiRoot from './util/apiRoot';
 
 export const getAllProducts = async (): Promise<Product[]> => {
@@ -20,11 +17,11 @@ export const getProductBySku = async (sku: string): Promise<Product> => {
   return axios.get(`${apiRoot}/product/sku/${sku}`).then((res) => res.data);
 };
 
-export const createProduct = async (product: NewProduct): Promise<void> => {
+export const createProduct = async (product: Product): Promise<void> => {
   return axios.post(`${apiRoot}/product`, product);
 };
 
-export const updateProduct = async (product: EditProduct): Promise<void> => {
+export const updateProduct = async (product: Product): Promise<void> => {
   return axios.put(`${apiRoot}/product`, product);
 };
 
@@ -39,17 +36,25 @@ export const getAllProductCategories = async (): Promise<Category[]> => {
 
 //Returns a blob
 export const generateExcelSvc = async (): Promise<any> => {
-  return axios.post(`${apiRoot}/product/excel`, {responseType: "blob"}).then((res) => res.data);
+  return axios
+    .post(`${apiRoot}/product/excel`, { responseType: 'blob' })
+    .then((res) => res.data);
 };
 
-export const getAllProductsByBrand = async (brandId: string | number): Promise<Product[]> => {
+export const getAllProductsByBrand = async (
+  brandId: string | number
+): Promise<Product[]> => {
   return axios.get(`${apiRoot}/product/all`).then((res) => res.data);
-}
+};
 
-export const getAllProductsByCategory = async (categoryId: string | number): Promise<Product[]> => {
+export const getAllProductsByCategory = async (
+  categoryId: string | number
+): Promise<Product[]> => {
   return axios.get(`${apiRoot}/product/all`).then((res) => res.data);
-}
+};
 
-export const getAllProductsByLocation = async (locationId: string | number): Promise<Product[]> => {
+export const getAllProductsByLocation = async (
+  locationId: string | number
+): Promise<Product[]> => {
   return axios.get(`${apiRoot}/product/all`).then((res) => res.data);
-}
+};
