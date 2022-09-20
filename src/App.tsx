@@ -49,6 +49,8 @@ import CategoryDetails from './pages/inventory/CategoryDetails';
 import RoleRoute from './components/routing/RoleRoute';
 import Restricted from './pages/Restricted';
 import InventoryState from './context/inventory/InventoryState';
+import SalesDashboard from './pages/sales/SalesDashboard';
+
 import AllOrders from './pages/order/AllOrders';
 
 const theme = createTheme({
@@ -68,10 +70,6 @@ const theme = createTheme({
     }
   }
 });
-
-// if (localStorage.token) {
-//     setAuthToken(localStorage.token);
-// }
 
 const App = () => {
   const token = localStorage.token;
@@ -96,7 +94,7 @@ const App = () => {
               >
                 <Route path='restricted' element={<Restricted />} />
 
-                {/* --- Inventory Components --- */}
+                {/* --- Inventory Routes --- */}
                 <Route
                   index
                   element={<Navigate replace to='/inventory/dashboard' />}
@@ -148,12 +146,35 @@ const App = () => {
                   path='inventory/createWarehouse'
                   element={<CreateWarehouse />}
                 />
+                <Route
+                  index
+                  element={<Navigate replace to='/sales/dashboard' />}
+                />
+                <Route
+                  path='sales'
+                  element={<Navigate replace to='/sales/dashboard' />}
+                />
 
-                {/* --- Order Components --- */}
+                {/* --- Delivery Routes --- */}
+                <Route path='sales/dashboard' element={<SalesDashboard />} />
+                <Route
+                  path='delivery/allManualDeliveries'
+                  element={<AllManualDeliveries />}
+                />
+                <Route
+                  path='delivery/allGrabDeliveries'
+                  element={<AllGrabDeliveries />}
+                />
+                <Route
+                  path='delivery/allShippitDeliveries'
+                  element={<AllShippitDeliveries />}
+                />
+
+                {/* --- Order Routes --- */}
                 <Route path='orders/createNewOrder' element={<AllOrders />} />
                 <Route path='orders' element={<AllOrders />} />
 
-                {/* --- Procurement Components --- */}
+                {/* --- Procurement Routes --- */}
                 <Route path='procurementOrders' element={<AllProcurementOrders />} />
                 <Route
                   path='procurementOrders/createProcurementOrder'
@@ -173,21 +194,7 @@ const App = () => {
                   element={<SupplierDetails />}
                 />
 
-                {/* --- Delivery Components --- */}
-                <Route
-                  path='delivery/allManualDeliveries'
-                  element={<AllManualDeliveries />}
-                />
-                <Route
-                  path='delivery/allGrabDeliveries'
-                  element={<AllGrabDeliveries />}
-                />
-                <Route
-                  path='delivery/allShippitDeliveries'
-                  element={<AllShippitDeliveries />}
-                />
-
-                {/* --- Account Components --- */}
+                {/* --- Account Routes --- */}
                 <Route
                   path='accounts'
                   element={<RoleRoute allowedRoles={['ADMIN']} />}

@@ -16,15 +16,20 @@ type NestedListProps = {
   children: React.ReactNode;
 };
 
-const NestedList = ({ title, icon, open, toggleOpen, children }: NestedListProps) => {
+const NestedList = ({
+  title,
+  icon,
+  open,
+  toggleOpen,
+  children
+}: NestedListProps) => {
   return (
     <>
       <ListItem button onClick={() => toggleOpen(!open)}>
         <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText
           primary={title}
-
-          primaryTypographyProps={{ fontWeight: 'bold' }}
+          primaryTypographyProps={{ fontWeight: 500 }}
         />
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>

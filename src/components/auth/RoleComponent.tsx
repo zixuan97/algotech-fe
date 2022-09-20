@@ -1,10 +1,9 @@
-import React, { useContext } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
-import Restricted from 'src/pages/Restricted';
+import { useContext } from 'react';
+import { UserRole } from 'src/models/types';
 import AuthContext from '../../context/auth/authContext';
 
 type RoleComponentProps = {
-  allowedRoles: string[];
+  allowedRoles: UserRole[];
   children: JSX.Element;
 };
 
@@ -15,7 +14,7 @@ const RoleComponent = ({
   const authContext = useContext(AuthContext);
   const { user } = authContext;
 
-  return allowedRoles.includes(user?.role ?? '') ? children : null;
+  return user && allowedRoles.includes(user.role) ? children : null;
 };
 
 export default RoleComponent;
