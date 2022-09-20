@@ -1,4 +1,4 @@
-import { TextField, Tooltip } from '@mui/material';
+import { TextField } from '@mui/material';
 import { GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import React from 'react';
 
@@ -12,7 +12,7 @@ const PositiveNumberEditCellAction = ({
   allowDecimals = true
 }: PositiveNumberEditCellActionProps) => {
   const { id: gridId, field, value } = params;
-  console.log(value);
+
   const apiRef = useGridApiContext();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,4 +40,13 @@ const PositiveNumberEditCellAction = ({
   );
 };
 
-export default PositiveNumberEditCellAction;
+const arePropsSame = (
+  prevProps: Readonly<PositiveNumberEditCellActionProps>,
+  nextProps: Readonly<PositiveNumberEditCellActionProps>
+) => {
+  const { id: prevId, value: prevValue } = prevProps.params;
+  const { id: nextId, value: nextValue } = nextProps.params;
+  return prevId === nextId && prevValue === nextValue;
+};
+
+export default React.memo(PositiveNumberEditCellAction, arePropsSame);

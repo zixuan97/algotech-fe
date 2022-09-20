@@ -52,24 +52,24 @@ const AllProducts = () => {
 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
-  const [filteredData, setFilteredData] = React.useState<Product[]>([]);
 
   React.useEffect(() => {
-    refreshProducts();
+    setLoading(true);
+    refreshProducts(() => setLoading(false));
     // eslint-disable-next-line
   }, []);
 
-  React.useEffect(() => {
-    setFilteredData(
+  const filteredData = React.useMemo(
+    () =>
       searchField
         ? products.filter((product) =>
             Object.values(product).some((value) =>
               String(value).toLowerCase().match(searchField.toLowerCase())
             )
           )
-        : products
-    );
-  }, [searchField, products]);
+        : products,
+    [searchField, products]
+  );
 
   console.log(filteredData);
 
