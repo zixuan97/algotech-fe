@@ -19,38 +19,42 @@ import {
   GridValueSetterParams,
   useGridApiContext
 } from '@mui/x-data-grid';
-import { Location } from 'src/models/types';
+import { Location, PartialBy, StockQuantity } from 'src/models/types';
 import { ProductLocationRow } from 'src/pages/inventory/CreateProduct';
 import EditToolbarCellAction from './EditToolbarCellAction';
 import LocationSelectCellAction from './LocationSelectCellAction';
 import { TextField } from '@mui/material';
 import PositiveNumberEditCellAction from './PositiveNumberEditCellAction';
+import inventoryContext from 'src/context/inventory/inventoryContext';
+import {
+  convertGridRowToStockQty,
+  convertStockQtyToGridRow,
+  getAvailableLocations,
+  StockQuantityGridRow
+} from './inventoryHelper';
+import { toPairs, values } from 'lodash';
 
 type LocationGridProps = {
-  locations: Location[];
-  productLocations: ProductLocationRow[];
-  updateProductLocations: (productLocations: ProductLocationRow[]) => void;
+  stockQuantity: StockQuantity[];
+  updateStockQuantity: (stockQuantity: StockQuantity[]) => void;
 };
 
 //TODO: create a generic version of Edtiable Grid
 export default function LocationGrid({
-  locations,
-  productLocations,
-  updateProductLocations
+  stockQuantity,
+  updateStockQuantity
 }: LocationGridProps) {
-  const availableLocations = React.useMemo(
-    () =>
-      locations.filter(
-        (location) =>
-          !productLocations.find(
-            (prodLocation) =>
-              prodLocation.id === location.id && !prodLocation.isNew
-          )
-      ),
-    [locations, productLocations]
-  );
+  const { locations } = React.useContext(inventoryContext);
+  const [stockQtyGridRows, setStockQtyGridRows] = React.useState<
+    StockQuantityGridRow[]
+  >(convertStockQtyToGridRow(stockQuantity));
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
     {}
+  );
+
+  const availableLocations = React.useMemo(
+    () => getAvailableLocations(stockQtyGridRows, locations),
+    [stockQtyGridRows, locations]
   );
 
   const handleRowEditStart = (
@@ -73,7 +77,11 @@ export default function LocationGrid({
   };
 
   const handleDeleteClick = (id: GridRowId) => () => {
-    updateProductLocations(productLocations.filter((row) => row.gridId !== id));
+    const updatedStockQtyGridRows = stockQtyGridRows.filter(
+      (row) => row.gridId !== id
+    );
+    setStockQtyGridRows(updatedStockQtyGridRows);
+    updateStockQuantity(convertGridRowToStockQty(updatedStockQtyGridRows));
   };
 
   const handleCancelClick = (id: GridRowId) => () => {
@@ -82,41 +90,35 @@ export default function LocationGrid({
       [id]: { mode: GridRowModes.View, ignoreModifications: true }
     });
 
-    const editedRow = productLocations.find((row) => row.gridId === id);
+    const editedRow = stockQtyGridRows.find((row) => row.gridId === id);
     if (editedRow!.isNew) {
-      updateProductLocations(
-        productLocations.filter((row) => row.gridId !== id)
-      );
+      setStockQtyGridRows(stockQtyGridRows.filter((row) => row.gridId !== id));
     }
   };
 
-  const processRowUpdate = (newRow: ProductLocationRow) => {
-    console.log(newRow, 'row update');
+  const processRowUpdate = (newRow: StockQuantityGridRow) => {
     const updatedRow = {
       ...newRow,
-      name: locations.find((location) => location.id === newRow.id)?.name!,
       quantity: isNaN(newRow.quantity) ? 0 : newRow.quantity,
       price: isNaN(newRow.price) ? 0 : newRow.price,
       isNew: false
     };
-    updateProductLocations(
-      productLocations.map((row) =>
-        row.gridId === newRow.gridId ? updatedRow : row
-      )
+    const updatedStockQtyGridRows = stockQtyGridRows.map((row) =>
+      row.gridId === newRow.gridId ? updatedRow : row
     );
+    setStockQtyGridRows(updatedStockQtyGridRows);
+    updateStockQuantity(convertGridRowToStockQty(updatedStockQtyGridRows));
     return updatedRow;
   };
 
   const columns: GridColumns = [
     {
-      field: 'id',
+      field: 'location',
       headerName: 'Warehouse Location',
       flex: 2,
       editable: true,
-      valueFormatter: (params: GridValueFormatterParams) => {
-        return locations.find((location) => location.id === params.value)?.name;
-      },
-      renderEditCell: (params: GridRenderEditCellParams<number>) => (
+      valueFormatter: (params) => params.value.name,
+      renderEditCell: (params: GridRenderEditCellParams<Location>) => (
         <LocationSelectCellAction
           params={params}
           allLocations={locations}
@@ -170,18 +172,24 @@ export default function LocationGrid({
           ];
         }
 
+        const anyCellEditing = toPairs(rowModesModel).some(
+          (row) => row[0] !== id && row[1].mode === GridRowModes.Edit
+        );
+
         return [
           <GridActionsCellItem
             icon={<EditIcon />}
             label='Edit'
             className='textPrimary'
             onClick={handleEditClick(id)}
+            disabled={anyCellEditing}
             color='inherit'
           />,
           <GridActionsCellItem
             icon={<DeleteIcon />}
             label='Delete'
             onClick={handleDeleteClick(id)}
+            disabled={anyCellEditing}
             color='inherit'
           />
         ];
@@ -191,7 +199,7 @@ export default function LocationGrid({
 
   return (
     <DataGrid
-      rows={productLocations}
+      rows={stockQtyGridRows}
       columns={columns}
       editMode='row'
       rowModesModel={rowModesModel}
@@ -204,9 +212,10 @@ export default function LocationGrid({
       }}
       componentsProps={{
         toolbar: {
-          setRows: updateProductLocations,
+          setRows: setStockQtyGridRows,
           setRowModesModel,
-          availableLocations
+          availableLocations,
+          disableAdd: stockQtyGridRows.some((row) => row.isNew)
         }
       }}
       experimentalFeatures={{ newEditingApi: true }}
