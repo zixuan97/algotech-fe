@@ -23,7 +23,7 @@ import {
   deleteCategory
 } from '../../services/categoryService';
 import {
-  getAllProductCategories,
+  getAllProductsByCategory,
   getProductById
 } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
@@ -35,7 +35,7 @@ import TimeoutAlert, {
 
 const columns: GridColDef[] = [
   {
-    field: 'productName',
+    field: 'name',
     headerName: 'Product Name',
     flex: 2
   },
@@ -48,11 +48,6 @@ const columns: GridColDef[] = [
     renderCell: ProductCellAction
   }
 ];
-
-interface ProductDetails {
-  id: number;
-  productName: string;
-}
 
 const CategoryDetails = () => {
   const navigate = useNavigate();
@@ -72,7 +67,7 @@ const CategoryDetails = () => {
   const [originalCategory, setOriginalCategory] =
     React.useState<Category>(category);
   const [editCategory, setEditCategory] = React.useState<Category>(category);
-  const [productDetails, setProductDetails] = React.useState<ProductDetails[]>(
+  const [productDetails, setProductDetails] = React.useState<Product[]>(
     []
   );
 
@@ -99,10 +94,10 @@ const CategoryDetails = () => {
 
   React.useEffect(() => {
     const shouldDisable = !(
-      editCategory?.name && editCategory?.productCategory
+      editCategory?.name && productDetails //editCategory?.productCategory
     );
     setDisableSave(shouldDisable);
-  }, [editCategory?.name, editCategory?.productCategory]);
+}, [editCategory?.name, productDetails]);
 
   React.useEffect(() => {
     setTableLoading(true);
@@ -110,30 +105,14 @@ const CategoryDetails = () => {
       asyncFetchCallback(getCategoryById(id), (res) => {
         setOriginalCategory(res);
         setEditCategory(res);
+
+        asyncFetchCallback(getAllProductsByCategory(originalCategory.id), setProductDetails);
+        setTableLoading(false);
+
         setLoading(false);
       });
     }
   }, [id]);
-
-  React.useEffect(() => {
-    if (originalCategory) {
-      Promise.all(
-        originalCategory.productCategory.map(async (qty) => {
-          const product = await getProductById(qty.product_id);
-          return {
-            id: qty.product_id,
-            productName: product.name
-          };
-        })
-      ).then(
-        (res) => {
-          setTableLoading(false);
-          setProductDetails(res);
-        },
-        () => setTableLoading(false)
-      );
-    }
-  }, [originalCategory]);
 
   const handleDeleteButtonClick = () => {
     setModalOpen(false);

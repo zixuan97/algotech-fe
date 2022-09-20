@@ -41,3 +41,15 @@ export const getAllProductCategories = async (): Promise<Category[]> => {
 export const generateExcelSvc = async (): Promise<any> => {
   return axios.post(`${apiRoot}/product/excel`, {responseType: "blob"}).then((res) => res.data);
 };
+
+export const getAllProductsByBrand = async (brandId: string | number): Promise<Product[]> => {
+  return axios.get(`${apiRoot}/product/all`).then((res) => res.data);
+}
+
+export const getAllProductsByCategory = async (categoryId: string | number): Promise<Product[]> => {
+  return axios.get(`${apiRoot}/product/all`).then((res) => res.data);
+}
+
+export const getAllProductsByLocation = async (locationId: string | number): Promise<Product[]> => {
+  return axios.get(`${apiRoot}/product/all`).then((res) => res.data);
+}
