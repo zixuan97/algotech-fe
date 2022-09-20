@@ -7,7 +7,6 @@ import {
   Button,
   Tooltip,
   IconButton,
-  Alert,
   Backdrop,
   CircularProgress
 } from '@mui/material';
@@ -17,8 +16,10 @@ import { useNavigate } from 'react-router';
 import { Supplier } from '../../models/types';
 import { createSupplier } from '../../services/supplierService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
-import { toast } from 'react-toastify';
+import TimeoutAlert, {
+  AlertType,
+  AxiosErrDataBody
+ } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
 
 const CreateSupplier = () => {
@@ -76,10 +77,11 @@ const CreateSupplier = () => {
           setTimeout(() => navigate('/orders/allSuppliers'), 3500);
         },
         (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
           setLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error creating supplier: ${err.message}. Try again later.`
+            message: `Error creating supplier: ${resData.message}`
           });
         }
       );

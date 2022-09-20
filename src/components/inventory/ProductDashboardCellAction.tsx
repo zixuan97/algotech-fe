@@ -8,7 +8,20 @@ const ProductDashboardCellAction = ({ id }: GridRenderCellParams) => {
   const navigate = useNavigate();
 
   return (
-    <div className='action-cell'>
+    <div className='button-group'>
+      <Button
+        variant='contained'
+        onClick={() =>
+          navigate({
+            pathname: '/inventory/productDetails',
+            search: createSearchParams({
+              id: id.toString()
+            }).toString()
+          })
+        }
+      >
+        View Details
+      </Button>
       <Button
         variant='contained'
         sx={{ fontSize: '0.75rem' }}

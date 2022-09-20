@@ -7,7 +7,6 @@ import {
   Button,
   Tooltip,
   IconButton,
-  Alert,
   Backdrop,
   CircularProgress
 } from '@mui/material';
@@ -17,7 +16,10 @@ import { useNavigate } from 'react-router';
 import { Location } from '../../models/types';
 import { createLocation } from '../../services/locationService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
+import TimeoutAlert, {
+  AlertType,
+  AxiosErrDataBody
+ } from 'src/components/common/TimeoutAlert';
 
 export type NewLocation = Partial<Location>;
 
@@ -57,10 +59,11 @@ const CreateWarehouse = () => {
           }, 3000);
         },
         (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
           setLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error creating warehouse: ${err.message}`
+            message: `Error creating warehouse: ${resData.message}`
           });
         }
       );

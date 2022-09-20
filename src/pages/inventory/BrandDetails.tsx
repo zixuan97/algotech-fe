@@ -26,7 +26,10 @@ import {
 import { getProductById } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import TimeoutAlert, {
+  AlertType,
+  AxiosErrDataBody
+ } from 'src/components/common/TimeoutAlert';
 
 const columns: GridColDef[] = [
   {
@@ -143,11 +146,12 @@ const BrandDetails = () => {
           });
           setTimeout(() => navigate('/inventory/allBrands'), 3500);
         },
-        () => {
+        (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
           setBackdropLoading(false);
           setAlert({
             severity: 'error',
-            message: 'Error deleting brand! Try again later.'
+            message: `Error deleting brand: ${resData.message}`
           });
         }
       );
@@ -166,30 +170,31 @@ const BrandDetails = () => {
     });
   };
 
-  const handleSave = async () => {
-    if (editBrand) {
-      setBackdropLoading(true);
-      asyncFetchCallback(
-        updateBrand(editBrand),
-        () => {
-          setAlert({
-            severity: 'success',
-            message: 'Brand successfully edited.'
-          });
-          setBackdropLoading(false);
-          setEditBrand(editBrand);
-          setOriginalBrand(editBrand);
-        },
-        () => {
-          setAlert({
-            severity: 'error',
-            message: 'Error editing brand! Try again later.'
-          });
-          setBackdropLoading(false);
-        }
-      );
-    }
-  };
+const handleSave = async() => {
+  if (editBrand) {
+    setBackdropLoading(true);
+    asyncFetchCallback(
+      updateBrand(editBrand),
+      () => {
+        setAlert({
+          severity: 'success',
+          message: 'Brand successfully edited.'
+        });
+        setBackdropLoading(false);
+        setEditBrand(editBrand);
+        setOriginalBrand(editBrand);
+      },
+      (err) => {
+        const resData = err.response?.data as AxiosErrDataBody;
+        setBackdropLoading(false);
+        setAlert({
+          severity: 'error',
+          message: `Error editing brand: ${resData.message}`
+        });
+      }
+    );
+  }
+}
 
   const title = `${edit ? 'Edit' : ''} Brand Details`;
 

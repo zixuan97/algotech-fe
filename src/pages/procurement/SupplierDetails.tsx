@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
+  Backdrop,
   Box,
   FormGroup,
   TextField,
@@ -23,7 +24,10 @@ import {
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { getAllSuppliers } from 'src/services/procurementService';
 import validator from 'validator';
-import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import TimeoutAlert, {
+  AlertType,
+  AxiosErrDataBody
+ } from 'src/components/common/TimeoutAlert';
 
 const SupplierDetails = () => {
   const navigate = useNavigate();
