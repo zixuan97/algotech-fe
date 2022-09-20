@@ -45,12 +45,14 @@ import validator from 'validator';
 import { getBase64 } from 'src/utils/fileUtils';
 import { getBrandById } from 'src/services/brandService';
 import inventoryContext from 'src/context/inventory/inventoryContext';
+import { isValidProduct } from 'src/components/inventory/inventoryHelper';
 
 const columns: GridColDef[] = [
   {
-    field: 'name',
+    field: 'location',
     headerName: 'Warehouse Location',
-    flex: 2
+    flex: 2,
+    valueGetter: (params) => params.value.name
   },
   {
     field: 'quantity',
@@ -64,10 +66,9 @@ const columns: GridColDef[] = [
   }
 ];
 
-// i apologise in advance for the long winded code, was rushing it out LOL
 const ProductDetails = () => {
   const navigate = useNavigate();
-  const { locations, categories } = React.useContext(inventoryContext);
+  const { locations, brands, categories } = React.useContext(inventoryContext);
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
 
@@ -77,17 +78,25 @@ const ProductDetails = () => {
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
-  const [originalProduct, setOriginalProduct] = React.useState<Product>();
-  const [editProduct, setEditProduct] = React.useState<Product>();
+  const [originalProduct, setOriginalProduct] = React.useState<Product | null>(
+    null
+  );
+  const [editProduct, setEditProduct] = React.useState<Product | null>(null);
 
   const [edit, setEdit] = React.useState<boolean>(false);
 
   React.useEffect(() => {
-    id &&
+    setDisableSave(!isValidProduct(editProduct));
+  }, [editProduct]);
+
+  React.useEffect(() => {
+    if (id) {
+      setLoading(true);
       asyncFetchCallback(
         getProductById(id),
-        (product: Product) => {
-          console.log('hello world');
+        (res) => {
+          setOriginalProduct(res);
+          setEditProduct(res);
           setLoading(false);
         },
         () => {
@@ -100,71 +109,31 @@ const ProductDetails = () => {
           setTimeout(() => navigate('/inventory/allProducts'), 3500);
         }
       );
+    }
   }, [id, navigate]);
 
-  React.useEffect(() => {
-    const shouldDisable = !(
-      editProduct?.sku &&
-      editProduct?.name &&
-      editProduct?.brand &&
-      editProduct?.qtyThreshold
-    );
-    setDisableSave(shouldDisable);
-  }, [
-    editProduct?.sku,
-    editProduct?.name,
-    editProduct?.brand,
-    editProduct?.qtyThreshold
-  ]);
-
-  React.useEffect(() => {
-    if (id) {
-      setLoading(true);
-      asyncFetchCallback(getProductById(id), (res) => {
-        setOriginalProduct(res);
-        setEditProduct(res);
-        setLoading(false);
-      });
-    }
-  }, [id]);
-
-  const handleEditProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditProduct((prev) => {
-      if (prev) {
-        return { ...prev, [e.target.name]: e.target.value };
-      } else {
-        return prev;
-      }
-    });
-  };
-
-  const handleEditProductNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditProduct((prev) => {
-      if (prev) {
-        return { ...prev, [e.target.name]: parseInt(e.target.value) };
-      } else {
-        return prev;
-      }
-    });
+  const handleEditProduct = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    isNumber: boolean = false
+  ) => {
+    const value = isNumber ? parseInt(e.target.value) : e.target.value;
+    setEditProduct((prev) => prev && { ...prev, [e.target.name]: value });
   };
 
   const handleEditCategories = (e: SelectChangeEvent<string[]>) => {
     const inputCategories = e.target.value;
     console.log(inputCategories);
-    setEditProduct((prev) => {
-      if (prev) {
-        return {
+    setEditProduct(
+      (prev) =>
+        prev && {
           ...prev,
           categories: intersectionWith(
             categories,
             inputCategories,
             (a, b) => a.name === b
           )
-        };
-      } else {
-        return prev;
-      }
-    });
+        }
+    );
   };
 
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -478,7 +447,9 @@ const ProductDetails = () => {
                             ? 'Quantity Threshold is wrong!'
                             : ''
                         }
-                        onChange={handleEditProductNumber}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          handleEditProduct(e, true)
+                        }
                         value={editProduct?.qtyThreshold}
                       />
                     ) : (
@@ -488,11 +459,27 @@ const ProductDetails = () => {
                     )}
                   </div>
                 </div>
-                {edit ? null : ( //   /> //     updateProductLocations={setProductLocations} //     productLocations={productLocations} //     locations={locations} //   <LocationGrid
+                {edit ? (
+                  <LocationGrid
+                    stockQuantity={originalProduct?.stockQuantity ?? []}
+                    updateStockQuantity={(stockQuantity) =>
+                      setEditProduct(
+                        (prev) =>
+                          prev && {
+                            ...prev,
+                            stockQuantity: stockQuantity.map((stockQty) => ({
+                              ...stockQty,
+                              productId: prev.id
+                            }))
+                          }
+                      )
+                    }
+                  />
+                ) : (
                   <DataGrid
                     columns={columns}
                     rows={originalProduct?.stockQuantity ?? []}
-                    getRowId={(row) => row.name}
+                    getRowId={(row) => row.location.id}
                     autoHeight
                     pageSize={5}
                   />
