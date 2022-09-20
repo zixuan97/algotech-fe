@@ -33,6 +33,8 @@ import AllSuppliers from './pages/procurement/AllSuppliers';
 import SupplierDetails from './pages/procurement/SupplierDetails';
 import CreateSupplier from './pages/procurement/CreateSupplier';
 
+import AllDeliveries from './pages/delivery/AllDeliveries';
+
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
@@ -168,6 +170,10 @@ const App = () => {
               <Route
                 path='inventory/createWarehouse'
                 element={<CreateWarehouse />}
+              />
+              <Route
+                path='delivery/allDeliveries'
+                element={<AllDeliveries />}
               />
 
               <Route

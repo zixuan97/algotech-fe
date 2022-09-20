@@ -3,7 +3,8 @@ import {
   Inventory,
   LocalGroceryStore,
   People,
-  Receipt
+  Receipt,
+  LocalShipping
 } from '@mui/icons-material';
 import { Button, Divider, Drawer, List, Toolbar } from '@mui/material';
 import React from 'react';
@@ -22,6 +23,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
   const [inventoryOpen, setInventoryOpen] = React.useState<boolean>(false);
   const [salesOpen, setSalesOpen] = React.useState<boolean>(false);
   const [ordersOpen, setOrdersOpen] = React.useState<boolean>(false);
+  const [deliveryOpen, setDeliveryOpen] = React.useState<boolean>(false);
   const [customersOpen, setCustomersOpen] = React.useState<boolean>(false);
   const [hrOpen, setHrOpen] = React.useState<boolean>(false);
 
@@ -50,7 +52,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
           >
             The Kettle Gourmet{' '}
           </Button>
-          <img src={logo}  width={75} height={65}  />
+          <img src={logo} width={75} height={65} />
           {/* <IconButton onClick={() => toggleOpen(false)}>
             <ChevronLeft />
           </IconButton> */}
@@ -91,7 +93,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
               />
             </List>
           </NestedList>
-          
+
           <ListItemLink
             icon={<LocalGroceryStore />}
             primary='Sales'
@@ -100,7 +102,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
           />
 
           <NestedList
-          title={'Procurement'}
+            title={'Procurement'}
             open={ordersOpen}
             toggleOpen={setOrdersOpen}
             icon={<Receipt />}
@@ -113,6 +115,24 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             <ListItemLink
               primary='All Suppliers'
               to='/orders/allSuppliers'
+              typographyProps={submenuTypographyProps}
+            />
+          </NestedList>
+
+          <NestedList
+            title={'Delivery'}
+            open={deliveryOpen}
+            toggleOpen={setDeliveryOpen}
+            icon={<LocalShipping />}
+          >
+            <ListItemLink
+              primary='Dashboard'
+              to=''
+              typographyProps={submenuTypographyProps}
+            />
+            <ListItemLink
+              primary='All Deliveries'
+              to='/delivery/allDeliveries'
               typographyProps={submenuTypographyProps}
             />
           </NestedList>
