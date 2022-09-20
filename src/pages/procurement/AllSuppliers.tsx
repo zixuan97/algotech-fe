@@ -81,7 +81,7 @@ const AllSuppliers = () => {
           variant='contained'
           size='large'
           sx={{ height: 'fit-content' }}
-          onClick={() => navigate({ pathname: '/orders/createSupplier' })}
+          onClick={() => navigate({ pathname: '/procurementOrders/createSupplier' })}
         >
           Create Supplier
         </Button>

@@ -25,7 +25,7 @@ import AllWarehouses from './pages/inventory/Warehouses';
 import WarehouseDetails from './pages/inventory/WarehouseDetails';
 import CreateWarehouse from './pages/inventory/CreateWarehouse';
 
-import AllOrders from './pages/procurement/AllProcurementOrders';
+import AllProcurementOrders from './pages/procurement/AllProcurementOrders';
 import CreateProcurementOrder from './pages/procurement/CreateProcurementOrder';
 import ProcurementOrderDetails from './pages/procurement/ProcurementOrderDetails';
 
@@ -49,6 +49,7 @@ import CategoryDetails from './pages/inventory/CategoryDetails';
 import RoleRoute from './components/routing/RoleRoute';
 import Restricted from './pages/Restricted';
 import InventoryState from './context/inventory/InventoryState';
+import AllOrders from './pages/order/AllOrders';
 
 const theme = createTheme({
   palette: {
@@ -94,6 +95,8 @@ const App = () => {
                 }
               >
                 <Route path='restricted' element={<Restricted />} />
+
+                {/* --- Inventory Components --- */}
                 <Route
                   index
                   element={<Navigate replace to='/inventory/dashboard' />}
@@ -114,24 +117,6 @@ const App = () => {
                 <Route
                   path='inventory/productDetails'
                   element={<ProductDetails />}
-                />
-                <Route path='orders' element={<AllOrders />} />
-                <Route
-                  path='orders/createProcurementOrder'
-                  element={<CreateProcurementOrder />}
-                />
-                <Route
-                  path='orders/procurementOrderDetails'
-                  element={<ProcurementOrderDetails />}
-                />
-                <Route path='orders/allSuppliers' element={<AllSuppliers />} />
-                <Route
-                  path='orders/createSupplier'
-                  element={<CreateSupplier />}
-                />
-                <Route
-                  path='orders/supplierDetails'
-                  element={<SupplierDetails />}
                 />
                 <Route
                   path='inventory/allCategories'
@@ -163,6 +148,32 @@ const App = () => {
                   path='inventory/createWarehouse'
                   element={<CreateWarehouse />}
                 />
+
+                {/* --- Order Components --- */}
+                <Route path='orders/createNewOrder' element={<AllOrders />} />
+                <Route path='orders' element={<AllOrders />} />
+
+                {/* --- Procurement Components --- */}
+                <Route path='procurementOrders' element={<AllProcurementOrders />} />
+                <Route
+                  path='procurementOrders/createProcurementOrder'
+                  element={<CreateProcurementOrder />}
+                />
+                <Route
+                  path='procurementOrders/procurementOrderDetails'
+                  element={<ProcurementOrderDetails />}
+                />
+                <Route path='procurementOrders/allSuppliers' element={<AllSuppliers />} />
+                <Route
+                  path='procurementOrders/createSupplier'
+                  element={<CreateSupplier />}
+                />
+                <Route
+                  path='procurementOrders/supplierDetails'
+                  element={<SupplierDetails />}
+                />
+
+                {/* --- Delivery Components --- */}
                 <Route
                   path='delivery/allManualDeliveries'
                   element={<AllManualDeliveries />}
@@ -176,6 +187,7 @@ const App = () => {
                   element={<AllShippitDeliveries />}
                 />
 
+                {/* --- Account Components --- */}
                 <Route
                   path='accounts'
                   element={<RoleRoute allowedRoles={['ADMIN']} />}

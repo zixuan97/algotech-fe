@@ -5,7 +5,8 @@ import {
   People,
   Receipt,
   LocalShipping,
-  FamilyRestroomRounded
+  FamilyRestroomRounded,
+  PointOfSale
 } from '@mui/icons-material';
 import { Button, Divider, Drawer, List, Toolbar } from '@mui/material';
 import React from 'react';
@@ -23,6 +24,7 @@ type SidebarProps = {
 type MenuOpen = {
   inventory: boolean;
   sales: boolean;
+  order: boolean;
   procurement: boolean;
   delivery: boolean;
   customers: boolean;
@@ -32,6 +34,7 @@ type MenuOpen = {
 const menuOpenDefaultState: MenuOpen = {
   inventory: false,
   sales: false,
+  order: false,
   procurement: false,
   delivery: false,
   customers: false,
@@ -113,12 +116,27 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             </List>
           </NestedList>
 
-          <ListItemLink
-            icon={<LocalGroceryStore />}
-            primary='Sales'
-            to='/sales'
-            disabled
-          />
+          <NestedList
+            title={'Orders'}
+            open={menuOpen.order}
+            toggleOpen={(open) => toggleMenuOpen('order', open)}
+            icon={<PointOfSale />}
+          >
+            <List component='div' disablePadding>
+              <ListItemLink
+                primary='Create Orders'
+                to='/orders/createNewOrder'
+                typographyProps={submenuTypographyProps}
+                disabled
+              />
+              <ListItemLink
+                primary='Order Fulfillments'
+                to='/orders'
+                typographyProps={submenuTypographyProps}
+              />
+            </List>
+          </NestedList>
+
 
           <NestedList
             title={'Procurement'}
@@ -127,13 +145,13 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             icon={<Receipt />}
           >
             <ListItemLink
-              primary='Orders'
-              to='/orders'
+              primary='Procurement Orders'
+              to='/procurementOrders'
               typographyProps={submenuTypographyProps}
             />
             <ListItemLink
               primary='All Suppliers'
-              to='/orders/allSuppliers'
+              to='/procurementOrders/allSuppliers'
               typographyProps={submenuTypographyProps}
             />
           </NestedList>
