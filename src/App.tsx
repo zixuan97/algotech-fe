@@ -34,6 +34,7 @@ import SupplierDetails from './pages/procurement/SupplierDetails';
 import CreateSupplier from './pages/procurement/CreateSupplier';
 
 import AllDeliveries from './pages/delivery/AllDeliveries';
+import DeliveryDashboard from './pages/delivery/DeliveryDashboard';
 
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
@@ -174,6 +175,10 @@ const App = () => {
               <Route
                 path='delivery/allDeliveries'
                 element={<AllDeliveries />}
+              />
+              <Route
+                path='delivery/deliveryDashboard'
+                element={<DeliveryDashboard />}
               />
 
               <Route
