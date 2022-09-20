@@ -23,7 +23,7 @@ import {
   deleteBrand,
   getBrandById
 } from '../../services/brandService';
-import { getProductById } from '../../services/productService';
+import { getProductById, getAllProductsByBrand } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import TimeoutAlert, {
@@ -33,7 +33,7 @@ import TimeoutAlert, {
 
 const columns: GridColDef[] = [
   {
-    field: 'productName',
+    field: 'name',
     headerName: 'Product Name',
     flex: 2
   },
@@ -47,10 +47,10 @@ const columns: GridColDef[] = [
   }
 ];
 
-interface ProductDetails {
-  id: number;
-  productName: string;
-}
+// interface ProductDetails {
+//   id: number;
+//   productName: string;
+// }
 
 const BrandDetails = () => {
   const navigate = useNavigate();
@@ -69,7 +69,7 @@ const BrandDetails = () => {
 
   const [originalBrand, setOriginalBrand] = React.useState<Brand>(brand);
   const [editBrand, setEditBrand] = React.useState<Brand>(brand);
-  const [productDetails, setProductDetails] = React.useState<ProductDetails[]>(
+  const [productDetails, setProductDetails] = React.useState<Product[]>(
     []
   );
 
@@ -105,30 +105,14 @@ const BrandDetails = () => {
       asyncFetchCallback(getBrandById(id), (res) => {
         setOriginalBrand(res);
         setEditBrand(res);
+
+        asyncFetchCallback(getAllProductsByBrand(originalBrand.id), setProductDetails);
+        setTableLoading(false);
+
         setLoading(false);
       });
     }
   }, [id]);
-
-  React.useEffect(() => {
-    if (originalBrand) {
-      Promise.all(
-        originalBrand.product.map(async (qty) => {
-          const product = await getProductById(qty.id);
-          return {
-            id: qty.id,
-            productName: product.name
-          };
-        })
-      ).then(
-        (res) => {
-          setTableLoading(false);
-          setProductDetails(res);
-        },
-        () => setTableLoading(false)
-      );
-    }
-  }, [originalBrand]);
 
   const handleDeleteBrand = async () => {
     setModalOpen(false);

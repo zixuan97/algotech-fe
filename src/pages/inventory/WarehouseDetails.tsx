@@ -23,7 +23,7 @@ import {
   updateLocation,
   updateLocationWithoutProducts
 } from '../../services/locationService';
-import { getProductById } from '../../services/productService';
+import { getProductById, getAllProductsByLocation } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { omit } from 'lodash';
@@ -58,12 +58,12 @@ const columns: GridColDef[] = [
   }
 ];
 
-interface ProductDetails {
-  id: number;
-  productName: string;
-  quantity: number;
-  price: number;
-}
+// interface ProductDetails {
+//   id: number;
+//   productName: string;
+//   quantity: number;
+//   price: number;
+// }
 
 const LocationDetails = () => {
   const navigate = useNavigate();
@@ -84,7 +84,7 @@ const LocationDetails = () => {
     React.useState<Location>(location);
   const [editLocation, setEditLocation] = React.useState<Location>(location);
   const [products, setProducts] = React.useState<Product[]>([]);
-  const [productDetails, setProductDetails] = React.useState<ProductDetails[]>(
+  const [productDetails, setProductDetails] = React.useState<Product[]>(
     []
   );
 
@@ -109,24 +109,24 @@ const LocationDetails = () => {
       });
   }, [id, navigate]);
 
-  React.useEffect(() => {
-    if (originalLocation?.id) {
-      setProductDetails(
-        products.map((product) => ({
-          id: product.id,
-          productName: product.name,
-          quantity:
-            product.stockQuantity.find(
-              (qty) => qty.location_id === originalLocation.id
-            )?.quantity ?? 0,
-          price:
-            product.stockQuantity.find(
-              (qty) => qty.location_id === originalLocation.id
-            )?.price ?? 0
-        }))
-      );
-    }
-  }, [originalLocation?.id, products]);
+  // React.useEffect(() => {
+  //   if (originalLocation) {
+  //     setProductDetails(
+  //       products.map((product) => ({
+  //         id: product.id,
+  //         productName: product.name,
+  //         quantity:
+  //           product.stockQuantity.find(
+  //             (qty) => qty.location === originalLocation
+  //           )?.quantity ?? 0,
+  //         price:
+  //           product.stockQuantity.find(
+  //             (qty) => qty.location === originalLocation
+  //           )?.price ?? 0
+  //       }))
+  //     );
+  //   }
+  // }, [originalLocation, products]);
 
   React.useEffect(() => {
     const shouldDisable = !(editLocation?.name && editLocation?.address);
@@ -139,27 +139,31 @@ const LocationDetails = () => {
       asyncFetchCallback(getLocationById(id), (res) => {
         setOriginalLocation(res);
         setEditLocation(res);
+
+        asyncFetchCallback(getAllProductsByLocation(originalLocation.id), setProductDetails);
+        setTableLoading(false);
+
         setLoading(false);
       });
     }
   }, [id]);
 
-  React.useEffect(() => {
-    if (originalLocation) {
-      Promise.all(
-        originalLocation.stockQuantity.map(async (qty) => {
-          const product = await getProductById(qty.product_id);
-          return product;
-        })
-      ).then(
-        (res) => {
-          setTableLoading(false);
-          setProducts(res);
-        },
-        () => setTableLoading(false)
-      );
-    }
-  }, [originalLocation]);
+  // React.useEffect(() => {
+  //   if (originalLocation) {
+  //     Promise.all(
+  //       originalLocation.stockQuantity.map(async (qty) => {
+  //         const product = await getProductById(qty.product_id);
+  //         return product;
+  //       })
+  //     ).then(
+  //       (res) => {
+  //         setTableLoading(false);
+  //         setProducts(res);
+  //       },
+  //       () => setTableLoading(false)
+  //     );
+  //   }
+  // }, [originalLocation]);
 
   const handleDeleteButtonClick = () => {
     setModalOpen(false);
@@ -204,9 +208,7 @@ const LocationDetails = () => {
     if (editLocation) {
       setBackdropLoading(true);
       asyncFetchCallback(
-        updateLocationWithoutProducts({
-          ...omit(editLocation, ['stockQuantity'])
-        }),
+        updateLocationWithoutProducts(editLocation),
         () => {
           setAlert({
             severity: 'success',
