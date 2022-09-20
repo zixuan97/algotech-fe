@@ -58,13 +58,6 @@ const columns: GridColDef[] = [
   }
 ];
 
-// interface ProductDetails {
-//   id: number;
-//   productName: string;
-//   quantity: number;
-//   price: number;
-// }
-
 const LocationDetails = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -109,25 +102,6 @@ const LocationDetails = () => {
       });
   }, [id, navigate]);
 
-  // React.useEffect(() => {
-  //   if (originalLocation) {
-  //     setProductDetails(
-  //       products.map((product) => ({
-  //         id: product.id,
-  //         productName: product.name,
-  //         quantity:
-  //           product.stockQuantity.find(
-  //             (qty) => qty.location === originalLocation
-  //           )?.quantity ?? 0,
-  //         price:
-  //           product.stockQuantity.find(
-  //             (qty) => qty.location === originalLocation
-  //           )?.price ?? 0
-  //       }))
-  //     );
-  //   }
-  // }, [originalLocation, products]);
-
   React.useEffect(() => {
     const shouldDisable = !(editLocation?.name && editLocation?.address);
     setDisableSave(shouldDisable);
@@ -147,23 +121,6 @@ const LocationDetails = () => {
       });
     }
   }, [id]);
-
-  // React.useEffect(() => {
-  //   if (originalLocation) {
-  //     Promise.all(
-  //       originalLocation.stockQuantity.map(async (qty) => {
-  //         const product = await getProductById(qty.product_id);
-  //         return product;
-  //       })
-  //     ).then(
-  //       (res) => {
-  //         setTableLoading(false);
-  //         setProducts(res);
-  //       },
-  //       () => setTableLoading(false)
-  //     );
-  //   }
-  // }, [originalLocation]);
 
   const handleDeleteButtonClick = () => {
     setModalOpen(false);
