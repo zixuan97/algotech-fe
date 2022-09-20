@@ -10,6 +10,7 @@ import {
 } from './inventoryContextTypes';
 import InventoryContext from './inventoryContext';
 import inventoryReducer from './inventoryReducer';
+import { Brand, Category, Location, Product } from 'src/models/types';
 
 const InventoryState = (props: PropsWithChildren) => {
   const initialState: InventoryStateAttr = {
@@ -29,25 +30,29 @@ const InventoryState = (props: PropsWithChildren) => {
     fetchCategories();
   }, []);
 
-  const fetchProducts = () =>
-    asyncFetchCallback(getAllProducts(), (res) =>
-      dispatch({ type: InventoryActionTypes.UPDATE_PRODUCTS, payload: res })
-    );
+  const fetchProducts = (callback?: (products: Product[]) => void) =>
+    asyncFetchCallback(getAllProducts(), (res) => {
+      callback?.(res);
+      dispatch({ type: InventoryActionTypes.UPDATE_PRODUCTS, payload: res });
+    });
 
-  const fetchBrands = () =>
-    asyncFetchCallback(getAllBrands(), (res) =>
-      dispatch({ type: InventoryActionTypes.UPDATE_BRANDS, payload: res })
-    );
+  const fetchBrands = (callback?: (brands: Brand[]) => void) =>
+    asyncFetchCallback(getAllBrands(), (res) => {
+      callback?.(res);
+      dispatch({ type: InventoryActionTypes.UPDATE_BRANDS, payload: res });
+    });
 
-  const fetchLocations = () =>
-    asyncFetchCallback(getAllLocations(), (res) =>
-      dispatch({ type: InventoryActionTypes.UPDATE_LOCATIONS, payload: res })
-    );
+  const fetchLocations = (callback?: (locations: Location[]) => void) =>
+    asyncFetchCallback(getAllLocations(), (res) => {
+      callback?.(res);
+      dispatch({ type: InventoryActionTypes.UPDATE_LOCATIONS, payload: res });
+    });
 
-  const fetchCategories = () =>
-    asyncFetchCallback(getAllProductCategories(), (res) =>
-      dispatch({ type: InventoryActionTypes.UPDATE_CATEGORIES, payload: res })
-    );
+  const fetchCategories = (callback?: (categories: Category[]) => void) =>
+    asyncFetchCallback(getAllProductCategories(), (res) => {
+      callback?.(res);
+      dispatch({ type: InventoryActionTypes.UPDATE_CATEGORIES, payload: res });
+    });
 
   return (
     <InventoryContext.Provider
