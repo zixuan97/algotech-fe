@@ -39,11 +39,8 @@ import {
   AlertType,
   AxiosErrDataBody
 } from '../../components/common/TimeoutAlert';
-
-export type NewProduct = Partial<Product> & {
-  categories?: Category[];
-  locations: ProductLocation[];
-};
+import inventoryContext from '../../context/inventory/inventoryContext';
+import { isValidProduct } from 'src/components/inventory/inventoryHelper';
 
 export interface ProductLocation {
   id: number;
@@ -60,59 +57,21 @@ export interface ProductLocationRow extends ProductLocation {
 // TODO: this page needs major refactoring
 const CreateProduct = () => {
   const navigate = useNavigate();
+  const { brands, categories, locations } = React.useContext(inventoryContext);
 
   const imgRef = React.useRef<HTMLInputElement | null>(null);
 
   const [disableCreate, setDisableCreate] = React.useState<boolean>(true);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [newProduct, setNewProduct] = React.useState<NewProduct>({
-    locations: []
+  const [newProduct, setNewProduct] = React.useState<Partial<Product>>({
+    categories: [],
+    stockQuantity: []
   });
-  const [productLocations, setProductLocations] = React.useState<
-    ProductLocationRow[]
-  >(
-    newProduct.locations.map((location) => {
-      return { ...location, gridId: randomId() };
-    })
-  );
-  const [categories, setCategories] = React.useState<Category[]>([]);
-  const [brands, setBrands] = React.useState<Brand[]>([]);
-  const [locations, setLocations] = React.useState<Location[]>([]);
 
   React.useEffect(() => {
-    const shouldDisable = !(
-      newProduct.sku &&
-      newProduct.name &&
-      newProduct.brand_id &&
-      newProduct.qtyThreshold
-    );
-    setDisableCreate(shouldDisable);
-  }, [
-    newProduct.sku,
-    newProduct.name,
-    newProduct.brand_id,
-    newProduct.qtyThreshold
-  ]);
-
-  React.useEffect(() => {
-    asyncFetchCallback(getAllProductCategories(), setCategories);
-    asyncFetchCallback(getAllBrands(), setBrands);
-    asyncFetchCallback(getAllLocations(), setLocations);
-  }, []);
-
-  React.useEffect(() => {
-    setNewProduct((prev) => {
-      return {
-        ...prev,
-        locations: productLocations.map((location) => {
-          return {
-            ...omit(location, ['gridId'])
-          };
-        })
-      };
-    });
-  }, [productLocations]);
+    setDisableCreate(isValidProduct(newProduct));
+  }, [newProduct]);
 
   const handleEditProductString = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewProduct((prev) => {
@@ -194,7 +153,7 @@ const CreateProduct = () => {
     if (newProduct) {
       setLoading(true);
       await asyncFetchCallback(
-        createProduct(newProduct),
+        createProduct(newProduct as Product),
         () => {
           setLoading(false);
           setAlert({
@@ -346,7 +305,7 @@ const CreateProduct = () => {
                         required
                         labelId='brand-label'
                         id='brand'
-                        value={newProduct?.brand_id}
+                        value={newProduct.brand?.id}
                         onChange={handleEditBrand}
                         input={<OutlinedInput label='Brand' />}
                       >
@@ -369,11 +328,11 @@ const CreateProduct = () => {
                     />
                   </div>
                 </div>
-                <LocationGrid
+                {/* <LocationGrid
                   locations={locations}
                   productLocations={productLocations}
                   updateProductLocations={setProductLocations}
-                />
+                /> */}
                 <div className='button-group'>
                   <Button
                     variant='text'

@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { AuthStateInit } from './authTypes';
+import { AuthStateInit } from './authContextTypes';
 
 // TODO: externalise initial state to an object
 const authContext = createContext({

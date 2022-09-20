@@ -44,6 +44,7 @@ import TimeoutAlert, {
 import validator from 'validator';
 import { getBase64 } from 'src/utils/fileUtils';
 import { getBrandById } from 'src/services/brandService';
+import inventoryContext from 'src/context/inventory/inventoryContext';
 
 const columns: GridColDef[] = [
   {
@@ -63,30 +64,10 @@ const columns: GridColDef[] = [
   }
 ];
 
-interface LocationDetails {
-  id: number;
-  name: string;
-  quantity: number;
-  price: number;
-}
-
-export interface ProductLocationRow extends LocationDetails {
-  gridId: GridRowId;
-}
-
-interface CategoryInterface {
-  id: number;
-  name: string;
-}
-
-export type EditProduct = Partial<Product> & {
-  categories: CategoryInterface[];
-  locations: LocationDetails[];
-};
-
 // i apologise in advance for the long winded code, was rushing it out LOL
 const ProductDetails = () => {
   const navigate = useNavigate();
+  const { locations, categories } = React.useContext(inventoryContext);
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
 
@@ -96,21 +77,10 @@ const ProductDetails = () => {
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
-  const [originalProduct, setOriginalProduct] = React.useState<EditProduct>();
-  const [editProduct, setEditProduct] = React.useState<EditProduct>();
-  const [locationDetails, setLocationDetails] = React.useState<
-    LocationDetails[]
-  >([]);
-  const [categories, setCategories] = React.useState<CategoryInterface[]>([]);
+  const [originalProduct, setOriginalProduct] = React.useState<Product>();
+  const [editProduct, setEditProduct] = React.useState<Product>();
+
   const [edit, setEdit] = React.useState<boolean>(false);
-
-  const [locations, setLocations] = React.useState<Location[]>([]);
-  const [productLocations, setProductLocations] = React.useState<
-    ProductLocationRow[]
-  >([]);
-
-  // this is cancerous code, to remove this when we get the schema right
-  const [brand, setBrand] = React.useState<Brand>();
 
   React.useEffect(() => {
     id &&
@@ -136,121 +106,27 @@ const ProductDetails = () => {
     const shouldDisable = !(
       editProduct?.sku &&
       editProduct?.name &&
-      editProduct?.brand_id &&
+      editProduct?.brand &&
       editProduct?.qtyThreshold
     );
     setDisableSave(shouldDisable);
   }, [
     editProduct?.sku,
     editProduct?.name,
-    editProduct?.brand_id,
+    editProduct?.brand,
     editProduct?.qtyThreshold
   ]);
 
   React.useEffect(() => {
-    if (editProduct?.brand_id) {
-      asyncFetchCallback(getBrandById(editProduct?.brand_id), setBrand);
-    }
-  }, [editProduct?.brand_id]);
-
-  React.useEffect(() => {
     if (id) {
       setLoading(true);
-      asyncFetchCallback(getAllLocations(), setLocations);
       asyncFetchCallback(getProductById(id), (res) => {
-        setOriginalProduct(() => {
-          return {
-            ...res,
-            locations: res.stockQuantity.map((location) => {
-              return {
-                id: location.location_id,
-                name: location.location_name,
-                quantity: location.quantity,
-                price: location.price
-              };
-            }),
-            categories: res.productCategory.map((category) => {
-              return {
-                id: category.category_id,
-                name: category.category_name
-              };
-            })
-          };
-        });
-        setEditProduct(() => {
-          return {
-            ...res,
-            locations: res.stockQuantity.map((location) => {
-              return {
-                id: location.location_id,
-                name: location.location_name,
-                quantity: location.quantity,
-                price: location.price
-              };
-            }),
-            categories: res.productCategory.map((category) => {
-              return {
-                id: category.category_id,
-                name: category.category_name
-              };
-            })
-          };
-        });
+        setOriginalProduct(res);
+        setEditProduct(res);
         setLoading(false);
       });
     }
   }, [id]);
-
-  React.useEffect(() => {
-    if (originalProduct) {
-      //   Promise.all(
-      //     originalProduct.locations.map(async (qty) => {
-      //       const location = await getLocationById(qty.id);
-      //       return {
-      //         id: location.id,
-      //         name: location.name,
-      //         quantity: qty.quantity,
-      //         price: qty.price
-      //       };
-      //     })
-      //   ).then((res) => {
-      //     if (productLocations.length === 0) {
-      //       setLocationDetails(res);
-      //       res.forEach((location) => {
-      //         setProductLocations((productLocation) => [
-      //           ...productLocation,
-      //           {
-      //             id: location.id,
-      //             name: location.name,
-      //             quantity: location.quantity,
-      //             price: location.price,
-      //             gridId: randomId()
-      //           }
-      //         ]);
-      //       });
-      //     }
-      //   });
-      setProductLocations(
-        originalProduct.locations.map((loc) => ({
-          ...loc,
-          gridId: randomId()
-        }))
-      );
-    }
-  }, [originalProduct]);
-
-  React.useEffect(() => {
-    asyncFetchCallback(getAllProductCategories(), (res) => {
-      setCategories(
-        res.map((cat) => {
-          return {
-            id: cat.id,
-            name: cat.name
-          };
-        })
-      );
-    });
-  }, []);
 
   const handleEditProduct = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEditProduct((prev) => {
@@ -321,30 +197,9 @@ const ProductDetails = () => {
     if (editProduct) {
       setLoading(true);
       await asyncFetchCallback(
-        updateProduct({
-          ...editProduct,
-          locations: productLocations.map((prodLoc) =>
-            omit(prodLoc, ['gridId'])
-          )
-        }),
+        updateProduct(editProduct),
         () => {
-          setOriginalProduct({
-            ...editProduct,
-            locations: productLocations.map((item) => ({
-              id: item.id,
-              name: item.name,
-              quantity: item.quantity,
-              price: item.price
-            }))
-          });
-          //   setLocationDetails(
-          //     productLocations.map((item) => ({
-          //       id: item.id,
-          //       name: item.name,
-          //       quantity: item.quantity,
-          //       price: item.price
-          //     }))
-          //   );
+          setOriginalProduct(editProduct);
           setAlert({
             message: 'Product edited successfully',
             severity: 'success'
@@ -431,19 +286,6 @@ const ProductDetails = () => {
                   onClick={() => {
                     setEdit(false);
                     setEditProduct(originalProduct);
-                    setProductLocations([]);
-                    locationDetails.map((location) => {
-                      setProductLocations((productLocation) => [
-                        ...productLocation,
-                        {
-                          id: location.id,
-                          name: location.name,
-                          quantity: location.quantity,
-                          price: location.price,
-                          gridId: randomId()
-                        }
-                      ]);
-                    });
                   }}
                 >
                   DISCARD CHANGES
@@ -614,9 +456,9 @@ const ProductDetails = () => {
                         </div>
                       )
                     )}
-                    {brand && (
+                    {editProduct?.brand && (
                       <Typography sx={{ padding: '15px' }}>
-                        {`Brand: ${brand.name}`}
+                        {`Brand: ${editProduct?.brand.name}`}
                       </Typography>
                     )}
                     {edit ? (
@@ -646,16 +488,10 @@ const ProductDetails = () => {
                     )}
                   </div>
                 </div>
-                {edit ? (
-                  <LocationGrid
-                    locations={locations}
-                    productLocations={productLocations}
-                    updateProductLocations={setProductLocations}
-                  />
-                ) : (
+                {edit ? null : ( //   /> //     updateProductLocations={setProductLocations} //     productLocations={productLocations} //     locations={locations} //   <LocationGrid
                   <DataGrid
                     columns={columns}
-                    rows={originalProduct?.locations ?? []}
+                    rows={originalProduct?.stockQuantity ?? []}
                     getRowId={(row) => row.name}
                     autoHeight
                     pageSize={5}

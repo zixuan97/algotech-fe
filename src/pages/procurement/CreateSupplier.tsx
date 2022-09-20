@@ -19,7 +19,7 @@ import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import TimeoutAlert, {
   AlertType,
   AxiosErrDataBody
- } from 'src/components/common/TimeoutAlert';
+} from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
 
 const CreateSupplier = () => {
@@ -27,8 +27,7 @@ const CreateSupplier = () => {
     id: 0,
     email: '',
     name: '',
-    address: '',
-    proc_order_items: []
+    address: ''
   };
 
   const navigate = useNavigate();
