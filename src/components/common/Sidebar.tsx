@@ -15,6 +15,7 @@ import ListItemLink from './ListItemLink';
 import NestedList from './NestedList';
 
 import logo from '../logo blue.png';
+import { UserRole } from 'src/models/types';
 
 type SidebarProps = {
   sidebarWidth: string;
@@ -84,41 +85,27 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             toggleOpen={(open) => toggleMenuOpen('inventory', open)}
             icon={<Inventory />}
           >
-            <List component='div' disablePadding>
-              <ListItemLink
-                primary='Dashboard'
-                to='/inventory/dashboard'
-                typographyProps={submenuTypographyProps}
-              />
-              <ListItemLink
-                primary='All Products'
-                to='/inventory/allProducts'
-                typographyProps={submenuTypographyProps}
-              />
-              <ListItemLink
-                primary='Manage Brands'
-                to='/inventory/allBrands'
-                typographyProps={submenuTypographyProps}
-              />
-              <ListItemLink
-                primary='Manage Categories'
-                to='/inventory/allCategories'
-                typographyProps={submenuTypographyProps}
-              />
-              <ListItemLink
-                primary='Manage Warehouses'
-                to='/inventory/warehouses'
-                typographyProps={submenuTypographyProps}
-              />
-            </List>
+            <ListItemLink primary='Dashboard' to='/inventory/dashboard' />
+            <ListItemLink primary='All Products' to='/inventory/allProducts' />
+            <ListItemLink primary='Manage Brands' to='/inventory/allBrands' />
+            <ListItemLink
+              primary='Manage Categories'
+              to='/inventory/allCategories'
+            />
+            <ListItemLink
+              primary='Manage Warehouses'
+              to='/inventory/warehouses'
+            />
           </NestedList>
 
-          <ListItemLink
+          <NestedList
+            title={'Sales'}
+            open={menuOpen.sales}
+            toggleOpen={(open) => toggleMenuOpen('sales', open)}
             icon={<LocalGroceryStore />}
-            primary='Sales'
-            to='/sales'
-            disabled
-          />
+          >
+            <ListItemLink primary='Dashboard' to='/sales/dashboard' />
+          </NestedList>
 
           <NestedList
             title={'Procurement'}
@@ -126,16 +113,8 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             toggleOpen={(open) => toggleMenuOpen('procurement', open)}
             icon={<Receipt />}
           >
-            <ListItemLink
-              primary='Orders'
-              to='/orders'
-              typographyProps={submenuTypographyProps}
-            />
-            <ListItemLink
-              primary='All Suppliers'
-              to='/orders/allSuppliers'
-              typographyProps={submenuTypographyProps}
-            />
+            <ListItemLink primary='Orders' to='/orders' />
+            <ListItemLink primary='All Suppliers' to='/orders/allSuppliers' />
           </NestedList>
 
           <NestedList
@@ -147,17 +126,14 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             <ListItemLink
               primary='Manual Deliveries'
               to='/delivery/allManualDeliveries'
-              typographyProps={submenuTypographyProps}
             />
             <ListItemLink
               primary='Grab Deliveries'
               to='/delivery/allGrabDeliveries'
-              typographyProps={submenuTypographyProps}
             />
             <ListItemLink
               primary='Shippit Deliveries'
               to='/delivery/allShippitDeliveries'
-              typographyProps={submenuTypographyProps}
             />
           </NestedList>
 
@@ -168,11 +144,12 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             disabled
           />
           <ListItemLink icon={<AccountBox />} primary='HR' to='/hr' disabled />
-          <RoleComponent allowedRoles={['ADMIN']}>
+          <RoleComponent allowedRoles={[UserRole.ADMIN]}>
             <ListItemLink
               icon={<People />}
               primary='User Accounts'
               to='/accounts'
+              typographyProps={{ fontWeight: 500 }}
             />
           </RoleComponent>
         </List>
