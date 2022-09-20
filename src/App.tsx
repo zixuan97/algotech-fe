@@ -86,111 +86,12 @@ const App = () => {
             <Routes>
               <Route path='/login' element={<Login />} />
               <Route
-<<<<<<< HEAD
-                index
-                element={<Navigate replace to='/inventory/dashboard' />}
-              />
-              <Route
-                path='inventory'
-                element={<Navigate replace to='/inventory/dashboard' />}
-              />
-              <Route
-                path='inventory/dashboard'
-                element={<InventoryDashboard />}
-              />
-              <Route path='inventory/allProducts' element={<AllProducts />} />
-              <Route
-                path='inventory/createProduct'
-                element={<CreateProduct />}
-              />
-              <Route
-                path='inventory/productDetails'
-                element={<ProductDetails />}
-              />
-              <Route
-                path='orders'
-                element={<AllOrders />}
-              />
-              <Route
-                path='orders/createProcurementOrder'
-                element={<CreateProcurementOrder />}
-              />
-              <Route
-                path='orders/procurementOrderDetails'
-                element={<ProcurementOrderDetails />}
-              />
-              <Route
-                path='orders/allSuppliers'
-                element={<AllSuppliers />}
-              />
-              <Route
-                path='orders/createSupplier'
-                element={<CreateSupplier />}
-              />
-              <Route
-                path='orders/supplierDetails'
-                element={<SupplierDetails />}
-              />
-              <Route
-                path='inventory/allCategories'
-                element={<AllCategories />}
-              />
-              <Route
-                path='inventory/createCategory'
-                element={<CreateCategory />}
-              />
-              <Route
-                path='inventory/categoryDetails'
-                element={<CategoryDetails />}
-              />
-              <Route
-                path='inventory/allBrands'
-                element={<AllBrands />}
-              />
-              <Route
-                path='inventory/createBrand'
-                element={<CreateBrand />}
-              />
-              <Route
-                path='inventory/brandDetails'
-                element={<BrandDetails />}
-              />
-              <Route
-                path='inventory/warehouses'
-                element={<AllWarehouses />}
-              />
-              <Route
-                path='inventory/warehouseDetails'
-                element={<WarehouseDetails />}
-              />
-              <Route
-                path='inventory/createWarehouse'
-                element={<CreateWarehouse />}
-              />
-              <Route
-                path='delivery/allGrabDeliveries'
-                element={<AllGrabDeliveries />}
-              />
-              <Route
-                path='delivery/allManualDeliveries'
-                element={<AllManualDeliveries />}
-              />
-              <Route
-                path='delivery/allShippitDeliveries'
-                element={<AllShippitDeliveries />}
-              />
-
-              <Route
-                path='accounts'
-                element={<RoleRoute allowedRoles={['ADMIN']} />}
-=======
                 path='/'
                 element={
                   <AuthRoute redirectTo='/login'>
                     <Home />
                   </AuthRoute>
                 }
->>>>>>> 3019af0e5a3f9feea10edaa216eeaddd798575dd
               >
                 <Route path='restricted' element={<Restricted />} />
                 <Route
@@ -263,8 +164,16 @@ const App = () => {
                   element={<CreateWarehouse />}
                 />
                 <Route
-                  path='delivery/allDeliveries'
-                  element={<AllDeliveries />}
+                  path='delivery/allManualDeliveries'
+                  element={<AllManualDeliveries />}
+                />
+                <Route
+                  path='delivery/allGrabDeliveries'
+                  element={<AllGrabDeliveries />}
+                />
+                <Route
+                  path='delivery/allShippitDeliveries'
+                  element={<AllShippitDeliveries />}
                 />
 
                 <Route
