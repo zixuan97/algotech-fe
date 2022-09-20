@@ -26,7 +26,7 @@ const columns: GridColDef[] = [
   }
 ];
 
-const AllDeliveries = () => {
+const AllGrabDeliveries = () => {
   const navigate = useNavigate();
 
   const [searchField, setSearchField] = React.useState<string>('');
@@ -68,7 +68,7 @@ const AllDeliveries = () => {
 
   return (
     <div className='delivery'>
-      <h1>All Deliveries</h1>
+      <h1>All Grab Deliveries</h1>
       <div className='grid-toolbar'>
         <div className='search-bar'>
           <Search />
@@ -99,4 +99,4 @@ const AllDeliveries = () => {
   );
 };
 
-export default AllDeliveries;
+export default AllGrabDeliveries;

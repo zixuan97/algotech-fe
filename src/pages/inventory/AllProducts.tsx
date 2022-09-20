@@ -18,13 +18,14 @@ const columns: GridColDef[] = [
   {
     field: 'brand',
     headerName: 'Brand',
-    flex: 1
+    flex: 1,
+    valueGetter: (params) => params.value.name
   },
   {
     field: 'categories',
     headerName: 'Category',
     flex: 2,
-    valueGetter: (params: GridValueGetterParams) =>
+    valueGetter: (params) =>
       params.value.map((category: Category) => category.name).join(', ')
   },
   {
@@ -32,7 +33,7 @@ const columns: GridColDef[] = [
     headerName: 'Total Quantity',
     type: 'number',
     flex: 1,
-    valueGetter: (params: GridValueGetterParams) =>
+    valueGetter: (params) =>
       params.value?.reduce(
         (prev: number, curr: StockQuantity) => prev + curr.quantity,
         0
@@ -50,11 +51,16 @@ const columns: GridColDef[] = [
 
 const AllProducts = () => {
   const navigate = useNavigate();
-  const { products } = React.useContext(inventoryContext);
+  const { products, refreshProducts } = React.useContext(inventoryContext);
 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
   const [filteredData, setFilteredData] = React.useState<Product[]>([]);
+
+  React.useEffect(() => {
+    refreshProducts();
+    // eslint-disable-next-line
+  }, []);
 
   React.useEffect(() => {
     setFilteredData(

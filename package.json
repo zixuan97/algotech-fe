@@ -23,6 +23,7 @@
     "html2canvas": "^1.4.1",
     "js-file-download": "^0.4.12",
     "jspdf": "^2.5.1",
+    "leaflet": "^1.8.0",
     "lodash": "^4.17.21",
     "moment": "^2.29.4",
     "node-polyfill-webpack-plugin": "^2.0.1",

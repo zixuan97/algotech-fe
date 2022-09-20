@@ -1,3 +1,5 @@
+export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
+
 export enum UserRole {
   ADMIN = 'ADMIN',
   INTERN = 'INTERN',
@@ -77,7 +79,7 @@ export interface Location {
 }
 
 export interface StockQuantity {
-  productId: number;
+  productId?: number;
   location: Location;
   price: number;
   quantity: number;
