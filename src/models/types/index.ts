@@ -22,6 +22,22 @@ export enum FulfilmentStatus {
   COMPLETED = 'COMPLETED'
 }
 
+export enum OrderStatus {
+  CREATED = 'CREATED'
+  //not completed, need to wait for backend
+}
+
+export enum DeliveryStatus {
+  DELIVERED = 'DELIVERED'
+  //not completed, need to wait for backend
+}
+
+export enum ShippingType {
+  MANUAL = 'MANUAL',
+  SHIPPIT = 'SHIPPIT',
+  SHOPIFY = 'SHOPIFY'
+}
+
 export interface User {
   id: number;
   firstName: string;
@@ -100,4 +116,16 @@ export interface Supplier {
   email: string;
   name: string;
   address: string;
+}
+
+export interface DeliveryOrder {
+  id: number;
+  orderStatus: OrderStatus;
+  deliveryStatus: DeliveryStatus;
+  shippingDate: Date;
+  shippingAddress: string;
+  shippingType: ShippingType;
+  currentLocation: string;
+  eta: Date;
+  paymentId: number;
 }
