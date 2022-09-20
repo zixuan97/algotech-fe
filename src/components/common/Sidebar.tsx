@@ -126,13 +126,18 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             icon={<LocalShipping />}
           >
             <ListItemLink
-              primary='Dashboard'
-              to=''
+              primary='Manual Deliveries'
+              to='/delivery/allManualDeliveries'
               typographyProps={submenuTypographyProps}
             />
             <ListItemLink
-              primary='All Deliveries'
-              to='/delivery/allDeliveries'
+              primary='Grab Deliveries'
+              to='/delivery/allGrabDeliveries'
+              typographyProps={submenuTypographyProps}
+            />
+            <ListItemLink
+              primary='Shippit Deliveries'
+              to='/delivery/allShippitDeliveries'
               typographyProps={submenuTypographyProps}
             />
           </NestedList>

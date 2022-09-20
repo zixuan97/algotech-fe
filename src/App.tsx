@@ -33,8 +33,9 @@ import AllSuppliers from './pages/procurement/AllSuppliers';
 import SupplierDetails from './pages/procurement/SupplierDetails';
 import CreateSupplier from './pages/procurement/CreateSupplier';
 
-import AllDeliveries from './pages/delivery/AllDeliveries';
-import DeliveryDashboard from './pages/delivery/DeliveryDashboard';
+import AllGrabDeliveries from './pages/delivery/AllGrabDeliveries';
+import AllManualDeliveries from './pages/delivery/AllManualDeliveries';
+import AllShippitDeliveries from './pages/delivery/AllShippitDeliveries';
 
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
@@ -173,12 +174,16 @@ const App = () => {
                 element={<CreateWarehouse />}
               />
               <Route
-                path='delivery/allDeliveries'
-                element={<AllDeliveries />}
+                path='delivery/allGrabDeliveries'
+                element={<AllGrabDeliveries />}
               />
               <Route
-                path='delivery/deliveryDashboard'
-                element={<DeliveryDashboard />}
+                path='delivery/allManualDeliveries'
+                element={<AllManualDeliveries />}
+              />
+              <Route
+                path='delivery/allShippitDeliveries'
+                element={<AllShippitDeliveries />}
               />
 
               <Route
