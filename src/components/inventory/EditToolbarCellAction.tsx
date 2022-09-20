@@ -5,34 +5,35 @@ import {
   GridRowModesModel,
   GridToolbarContainer
 } from '@mui/x-data-grid';
-import {
-  ProductLocation,
-  ProductLocationRow
-} from 'src/pages/inventory/CreateProduct';
+import { ProductLocationRow } from 'src/pages/inventory/CreateProduct';
 import { Location } from 'src/models/types';
 import { randomId } from '@mui/x-data-grid-generator';
+import { StockQuantityGridRow } from './inventoryHelper';
 
 interface EditToolbarProps {
   setRows: (
-    newRows: (oldRows: ProductLocationRow[]) => ProductLocationRow[]
+    newRows: (oldRows: StockQuantityGridRow[]) => StockQuantityGridRow[]
   ) => void;
   setRowModesModel: (
     newModel: (oldModel: GridRowModesModel) => GridRowModesModel
   ) => void;
   availableLocations: Location[];
+  disableAdd: boolean;
 }
 
-const EditToolbarCellAction = (props: EditToolbarProps) => {
-  const { setRows, setRowModesModel, availableLocations } = props;
-
+const EditToolbarCellAction = ({
+  setRows,
+  setRowModesModel,
+  availableLocations,
+  disableAdd
+}: EditToolbarProps) => {
   const handleClick = () => {
     const gridId = randomId();
     setRows((oldRows) => [
       ...oldRows,
       {
         gridId,
-        id: availableLocations[0].id,
-        name: availableLocations[0].name,
+        location: availableLocations[0],
         price: 0,
         quantity: 0,
         isNew: true
@@ -50,7 +51,7 @@ const EditToolbarCellAction = (props: EditToolbarProps) => {
         color='primary'
         startIcon={<AddIcon />}
         onClick={handleClick}
-        disabled={!availableLocations.length}
+        disabled={!availableLocations.length || disableAdd}
       >
         Add warehouse
       </Button>

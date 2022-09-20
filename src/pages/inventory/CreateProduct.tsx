@@ -23,18 +23,12 @@ import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft, Delete } from '@mui/icons-material';
 import { GridRowId } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router';
-import { Category, Product, Brand, Location } from 'src/models/types';
+import { Product, StockQuantity } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import {
-  createProduct,
-  getAllProductCategories
-} from 'src/services/productService';
-import { has, intersectionWith, omit } from 'lodash';
-import { getAllBrands } from 'src/services/brandService';
+import { createProduct } from 'src/services/productService';
+import { intersectionWith, omit } from 'lodash';
 import { getBase64 } from 'src/utils/fileUtils';
-import { getAllLocations } from 'src/services/locationService';
 import LocationGrid from 'src/components/inventory/LocationGrid';
-import { randomId } from '@mui/x-data-grid-generator';
 import {
   AlertType,
   AxiosErrDataBody
@@ -57,7 +51,7 @@ export interface ProductLocationRow extends ProductLocation {
 // TODO: this page needs major refactoring
 const CreateProduct = () => {
   const navigate = useNavigate();
-  const { brands, categories, locations } = React.useContext(inventoryContext);
+  const { brands, categories } = React.useContext(inventoryContext);
 
   const imgRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -70,17 +64,15 @@ const CreateProduct = () => {
   });
 
   React.useEffect(() => {
-    setDisableCreate(isValidProduct(newProduct));
+    setDisableCreate(!isValidProduct(newProduct));
   }, [newProduct]);
 
-  const handleEditProductString = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewProduct((prev) => {
-      if (prev) {
-        return { ...prev, [e.target.name]: e.target.value };
-      } else {
-        return prev;
-      }
-    });
+  const handleEditProduct = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    isNumber: boolean = false
+  ) => {
+    const value = isNumber ? parseInt(e.target.value) : e.target.value;
+    setNewProduct((prev) => ({ ...prev, [e.target.name]: value }));
   };
 
   const handleEditCategories = (e: SelectChangeEvent<string[]>) => {
@@ -101,15 +93,11 @@ const CreateProduct = () => {
     });
   };
 
-  const handleEditBrand = (e: SelectChangeEvent<number>) => {
-    setNewProduct((prev) => {
-      if (prev) {
-        return { ...prev, brand_id: e.target.value as number };
-      } else {
-        return prev;
-      }
-    });
-  };
+  const handleEditBrand = (e: SelectChangeEvent<number>) =>
+    setNewProduct((prev) => ({
+      ...prev,
+      brand: brands.find((brand) => brand.id === e.target.value)
+    }));
 
   const handleEditProductNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewProduct((prev) => {
@@ -262,7 +250,7 @@ const CreateProduct = () => {
                       label='SKU'
                       name='sku'
                       value={newProduct?.sku}
-                      onChange={handleEditProductString}
+                      onChange={handleEditProduct}
                       placeholder='eg.: SKU12345678'
                     />
 
@@ -273,7 +261,7 @@ const CreateProduct = () => {
                       label='Product Name'
                       name='name'
                       value={newProduct?.name}
-                      onChange={handleEditProductString}
+                      onChange={handleEditProduct}
                       placeholder='eg.: Nasi Lemak Popcorn'
                     />
                     <FormControl>
@@ -328,11 +316,15 @@ const CreateProduct = () => {
                     />
                   </div>
                 </div>
-                {/* <LocationGrid
-                  locations={locations}
-                  productLocations={productLocations}
-                  updateProductLocations={setProductLocations}
-                /> */}
+                <LocationGrid
+                  stockQuantity={newProduct.stockQuantity ?? []}
+                  updateStockQuantity={(stockQty) =>
+                    setNewProduct((prev) => ({
+                      ...prev,
+                      stockQuantity: stockQty
+                    }))
+                  }
+                />
                 <div className='button-group'>
                   <Button
                     variant='text'
