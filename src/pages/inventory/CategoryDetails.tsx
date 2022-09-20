@@ -15,15 +15,16 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { Category } from '../../models/types';
+import { Category, Product } from '../../models/types';
 import ProductCellAction from '../../components/inventory/ProductCellAction';
 import {
   getCategoryById,
   updateCategory,
-  deleteCategory,
+  deleteCategory
 } from '../../services/categoryService';
 import {
-  getProductById,
+  getAllProductCategories,
+  getProductById
 } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
@@ -68,39 +69,37 @@ const CategoryDetails = () => {
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
 
-  const [originalCategory, setOriginalCategory] = React.useState<Category>(category);
+  const [originalCategory, setOriginalCategory] =
+    React.useState<Category>(category);
   const [editCategory, setEditCategory] = React.useState<Category>(category);
-  const [productDetails, setProductDetails] = React.useState<
-    ProductDetails[]
-  >([]);
+  const [productDetails, setProductDetails] = React.useState<ProductDetails[]>(
+    []
+  );
 
   const [edit, setEdit] = React.useState<boolean>(false);
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
 
   React.useEffect(() => {
     id &&
-      asyncFetchCallback(
-        getCategoryById(id),
-        (category: Category) => {
-          if(category) {
-            setOriginalCategory(category);
-            setLoading(false);
-          } else {
-            setAlert({
-              severity: 'error',
-              message: 'Category does not exist. You will be redirected back to the Manage Categories page.'
-            });
-            setLoading(false);
-            setTimeout(() => navigate('/inventory/allCategories'), 3500);
-          }
+      asyncFetchCallback(getCategoryById(id), (category: Category) => {
+        if (category) {
+          setOriginalCategory(category);
+          setLoading(false);
+        } else {
+          setAlert({
+            severity: 'error',
+            message:
+              'Category does not exist. You will be redirected back to the Manage Categories page.'
+          });
+          setLoading(false);
+          setTimeout(() => navigate('/inventory/allCategories'), 3500);
         }
-      );
+      });
   }, [id, navigate]);
 
   React.useEffect(() => {
     const shouldDisable = !(
-      editCategory?.name &&
-      editCategory?.productCategory
+      editCategory?.name && editCategory?.productCategory
     );
     setDisableSave(shouldDisable);
   }, [editCategory?.name, editCategory?.productCategory]);
@@ -127,7 +126,7 @@ const CategoryDetails = () => {
           };
         })
       ).then(
-        (res) =>  {
+        (res) => {
           setTableLoading(false);
           setProductDetails(res);
         },
@@ -146,7 +145,8 @@ const CategoryDetails = () => {
           setBackdropLoading(false);
           setAlert({
             severity: 'success',
-            message: 'Category successfully deleted. You will be redirected to the Manage Categories page now.'
+            message:
+              'Category successfully deleted. You will be redirected to the Manage Categories page now.'
           });
           setTimeout(() => navigate('/inventory/allCategories'), 3500);
         },
@@ -299,13 +299,13 @@ const CategoryDetails = () => {
                 </div>
                 {/* product table */}
                 {!edit && (
-                <DataGrid
-                  columns={columns}
-                  rows={productDetails}
-                  loading={tableLoading}
-                  autoHeight
-                  pageSize={5}
-                />
+                  <DataGrid
+                    columns={columns}
+                    rows={productDetails}
+                    loading={tableLoading}
+                    autoHeight
+                    pageSize={5}
+                  />
                 )}
               </FormGroup>
             </form>

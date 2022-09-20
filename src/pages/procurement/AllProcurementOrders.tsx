@@ -4,12 +4,13 @@ import {
   DataGrid,
   GridColDef,
   GridRowParams,
-  GridValueFormatterParams
+  GridValueFormatterParams,
+  GridValueGetterParams
 } from '@mui/x-data-grid';
 import { GridRenderCellParams } from '@mui/x-data-grid';
 import '../../styles/pages/procurement.scss';
 import { Button, Chip, ChipProps } from '@mui/material';
-import { ProcurementOrder } from 'src/models/types';
+import { ProcurementOrder, Supplier } from 'src/models/types';
 import { getAllProcurementOrders } from 'src/services/procurementService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import ViewOrderButton from 'src/components/procurement/ViewOrderButton';
@@ -24,7 +25,7 @@ function getChipProps(params: GridRenderCellParams): ChipProps {
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'Order ID', flex: 1 },
   {
-    field: 'order_date',
+    field: 'orderDate',
     headerName: 'Date',
     flex: 1,
     valueFormatter: (params: GridValueFormatterParams<Date>) => {
@@ -34,9 +35,15 @@ const columns: GridColDef[] = [
       return valueFormatted;
     }
   },
-  { field: 'supplier_name', headerName: 'Supplier Name', flex: 1 },
   {
-    field: 'payment_status',
+    field: 'supplierName',
+    headerName: 'Supplier Name',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) =>
+      params.value.map((supplier: Supplier) => supplier.name)
+  },
+  {
+    field: 'paymentStatus',
     headerName: 'Payment Status',
     flex: 1,
     renderCell: (params) => {
@@ -46,12 +53,12 @@ const columns: GridColDef[] = [
     }
   },
   {
-    field: 'fulfilment_status',
+    field: 'fulfilmentStatus',
     headerName: 'Fulfilment Status',
     flex: 1,
     renderCell: OrderFulfilmentStatusCell
   },
-  { field: 'total_amount', headerName: 'Order Total', type: 'number', flex: 1 },
+  { field: 'totalAmount', headerName: 'Order Total', type: 'number', flex: 1 },
   {
     field: 'action',
     headerName: 'Action',

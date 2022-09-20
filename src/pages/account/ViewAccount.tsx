@@ -22,10 +22,9 @@ import {
   getUserDetailsSvc
 } from 'src/services/accountService';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
-import { User } from 'src/models/types';
+import { User, UserStatus, UserRole } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
-import { roles } from 'src/components/account/accountTypes';
 import validator from 'validator';
 interface ModalProps {
   wrapperParam: wrapperParam;
@@ -50,22 +49,13 @@ const WrapperModal = ({ wrapperParam, modalOpen, onClose }: ModalProps) => {
   );
 };
 
-const placeholderUser: User = {
-  //note: id is temp holder, BE doesn't consume id on create
-  id: 0,
-  email: '',
-  role: '',
-  status: '',
-  first_name: '',
-  last_name: '',
-  password: '',
-  isVerified: true
-};
+const roles = Object.keys(UserRole).filter((v) => isNaN(Number(v)));
 
 const ViewAccount = () => {
   let params = new URLSearchParams(window.location.search);
   const navigate = useNavigate();
-  const [user, setUser] = useState<User>(placeholderUser);
+  const [user, setUser] = useState<User>();
+  const [editUser, setEditUser] = useState<User>();
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [alert, setAlert] = useState<AlertType | null>(null);
@@ -76,6 +66,7 @@ const ViewAccount = () => {
     funct: () => { }
   });
   const id = params.get('id');
+  
 
   const handleDisableButtonClick = () => {
     setModalOpen(true);
@@ -138,7 +129,7 @@ const ViewAccount = () => {
         navigate(`/accounts/viewAccount?id=${id}`);
         setUser((oldUser) => {
           return {
-            ...oldUser, status: 'DISABLED'
+            ...oldUser!, status: UserStatus.DISABLED
           }
         })
       });
@@ -156,7 +147,7 @@ const ViewAccount = () => {
         navigate(`/accounts/viewAccount?id=${id}`);
         setUser((oldUser) => {
           return {
-            ...oldUser, status: 'ACTIVE'
+            ...oldUser!, status: UserStatus.ACTIVE
           }
         })
       });
@@ -168,8 +159,9 @@ const ViewAccount = () => {
       asyncFetchCallback(
         getUserDetailsSvc(id),
         (user: User) => {
-          if(user) {
+          if (user) {
             setUser(user);
+            setEditUser(user);
             setLoading(false);
           } else {
             setAlert({
@@ -187,9 +179,9 @@ const ViewAccount = () => {
     event: React.ChangeEvent<HTMLInputElement>,
     key: string
   ) => {
-    setUser((paramUser: User) => {
+    setEditUser((paramUser) => {
       return {
-        ...paramUser,
+        ...paramUser!,
         [key]: event.target.value
       };
     });
@@ -199,13 +191,14 @@ const ViewAccount = () => {
     e.preventDefault();
     setLoading(true);
     asyncFetchCallback(
-      editUserSvc(user),
+      editUserSvc(editUser!),
       () => {
         setAlert({
           severity: 'success',
           message: 'Account edited.'
         });
         setLoading(false);
+        setUser(editUser);
       },
       () => {
         setAlert({
@@ -246,6 +239,7 @@ const ViewAccount = () => {
                   color='primary'
                   onClick={() => {
                     setEdit(false);
+                    setEditUser(user);
                   }}
                 >
                   DISCARD CHANGES
@@ -255,7 +249,7 @@ const ViewAccount = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
-                disabled={edit && (!validator.isEmail(user.email) || validator.isEmpty(user?.last_name) || validator.isEmpty(user?.first_name))}
+                disabled={edit && (!validator.isEmail(editUser?.email!) || validator.isEmpty(editUser?.lastName!) || validator.isEmpty(editUser?.firstName!))}
                 onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   if (!edit) {
                     setEdit(true);
@@ -311,19 +305,19 @@ const ViewAccount = () => {
                         label='First Name'
                         name='firstName'
                         placeholder='eg.: John'
-                        error={!user.first_name}
+                        error={!editUser?.firstName}
                         helperText={
-                          !user.first_name ? 'First Name is empty!' : ''
+                          !editUser?.firstName ? 'First Name is empty!' : ''
                         }
-                        value={user?.first_name}
+                        value={editUser?.firstName}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          userFieldOnChange(e, 'first_name')
+                          userFieldOnChange(e, 'firstName')
                         }
                       />
                     ) : (
                       <div>
                         <h4>First Name</h4>
-                        <Typography>{user?.first_name}</Typography>
+                        <Typography>{user?.firstName}</Typography>
                       </div>
                     )}
                   </Grid>
@@ -337,19 +331,19 @@ const ViewAccount = () => {
                         label='Last Name'
                         name='lastName'
                         placeholder='eg.: Tan'
-                        error={!user.last_name}
+                        error={!editUser?.lastName}
                         helperText={
-                          !user.last_name ? 'Last Name is empty!' : ''
+                          !editUser?.lastName ? 'Last Name is empty!' : ''
                         }
-                        value={user?.last_name}
+                        value={editUser?.lastName}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          userFieldOnChange(e, 'last_name')
+                          userFieldOnChange(e, 'lastName')
                         }
                       />
                     ) : (
                       <div>
                         <h4>Last Name</h4>
-                        <Typography>{user?.last_name}</Typography>
+                        <Typography>{user?.lastName}</Typography>
                       </div>
                     )}
                   </Grid>
@@ -363,12 +357,12 @@ const ViewAccount = () => {
                         name='email'
                         placeholder='eg.: johntan@gmail.com'
                         helperText={
-                          validator.isEmail(user.email)
+                          validator.isEmail(editUser?.email!)
                             ? ''
                             : 'Enter a valid email: example@email.com'
                         }
-                        error={!validator.isEmail(user.email)}
-                        value={user?.email}
+                        error={!validator.isEmail(editUser?.email!)}
+                        value={editUser?.email}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           userFieldOnChange(e, 'email')
                         }
@@ -388,14 +382,14 @@ const ViewAccount = () => {
                         id='outlined-field'
                         select
                         label='Role'
-                        value={user?.role}
+                        value={editUser?.role}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           userFieldOnChange(e, 'role')
                         }
                       >
                         {roles.map((option) => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
+                          <MenuItem key={option} value={option}>
+                            {option}
                           </MenuItem>
                         ))}
                       </TextField>

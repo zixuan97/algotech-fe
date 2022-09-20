@@ -22,7 +22,7 @@ import {
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft, Delete } from '@mui/icons-material';
-import { Brand, Category, Product, ProductCategory } from 'src/models/types';
+import { Brand, Category, Product } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   deleteProduct,
@@ -119,10 +119,12 @@ const ProductDetails = () => {
         (product: Product) => {
           console.log('hello world');
           setLoading(false);
-        }, () => {
+        },
+        () => {
           setAlert({
             severity: 'error',
-            message: 'Product does not exist. You will be redirected back to the All Products page.'
+            message:
+              'Product does not exist. You will be redirected back to the All Products page.'
           });
           setLoading(false);
           setTimeout(() => navigate('/inventory/allProducts'), 3500);
