@@ -51,9 +51,12 @@ const CreateWarehouse = () => {
           setLoading(false);
           setAlert({
             severity: 'success',
-            message: 'Warehouse successfully created! You will be redirected back to the All Warehouses page now.'
+            message:
+              'Warehouse successfully created! You will be redirected back to the All Warehouses page now.'
           });
-          setTimeout(() => {navigate('/inventory/warehouses')}, 3000);
+          setTimeout(() => {
+            navigate('/inventory/warehouses');
+          }, 3000);
         },
         (err) => {
           const resData = err.response?.data as AxiosErrDataBody;
@@ -80,7 +83,7 @@ const CreateWarehouse = () => {
           <div className='header-content'>
             <h1>Create Warehouse</h1>
           </div>
-          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />          
+          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <Backdrop
               sx={{

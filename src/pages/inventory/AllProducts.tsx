@@ -5,13 +5,11 @@ import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
 import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
-import { Product, StockQuantity } from '../../models/types';
+import { Product, StockQuantity, Brand } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { getAllProducts } from 'src/services/productService';
 import { useNavigate } from 'react-router';
-import { ProductCategory } from 'src/models/types';
 import { getAllBrands, getBrandById } from 'src/services/brandService';
-import { Brand } from '../../models/types';
 
 const columns = (brands: Brand[]): GridColDef[] => [
   { field: 'sku', headerName: 'SKU', flex: 1 },

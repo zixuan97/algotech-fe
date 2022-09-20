@@ -94,9 +94,8 @@ const CreateProcurementOrder = () => {
       let newProcurementOrderItem: NewProcurementOrderItem = {
         id: selectedProduct.id,
         quantity: parseInt(quantity),
-        product_sku: sku,
         rate: parseInt(rate),
-        product_name: selectedProduct.name
+        product: selectedProduct
       };
       let updatedOrderItems = Object.assign([], orderItems);
       setAddedProductsId((prev) => [...prev, selectedProduct.id]);
@@ -135,7 +134,7 @@ const CreateProcurementOrder = () => {
   ];
 
   const handleOrderCreation = async () => {
-    if (newProcurementOrder.supplier_id === undefined) {
+    if (newProcurementOrder.supplier!.id === undefined) {
       setAlert({
         severity: 'warning',
         message: 'Please Select a Supplier!'
@@ -148,7 +147,7 @@ const CreateProcurementOrder = () => {
       setNewProcurementOrder(newProcurementOrder);
     }
 
-    if (newProcurementOrder.warehouse_address === undefined) {
+    if (newProcurementOrder.location!.address === undefined) {
       setAlert({
         severity: 'warning',
         message: 'Please Select a Warehouse Address!'
@@ -166,10 +165,10 @@ const CreateProcurementOrder = () => {
 
     setLoading(true);
     let finalProcurementOrderItems = orderItems.map(
-      ({ product_sku, quantity, product_name, rate }) => ({
-        product_sku,
+      ({ product, quantity, rate }) => ({
+        product_sku: product?.sku,
         quantity,
-        product_name,
+        product_name: product?.name,
         rate
       })
     );
@@ -179,8 +178,8 @@ const CreateProcurementOrder = () => {
       payment_status: 'PENDING',
       fulfilment_status: 'CREATED',
       proc_order_items: finalProcurementOrderItems,
-      supplier_id: newProcurementOrder.supplier_id,
-      warehouse_address: newProcurementOrder.warehouse_address
+      supplier_id: newProcurementOrder.supplier!.id,
+      warehouse_address: newProcurementOrder.location!.address
     };
 
     await asyncFetchCallback(
@@ -264,7 +263,7 @@ const CreateProcurementOrder = () => {
                   id='supplier-select-label'
                   label='Supplier'
                   name='supplier_id'
-                  value={newProcurementOrder?.supplier_id}
+                  value={newProcurementOrder.supplier!.id}
                   onChange={handleEditProcurementOrder}
                   select
                   required
@@ -282,7 +281,7 @@ const CreateProcurementOrder = () => {
                   id='warehouse-address-select-label'
                   label='Warehouse Name'
                   name='warehouse_address'
-                  value={newProcurementOrder?.warehouse_address}
+                  value={newProcurementOrder.location!.address}
                   onChange={handleEditProcurementOrder}
                   select
                   required

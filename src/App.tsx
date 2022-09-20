@@ -38,7 +38,6 @@ import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import EditAccount from './pages/account/EditAccount';
 import ViewMyAccount from './pages/account/ViewMyAccount';
 import AllCategories from './pages/inventory/AllCategories';
 import CreateCategory from './pages/inventory/CreateCategory';
@@ -177,7 +176,6 @@ const App = () => {
               >
                 <Route index element={<Accounts />} />
                 <Route path='viewAccount' element={<ViewAccount />} />
-                <Route path='editAccount' element={<EditAccount />} />
                 <Route path='createNewUser' element={<CreateNewUser />} />
               </Route>
               

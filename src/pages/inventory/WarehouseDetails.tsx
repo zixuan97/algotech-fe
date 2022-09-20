@@ -10,7 +10,7 @@ import {
   IconButton,
   Tooltip,
   Typography,
-  CircularProgress,
+  CircularProgress
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -93,22 +93,20 @@ const LocationDetails = () => {
 
   React.useEffect(() => {
     id &&
-      asyncFetchCallback(
-        getLocationById(id),
-        (location: Location) => {
-          if(location) {
-            setOriginalLocation(location);
-            setLoading(false);
-          } else {
-            setAlert({
-              severity: 'error',
-              message: 'Location does not exist. You will be redirected back to the Manage Warehouses page.'
-            });
-            setLoading(false);
-            setTimeout(() => navigate('/inventory/warehouses'), 3500);
-          }
+      asyncFetchCallback(getLocationById(id), (location: Location) => {
+        if (location) {
+          setOriginalLocation(location);
+          setLoading(false);
+        } else {
+          setAlert({
+            severity: 'error',
+            message:
+              'Location does not exist. You will be redirected back to the Manage Warehouses page.'
+          });
+          setLoading(false);
+          setTimeout(() => navigate('/inventory/warehouses'), 3500);
         }
-      );
+      });
   }, [id, navigate]);
 
   React.useEffect(() => {
@@ -173,7 +171,8 @@ const LocationDetails = () => {
           setBackdropLoading(false);
           setAlert({
             severity: 'success',
-            message: 'Warehouse successfully deleted. You will be redirected to the Manage Warehouses page now.'
+            message:
+              'Warehouse successfully deleted. You will be redirected to the Manage Warehouses page now.'
           });
           setTimeout(() => navigate('/inventory/warehouses'), 3500);
         },

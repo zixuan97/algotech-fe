@@ -26,23 +26,12 @@ import {
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
 
-const placeholderUser: User = {
-  //note: id is temp holder, BE doesn't consume id on create
-  id: 0,
-  email: '',
-  role: '',
-  status: '',
-  first_name: '',
-  last_name: '',
-  password: '',
-  isVerified: true
-};
-
 const ViewMyAccount = () => {
   const navigate = useNavigate();
   let params = new URLSearchParams(window.location.search);
   const id = params.get('id');
-  const [user, setUser] = useState<User>(placeholderUser);
+  const [user, setUser] = useState<User>();
+  const [editUser, setEditUser] = useState<User>();
   const [edit, setEdit] = useState<boolean>(false);
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -61,10 +50,8 @@ const ViewMyAccount = () => {
         getUserDetailsSvc(id),
         (user: User) => {
           setUser(user);
+          setEditUser(user);
           setLoading(false);
-        },
-        () => {
-          //handle error here
         }
       );
   }, []);
@@ -73,9 +60,9 @@ const ViewMyAccount = () => {
     event: React.ChangeEvent<HTMLInputElement>,
     key: string
   ) => {
-    setUser((paramUser: User) => {
+    setEditUser((paramUser) => {
       return {
-        ...paramUser,
+        ...paramUser!,
         [key]: event.target.value
       };
     });
@@ -85,16 +72,17 @@ const ViewMyAccount = () => {
     e.preventDefault();
     setLoading(true);
     asyncFetchCallback(
-      editUserSvc(user!),
+      editUserSvc(editUser!),
       () => {
         setLoading(false);
         setAlert({
           severity: 'success',
           message: 'Account edited.'
         });
+        setUser(editUser);
         navigate(`/accounts/viewMyAccount?id=${id}`);
       },
-      (err) => {
+      () => {
         setLoading(false);
         setAlert({
           severity: 'error',
@@ -108,7 +96,7 @@ const ViewMyAccount = () => {
     e.preventDefault();
     setLoading(true);
     asyncFetchCallback(
-      updatePasswordSvc(user?.email, currentPassword, newPassword),
+      updatePasswordSvc(user?.email!, currentPassword, newPassword),
       () => {
         setLoading(false);
         setAlert({
@@ -162,6 +150,7 @@ const ViewMyAccount = () => {
                   color='primary'
                   onClick={() => {
                     setEdit(false);
+                    setEditUser(user);
                   }}
                 >
                   DISCARD CHANGES
@@ -172,9 +161,7 @@ const ViewMyAccount = () => {
                 className='create-btn'
                 color='primary'
                 disabled={
-                  !validator.isEmail(user.email) ||
-                  !user.first_name ||
-                  !user.last_name
+                  edit && (!validator.isEmail(editUser?.email!) || validator.isEmpty(editUser?.lastName!) || validator.isEmpty(editUser?.firstName!))
                 }
                 onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   if (!edit) {
@@ -203,20 +190,20 @@ const ViewMyAccount = () => {
                           id='outlined-quantity'
                           label='First Name'
                           name='firstName'
-                          error={!user.first_name}
+                          error={!editUser?.firstName}
                           helperText={
-                            !user.first_name ? 'First Name is empty!' : ''
+                            !editUser?.firstName ? 'First Name is empty!' : ''
                           }
                           placeholder='eg.: John'
-                          value={user?.first_name}
+                          value={editUser?.firstName}
                           onChange={(
                             e: React.ChangeEvent<HTMLInputElement>
-                          ) => userFieldOnChange(e, 'first_name')}
+                          ) => userFieldOnChange(e, 'firstName')}
                         />
                       ) : (
                         <div>
                           <h4>First Name</h4>
-                          <Typography>{user?.first_name}</Typography>
+                          <Typography>{user?.firstName}</Typography>
                         </div>
                       )}
                     </Grid>
@@ -228,20 +215,20 @@ const ViewMyAccount = () => {
                           id='outlined-quantity'
                           label='Last Name'
                           name='lastName'
-                          error={!user.last_name}
+                          error={!editUser?.lastName}
                           helperText={
-                            !user.last_name ? 'Last Name is empty!' : ''
+                            !editUser?.lastName ? 'Last Name is empty!' : ''
                           }
                           placeholder='eg.: Tan'
-                          value={user?.last_name}
+                          value={editUser?.lastName}
                           onChange={(
                             e: React.ChangeEvent<HTMLInputElement>
-                          ) => userFieldOnChange(e, 'last_name')}
+                          ) => userFieldOnChange(e, 'lastName')}
                         />
                       ) : (
                         <div>
                           <h4>Last Name</h4>
-                          <Typography>{user?.last_name}</Typography>
+                          <Typography>{user?.lastName}</Typography>
                         </div>
                       )}
                     </Grid>
@@ -251,13 +238,13 @@ const ViewMyAccount = () => {
                           required
                           fullWidth
                           id='outlined-quantity'
-                          error={!validator.isEmail(user.email)}
+                          error={!validator.isEmail(editUser?.email!)}
                           label='Email'
                           name='email'
                           placeholder='eg.: johntan@gmail.com'
-                          value={user?.email}
+                          value={editUser?.email}
                           helperText={
-                            validator.isEmail(user.email)
+                            validator.isEmail(editUser?.email!)
                               ? ''
                               : 'Enter a valid email: example@email.com'
                           }
@@ -359,12 +346,12 @@ const ViewMyAccount = () => {
                                   fullWidth
                                   required
                                   error={
-                                   ( confirmPassword !== newPassword ||
-                                    confirmPassword === currentPassword ||
-                                    !validator.isLength(confirmPassword, {
-                                      min: 8,
-                                      max: undefined
-                                    })) && showCfmPwdError
+                                    (confirmPassword !== newPassword ||
+                                      confirmPassword === currentPassword ||
+                                      !validator.isLength(confirmPassword, {
+                                        min: 8,
+                                        max: undefined
+                                      })) && showCfmPwdError
                                   }
                                   helperText={
                                     !validator.isLength(newPassword, {
