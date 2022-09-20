@@ -31,6 +31,8 @@ import { FulfilmentStatus } from 'src/models/types';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import apiRoot from 'src/services/util/apiRoot';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import { DDMMYYYY, getTodayFormattedDate } from 'src/utils/dateUtils';
+import moment from 'moment';
 
 const columns: GridColDef[] = [
   { field: 'product_sku', headerName: 'SKU', flex: 1 },
@@ -90,7 +92,8 @@ const ProcurementOrderDetails = () => {
           });
           var link = document.createElement('a');
           link.href = window.URL.createObjectURL(blob);
-          link.download = 'PurchaseOrder.pdf';
+          let orderDate = moment(originalOrder?.order_date).format('DDMMYYYY');
+          link.download = `PurchaseOrder-${originalOrder?.supplier_name}-${orderDate}`;
           link.click();
         }
       };
@@ -192,8 +195,6 @@ const ProcurementOrderDetails = () => {
         <div className='button-container'>
           <Button
             variant='contained'
-            // size='medium'
-            // sx={{ width: '10px' }}
             onClick={() => {
               if (!edit) {
                 setEdit(true);
@@ -324,19 +325,11 @@ const ProcurementOrderDetails = () => {
               startIcon={<PictureAsPdfIcon />}
               onClick={handleDownloadInvoice}
             >
-              PurchaseOrder.pdf
+              PurchaseOrder-{originalOrder?.supplier_name}-
+              {moment(originalOrder?.order_date).format('DDMMYYYY')}
+              .pdf
             </Button>
           </div>
-          {/* <div
-            style={{
-              flexDirection: 'row',
-              paddingLeft: '2rem',
-              paddingBottom: '0'
-            }}
-          >
-            <PictureAsPdfIcon />
-            <small>Invoice.pdf</small>
-          </div> */}
         </Paper>
         <Paper elevation={2} className='order-details-paper'>
           <h3>View Order Status</h3>

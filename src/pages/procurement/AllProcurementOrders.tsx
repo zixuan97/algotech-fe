@@ -102,7 +102,6 @@ const AllProcurementOrders = () => {
         </Button>
       </div>
       <DataGrid
-        // checkboxSelection
         isRowSelectable={(params: GridRowParams) =>
           params.row.fulfilmentStatus === 'Arrived'
         }
