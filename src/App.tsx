@@ -48,6 +48,7 @@ import CreateCategory from './pages/inventory/CreateCategory';
 import CategoryDetails from './pages/inventory/CategoryDetails';
 import RoleRoute from './components/routing/RoleRoute';
 import Restricted from './pages/Restricted';
+import InventoryState from './context/inventory/InventoryState';
 
 const theme = createTheme({
   palette: {
@@ -79,20 +80,13 @@ const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <AuthState>
-        <ToastContainer />
-        <Router>
-          <Routes>
-            <Route path='/login' element={<Login />} />
-            <Route
-              path='/'
-              element={
-                <AuthRoute redirectTo='/login'>
-                  <Home />
-                </AuthRoute>
-              }
-            >
-              <Route path='restricted' element={<Restricted />} />
+        <InventoryState>
+          <ToastContainer />
+          <Router>
+            <Routes>
+              <Route path='/login' element={<Login />} />
               <Route
+<<<<<<< HEAD
                 index
                 element={<Navigate replace to='/inventory/dashboard' />}
               />
@@ -189,16 +183,107 @@ const App = () => {
               <Route
                 path='accounts'
                 element={<RoleRoute allowedRoles={['ADMIN']} />}
+=======
+                path='/'
+                element={
+                  <AuthRoute redirectTo='/login'>
+                    <Home />
+                  </AuthRoute>
+                }
+>>>>>>> 3019af0e5a3f9feea10edaa216eeaddd798575dd
               >
-                <Route index element={<Accounts />} />
-                <Route path='viewAccount' element={<ViewAccount />} />
-                <Route path='createNewUser' element={<CreateNewUser />} />
+                <Route path='restricted' element={<Restricted />} />
+                <Route
+                  index
+                  element={<Navigate replace to='/inventory/dashboard' />}
+                />
+                <Route
+                  path='inventory'
+                  element={<Navigate replace to='/inventory/dashboard' />}
+                />
+                <Route
+                  path='inventory/dashboard'
+                  element={<InventoryDashboard />}
+                />
+                <Route path='inventory/allProducts' element={<AllProducts />} />
+                <Route
+                  path='inventory/createProduct'
+                  element={<CreateProduct />}
+                />
+                <Route
+                  path='inventory/productDetails'
+                  element={<ProductDetails />}
+                />
+                <Route path='orders' element={<AllOrders />} />
+                <Route
+                  path='orders/createProcurementOrder'
+                  element={<CreateProcurementOrder />}
+                />
+                <Route
+                  path='orders/procurementOrderDetails'
+                  element={<ProcurementOrderDetails />}
+                />
+                <Route path='orders/allSuppliers' element={<AllSuppliers />} />
+                <Route
+                  path='orders/createSupplier'
+                  element={<CreateSupplier />}
+                />
+                <Route
+                  path='orders/supplierDetails'
+                  element={<SupplierDetails />}
+                />
+                <Route
+                  path='inventory/allCategories'
+                  element={<AllCategories />}
+                />
+                <Route
+                  path='inventory/createCategory'
+                  element={<CreateCategory />}
+                />
+                <Route
+                  path='inventory/categoryDetails'
+                  element={<CategoryDetails />}
+                />
+                <Route path='inventory/allBrands' element={<AllBrands />} />
+                <Route path='inventory/createBrand' element={<CreateBrand />} />
+                <Route
+                  path='inventory/brandDetails'
+                  element={<BrandDetails />}
+                />
+                <Route
+                  path='inventory/warehouses'
+                  element={<AllWarehouses />}
+                />
+                <Route
+                  path='inventory/warehouseDetails'
+                  element={<WarehouseDetails />}
+                />
+                <Route
+                  path='inventory/createWarehouse'
+                  element={<CreateWarehouse />}
+                />
+                <Route
+                  path='delivery/allDeliveries'
+                  element={<AllDeliveries />}
+                />
+
+                <Route
+                  path='accounts'
+                  element={<RoleRoute allowedRoles={['ADMIN']} />}
+                >
+                  <Route index element={<Accounts />} />
+                  <Route path='viewAccount' element={<ViewAccount />} />
+                  <Route path='createNewUser' element={<CreateNewUser />} />
+                </Route>
+
+                <Route
+                  path='accounts/viewMyAccount'
+                  element={<ViewMyAccount />}
+                />
               </Route>
-              
-              <Route path='accounts/viewMyAccount' element={<ViewMyAccount />} />
-            </Route>
-          </Routes>
-        </Router>
+            </Routes>
+          </Router>
+        </InventoryState>
       </AuthState>
     </ThemeProvider>
   );
