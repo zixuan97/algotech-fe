@@ -186,24 +186,11 @@ const CreateProcurementOrder = () => {
       createProcurementOrder(reqBody),
       (res) => {
         setLoading(false);
-        // toast.success(
-        //   'Order created! A confirmation email has been sent to the supplier.',
-        //   {
-        //     position: 'top-right',
-        //     autoClose: 6000,
-        //     hideProgressBar: false,
-        //     closeOnClick: true,
-        //     pauseOnHover: true,
-        //     draggable: true,
-        //     progress: undefined
-        //   }
-        // );
-        // navigate('/orders');
         setAlert({
           severity: 'success',
           message: 'Procurement Order successfully created!'
         });
-        setTimeout(() => navigate('/orders'), 3000);
+        setTimeout(() => navigate('/procurementOrders'), 3000);
       },
       (err) => {
         setLoading(false);

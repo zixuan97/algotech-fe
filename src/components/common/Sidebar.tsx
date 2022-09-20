@@ -5,7 +5,8 @@ import {
   People,
   Receipt,
   LocalShipping,
-  FamilyRestroomRounded
+  FamilyRestroomRounded,
+  PointOfSale
 } from '@mui/icons-material';
 import { Button, Divider, Drawer, List, Toolbar } from '@mui/material';
 import React from 'react';
@@ -24,6 +25,7 @@ type SidebarProps = {
 type MenuOpen = {
   inventory: boolean;
   sales: boolean;
+  order: boolean;
   procurement: boolean;
   delivery: boolean;
   customers: boolean;
@@ -33,6 +35,7 @@ type MenuOpen = {
 const menuOpenDefaultState: MenuOpen = {
   inventory: false,
   sales: false,
+  order: false,
   procurement: false,
   delivery: false,
   customers: false,
@@ -108,13 +111,32 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
           </NestedList>
 
           <NestedList
+            title={'Orders'}
+            open={menuOpen.order}
+            toggleOpen={(open) => toggleMenuOpen('order', open)}
+            icon={<PointOfSale />}
+          >
+            <List component='div' disablePadding>
+              <ListItemLink
+                primary='Create Orders'
+                to='/orders/createNewOrder'
+                disabled
+              />
+              <ListItemLink
+                primary='Order Fulfillments'
+                to='/orders'
+              />
+            </List>
+          </NestedList>
+
+          <NestedList
             title={'Procurement'}
             open={menuOpen.procurement}
             toggleOpen={(open) => toggleMenuOpen('procurement', open)}
             icon={<Receipt />}
           >
-            <ListItemLink primary='Orders' to='/orders' />
-            <ListItemLink primary='All Suppliers' to='/orders/allSuppliers' />
+            <ListItemLink primary='Procurement Orders' to='/procurementOrders' />
+            <ListItemLink primary='All Suppliers' to='/procurementOrders/allSuppliers' />
           </NestedList>
 
           <NestedList
