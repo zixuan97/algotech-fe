@@ -8,10 +8,10 @@ export interface InventoryStateAttr {
 }
 
 export interface InventoryStateInit extends InventoryStateAttr {
-  refreshProducts: () => void;
-  refreshBrands: () => void;
-  refreshLocations: () => void;
-  refreshCategories: () => void;
+  refreshProducts: (callback?: (products: Product[]) => void) => void;
+  refreshBrands: (callback?: (brands: Brand[]) => void) => void;
+  refreshLocations: (callback?: (locations: Location[]) => void) => void;
+  refreshCategories: (callback?: (categories: Category[]) => void) => void;
 }
 
 export type InventoryAction = {
