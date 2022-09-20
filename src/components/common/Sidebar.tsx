@@ -4,7 +4,8 @@ import {
   LocalGroceryStore,
   People,
   Receipt,
-  LocalShipping
+  LocalShipping,
+  FamilyRestroomRounded
 } from '@mui/icons-material';
 import { Button, Divider, Drawer, List, Toolbar } from '@mui/material';
 import React from 'react';
@@ -19,15 +20,33 @@ type SidebarProps = {
   sidebarWidth: string;
 };
 
-const Sidebar = ({ sidebarWidth }: SidebarProps) => {
-  const [inventoryOpen, setInventoryOpen] = React.useState<boolean>(false);
-  const [salesOpen, setSalesOpen] = React.useState<boolean>(false);
-  const [ordersOpen, setOrdersOpen] = React.useState<boolean>(false);
-  const [deliveryOpen, setDeliveryOpen] = React.useState<boolean>(false);
-  const [customersOpen, setCustomersOpen] = React.useState<boolean>(false);
-  const [hrOpen, setHrOpen] = React.useState<boolean>(false);
+type MenuOpen = {
+  inventory: boolean;
+  sales: boolean;
+  procurement: boolean;
+  delivery: boolean;
+  customers: boolean;
+  hr: boolean;
+};
 
-  const submenuTypographyProps = { fontSize: '0.8em' };
+const menuOpenDefaultState: MenuOpen = {
+  inventory: false,
+  sales: false,
+  procurement: false,
+  delivery: false,
+  customers: false,
+  hr: false
+};
+
+const submenuTypographyProps = { fontSize: '0.8em' };
+
+const Sidebar = ({ sidebarWidth }: SidebarProps) => {
+  const [menuOpen, setMenuOpen] =
+    React.useState<MenuOpen>(menuOpenDefaultState);
+
+  const toggleMenuOpen = (menu: keyof MenuOpen, open: boolean) => {
+    setMenuOpen({ ...menuOpenDefaultState, [menu]: open });
+  };
 
   return (
     <div>
@@ -61,8 +80,8 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
         <List>
           <NestedList
             title={'Inventory'}
-            open={inventoryOpen}
-            toggleOpen={setInventoryOpen}
+            open={menuOpen.inventory}
+            toggleOpen={(open) => toggleMenuOpen('inventory', open)}
             icon={<Inventory />}
           >
             <List component='div' disablePadding>
@@ -103,8 +122,8 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
 
           <NestedList
             title={'Procurement'}
-            open={ordersOpen}
-            toggleOpen={setOrdersOpen}
+            open={menuOpen.procurement}
+            toggleOpen={(open) => toggleMenuOpen('procurement', open)}
             icon={<Receipt />}
           >
             <ListItemLink
@@ -121,8 +140,8 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
 
           <NestedList
             title={'Delivery'}
-            open={deliveryOpen}
-            toggleOpen={setDeliveryOpen}
+            open={menuOpen.delivery}
+            toggleOpen={(open) => toggleMenuOpen('delivery', open)}
             icon={<LocalShipping />}
           >
             <ListItemLink
