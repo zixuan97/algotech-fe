@@ -2,11 +2,6 @@ import { createContext } from 'react';
 import { AuthStateInit } from './authContextTypes';
 
 // TODO: externalise initial state to an object
-const authContext = createContext({
-  token: localStorage.getItem('token'),
-  isAuthenticated: !!localStorage.getItem('token'),
-  user: null,
-  error: null
-} as AuthStateInit);
+const authContext = createContext({} as AuthStateInit);
 
 export default authContext;

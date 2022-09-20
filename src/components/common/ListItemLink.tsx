@@ -23,7 +23,7 @@ const ListItemLink = ({
   icon,
   primary,
   to,
-  typographyProps,
+  typographyProps = {},
   disabled = false
 }: ListItemLinkProps) => {
   const location = useLocation();
@@ -50,7 +50,7 @@ const ListItemLink = ({
         <ListItemIcon>{icon && icon}</ListItemIcon>
         <ListItemText
           primary={primary}
-          primaryTypographyProps={typographyProps}
+          primaryTypographyProps={{ ...typographyProps, fontSize: '0.8em' }}
         />
       </ListItem>
     </li>

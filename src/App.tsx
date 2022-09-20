@@ -49,6 +49,7 @@ import CategoryDetails from './pages/inventory/CategoryDetails';
 import RoleRoute from './components/routing/RoleRoute';
 import Restricted from './pages/Restricted';
 import InventoryState from './context/inventory/InventoryState';
+import SalesDashboard from './pages/sales/SalesDashboard';
 
 const theme = createTheme({
   palette: {
@@ -67,10 +68,6 @@ const theme = createTheme({
     }
   }
 });
-
-// if (localStorage.token) {
-//     setAuthToken(localStorage.token);
-// }
 
 const App = () => {
   const token = localStorage.token;
@@ -163,6 +160,15 @@ const App = () => {
                   path='inventory/createWarehouse'
                   element={<CreateWarehouse />}
                 />
+                <Route
+                  index
+                  element={<Navigate replace to='/sales/dashboard' />}
+                />
+                <Route
+                  path='sales'
+                  element={<Navigate replace to='/sales/dashboard' />}
+                />
+                <Route path='sales/dashboard' element={<SalesDashboard />} />
                 <Route
                   path='delivery/allManualDeliveries'
                   element={<AllManualDeliveries />}
