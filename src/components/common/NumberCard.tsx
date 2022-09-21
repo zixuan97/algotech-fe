@@ -1,17 +1,20 @@
-import React from 'react';
 import { Card } from '@mui/material';
 import '../../styles/common/common.scss';
 
 type NumberCardProps = {
-  number: number;
+  value: number | string;
   text: string;
+  component?: React.ReactNode;
 };
 
-const NumberCard = ({ number, text }: NumberCardProps) => {
+const NumberCard = ({ value, text, component }: NumberCardProps) => {
   return (
     <Card className='number-card'>
-      <h1>{number}</h1>
-      {text}
+      <div style={{ paddingRight: '5em' }}>
+        <h1>{value}</h1>
+        {text}
+      </div>
+      {component && component}
     </Card>
   );
 };

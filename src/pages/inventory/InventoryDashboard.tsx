@@ -3,9 +3,7 @@ import React from 'react';
 import '../../styles/pages/inventory/inventoryDashboard.scss';
 import '../../styles/common/common.scss';
 import NumberCard from 'src/components/common/NumberCard';
-import { Product, StockQuantity } from 'src/models/types';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { generateExcelSvc, getAllProducts } from 'src/services/productService';
+import { StockQuantity } from 'src/models/types';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import { Link } from 'react-router-dom';
 import ProductDashboardCellAction from 'src/components/inventory/ProductDashboardCellAction';
@@ -13,12 +11,13 @@ import InventoryLevelsChart from 'src/components/inventory/InventoryTurnoverChar
 import {
   createPdfWithHeaderImage,
   downloadFile,
-  createImageFromComponent
+  createImageFromComponent,
+  getExcelFromApi
 } from 'src/utils/fileUtils';
-import apiRoot from '../../services/util/apiRoot';
 import StockPriorityCell from 'src/components/inventory/StockPriorityCell';
 import DownloadIcon from '@mui/icons-material/Download';
 import { DDMMYYYY, getTodayFormattedDate } from 'src/utils/dateUtils';
+import inventoryContext from 'src/context/inventory/inventoryContext';
 
 export enum StockPriorityType {
   LOW = 1,
@@ -76,12 +75,12 @@ const columns: GridColDef[] = [
 ];
 
 const InventoryDashboard = () => {
+  const { products, refreshProducts } = React.useContext(inventoryContext);
   const pdfRef = React.createRef<HTMLDivElement>();
-  const [productData, setProductData] = React.useState<Product[]>([]);
 
   const computeProductsWithLowStock = () => {
     let count = 0;
-    productData.forEach((product) => {
+    products.forEach((product) => {
       const { qtyThreshold, stockQuantity } = product;
       const totalQty = stockQuantity.reduce(
         (prev: number, curr: StockQuantity) => prev + curr.quantity,
@@ -92,24 +91,6 @@ const InventoryDashboard = () => {
       }
     });
     return count;
-  };
-
-  const generateInventoryExcel = () => {
-    var xhr = new XMLHttpRequest();
-    xhr.open('POST', `${apiRoot}/product/excel`, true);
-    xhr.responseType = 'arraybuffer';
-    xhr.onload = function (e) {
-      if (this.status === 200) {
-        var blob = new Blob([this.response], {
-          type: 'application/octet-stream'
-        });
-        var link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = `InventoryData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`;
-        link.click();
-      }
-    };
-    xhr.send();
   };
 
   const generateChartPdf = React.useCallback(async () => {
@@ -126,7 +107,8 @@ const InventoryDashboard = () => {
   }, [pdfRef]);
 
   React.useEffect(() => {
-    asyncFetchCallback(getAllProducts(), setProductData);
+    refreshProducts();
+    //eslint-disable-next-line
   }, []);
 
   return (
@@ -136,7 +118,7 @@ const InventoryDashboard = () => {
       <h4>At a glance</h4>
       <div className='horizontal-inline-bar'>
         <NumberCard
-          number={computeProductsWithLowStock()}
+          value={computeProductsWithLowStock()}
           text='Products with low stock levels'
         />
         {/* <NumberCard number={20} text='Days of supply left on average' /> */}
@@ -160,7 +142,13 @@ const InventoryDashboard = () => {
         <Button
           startIcon={<DownloadIcon />}
           variant='outlined'
-          onClick={() => generateInventoryExcel()}
+          onClick={() =>
+            getExcelFromApi(
+              'POST',
+              '/product/excel',
+              `InventoryData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`
+            )
+          }
         >
           Export Inventory Data
         </Button>
@@ -169,7 +157,7 @@ const InventoryDashboard = () => {
         <DataGrid
           sx={{ fontSize: '0.8em' }}
           columns={columns}
-          rows={productData}
+          rows={products}
           autoHeight
           pageSize={5}
         />
@@ -193,7 +181,7 @@ const InventoryDashboard = () => {
           Download Chart
         </Button>
       </div>
-      <InventoryLevelsChart productData={productData} ref={pdfRef} />
+      <InventoryLevelsChart productData={products} ref={pdfRef} />
     </div>
   );
 };

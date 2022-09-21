@@ -1,6 +1,6 @@
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
-import React from 'react';
+import apiRoot from 'src/services/util/apiRoot';
 
 export const getBase64 = (
   file: File | null,
@@ -56,4 +56,23 @@ export const createPdfWithHeaderImage = (
     'FAST'
   );
   return URL.createObjectURL(pdf.output('blob'));
+};
+
+export const getExcelFromApi = (
+  httpMethod: string,
+  api: string,
+  fileName: string
+) => {
+  const xhr = new XMLHttpRequest();
+  xhr.open(httpMethod, `${apiRoot}${api}`, true);
+  xhr.responseType = 'arraybuffer';
+  xhr.onload = function (e) {
+    if (this.status === 200) {
+      const blob = new Blob([this.response], {
+        type: 'application/octet-stream'
+      });
+      downloadFile(window.URL.createObjectURL(blob), fileName);
+    }
+  };
+  xhr.send();
 };

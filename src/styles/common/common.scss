@@ -43,5 +43,8 @@
 }
 
 .number-card {
-	padding: 0 10em 2em 2em;
+	padding: 0 2em 2em 2em;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
