@@ -145,11 +145,17 @@ export interface DeliveryOrder {
 }
 export interface SalesOrder { 
   id: number;
-  customerName: string;
-  createdTimestamp: Date;
-  amount: number;
-  status: OrderStatus;
-  orderLineItems: Product[];
   platformType: PlatformType;
+  status: OrderStatus;
+  createdTime: Date;
+  customerName: string;
+  amount: number;
   delivery: DeliveryOrder;
+  orderLineItems: LineItem[];
+}
+export interface LineItem {
+  saleOrderId: number;
+  price: number;
+  quantity: number;
+  product: Product;
 }
