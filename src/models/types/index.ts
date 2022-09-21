@@ -25,11 +25,18 @@ export enum FulfilmentStatus {
 }
 
 export enum OrderStatus {
-  CREATED = 'CREATED'
+  PLACED = 'PLACED',
+  PAID = 'PAID',
+  PREPARING = 'PREPARING',
+  PREPARED = 'PREPARED',
+  SHIPPED = 'SHIPPED',
+  DELIVERED = 'DELIVERED', 
   //not completed, need to wait for backend
 }
 
 export enum DeliveryStatus {
+  READYFORDELIVERY = 'READY_FOR_DELIVERY',
+  DELIVERYINPROGRESS = 'DELIVERY_IN_PROGRESS',
   DELIVERED = 'DELIVERED'
   //not completed, need to wait for backend
 }
@@ -37,7 +44,15 @@ export enum DeliveryStatus {
 export enum ShippingType {
   MANUAL = 'MANUAL',
   SHIPPIT = 'SHIPPIT',
-  SHOPIFY = 'SHOPIFY'
+  NINJAVAN = 'NINJAVAN',
+  GRAB = 'GRAB'
+}
+
+export enum PlatformType {
+  MANUAL = 'MANUAL',
+  SHOPIFY = 'SHOPIFY',
+  REDMART = 'REDMART',
+  SHOPEE = 'SHOPEE'
 }
 
 export interface User {
@@ -119,15 +134,28 @@ export interface Supplier {
   name: string;
   address: string;
 }
-
 export interface DeliveryOrder {
   id: number;
-  orderStatus: OrderStatus;
   deliveryStatus: DeliveryStatus;
   shippingDate: Date;
   shippingAddress: string;
   shippingType: ShippingType;
   currentLocation: string;
   eta: Date;
-  paymentId: number;
+}
+export interface SalesOrder { 
+  id: number;
+  platformType: PlatformType;
+  status: OrderStatus;
+  createdTime: Date;
+  customerName: string;
+  amount: number;
+  delivery: DeliveryOrder;
+  salesOrderItems: SalesOrderItem[];
+}
+export interface SalesOrderItem {
+  saleOrderId: number;
+  price: number;
+  quantity: number;
+  product: Product;
 }

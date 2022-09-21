@@ -5,7 +5,8 @@ import {
   People,
   Receipt,
   LocalShipping,
-  FamilyRestroomRounded
+  FamilyRestroomRounded,
+  PointOfSale
 } from '@mui/icons-material';
 import { Button, Divider, Drawer, List, Toolbar } from '@mui/material';
 import React from 'react';
@@ -24,6 +25,7 @@ type SidebarProps = {
 type MenuOpen = {
   inventory: boolean;
   sales: boolean;
+  order: boolean;
   procurement: boolean;
   delivery: boolean;
   customers: boolean;
@@ -33,13 +35,13 @@ type MenuOpen = {
 const menuOpenDefaultState: MenuOpen = {
   inventory: false,
   sales: false,
+  order: false,
   procurement: false,
   delivery: false,
   customers: false,
   hr: false
 };
 
-const submenuTypographyProps = { fontSize: '0.8em' };
 
 const Sidebar = ({ sidebarWidth }: SidebarProps) => {
   const [menuOpen, setMenuOpen] =
@@ -104,7 +106,18 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             toggleOpen={(open) => toggleMenuOpen('sales', open)}
             icon={<LocalGroceryStore />}
           >
-            <ListItemLink primary='Dashboard' to='/sales/dashboard' />
+            <List component='div' disablePadding>
+              <ListItemLink primary='Dashboard' to='/sales/dashboard' />
+              <ListItemLink
+                primary='Create Orders'
+                to='/orders/createNewOrder'
+                disabled
+              />
+              <ListItemLink
+                primary='Order Fulfillments'
+                to='/orders'
+              />
+            </List>
           </NestedList>
 
           <NestedList
@@ -113,8 +126,8 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             toggleOpen={(open) => toggleMenuOpen('procurement', open)}
             icon={<Receipt />}
           >
-            <ListItemLink primary='Orders' to='/orders' />
-            <ListItemLink primary='All Suppliers' to='/orders/allSuppliers' />
+            <ListItemLink primary='Procurement Orders' to='/procurementOrders' />
+            <ListItemLink primary='All Suppliers' to='/procurementOrders/allSuppliers' />
           </NestedList>
 
           <NestedList

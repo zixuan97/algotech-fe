@@ -73,7 +73,7 @@ const CreateSupplier = () => {
             message:
               'Supplier successfully created! You will be redirected back to the All Suppliers page now.'
           });
-          setTimeout(() => navigate('/orders/allSuppliers'), 3500);
+          setTimeout(() => navigate('/procurementOrders/allSuppliers'), 3500);
         },
         (err) => {
           const resData = err.response?.data as AxiosErrDataBody;

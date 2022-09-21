@@ -13,7 +13,7 @@ const SupplierCellAction = ({ id }: GridRenderCellParams) => {
           variant='contained'
           onClick={() =>
             navigate({
-              pathname: '/orders/supplierDetails',
+              pathname: '/procurementOrders/supplierDetails',
               search: createSearchParams({
                 id: id.toString()
               }).toString()

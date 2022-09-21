@@ -64,7 +64,7 @@ const SupplierDetails = () => {
               'Supplier does not exist. You will be redirected back to the All Suppliers page.'
           });
           setLoading(false);
-          setTimeout(() => navigate('/orders/allSuppliers'), 3500);
+          setTimeout(() => navigate('/procurementOrders/allSuppliers'), 3500);
         }
       });
   }, [id, navigate]);
@@ -108,7 +108,7 @@ const SupplierDetails = () => {
             message:
               'Supplier successfully deleted. You will be redirected back to the All Suppliers page now.'
           });
-          setTimeout(() => navigate('/orders/allSuppliers'), 3500);
+          setTimeout(() => navigate('/procurementOrders/allSuppliers'), 3500);
         },
         () => {
           setBackdropLoading(false);

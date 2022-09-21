@@ -1,0 +1,23 @@
+@use '../variables/colors.scss';
+@use '../variables/fonts.scss';
+@use '../common/common.scss';
+
+.orders {
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	padding: 2rem;
+}
+
+.search-bar {
+	@extend .horizontal-inline-bar;
+	width: 20%;
+}
+
+.grid-toolbar {
+	width: 100%;
+	padding: 0 0 1em;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
