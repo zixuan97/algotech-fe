@@ -34,7 +34,7 @@ import TimeoutAlert, {
 
 const columns: GridColDef[] = [
   {
-    field: 'productName',
+    field: 'name',
     headerName: 'Product Name',
     flex: 2
   },
@@ -114,7 +114,7 @@ const LocationDetails = () => {
         setOriginalLocation(res);
         setEditLocation(res);
 
-        asyncFetchCallback(getAllProductsByLocation(originalLocation.id), setProductDetails);
+        asyncFetchCallback(getAllProductsByLocation(id), setProductDetails);
         setTableLoading(false);
 
         setLoading(false);

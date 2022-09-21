@@ -106,7 +106,7 @@ const BrandDetails = () => {
         setOriginalBrand(res);
         setEditBrand(res);
 
-        asyncFetchCallback(getAllProductsByBrand(originalBrand.id), setProductDetails);
+        asyncFetchCallback(getAllProductsByBrand(id), setProductDetails);
         setTableLoading(false);
 
         setLoading(false);

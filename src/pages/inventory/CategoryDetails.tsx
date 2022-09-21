@@ -106,7 +106,7 @@ const CategoryDetails = () => {
         setOriginalCategory(res);
         setEditCategory(res);
 
-        asyncFetchCallback(getAllProductsByCategory(originalCategory.id), setProductDetails);
+        asyncFetchCallback(getAllProductsByCategory(id), setProductDetails);
         setTableLoading(false);
 
         setLoading(false);
