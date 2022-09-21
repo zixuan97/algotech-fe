@@ -98,7 +98,7 @@ const Row = ({ row }: { row: Partial<SalesOrder> }) => {
 };
 
 
-const AllOrders = () => {
+const OrderDetails = () => {
     const [salesOrders, setSalesOrders] = useState<Partial<SalesOrder>[]>(salesOrderData);
     const [searchField, setSearchField] = useState<string>('');
     const [filterPlatform, setFilterPlatform] = useState<string>('');
@@ -199,4 +199,4 @@ const AllOrders = () => {
     );
 };
 
-export default AllOrders;
+export default OrderDetails;

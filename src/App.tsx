@@ -52,6 +52,7 @@ import InventoryState from './context/inventory/InventoryState';
 import SalesDashboard from './pages/sales/SalesDashboard';
 
 import AllOrders from './pages/order/AllOrders';
+import OrderDetails from './pages/order/OrderDetails';
 
 const theme = createTheme({
   palette: {
@@ -153,6 +154,12 @@ const App = () => {
                 <Route
                   path='sales'
                   element={<Navigate replace to='/sales/dashboard' />}
+                />
+
+
+                <Route
+                  path='individualSales'
+                  element={<OrderDetails />}
                 />
 
                 {/* --- Delivery Routes --- */}

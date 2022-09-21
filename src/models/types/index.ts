@@ -28,9 +28,9 @@ export enum OrderStatus {
   PLACED = 'PLACED',
   PAID = 'PAID',
   PREPARING = 'PREPARING',
-  PREPARED = 'PREPARED',
-  SHIPPED = 'SHIPPED',
-  DELIVERED = 'DELIVERED', 
+  PREPARED = 'PREPARED', //Create New DO, associate to SalesOrder, status = READY_FOR_DELIVERY
+  SHIPPED = 'SHIPPED', //Update associated DO, status = DELIVERY_IN_PROGRESS
+  DELIVERED = 'DELIVERED', //Update associated DO, status = DELIVERED
   //not completed, need to wait for backend
 }
 
@@ -51,7 +51,6 @@ export enum ShippingType {
 export enum PlatformType {
   MANUAL = 'MANUAL',
   SHOPIFY = 'SHOPIFY',
-  REDMART = 'REDMART',
   SHOPEE = 'SHOPEE'
 }
 
@@ -150,12 +149,12 @@ export interface SalesOrder {
   createdTime: Date;
   customerName: string;
   amount: number;
-  delivery: DeliveryOrder;
+  delivery?: DeliveryOrder;
   salesOrderItems: SalesOrderItem[];
 }
 export interface SalesOrderItem {
   saleOrderId: number;
   price: number;
   quantity: number;
-  product: Product;
+  product?: Product;
 }
