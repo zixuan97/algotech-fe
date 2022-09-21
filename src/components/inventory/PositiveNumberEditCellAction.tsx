@@ -17,7 +17,7 @@ const PositiveNumberEditCellAction = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = allowDecimals
-      ? Number.parseFloat(e.target.value)
+      ? Number.parseFloat(e.target.value).toFixed(2)
       : parseInt(e.target.value);
     apiRef.current.setEditCellValue({
       id: gridId,

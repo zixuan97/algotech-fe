@@ -142,6 +142,7 @@ export default function LocationGrid({
       type: 'number',
       flex: 1,
       editable: true,
+      valueFormatter: (params) => params.value.toFixed(2),
       renderEditCell: (params) => (
         <PositiveNumberEditCellAction params={params} />
       )

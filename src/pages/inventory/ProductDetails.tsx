@@ -51,13 +51,16 @@ const columns: GridColDef[] = [
   },
   {
     field: 'quantity',
+    type: 'number',
     headerName: 'Quantity',
     flex: 1
   },
   {
     field: 'price',
+    type: 'number',
     headerName: 'Price',
-    flex: 1
+    flex: 1,
+    valueFormatter: (params) => params.value.toFixed(2)
   }
 ];
 
