@@ -151,9 +151,9 @@ export interface SalesOrder {
   customerName: string;
   amount: number;
   delivery: DeliveryOrder;
-  orderLineItems: LineItem[];
+  salesOrderItems: SalesOrderItem[];
 }
-export interface LineItem {
+export interface SalesOrderItem {
   saleOrderId: number;
   price: number;
   quantity: number;
