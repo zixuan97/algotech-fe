@@ -42,7 +42,6 @@ const menuOpenDefaultState: MenuOpen = {
   hr: false
 };
 
-const submenuTypographyProps = { fontSize: '0.8em' };
 
 const Sidebar = ({ sidebarWidth }: SidebarProps) => {
   const [menuOpen, setMenuOpen] =
@@ -107,16 +106,8 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             toggleOpen={(open) => toggleMenuOpen('sales', open)}
             icon={<LocalGroceryStore />}
           >
-            <ListItemLink primary='Dashboard' to='/sales/dashboard' />
-          </NestedList>
-
-          <NestedList
-            title={'Orders'}
-            open={menuOpen.order}
-            toggleOpen={(open) => toggleMenuOpen('order', open)}
-            icon={<PointOfSale />}
-          >
             <List component='div' disablePadding>
+              <ListItemLink primary='Dashboard' to='/sales/dashboard' />
               <ListItemLink
                 primary='Create Orders'
                 to='/orders/createNewOrder'
