@@ -41,12 +41,8 @@ const columns: GridColDef[] = [
   {
     field: 'quantity',
     headerName: 'Quantity',
-    flex: 1
-  },
-  {
-    field: 'price',
-    headerName: 'Price',
-    flex: 1
+    flex: 1,
+    valueGetter: (params) => params.value.name
   },
   {
     field: 'action',

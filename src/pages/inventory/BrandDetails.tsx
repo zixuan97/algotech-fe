@@ -47,11 +47,6 @@ const columns: GridColDef[] = [
   }
 ];
 
-// interface ProductDetails {
-//   id: number;
-//   productName: string;
-// }
-
 const BrandDetails = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
