@@ -47,11 +47,6 @@ const columns: GridColDef[] = [
   }
 ];
 
-// interface ProductDetails {
-//   id: number;
-//   productName: string;
-// }
-
 const BrandDetails = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -106,7 +101,7 @@ const BrandDetails = () => {
         setOriginalBrand(res);
         setEditBrand(res);
 
-        asyncFetchCallback(getAllProductsByBrand(originalBrand.id), setProductDetails);
+        asyncFetchCallback(getAllProductsByBrand(id), setProductDetails);
         setTableLoading(false);
 
         setLoading(false);

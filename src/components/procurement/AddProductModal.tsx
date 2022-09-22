@@ -22,7 +22,6 @@ type AddProductModalProps = {
   open: boolean;
   onClose: () => void;
   onConfirm: (
-    sku: string,
     rate: string,
     quantity: string,
     selectedProduct: Product | undefined
@@ -108,7 +107,7 @@ const AddProductModal = ({
       return;
     }
 
-    onConfirm(sku, rate, quantity, selectedProduct);
+    onConfirm(rate, quantity, selectedProduct);
 
     setSku('');
     setRate('');

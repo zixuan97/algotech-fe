@@ -89,6 +89,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
           >
             <ListItemLink primary='Dashboard' to='/inventory/dashboard' />
             <ListItemLink primary='All Products' to='/inventory/allProducts' />
+            <ListItemLink primary='All Bundles' to='/inventory/allBundles' />
             <ListItemLink primary='Manage Brands' to='/inventory/allBrands' />
             <ListItemLink
               primary='Manage Categories'

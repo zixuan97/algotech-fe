@@ -31,7 +31,6 @@ import { FulfilmentStatus } from 'src/models/types';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import apiRoot from 'src/services/util/apiRoot';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
-import { DDMMYYYY, getTodayFormattedDate } from 'src/utils/dateUtils';
 import moment from 'moment';
 
 const columns: GridColDef[] = [
@@ -260,7 +259,6 @@ const ProcurementOrderDetails = () => {
                   label='Payment Status'
                   name='payment_status'
                   value={updatedOrder?.paymentStatus}
-                  // defaultValue={originalOrder?.payment_status}
                   onChange={handleEditProcurementOrder}
                   select
                   fullWidth

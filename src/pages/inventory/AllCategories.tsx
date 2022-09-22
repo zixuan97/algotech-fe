@@ -1,14 +1,13 @@
 import React from 'react';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import CategoryCellAction from '../../components/inventory/CategoryCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
 import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { Category } from '../../models/types';
-import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { getAllProductCategories } from '../../services/productService';
 import { useNavigate } from 'react-router';
+import inventoryContext from 'src/context/inventory/inventoryContext';
 
 const columns: GridColDef[] = [
   { field: 'name', headerName: 'Category Name', flex: 1 },
@@ -24,38 +23,27 @@ const columns: GridColDef[] = [
 
 const AllCategories = () => {
   const navigate = useNavigate();
+  const { categories, refreshCategories } = React.useContext(inventoryContext);
 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
-  const [categoryData, setCategoryData] = React.useState<Category[]>([]);
-  const [filteredData, setFilteredData] = React.useState<Category[]>([]);
-
+  
   React.useEffect(() => {
-    // TODO: implement error callback
-    // to do; write the categoryServices ts... vv this is WRONG
-    // asyncFetchCallback(getAllProductCategories(), setCategoryData);
     setLoading(true);
-    asyncFetchCallback(
-      getAllProductCategories(),
-      (res) => {
-        setLoading(false);
-        setCategoryData(res);
-      },
-      () => setLoading(false)
-    );
+    refreshCategories(() => setLoading(false));
   }, []);
 
-  React.useEffect(() => {
-    setFilteredData(
+  const filteredData = React.useMemo(
+    () =>
       searchField
-        ? categoryData.filter((category) =>
-            Object.values(category).some((value) =>
-              String(value).toLowerCase().match(searchField.toLowerCase())
-            )
+        ? categories.filter((category) => 
+          Object.values(category).some((value) =>
+            String(value).toLowerCase().match(searchField.toLowerCase())
           )
-        : categoryData
-    );
-  }, [searchField, categoryData]);
+        )
+      : categories,
+    [searchField, categories]
+  );
 
   console.log(filteredData);
 

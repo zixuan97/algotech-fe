@@ -5,25 +5,25 @@ import '../../styles/common/actionCells.scss';
 import { useNavigate } from 'react-router';
 import { createSearchParams } from 'react-router-dom';
 
-const ViewOrderButton = ({ id }: GridRenderCellParams) => {
+const BundleCellAction = ({ id }: GridRenderCellParams) => {
   const navigate = useNavigate();
   return (
-    <div className='action-cell'>
+    <div className='action-cell-fit-content'>
       <Button
         variant='contained'
         onClick={() =>
           navigate({
-            pathname: '/procurementOrders/procurementOrderDetails',
+            pathname: '/inventory/bundleDetails',
             search: createSearchParams({
               id: id.toString()
             }).toString()
           })
         }
-      >
-        View Order
-      </Button>
+        >
+          View Bundle
+        </Button>
     </div>
   );
 };
 
-export default ViewOrderButton;
+export default BundleCellAction;

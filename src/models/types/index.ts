@@ -103,8 +103,8 @@ export interface Bundle {
   id: number;
   name: string;
   description: string;
-  price: number;
-  products: Product[];
+  // price: number;
+  bundleProduct: Product[];
 }
 
 export interface ProcurementOrder {
