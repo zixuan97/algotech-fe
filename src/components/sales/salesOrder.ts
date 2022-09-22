@@ -9,12 +9,12 @@ import {
 export const salesOrderData: Partial<SalesOrder>[] = [
   {
     id: 1,
-    platformType: PlatformType.MANUAL,
+    platformType: PlatformType.OTHERS,
     status: OrderStatus.PREPARED,
     createdTime: new Date(),
     customerName: 'Peter Tan',
     amount: 70,
-    delivery: {
+    deliveryOrder: {
       id: 1,
       deliveryStatus: DeliveryStatus.READYFORDELIVERY,
       shippingDate: new Date(),
@@ -45,7 +45,7 @@ export const salesOrderData: Partial<SalesOrder>[] = [
     createdTime: new Date(),
     customerName: 'Alex Ong',
     amount: 30,
-    delivery: undefined,
+    deliveryOrder: undefined,
     salesOrderItems: [
       {
         saleOrderId: 2,
@@ -62,7 +62,7 @@ export const salesOrderData: Partial<SalesOrder>[] = [
     createdTime: new Date(),
     customerName: 'Sharon Tan',
     amount: 150,
-    delivery: {
+    deliveryOrder: {
       id: 2,
       deliveryStatus: DeliveryStatus.DELIVERYINPROGRESS,
       shippingDate: new Date(),
