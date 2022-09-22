@@ -67,9 +67,7 @@ const Row = ({ row }: { row: Partial<SalesOrder> }) => {
           />
         </TableCell>
         <TableCell align='center'>${row.amount}</TableCell>
-        <TableCell align='center'>
-          {row.deliveryOrder?.shippingAddress ?? 'NA'}
-        </TableCell>
+        <TableCell align='center'>{row.customerAddress ?? 'NA'}</TableCell>
         <TableCell align='center'>
           <Button
             variant='contained'

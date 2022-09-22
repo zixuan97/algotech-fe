@@ -18,7 +18,6 @@ export const salesOrderData: Partial<SalesOrder>[] = [
       id: 1,
       deliveryStatus: DeliveryStatus.READYFORDELIVERY,
       shippingDate: new Date(),
-      shippingAddress: 'Blk 123 NUS Road #01-01',
       shippingType: ShippingType.MANUAL,
       currentLocation: 'Blk 100 NUS Road #01-01',
       eta: new Date()
@@ -66,7 +65,6 @@ export const salesOrderData: Partial<SalesOrder>[] = [
       id: 2,
       deliveryStatus: DeliveryStatus.DELIVERYINPROGRESS,
       shippingDate: new Date(),
-      shippingAddress: 'Blk 456 NUS Road #01-01',
       shippingType: ShippingType.MANUAL,
       currentLocation: 'Blk 400 NUS Road #01-01',
       eta: new Date()

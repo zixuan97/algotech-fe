@@ -23,11 +23,13 @@ const SalesState = (props: PropsWithChildren) => {
         amount: 70,
         customerContactNo: '99998888',
         currency: 'SGD',
+        customerAddress: 'Blk 789 NUS Road #03-02',
+        customerEmail: 'ghi@xyz.com',
+        postalCode: '789456',
         deliveryOrder: {
           id: 1,
           deliveryStatus: DeliveryStatus.READYFORDELIVERY,
           shippingDate: new Date(),
-          shippingAddress: 'Blk 123 NUS Road #01-01',
           shippingType: ShippingType.MANUAL,
           currentLocation: 'Blk 100 NUS Road #01-01',
           eta: new Date()
@@ -57,6 +59,9 @@ const SalesState = (props: PropsWithChildren) => {
         amount: 30,
         customerContactNo: '99998888',
         currency: 'SGD',
+        customerAddress: 'Blk 123 NUS Road #09-02',
+        customerEmail: 'def@xyz.com',
+        postalCode: '654321',
         deliveryOrder: undefined,
         salesOrderItems: [
           {
@@ -77,11 +82,13 @@ const SalesState = (props: PropsWithChildren) => {
         amount: 150,
         customerContactNo: '99998888',
         currency: 'SGD',
+        customerAddress: 'Blk 456 NUS Road #01-01',
+        customerEmail: 'abc@xyz.com',
+        postalCode: '123456',
         deliveryOrder: {
           id: 2,
           deliveryStatus: DeliveryStatus.DELIVERYINPROGRESS,
           shippingDate: new Date(),
-          shippingAddress: 'Blk 456 NUS Road #01-01',
           shippingType: ShippingType.MANUAL,
           currentLocation: 'Blk 400 NUS Road #01-01',
           eta: new Date()

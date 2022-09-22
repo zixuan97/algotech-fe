@@ -137,7 +137,6 @@ export interface DeliveryOrder {
   id: number;
   deliveryStatus: DeliveryStatus;
   shippingDate: Date;
-  shippingAddress: string;
   shippingType: ShippingType;
   currentLocation: string;
   eta: Date;
@@ -148,11 +147,11 @@ export interface SalesOrder {
   platformType: PlatformType;
   status: OrderStatus;
   createdTime: Date;
-  customerName?: string;
-  customerAddress?: string;
-  postalCode?: string;
+  customerName: string;
+  customerAddress: string;
+  postalCode: string;
   customerContactNo: string;
-  customerEmail?: string;
+  customerEmail: string;
   currency: string;
   amount: number;
   deliveryOrder?: DeliveryOrder;
