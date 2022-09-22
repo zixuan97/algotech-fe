@@ -1,201 +1,89 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import '../../styles/pages/orders.scss';
 import '../../styles/common/common.scss';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Paper, Select, MenuItem, SelectChangeEvent, IconButton, Collapse, Box, Typography, Grid, Chip } from '@mui/material';
-import { Search, Download, FilterList, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
+import { Box, Button, CircularProgress, Grid, IconButton, Paper, Step, StepButton, StepLabel, Stepper, Tooltip, Typography } from '@mui/material';
+import { ChevronLeft, ReceiptLongRounded, AccountBalanceWalletRounded, ConstructionRounded, PlaylistAddCheckCircleRounded, LocalShippingRounded, TaskAltRounded } from '@mui/icons-material';
 import { PlatformType, SalesOrder, } from 'src/models/types';
-import { salesOrderData } from 'src/components/sales/salesOrder';
+import { useNavigate } from 'react-router-dom';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
-const platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
-
-const Row = ({ row }: { row: Partial<SalesOrder> }) => {
-    const [open, setOpen] = React.useState(false);
-    return (
-        <>
-            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                <TableCell align='center'>
-                    <IconButton
-                        aria-label="expand row"
-                        size="small"
-                        onClick={() => setOpen(!open)}
-                    >
-                        {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-                    </IconButton>
-                </TableCell>
-                <TableCell component="th" scope="row" align='center'>
-                    {row.customerName}
-                </TableCell>
-
-                <TableCell align='center'>{row.status}</TableCell>
-                <TableCell align='center'>
-                    <Chip label={row.platformType} color={row.platformType === PlatformType.SHOPEE ? 'warning' :
-                        row.platformType === PlatformType.SHOPIFY ? 'primary' : 'info'} />
-                </TableCell>
-                <TableCell align='center'>${row.amount}</TableCell>
-                <TableCell align='center'>{row.delivery?.shippingAddress ?? 'NA'}</TableCell>
-                <TableCell align='center'>
-                    <Button
-                        variant='contained'
-                        size='large'
-                        sx={{ height: 'fit-content' }}
-                    >
-                        Manage Order
-                    </Button>
-                </TableCell>
-            </TableRow>
-            <TableRow>
-                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
-                    <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: '1%' }}>
-                            {row.salesOrderItems?.map((item) => {
-                                return (
-                                    <Grid container spacing={1} style={{ alignItems: 'center' }}>
-                                        <Grid item xs={2}>
-                                            <Box
-                                                sx={{
-                                                    width: 150,
-                                                    maxWidth: 150,
-                                                    height: 150,
-                                                    maxHeight: 150,
-                                                    border: item.product?.image ? '' : '1px solid lightgray',
-                                                    margin: 1
-                                                }}
-                                                className={item.product?.image ? '' : 'container-center'}
-                                            >
-                                                {item.product?.image ? (
-                                                    <img
-                                                        src={item.product?.image}
-                                                        alt='Product'
-                                                        style={{ maxWidth: '100%', maxHeight: '100%' }}
-                                                    />
-                                                ) : (
-                                                    <Typography>Product Image</Typography>
-                                                )}
-                                            </Box>
-
-                                        </Grid>
-                                        <Grid item xs={1}>
-                                            <b>
-                                                {item.product?.name ?? 'NA'} x{item.quantity}, ${item.price}
-                                            </b>
-                                        </Grid>
-                                        <Grid item xs={1}>
-                                            <b>
-                                                ${item.quantity * item.price}
-                                            </b>
-                                        </Grid>
-                                    </Grid>
-                                )
-                            })}
-
-
-                        </Box>
-                    </Collapse>
-                </TableCell>
-            </TableRow>
-        </>
-    );
-};
+const steps = [
+    {
+        label: 'Order Placed',
+        icon: <ReceiptLongRounded />
+    },
+    {
+        label: 'Order Paid',
+        icon: <AccountBalanceWalletRounded />
+    },
+    {
+        label: 'Preparing Order',
+        icon: <ConstructionRounded />
+    },
+    {
+        label: 'Ready For Delivery',
+        icon: <PlaylistAddCheckCircleRounded />
+    },
+    {
+        label: 'Order Shipped',
+        icon: <LocalShippingRounded />
+    },
+    {
+        label: 'Order Received',
+        icon: <TaskAltRounded />
+    },
+];
 
 
 const OrderDetails = () => {
-    const [salesOrders, setSalesOrders] = useState<Partial<SalesOrder>[]>(salesOrderData);
-    const [searchField, setSearchField] = useState<string>('');
-    const [filterPlatform, setFilterPlatform] = useState<string>('');
-
-    const filteredData = useMemo(
-        () =>
-            filterPlatform || searchField
-                ?
-                salesOrders.filter((saleOrder) =>
-                (!filterPlatform || saleOrder.platformType === filterPlatform) && 
-                    Object.values(saleOrder).some((value) =>
-                        String(value).toLowerCase().match(searchField.toLowerCase())
-                    )
-                )
-                : salesOrders,
-        [salesOrders, filterPlatform, searchField]
-    );
-
-    const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchField(e.target.value);
-    };
-    const handleFilterChange = (event: SelectChangeEvent) => {
-        setFilterPlatform(event.target.value);
-    };
-
-    console.log(filteredData);
+    const navigate = useNavigate();
+    const [salesOrders, setSalesOrders] = useState<Partial<SalesOrder>>({});
+    const [loading, setLoading] = React.useState<boolean>(true);
+    const [alert, setAlert] = useState<AlertType | null>(null);
+    const [activeStep, setActiveStep] = React.useState<number>(3);
 
     return (
-        <div className='orders'>
-            <h1>All Orders</h1>
-            <div className='grid-toolbar'>
-                <div className='search-bar'>
-                    <FilterList />
-                    <Select
-                        style={{ width: '50%' }}
-                        value={filterPlatform}
-                        label="Filter"
-                        placeholder='Platform'
-                        onChange={handleFilterChange}>
-                        {platforms.map((option) => (
-                            <MenuItem key={option} value={option}>
-                                {option}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                    <Search />
-                    <TextField
-                        id='search'
-                        label='Search'
-                        fullWidth
-                        value={searchField}
-                        placeholder='Input Search Field ...'
-                        onChange={handleSearchFieldChange}
-                    />
-                    <Button
-                        variant='contained'
-                        size='large'
-                        sx={{ height: 'fit-content' }}
-                        onClick={() => {
-                            setSearchField('');
-                            setFilterPlatform('');
-                        }}
-                    >
-                        Reset
-                    </Button>
-                </div>
-                <Button
-                    variant='contained'
-                    size='large'
-                    sx={{ height: 'fit-content' }}
-                    endIcon={<Download />}
-                    onClick={() => { }}
-                >
-                    Download CSV
-                </Button>
+        <>
+            <Tooltip title='Return to Accounts' enterDelay={300}>
+                <IconButton size='large' onClick={() => navigate(-1)}>
+                    <ChevronLeft />
+                </IconButton>
+            </Tooltip>
+
+            <div className='center-div'>
+                <Box className='center-box'>
+                    <div className='header-content'>
+                        {/* {loading && <CircularProgress color='secondary' />} */}
+                        <Stepper activeStep={activeStep} alternativeLabel className="sales-stepper">
+                            {steps.map((step) => (
+                                <Step key={step.label}>
+                                    <StepLabel>{step.label}</StepLabel>
+                                </Step>
+                            ))}
+                        </Stepper>
+                        <Paper elevation={2} className='action-card'>
+                            <Typography sx={{ fontSize: 'inherit' }}>
+                                Next Action:
+                            </Typography>
+                            <Button
+                                variant='contained'
+                                size='medium'
+                            >
+                                Manage Order
+                            </Button>
+                        </Paper>
+                    </div>
+
+                    <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
+
+                    <Paper elevation={1}>
+                        <div className='content-body'>
+                            Hello World
+                        </div>
+                    </Paper>
+                </Box>
             </div>
-            <TableContainer component={Paper}>
-                <Table aria-label="collapsible table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell />
-                            <TableCell align='center'>Order For</TableCell>
-                            <TableCell align='center'>Status</TableCell>
-                            <TableCell align='center'>Platform</TableCell>
-                            <TableCell align='center'>Order Amount</TableCell>
-                            <TableCell align='center'>Delivery Details</TableCell>
-                            <TableCell align='center'>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {filteredData.map((salesOrder) => (
-                            <Row key={salesOrder.id} row={salesOrder} />
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </div>
+        </>
     );
 };
 

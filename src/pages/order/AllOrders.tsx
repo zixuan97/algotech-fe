@@ -5,10 +5,12 @@ import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRo
 import { Search, Download, FilterList, KeyboardArrowUp, KeyboardArrowDown } from '@mui/icons-material';
 import { PlatformType, SalesOrder, } from 'src/models/types';
 import { salesOrderData } from 'src/components/sales/salesOrder';
+import { useNavigate } from 'react-router-dom';
 
 const platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
 
 const Row = ({ row }: { row: Partial<SalesOrder> }) => {
+    const navigate = useNavigate();
     const [open, setOpen] = React.useState(false);
     return (
         <>
@@ -38,6 +40,7 @@ const Row = ({ row }: { row: Partial<SalesOrder> }) => {
                         variant='contained'
                         size='large'
                         sx={{ height: 'fit-content' }}
+                        onClick={() => navigate('/orderDetails')}
                     >
                         Manage Order
                     </Button>
@@ -46,7 +49,7 @@ const Row = ({ row }: { row: Partial<SalesOrder> }) => {
             <TableRow>
                 <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
                     <Collapse in={open} timeout="auto" unmountOnExit>
-                        <Box sx={{ margin: '1%' }}>
+                        <Box sx={{ margin: '2%' }}>
                             {row.salesOrderItems?.map((item) => {
                                 return (
                                     <Grid container spacing={1} style={{ alignItems: 'center' }}>

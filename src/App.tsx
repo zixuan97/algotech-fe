@@ -161,7 +161,7 @@ const App = () => {
 
   
                 <Route
-                  path='individualSales'
+                  path='orderDetails'
                   element={<OrderDetails />}
                 />
 
