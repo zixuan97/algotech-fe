@@ -36,11 +36,10 @@ const columns: GridColDef[] = [
     }
   },
   {
-    field: 'supplierName',
+    field: 'supplier',
     headerName: 'Supplier Name',
     flex: 1,
-    valueGetter: (params: GridValueGetterParams) =>
-      params.value.map((supplier: Supplier) => supplier.name)
+    valueGetter: (params: GridValueGetterParams) => params.value.name
   },
   {
     field: 'paymentStatus',

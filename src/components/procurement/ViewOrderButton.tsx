@@ -13,7 +13,7 @@ const ViewOrderButton = ({ id }: GridRenderCellParams) => {
         variant='contained'
         onClick={() =>
           navigate({
-            pathname: '/orders/procurementOrderDetails',
+            pathname: '/procurementOrders/procurementOrderDetails',
             search: createSearchParams({
               id: id.toString()
             }).toString()
