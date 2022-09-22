@@ -36,7 +36,7 @@ const platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
 
 const Row = ({ row }: { row: Partial<SalesOrder> }) => {
   const navigate = useNavigate();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(true);
   return (
     <>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
