@@ -8,21 +8,21 @@ import { createSearchParams } from 'react-router-dom';
 const BundleCellAction = ({ id }: GridRenderCellParams) => {
   const navigate = useNavigate();
   return (
-      <div className='action-cell-fit-content'>
-        <Button
-          variant='contained'
-          onClick={() =>
-            navigate({
-              pathname: '/inventory/bundleDetails',
-              search: createSearchParams({
-                id: id.toString()
-              }).toString()
-            })
-          }
-          >
-            View Bundle
-          </Button>
-      </div>
+    <div className='action-cell-fit-content'>
+      <Button
+        variant='contained'
+        onClick={() =>
+          navigate({
+            pathname: '/inventory/bundleDetails',
+            search: createSearchParams({
+              id: id.toString()
+            }).toString()
+          })
+        }
+        >
+          View Bundle
+        </Button>
+    </div>
   );
 };
 
