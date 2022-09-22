@@ -42,7 +42,6 @@ const menuOpenDefaultState: MenuOpen = {
   hr: false
 };
 
-
 const Sidebar = ({ sidebarWidth }: SidebarProps) => {
   const [menuOpen, setMenuOpen] =
     React.useState<MenuOpen>(menuOpenDefaultState);
@@ -116,7 +115,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
               />
               <ListItemLink
                 primary='Order Fulfillments'
-                to='sales/allOrders'
+                to='sales/allSalesOrders'
               />
             </List>
           </NestedList>
@@ -127,8 +126,14 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             toggleOpen={(open) => toggleMenuOpen('procurement', open)}
             icon={<Receipt />}
           >
-            <ListItemLink primary='Procurement Orders' to='/procurementOrders' />
-            <ListItemLink primary='All Suppliers' to='/procurementOrders/allSuppliers' />
+            <ListItemLink
+              primary='Procurement Orders'
+              to='/procurementOrders'
+            />
+            <ListItemLink
+              primary='All Suppliers'
+              to='/procurementOrders/allSuppliers'
+            />
           </NestedList>
 
           <NestedList
