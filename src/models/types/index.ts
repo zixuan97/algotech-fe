@@ -144,10 +144,16 @@ export interface DeliveryOrder {
 }
 export interface SalesOrder {
   id: number;
+  orderId: string;
   platformType: PlatformType;
   status: OrderStatus;
   createdTime: Date;
   customerName?: string;
+  customerAddress?: string;
+  postalCode?: string;
+  customerContactNo: string;
+  customerEmail?: string;
+  currency: string;
   amount: number;
   deliveryOrder?: DeliveryOrder;
   salesOrderItems: SalesOrderItem[];
@@ -156,5 +162,5 @@ export interface SalesOrderItem {
   saleOrderId: number;
   price: number;
   quantity: number;
-  product?: Product;
+  productName?: string;
 }

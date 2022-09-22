@@ -88,36 +88,10 @@ const Row = ({ row }: { row: Partial<SalesOrder> }) => {
               {row.salesOrderItems?.map((item) => {
                 return (
                   <Grid container spacing={1} style={{ alignItems: 'center' }}>
-                    <Grid item xs={2}>
-                      <Box
-                        sx={{
-                          width: 150,
-                          maxWidth: 150,
-                          height: 150,
-                          maxHeight: 150,
-                          border: item.product?.image
-                            ? ''
-                            : '1px solid lightgray',
-                          margin: 1
-                        }}
-                        className={
-                          item.product?.image ? '' : 'container-center'
-                        }
-                      >
-                        {item.product?.image ? (
-                          <img
-                            src={item.product?.image}
-                            alt='Product'
-                            style={{ maxWidth: '100%', maxHeight: '100%' }}
-                          />
-                        ) : (
-                          <Typography>Product Image</Typography>
-                        )}
-                      </Box>
-                    </Grid>
+                    <Grid item xs={2}></Grid>
                     <Grid item xs={1}>
                       <b>
-                        {item.product?.name ?? 'NA'} x{item.quantity}, $
+                        {item.productName ?? 'NA'} x{item.quantity}, $
                         {item.price}
                       </b>
                     </Grid>

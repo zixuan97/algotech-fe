@@ -8,7 +8,7 @@ import {
 
 export const salesOrderData: Partial<SalesOrder>[] = [
   {
-    id: 1,
+    orderId: '1',
     platformType: PlatformType.OTHERS,
     status: OrderStatus.PREPARED,
     createdTime: new Date(),
@@ -28,18 +28,18 @@ export const salesOrderData: Partial<SalesOrder>[] = [
         saleOrderId: 1,
         price: 20,
         quantity: 1,
-        product: undefined
+        productName: 'Pork Floss Popcorn'
       },
       {
         saleOrderId: 1,
         price: 10,
         quantity: 5,
-        product: undefined
+        productName: 'Chicken Floss Popcorn'
       }
     ]
   },
   {
-    id: 2,
+    orderId: '2',
     platformType: PlatformType.SHOPEE,
     status: OrderStatus.PREPARING,
     createdTime: new Date(),
@@ -51,12 +51,12 @@ export const salesOrderData: Partial<SalesOrder>[] = [
         saleOrderId: 2,
         price: 30,
         quantity: 1,
-        product: undefined
+        productName: 'Caramel Popcorn'
       }
     ]
   },
   {
-    id: 3,
+    orderId: '3',
     platformType: PlatformType.SHOPIFY,
     status: OrderStatus.SHIPPED,
     createdTime: new Date(),
@@ -76,13 +76,13 @@ export const salesOrderData: Partial<SalesOrder>[] = [
         saleOrderId: 3,
         price: 60,
         quantity: 2,
-        product: undefined
+        productName: 'Nasi Lemak Popcorn'
       },
       {
         saleOrderId: 3,
         price: 15,
         quantity: 2,
-        product: undefined
+        productName: 'Pulut Hitam Popcorn'
       }
     ]
   }
