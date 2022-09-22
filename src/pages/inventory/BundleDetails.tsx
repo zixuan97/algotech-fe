@@ -15,17 +15,14 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { Category, Product } from '../../models/types';
+import { Bundle, Product } from '../../models/types';
 import ProductCellAction from '../../components/inventory/ProductCellAction';
 import {
-  getCategoryById,
-  updateCategory,
-  deleteCategory
-} from '../../services/categoryService';
-import {
-  getAllProductsByCategory,
-  getProductById
-} from '../../services/productService';
+  getBundleById,
+  updateBundle,
+  deleteBundle
+} from '../../services/bundleService';
+import { getProductById } from '../../services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import TimeoutAlert, {
@@ -49,13 +46,13 @@ const columns: GridColDef[] = [
   }
 ];
 
-const CategoryDetails = () => {
+const BundleDetails = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
 
   const current = useLocation();
-  const category = current.state as Category;
+  const bundle = current.state as Bundle;
 
   const [loading, setLoading] = React.useState<boolean>(true);
   const [tableLoading, setTableLoading] = React.useState<boolean>(false);
@@ -64,9 +61,9 @@ const CategoryDetails = () => {
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
 
-  const [originalCategory, setOriginalCategory] =
-    React.useState<Category>(category);
-  const [editCategory, setEditCategory] = React.useState<Category>(category);
+  const [originalBundle, setOriginalBundle] =
+    React.useState<Bundle>(bundle);
+  const [editBundle, setEditBundle] = React.useState<Bundle>(bundle);
   const [productDetails, setProductDetails] = React.useState<Product[]>(
     []
   );
@@ -76,37 +73,37 @@ const CategoryDetails = () => {
 
   React.useEffect(() => {
     id &&
-      asyncFetchCallback(getCategoryById(id), (category: Category) => {
-        if (category) {
-          setOriginalCategory(category);
+      asyncFetchCallback(getBundleById(id), (bundle: Bundle) => {
+        if (bundle) {
+          setOriginalBundle(bundle);
           setLoading(false);
         } else {
           setAlert({
             severity: 'error',
             message:
-              'Category does not exist. You will be redirected back to the Manage Categories page.'
+              'Bundle does not exist. You will be redirected back to the All Bundles page.'
           });
           setLoading(false);
-          setTimeout(() => navigate('/inventory/allCategories'), 3500);
+          setTimeout(() => navigate('/inventory/allBundles'), 3500);
         }
       });
   }, [id, navigate]);
 
   React.useEffect(() => {
     const shouldDisable = !(
-      editCategory?.name && productDetails //editCategory?.productCategory
+      editBundle?.name && productDetails //editCategory?.productCategory
     );
     setDisableSave(shouldDisable);
-}, [editCategory?.name, productDetails]);
+  }, [editBundle?.name, productDetails]);
 
   React.useEffect(() => {
     setTableLoading(true);
     if (id) {
-      asyncFetchCallback(getCategoryById(id), (res) => {
-        setOriginalCategory(res);
-        setEditCategory(res);
+      asyncFetchCallback(getBundleById(id), (res) => {
+        setOriginalBundle(res);
+        setEditBundle(res);
 
-        asyncFetchCallback(getAllProductsByCategory(id), setProductDetails);
+        // asyncFetchCallback(getAllProductsByCategory(id), setProductDetails);
         setTableLoading(false);
 
         setLoading(false);
@@ -114,27 +111,58 @@ const CategoryDetails = () => {
     }
   }, [id]);
 
+  // React.useEffect(() => {
+  //   if (originalBundle) {
+  //     Promise.all(
+  //       originalBundle.bundleProduct.map(async (qty) => {
+  //         // const product = await getProductById(qty.id);
+  //         return {
+  //           // id: qty.id,
+  //           // sku: qty.sku,
+  //           // name: qty.name,
+  //           // image: qty.image,
+  //           // qtyThreshold: qty.qtyThreshold,
+  //           // brand: qty.brand,
+  //           // categories: qty.categories,
+  //           // stockQuantity: qty.stockQuantity,
+  //           qty,
+  //         };
+  //       })
+  //     ).then(
+  //       (res) => {
+  //         setTableLoading(false);
+  //         setProductDetails(res);
+  //         console.log('PRODUCT DETAILSSSS');
+  //         console.log(productDetails);
+  //       },
+  //       () => setTableLoading(false)
+  //     );
+  //   }
+  // }, [originalBundle]);
+
+
+
   const handleDeleteButtonClick = () => {
     setModalOpen(false);
     setBackdropLoading(true);
-    if (originalCategory) {
+    if (originalBundle) {
       asyncFetchCallback(
-        deleteCategory(originalCategory.id),
+        deleteBundle(originalBundle.id),
         () => {
           setBackdropLoading(false);
           setAlert({
             severity: 'success',
             message:
-              'Category successfully deleted. You will be redirected to the Manage Categories page now.'
+              'Bundle successfully deleted. You will be redirected to the All Bundles page now.'
           });
-          setTimeout(() => navigate('/inventory/allCategories'), 3500);
+          setTimeout(() => navigate('/inventory/allBundles'), 3500);
         },
         (err) => {
           const resData = err.response?.data as AxiosErrDataBody;
           setBackdropLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error deleting category: ${resData.message}`
+            message: `Error deleting bundle: ${resData.message}`
           });
         }
       );
@@ -145,41 +173,41 @@ const CategoryDetails = () => {
     event: React.ChangeEvent<HTMLInputElement>,
     key: string
   ) => {
-    setEditCategory((category: Category) => {
+    setEditBundle((bundle: Bundle) => {
       return {
-        ...category,
+        ...bundle,
         [key]: event.target.value
       };
     });
   };
 
   const handleSave = async () => {
-    if (editCategory) {
+    if (editBundle) {
       setBackdropLoading(true);
       asyncFetchCallback(
-        updateCategory(editCategory),
+        updateBundle(editBundle),
         () => {
           setAlert({
             severity: 'success',
-            message: 'Category successfully edited.'
+            message: 'Bundle successfully edited.'
           });
           setBackdropLoading(false);
-          setEditCategory(editCategory);
-          setOriginalCategory(editCategory);
+          setEditBundle(editBundle);
+          setOriginalBundle(editBundle);
         },
         (err) => {
           const resData = err.response?.data as AxiosErrDataBody;
           setBackdropLoading(false);
           setAlert({
             severity: 'error',
-            message: `Error editing category: ${resData.message}`
+            message: `Error editing bundle: ${resData.message}`
           });
         }
       );
     }
   };
 
-  const title = `${edit ? 'Edit' : ''} Category Details`;
+  const title = `${edit ? 'Edit' : ''} Bundle Details`;
 
   return (
     <div>
@@ -227,7 +255,7 @@ const CategoryDetails = () => {
                   color='primary'
                   onClick={() => {
                     setEdit(false);
-                    setEditCategory(originalCategory);
+                    setEditBundle(originalBundle);
                   }}
                 >
                   Discard Changes
@@ -245,8 +273,8 @@ const CategoryDetails = () => {
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
                 onConfirm={handleDeleteButtonClick}
-                title='Delete Category'
-                body='Are you sure you want to delete this category?'
+                title='Delete Bundle'
+                body='Are you sure you want to delete this bundle?'
               />
             </div>
           </div>
@@ -261,9 +289,9 @@ const CategoryDetails = () => {
                         required
                         fullWidth
                         id='outlined-required'
-                        label='Category Name'
+                        label='Bundle Name'
                         name='name'
-                        value={editCategory?.name}
+                        value={editBundle?.name}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           handleFieldOnChange(e, 'name')
                         }
@@ -272,7 +300,7 @@ const CategoryDetails = () => {
                     ) : (
                       <Typography
                         sx={{ padding: '15px' }}
-                      >{`Category Name: ${editCategory?.name}`}</Typography>
+                      >{`Bundle Name: ${editBundle?.name}`}</Typography>
                     )}
                   </div>
                 </div>
@@ -280,7 +308,10 @@ const CategoryDetails = () => {
                 {!edit && (
                   <DataGrid
                     columns={columns}
-                    rows={productDetails}
+                    rows={originalBundle?.bundleProduct ?? []}
+                    getRowId={(row) => row.productId}
+                    // rows={productDetails}
+                    // getRowId={(row) => row.id}
                     loading={tableLoading}
                     autoHeight
                     pageSize={5}
@@ -295,4 +326,4 @@ const CategoryDetails = () => {
   );
 };
 
-export default CategoryDetails;
+export default BundleDetails;

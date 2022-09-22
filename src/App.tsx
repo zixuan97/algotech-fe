@@ -17,6 +17,9 @@ import ProductDetails from './pages/inventory/ProductDetails';
 import AllProducts from './pages/inventory/AllProducts';
 import InventoryDashboard from './pages/inventory/InventoryDashboard';
 
+import AllBundles from './pages/inventory/AllBundles';
+import BundleDetails from './pages/inventory/BundleDetails';
+
 import AllBrands from './pages/inventory/AllBrands';
 import CreateBrand from './pages/inventory/CreateBrand';
 import BrandDetails from './pages/inventory/BrandDetails';

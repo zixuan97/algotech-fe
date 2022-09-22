@@ -1,14 +1,13 @@
 import React from 'react';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import BrandCellAction from '../../components/inventory/BrandCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
 import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { Brand } from '../../models/types';
-import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { getAllBrands } from 'src/services/brandService';
 import { useNavigate } from 'react-router';
+import inventoryContext from 'src/context/inventory/inventoryContext';
 
 const columns: GridColDef[] = [
   { field: 'name', headerName: 'Brand Name', flex: 1 },
@@ -24,36 +23,27 @@ const columns: GridColDef[] = [
 
 const AllBrands = () => {
   const navigate = useNavigate();
+  const { brands, refreshBrands } = React.useContext(inventoryContext);
 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
-  const [brandData, setBrandData] = React.useState<Brand[]>([]);
-  const [filteredData, setFilteredData] = React.useState<Brand[]>([]);
 
   React.useEffect(() => {
-    // TODO: implement error callback
     setLoading(true);
-    asyncFetchCallback(
-      getAllBrands(),
-      (res) => {
-        setLoading(false);
-        setBrandData(res);
-      },
-      () => setLoading(false)
-    );
+    refreshBrands(() => setLoading(false));
   }, []);
 
-  React.useEffect(() => {
-    setFilteredData(
+  const filteredData = React.useMemo(
+    () =>
       searchField
-        ? brandData.filter((category) =>
-            Object.values(category).some((value) =>
-              String(value).toLowerCase().match(searchField.toLowerCase())
-            )
+        ? brands.filter((brand) => 
+          Object.values(brand).some((value) =>
+            String(value).toLowerCase().match(searchField.toLowerCase())
           )
-        : brandData
-    );
-  }, [searchField, brandData]);
+        )
+      : brands,
+    [searchField, brands]
+  );
 
   console.log(filteredData);
 
