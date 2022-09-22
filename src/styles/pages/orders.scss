@@ -3,21 +3,58 @@
 @use '../common/common.scss';
 
 .orders {
-	display: flex;
-	justify-content: center;
-	flex-direction: column;
-	padding: 2rem;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 2rem;
 }
 
 .search-bar {
-	@extend .horizontal-inline-bar;
-	width: 20%;
+  @extend .horizontal-inline-bar;
+  width: 35%;
 }
 
 .grid-toolbar {
-	width: 100%;
-	padding: 0 0 1em;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+  width: 100%;
+  padding: 0 0 1em;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.center-div {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.center-box {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  color: colors.$primary;
+  font-family: fonts.$primary-font;
+  width: 80%;
+  margin: 1%;
+}
+
+.header-content {
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.action-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 30%;
+  margin: 1%;
+  padding: 1%;
+}
+
+.sales-stepper {
+  width: 100%;
+  margin: 1%;
 }

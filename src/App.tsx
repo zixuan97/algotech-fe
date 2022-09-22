@@ -57,7 +57,8 @@ import SalesDashboard from './pages/sales/SalesDashboard';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 
-import AllOrders from './pages/order/AllOrders';
+import AllSalesOrder from './pages/sales/AllSalesOrders';
+import SalesOrderDetails from './pages/sales/SalesOrderDetails';
 
 const theme = createTheme({
   palette: {
@@ -122,10 +123,7 @@ const App = () => {
                     path='inventory/createProduct'
                     element={<CreateProduct />}
                   />
-                  <Route
-                    path='inventory/allBundles'
-                    element={<AllBundles />}
-                  />
+                  <Route path='inventory/allBundles' element={<AllBundles />} />
                   <Route
                     path='inventory/createBundle'
                     element={<CreateBundle />}
@@ -150,10 +148,7 @@ const App = () => {
                     path='inventory/categoryDetails'
                     element={<CategoryDetails />}
                   />
-                  <Route
-                    path='inventory/allBrands'
-                    element={<AllBrands />} 
-                  />
+                  <Route path='inventory/allBrands' element={<AllBrands />} />
                   <Route
                     path='inventory/createBrand'
                     element={<CreateBrand />}
@@ -200,8 +195,18 @@ const App = () => {
                     element={<Navigate replace to='/sales/dashboard' />}
                   />
                   <Route path='sales/dashboard' element={<SalesDashboard />} />
-                  <Route path='sales/createNewOrder' element={<AllOrders />} />
-                  <Route path='sales/allOrders' element={<AllOrders />} />
+                  <Route
+                    path='sales/createNewOrder'
+                    element={<AllSalesOrder />}
+                  />
+                  <Route
+                    path='sales/allSalesOrders'
+                    element={<AllSalesOrder />}
+                  />
+                  <Route
+                    path='sales/salesOrderDetails'
+                    element={<SalesOrderDetails />}
+                  />
 
                   {/* --- Procurement Routes --- */}
                   <Route
@@ -227,99 +232,6 @@ const App = () => {
                   <Route
                     path='procurementOrders/supplierDetails'
                     element={<SupplierDetails />}
-                  />
-
-                  <Route path='restricted' element={<Restricted />} />
-                  <Route
-                    index
-                    element={<Navigate replace to='/inventory/dashboard' />}
-                  />
-                  <Route
-                    path='inventory'
-                    element={<Navigate replace to='/inventory/dashboard' />}
-                  />
-                  <Route
-                    path='inventory/dashboard'
-                    element={<InventoryDashboard />}
-                  />
-                  <Route
-                    path='inventory/allProducts'
-                    element={<AllProducts />}
-                  />
-                  <Route
-                    path='inventory/createProduct'
-                    element={<CreateProduct />}
-                  />
-                  <Route
-                    path='inventory/productDetails'
-                    element={<ProductDetails />}
-                  />
-                  <Route path='orders' element={<AllOrders />} />
-                  <Route
-                    path='orders/createProcurementOrder'
-                    element={<CreateProcurementOrder />}
-                  />
-                  <Route
-                    path='orders/procurementOrderDetails'
-                    element={<ProcurementOrderDetails />}
-                  />
-                  <Route
-                    path='orders/allSuppliers'
-                    element={<AllSuppliers />}
-                  />
-                  <Route
-                    path='orders/createSupplier'
-                    element={<CreateSupplier />}
-                  />
-                  <Route
-                    path='orders/supplierDetails'
-                    element={<SupplierDetails />}
-                  />
-                  <Route
-                    path='inventory/allCategories'
-                    element={<AllCategories />}
-                  />
-                  <Route
-                    path='inventory/createCategory'
-                    element={<CreateCategory />}
-                  />
-                  <Route
-                    path='inventory/categoryDetails'
-                    element={<CategoryDetails />}
-                  />
-                  <Route path='inventory/allBrands' element={<AllBrands />} />
-                  <Route
-                    path='inventory/createBrand'
-                    element={<CreateBrand />}
-                  />
-                  <Route
-                    path='inventory/brandDetails'
-                    element={<BrandDetails />}
-                  />
-                  <Route
-                    path='inventory/warehouses'
-                    element={<AllWarehouses />}
-                  />
-                  <Route
-                    path='inventory/warehouseDetails'
-                    element={<WarehouseDetails />}
-                  />
-                  <Route
-                    path='inventory/createWarehouse'
-                    element={<CreateWarehouse />}
-                  />
-
-                  <Route
-                    path='delivery/allManualDeliveries'
-                    element={<AllManualDeliveries />}
-                  />
-                  <Route
-                    path='delivery/allGrabDeliveries'
-                    element={<AllGrabDeliveries />}
-                  />
-                  <Route
-                    path='delivery/allShippitDeliveries'
-                    element={<AllShippitDeliveries />}
                   />
 
                   {/* --- Account Routes --- */}
