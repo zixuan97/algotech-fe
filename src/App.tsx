@@ -203,6 +203,7 @@ const App = () => {
                   <Route path='sales/dashboard' element={<SalesDashboard />} />
                   <Route path='sales/createNewOrder' element={<AllOrders />} />
                   <Route path='sales/allOrders' element={<AllOrders />} />
+                  <Route path='sales/orderDetails' element={<OrderDetails />} />
 
                   {/* --- Procurement Routes --- */}
                   <Route

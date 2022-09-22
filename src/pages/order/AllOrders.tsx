@@ -40,7 +40,7 @@ const Row = ({ row }: { row: Partial<SalesOrder> }) => {
                         variant='contained'
                         size='large'
                         sx={{ height: 'fit-content' }}
-                        onClick={() => navigate('/orderDetails')}
+                        onClick={() => navigate('/sales/orderDetails')}
                     >
                         Manage Order
                     </Button>
