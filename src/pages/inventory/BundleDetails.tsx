@@ -311,7 +311,6 @@ const BundleDetails = () => {
                     rows={originalBundle?.bundleProduct ?? []}
                     getRowId={(row) => row.productId}
                     // rows={productDetails}
-                    // getRowId={(row) => row.id}
                     loading={tableLoading}
                     autoHeight
                     pageSize={5}
