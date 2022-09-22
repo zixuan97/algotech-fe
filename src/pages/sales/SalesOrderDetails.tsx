@@ -55,7 +55,7 @@ const steps = [
   }
 ];
 
-const OrderDetails = () => {
+const SalesOrderDetails = () => {
   const navigate = useNavigate();
   const [salesOrders, setSalesOrders] = useState<Partial<SalesOrder>>({});
   const [loading, setLoading] = React.useState<boolean>(true);
@@ -104,4 +104,4 @@ const OrderDetails = () => {
   );
 };
 
-export default OrderDetails;
+export default SalesOrderDetails;

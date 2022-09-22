@@ -57,8 +57,8 @@ import SalesDashboard from './pages/sales/SalesDashboard';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 
-import AllOrders from './pages/order/AllOrders';
-import OrderDetails from './pages/order/OrderDetails';
+import AllSalesOrder from './pages/sales/AllSalesOrders';
+import SalesOrderDetails from './pages/sales/SalesOrderDetails';
 
 const theme = createTheme({
   palette: {
@@ -123,10 +123,7 @@ const App = () => {
                     path='inventory/createProduct'
                     element={<CreateProduct />}
                   />
-                  <Route
-                    path='inventory/allBundles'
-                    element={<AllBundles />}
-                  />
+                  <Route path='inventory/allBundles' element={<AllBundles />} />
                   <Route
                     path='inventory/createBundle'
                     element={<CreateBundle />}
@@ -151,10 +148,7 @@ const App = () => {
                     path='inventory/categoryDetails'
                     element={<CategoryDetails />}
                   />
-                  <Route
-                    path='inventory/allBrands'
-                    element={<AllBrands />}
-                  />
+                  <Route path='inventory/allBrands' element={<AllBrands />} />
                   <Route
                     path='inventory/createBrand'
                     element={<CreateBrand />}
@@ -201,9 +195,18 @@ const App = () => {
                     element={<Navigate replace to='/sales/dashboard' />}
                   />
                   <Route path='sales/dashboard' element={<SalesDashboard />} />
-                  <Route path='sales/createNewOrder' element={<AllOrders />} />
-                  <Route path='sales/allOrders' element={<AllOrders />} />
-                  <Route path='sales/orderDetails' element={<OrderDetails />} />
+                  <Route
+                    path='sales/createNewOrder'
+                    element={<AllSalesOrder />}
+                  />
+                  <Route
+                    path='sales/allSalesOrders'
+                    element={<AllSalesOrder />}
+                  />
+                  <Route
+                    path='sales/salesOrderDetails'
+                    element={<SalesOrderDetails />}
+                  />
 
                   {/* --- Procurement Routes --- */}
                   <Route
