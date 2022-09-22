@@ -147,11 +147,11 @@ export interface SalesOrder {
   platformType: PlatformType;
   status: OrderStatus;
   createdTime: Date;
-  customerName: string;
-  customerAddress: string;
-  postalCode: string;
+  customerName?: string;
+  customerAddress?: string;
+  postalCode?: string;
   customerContactNo: string;
-  customerEmail: string;
+  customerEmail?: string;
   currency: string;
   amount: number;
   deliveryOrder?: DeliveryOrder;
