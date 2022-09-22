@@ -17,7 +17,6 @@ import {
   IconButton,
   Collapse,
   Box,
-  Typography,
   Grid,
   Chip
 } from '@mui/material';
@@ -86,8 +85,7 @@ const Row = ({ row }: { row: Partial<SalesOrder> }) => {
               {row.salesOrderItems?.map((item) => {
                 return (
                   <Grid container spacing={1} style={{ alignItems: 'center' }}>
-                    <Grid item xs={2}></Grid>
-                    <Grid item xs={1}>
+                    <Grid item xs={3}>
                       <b>
                         {item.productName ?? 'NA'} x{item.quantity}, $
                         {item.price}
