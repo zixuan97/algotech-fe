@@ -18,6 +18,7 @@ import AllProducts from './pages/inventory/AllProducts';
 import InventoryDashboard from './pages/inventory/InventoryDashboard';
 
 import AllBundles from './pages/inventory/AllBundles';
+import CreateBundle from './pages/inventory/CreateBundle';
 import BundleDetails from './pages/inventory/BundleDetails';
 
 import AllBrands from './pages/inventory/AllBrands';
@@ -122,6 +123,18 @@ const App = () => {
                     element={<CreateProduct />}
                   />
                   <Route
+                    path='inventory/allBundles'
+                    element={<AllBundles />}
+                  />
+                  <Route
+                    path='inventory/createBundle'
+                    element={<CreateBundle />}
+                  />
+                  <Route
+                    path='inventory/bundleDetails'
+                    element={<BundleDetails />}
+                  />
+                  <Route
                     path='inventory/productDetails'
                     element={<ProductDetails />}
                   />
@@ -137,7 +150,10 @@ const App = () => {
                     path='inventory/categoryDetails'
                     element={<CategoryDetails />}
                   />
-                  <Route path='inventory/allBrands' element={<AllBrands />} />
+                  <Route
+                    path='inventory/allBrands'
+                    element={<AllBrands />} 
+                  />
                   <Route
                     path='inventory/createBrand'
                     element={<CreateBrand />}
