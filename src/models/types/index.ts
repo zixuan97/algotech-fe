@@ -29,14 +29,16 @@ export enum OrderStatus {
   PAID = 'PAID',
   PREPARED = 'PREPARED', //Create New DO, associate to SalesOrder, status = READY_FOR_DELIVERY
   SHIPPED = 'SHIPPED', //Update associated DO, status = DELIVERY_IN_PROGRESS
-  COMPLETED = 'DELIVERED' //Update associated DO, status = DELIVERED
+  COMPLETED = 'DELIVERED', //Update associated DO, status = DELIVERED
+  CANCELLED = 'CANCELLED'
   //not completed, need to wait for backend
 }
 
 export enum DeliveryStatus {
   READYFORDELIVERY = 'READY_FOR_DELIVERY',
   DELIVERYINPROGRESS = 'DELIVERY_IN_PROGRESS',
-  DELIVERED = 'DELIVERED'
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED'
   //not completed, need to wait for backend
 }
 
