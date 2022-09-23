@@ -32,7 +32,8 @@ const SalesState = (props: PropsWithChildren) => {
           shippingDate: new Date(),
           shippingType: ShippingType.MANUAL,
           currentLocation: 'Blk 100 NUS Road #01-01',
-          eta: new Date()
+          eta: new Date(),
+          salesOrderId: 1
         },
         salesOrderItems: [
           {
@@ -94,7 +95,8 @@ const SalesState = (props: PropsWithChildren) => {
           shippingDate: new Date(),
           shippingType: ShippingType.MANUAL,
           currentLocation: 'Blk 400 NUS Road #01-01',
-          eta: new Date()
+          eta: new Date(),
+          salesOrderId: 3,
         },
         salesOrderItems: [
           {
@@ -139,7 +141,8 @@ const SalesState = (props: PropsWithChildren) => {
           shippingDate: new Date(),
           shippingType: ShippingType.MANUAL,
           currentLocation: 'Blk 400 NUS Road #01-01',
-          eta: new Date()
+          eta: new Date(),
+          salesOrderId: 4
         },
         salesOrderItems: [
           {

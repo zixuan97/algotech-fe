@@ -81,20 +81,28 @@ const SalesOrderDetails = () => {
     if (saleOrd) {
       setSalesOrder(saleOrd);
       switch (saleOrd.orderStatus) {
-        case OrderStatus.PAID: {
+        case OrderStatus.CREATED: {
           setActiveStep(1);
           break;
         }
-        case OrderStatus.PREPARED: {
+        case OrderStatus.PAID: {
           setActiveStep(2);
           break;
         }
-        case OrderStatus.SHIPPED: {
+        case OrderStatus.PREPARING: {
           setActiveStep(3);
           break;
         }
-        case OrderStatus.COMPLETED: {
+        case OrderStatus.PREPARED: {
           setActiveStep(4);
+          break;
+        }
+        case OrderStatus.SHIPPED: {
+          setActiveStep(5);
+          break;
+        }
+        case OrderStatus.COMPLETED: {
+          setActiveStep(6);
           break;
         }
         default: {
