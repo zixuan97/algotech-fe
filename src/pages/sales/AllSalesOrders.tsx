@@ -62,7 +62,7 @@ const Row = ({ row }: { row: SalesOrder }) => {
           {row.customerName}
         </TableCell>
 
-        <TableCell align='center'>{row.status}</TableCell>
+        <TableCell align='center'>{row.orderStatus}</TableCell>
         <TableCell align='center'>
           <Chip
             label={row.platformType}

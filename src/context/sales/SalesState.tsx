@@ -17,7 +17,7 @@ const SalesState = (props: PropsWithChildren) => {
         id: 1,
         orderId: '1',
         platformType: PlatformType.OTHERS,
-        status: OrderStatus.PREPARED,
+        orderStatus: OrderStatus.PREPARED,
         createdTime: new Date(),
         customerName: 'Peter Tan',
         amount: 70,
@@ -36,13 +36,15 @@ const SalesState = (props: PropsWithChildren) => {
         },
         salesOrderItems: [
           {
-            saleOrderId: 1,
+            id: 1,
+            salesOrderId: 1,
             price: 20,
             quantity: 1,
             productName: 'Pork Floss Popcorn'
           },
           {
-            saleOrderId: 1,
+            id: 2,
+            salesOrderId: 1,
             price: 10,
             quantity: 5,
             productName: 'Chicken Floss Popcorn'
@@ -53,7 +55,7 @@ const SalesState = (props: PropsWithChildren) => {
         id: 2,
         orderId: '2',
         platformType: PlatformType.SHOPEE,
-        status: OrderStatus.PREPARING,
+        orderStatus: OrderStatus.PREPARING,
         createdTime: new Date(),
         customerName: 'Alex Ong',
         amount: 30,
@@ -65,7 +67,8 @@ const SalesState = (props: PropsWithChildren) => {
         deliveryOrder: undefined,
         salesOrderItems: [
           {
-            saleOrderId: 2,
+            id: 3,
+            salesOrderId: 2,
             price: 30,
             quantity: 1,
             productName: 'Caramel Popcorn'
@@ -76,7 +79,7 @@ const SalesState = (props: PropsWithChildren) => {
         id: 3,
         orderId: '3',
         platformType: PlatformType.SHOPIFY,
-        status: OrderStatus.SHIPPED,
+        orderStatus: OrderStatus.SHIPPED,
         createdTime: new Date(),
         customerName: 'Sharon Tan',
         amount: 150,
@@ -95,13 +98,15 @@ const SalesState = (props: PropsWithChildren) => {
         },
         salesOrderItems: [
           {
-            saleOrderId: 3,
+            id: 4,
+            salesOrderId: 3,
             price: 60,
             quantity: 2,
             productName: 'Nasi Lemak Popcorn'
           },
           {
-            saleOrderId: 3,
+            id: 5,
+            salesOrderId: 3,
             price: 15,
             quantity: 2,
             productName: 'Pulut Hitam Popcorn'
