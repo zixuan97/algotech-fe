@@ -55,7 +55,7 @@ const SalesState = (props: PropsWithChildren) => {
         id: 2,
         orderId: '2',
         platformType: PlatformType.SHOPEE,
-        orderStatus: OrderStatus.PREPARING,
+        orderStatus: OrderStatus.PAID,
         createdTime: new Date(),
         customerName: 'Alex Ong',
         amount: 30,
