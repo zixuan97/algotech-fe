@@ -113,7 +113,7 @@ const SalesState = (props: PropsWithChildren) => {
           },
           {
             id: 6,
-            saleOrderId: 4,
+            salesOrderId: 4,
             price: 10,
             quantity: 2,
             productName: 'Pork Cutlet Popcorn'
@@ -124,7 +124,7 @@ const SalesState = (props: PropsWithChildren) => {
         id: 4,
         orderId: '4',
         platformType: PlatformType.SHOPIFY,
-        status: OrderStatus.COMPLETED,
+        orderStatus: OrderStatus.COMPLETED,
         createdTime: new Date(),
         customerName: 'Tony Quek',
         amount: 290,
@@ -143,19 +143,22 @@ const SalesState = (props: PropsWithChildren) => {
         },
         salesOrderItems: [
           {
-            saleOrderId: 4,
+            id: 7,
+            salesOrderId: 4,
             price: 60,
             quantity: 4,
             productName: 'Nasi Lemak Popcorn'
           },
           {
-            saleOrderId: 4,
+            id: 8,
+            salesOrderId: 4,
             price: 15,
             quantity: 2,
             productName: 'Pulut Hitam Popcorn'
           },
           {
-            saleOrderId: 4,
+            id: 9,
+            salesOrderId: 4,
             price: 10,
             quantity: 2,
             productName: 'Pork Cutlet Popcorn'
