@@ -139,7 +139,7 @@ const ViewMyAccount = () => {
 
       <div className='center-div'>
         <Box className='center-box'>
-          <div className='header-content'>
+          <div className='account-header-content'>
             <h1>Your Profile Page</h1>
             <div className='button-group'>
               {loading && <CircularProgress color='secondary' />}
@@ -176,6 +176,7 @@ const ViewMyAccount = () => {
               </Button>
             </div>
           </div>
+
           <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <form>

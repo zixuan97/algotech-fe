@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Chip,
-  Grid,
   IconButton,
   Paper,
   Step,
@@ -24,53 +23,47 @@ import {
   ChevronLeft,
   ReceiptLongRounded,
   AccountBalanceWalletRounded,
-  ConstructionRounded,
   PlaylistAddCheckCircleRounded,
   LocalShippingRounded,
-  TaskAltRounded
+  TaskAltRounded,
+  AddShoppingCart
 } from '@mui/icons-material';
-import {
-  OrderStatus,
-  PlatformType,
-  SalesOrder,
-  SalesOrderItem
-} from 'src/models/types';
+import { OrderStatus, PlatformType, SalesOrder } from 'src/models/types';
 import { useNavigate } from 'react-router-dom';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import salesContext from 'src/context/sales/salesContext';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 const steps = [
   {
     label: 'Order Placed',
-    icon: <ReceiptLongRounded />
+    icon: <ReceiptLongRounded sx={{ fontSize: 35 }} />,
+    nextAction: 'Confirm Payment'
   },
   {
     label: 'Order Paid',
-    icon: <AccountBalanceWalletRounded />
+    icon: <AccountBalanceWalletRounded sx={{ fontSize: 35 }} />,
+    nextAction: 'Begin Prep'
   },
   {
     label: 'Preparing Order',
-    icon: <ConstructionRounded />
+    icon: <AddShoppingCart sx={{ fontSize: 35 }} />,
+    nextAction: 'Complete Prep'
   },
   {
-    label: 'Ready For Delivery',
-    icon: <PlaylistAddCheckCircleRounded />
+    label: 'Order Prepared',
+    icon: <PlaylistAddCheckCircleRounded sx={{ fontSize: 35 }} />,
+    nextAction: 'Schedule Delivery'
   },
   {
     label: 'Order Shipped',
-    icon: <LocalShippingRounded />
+    icon: <LocalShippingRounded sx={{ fontSize: 35 }} />,
+    nextAction: 'View Delivery'
   },
   {
     label: 'Order Received',
-    icon: <TaskAltRounded />
+    icon: <TaskAltRounded sx={{ fontSize: 35 }} />,
+    nextAction: 'View Delivery'
   }
-];
-
-const columns: GridColDef[] = [
-  { field: 'productName', headerName: 'Product Name', flex: 1 },
-  { field: 'quantity', headerName: 'Qnautity Ordered', flex: 1 },
-  { field: 'price', headerName: 'Price ($)', flex: 1 }
 ];
 
 const SalesOrderDetails = () => {
@@ -95,10 +88,14 @@ const SalesOrderDetails = () => {
       setSalesOrder(saleOrd);
       switch (saleOrd.orderStatus) {
         case OrderStatus.CREATED: {
-          setActiveStep(1);
+          setActiveStep(0);
           break;
         }
         case OrderStatus.PAID: {
+          setActiveStep(1);
+          break;
+        }
+        case OrderStatus.PREPARING: {
           setActiveStep(2);
           break;
         }
@@ -107,11 +104,11 @@ const SalesOrderDetails = () => {
           break;
         }
         case OrderStatus.SHIPPED: {
-          setActiveStep(5);
+          setActiveStep(4);
           break;
         }
         case OrderStatus.COMPLETED: {
-          setActiveStep(6);
+          setActiveStep(5);
           break;
         }
         default: {
@@ -120,8 +117,72 @@ const SalesOrderDetails = () => {
       }
       setLoading(false);
     }
-  }, [id, salesOrders]);
+  }, [salesOrders]);
 
+  const nextStep = () => {
+    switch (salesOrder?.orderStatus) {
+      case OrderStatus.CREATED: {
+        setSalesOrder((order) => {
+          return {
+            ...order!,
+            orderStatus: OrderStatus.PAID
+          };
+        });
+        setActiveStep(1);
+        break;
+      }
+      case OrderStatus.PAID: {
+        setSalesOrder((order) => {
+          return {
+            ...order!,
+            orderStatus: OrderStatus.PREPARING
+          };
+        });
+        setActiveStep(2);
+        break;
+      }
+      case OrderStatus.PREPARING: {
+        setSalesOrder((order) => {
+          return {
+            ...order!,
+            orderStatus: OrderStatus.PREPARED
+          };
+        });
+        setActiveStep(3);
+        break;
+      }
+      case OrderStatus.PREPARED: {
+        setSalesOrder((order) => {
+          return {
+            ...order!,
+            orderStatus: OrderStatus.SHIPPED
+          };
+        });
+        //Note that IRL this should not allow users to go next step.
+        //It should ONLY allow users to print View DO.
+        //Only in 'View Delivery Order', can users to trigger to OrderStatus.SHIPPED
+        //This is only for display
+        setActiveStep(4);
+        break;
+      }
+      case OrderStatus.SHIPPED: {
+        setSalesOrder((order) => {
+          return {
+            ...order!,
+            orderStatus: OrderStatus.COMPLETED
+          };
+        });
+        setActiveStep(5);
+        break;
+      }
+      case OrderStatus.COMPLETED: {
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  };
   return (
     <>
       <div className='top-carrot'>
@@ -156,14 +217,18 @@ const SalesOrderDetails = () => {
             >
               {steps.map((step) => (
                 <Step key={step.label}>
-                  <StepLabel>{step.label}</StepLabel>
+                  <StepLabel icon={step.icon}>{step.label}</StepLabel>
                 </Step>
               ))}
             </Stepper>
             <Paper elevation={2} className='action-card'>
               <Typography sx={{ fontSize: 'inherit' }}>Next Action:</Typography>
-              <Button variant='contained' size='medium'>
-                Manage Order
+              <Button
+                variant='contained'
+                size='medium'
+                onClick={nextStep}
+              >
+                {steps[activeStep].nextAction}
               </Button>
             </Paper>
           </div>

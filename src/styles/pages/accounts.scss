@@ -22,8 +22,9 @@
   padding: 2rem;
 }
 
-.header-content {
+.account-header-content {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
 }
@@ -65,4 +66,9 @@
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+}
+
+.button-group {
+  margin: 1% 1% 1% 1%;
+  justify-content: flex-end;
 }

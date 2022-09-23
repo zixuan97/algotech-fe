@@ -37,7 +37,8 @@ export enum OrderStatus {
 export enum DeliveryStatus {
   READYFORDELIVERY = 'READY_FOR_DELIVERY',
   DELIVERYINPROGRESS = 'DELIVERY_IN_PROGRESS',
-  DELIVERED = 'DELIVERED'
+  DELIVERED = 'DELIVERED',
+  CANCELLED = 'CANCELLED'
   //not completed, need to wait for backend
 }
 

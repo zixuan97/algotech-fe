@@ -31,7 +31,8 @@ import { PlatformType, SalesOrder } from 'src/models/types';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import salesContext from 'src/context/sales/salesContext';
 
-const platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
+let platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
+platforms.push('ALL');
 
 const Row = ({ row }: { row: SalesOrder }) => {
   const navigate = useNavigate();
@@ -62,10 +63,17 @@ const Row = ({ row }: { row: SalesOrder }) => {
           {row.customerName}
         </TableCell>
 
-        <TableCell align='center'>{row.orderStatus}</TableCell>
         <TableCell align='center'>
           <Chip
-            label={row.platformType}
+            label={
+              row.orderStatus.charAt(0).toUpperCase() +
+              row.orderStatus.slice(1).toLowerCase()
+            }
+          />
+        </TableCell>
+        <TableCell align='center'>
+          <Chip
+            label={row.platformType.toUpperCase()}
             color={
               row.platformType === PlatformType.SHOPEE
                 ? 'warning'
