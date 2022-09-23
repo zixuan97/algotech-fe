@@ -5,9 +5,7 @@ import {
   Box,
   Button,
   Chip,
-  Grid,
   IconButton,
-  makeStyles,
   Paper,
   Step,
   StepLabel,
@@ -25,21 +23,14 @@ import {
   ChevronLeft,
   ReceiptLongRounded,
   AccountBalanceWalletRounded,
-  ConstructionRounded,
   PlaylistAddCheckCircleRounded,
   LocalShippingRounded,
   TaskAltRounded
 } from '@mui/icons-material';
-import {
-  OrderStatus,
-  PlatformType,
-  SalesOrder,
-  SalesOrderItem
-} from 'src/models/types';
+import { OrderStatus, PlatformType, SalesOrder } from 'src/models/types';
 import { useNavigate } from 'react-router-dom';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import salesContext from 'src/context/sales/salesContext';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 const steps = [
   {
@@ -50,7 +41,7 @@ const steps = [
   {
     label: 'Order Paid',
     icon: <AccountBalanceWalletRounded sx={{ fontSize: 35 }} />,
-    nextAction: 'Complete Preperation'
+    nextAction: 'Complete Prep'
   },
   {
     label: 'Order Prepared',
@@ -67,12 +58,6 @@ const steps = [
     icon: <TaskAltRounded sx={{ fontSize: 35 }} />,
     nextAction: 'View Delivery'
   }
-];
-
-const columns: GridColDef[] = [
-  { field: 'productName', headerName: 'Product Name', flex: 1 },
-  { field: 'quantity', headerName: 'Qnautity Ordered', flex: 1 },
-  { field: 'price', headerName: 'Price ($)', flex: 1 }
 ];
 
 const SalesOrderDetails = () => {
@@ -123,6 +108,12 @@ const SalesOrderDetails = () => {
       setLoading(false);
     }
   }, [id, salesOrders]);
+
+  const nextStep = () => {
+    if (activeStep < 4) {
+      setActiveStep(activeStep + 1);
+    }
+  };
   return (
     <>
       <div className='top-carrot'>
@@ -163,7 +154,11 @@ const SalesOrderDetails = () => {
             </Stepper>
             <Paper elevation={2} className='action-card'>
               <Typography sx={{ fontSize: 'inherit' }}>Next Action:</Typography>
-              <Button variant='contained' size='medium'>
+              <Button
+                variant='contained'
+                size='medium'
+                onClick={() => nextStep()}
+              >
                 {steps[activeStep].nextAction}
               </Button>
             </Paper>
