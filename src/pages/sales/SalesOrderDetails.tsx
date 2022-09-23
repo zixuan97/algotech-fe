@@ -94,11 +94,11 @@ const SalesOrderDetails = () => {
     if (saleOrd) {
       setSalesOrder(saleOrd);
       switch (saleOrd.orderStatus) {
-        case OrderStatus.PAID: {
+        case OrderStatus.CREATED: {
           setActiveStep(1);
           break;
         }
-        case OrderStatus.PREPARING: {
+        case OrderStatus.PAID: {
           setActiveStep(2);
           break;
         }
@@ -110,7 +110,7 @@ const SalesOrderDetails = () => {
           setActiveStep(5);
           break;
         }
-        case OrderStatus.DELIVERED: {
+        case OrderStatus.COMPLETED: {
           setActiveStep(6);
           break;
         }
