@@ -17,7 +17,6 @@ import {
   IconButton,
   Collapse,
   Box,
-  Typography,
   Grid,
   Chip
 } from '@mui/material';
@@ -29,14 +28,24 @@ import {
   KeyboardArrowDown
 } from '@mui/icons-material';
 import { PlatformType, SalesOrder } from 'src/models/types';
-import { salesOrderData } from 'src/components/sales/salesOrder';
-import { useNavigate } from 'react-router-dom';
+import { createSearchParams, useNavigate } from 'react-router-dom';
+import salesContext from 'src/context/sales/salesContext';
 
 const platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
 
-const Row = ({ row }: { row: Partial<SalesOrder> }) => {
+const Row = ({ row }: { row: SalesOrder }) => {
   const navigate = useNavigate();
   const [open, setOpen] = React.useState(true);
+
+  const navToViewSalesOrder = () => {
+    navigate({
+      pathname: '/sales/salesOrderDetails',
+      search: createSearchParams({
+        id: row?.orderId.toString()
+      }).toString()
+    });
+  };
+
   return (
     <>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -73,7 +82,7 @@ const Row = ({ row }: { row: Partial<SalesOrder> }) => {
             variant='contained'
             size='large'
             sx={{ height: 'fit-content' }}
-            onClick={() => navigate('/sales/orderDetails')}
+            onClick={() => navToViewSalesOrder()}
           >
             Manage Order
           </Button>
@@ -83,20 +92,28 @@ const Row = ({ row }: { row: Partial<SalesOrder> }) => {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
           <Collapse in={open} timeout='auto' unmountOnExit>
             <Box sx={{ margin: '2%' }}>
+              <div className='grid-toolbar'>
+                <h3>Order Details</h3>
+                <h3>Order ID.: #{row.orderId}</h3>
+              </div>
+
               {row.salesOrderItems?.map((item) => {
                 return (
-                  <Grid container spacing={1} style={{ alignItems: 'center' }}>
-                    <Grid item xs={2}></Grid>
-                    <Grid item xs={1}>
-                      <b>
+                  <>
+                    <Grid
+                      container
+                      spacing={1}
+                      style={{ alignItems: 'center' }}
+                    >
+                      <Grid item xs={3}>
                         {item.productName ?? 'NA'} x{item.quantity}, $
                         {item.price}
-                      </b>
+                      </Grid>
+                      <Grid item xs={1}>
+                        ${item.quantity * item.price}
+                      </Grid>
                     </Grid>
-                    <Grid item xs={1}>
-                      <b>${item.quantity * item.price}</b>
-                    </Grid>
-                  </Grid>
+                  </>
                 );
               })}
             </Box>
@@ -108,8 +125,7 @@ const Row = ({ row }: { row: Partial<SalesOrder> }) => {
 };
 
 const AllSalesOrders = () => {
-  const [salesOrders, setSalesOrders] =
-    useState<Partial<SalesOrder>[]>(salesOrderData);
+  const { salesOrders } = React.useContext(salesContext);
   const [searchField, setSearchField] = useState<string>('');
   const [filterPlatform, setFilterPlatform] = useState<string>('');
 
@@ -133,8 +149,6 @@ const AllSalesOrders = () => {
   const handleFilterChange = (event: SelectChangeEvent) => {
     setFilterPlatform(event.target.value);
   };
-
-  console.log(filteredData);
 
   return (
     <div className='orders'>

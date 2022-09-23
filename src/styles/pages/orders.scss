@@ -11,7 +11,13 @@
 
 .search-bar {
   @extend .horizontal-inline-bar;
-  width: 35%;
+  width: 45%;
+}
+
+.top-carrot {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .grid-toolbar {
@@ -44,6 +50,11 @@
   flex-direction: column;
 }
 
+.content-body {
+  flex-direction: column;
+  margin: 2%;
+}
+
 .action-card {
   display: flex;
   flex-direction: row;
@@ -57,4 +68,15 @@
 .sales-stepper {
   width: 100%;
   margin: 1%;
+}
+
+.sales-order-card-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.order-summary-card {
+  display: flex;
+  justify-content: flex-end;
 }
