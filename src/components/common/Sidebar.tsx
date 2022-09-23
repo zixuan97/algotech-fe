@@ -4,9 +4,7 @@ import {
   LocalGroceryStore,
   People,
   Receipt,
-  LocalShipping,
-  FamilyRestroomRounded,
-  PointOfSale
+  LocalShipping
 } from '@mui/icons-material';
 import { Button, Divider, Drawer, List, Toolbar } from '@mui/material';
 import React from 'react';
@@ -41,7 +39,6 @@ const menuOpenDefaultState: MenuOpen = {
   customers: false,
   hr: false
 };
-
 
 const Sidebar = ({ sidebarWidth }: SidebarProps) => {
   const [menuOpen, setMenuOpen] =
@@ -116,7 +113,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
               />
               <ListItemLink
                 primary='Order Fulfillments'
-                to='sales/allOrders'
+                to='sales/allSalesOrders'
               />
             </List>
           </NestedList>
@@ -127,8 +124,14 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             toggleOpen={(open) => toggleMenuOpen('procurement', open)}
             icon={<Receipt />}
           >
-            <ListItemLink primary='Procurement Orders' to='/procurementOrders' />
-            <ListItemLink primary='All Suppliers' to='/procurementOrders/allSuppliers' />
+            <ListItemLink
+              primary='Procurement Orders'
+              to='/procurementOrders'
+            />
+            <ListItemLink
+              primary='All Suppliers'
+              to='/procurementOrders/allSuppliers'
+            />
           </NestedList>
 
           <NestedList

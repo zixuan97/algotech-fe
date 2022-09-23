@@ -1,7 +1,9 @@
 import { Chart as ChartJS, registerables } from 'chart.js';
+import { interpolateRdYlBu } from 'd3-scale-chromatic';
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import { Product, StockQuantity } from 'src/models/types';
+import { interpolateColors } from 'src/utils/chartUtils';
 import '../../styles/common/common.scss';
 
 ChartJS.register(...registerables);
@@ -33,6 +35,15 @@ const InventoryLevelsChart = React.forwardRef<
     () => productData.map((product) => product.name),
     [productData]
   );
+  const CHART_COLORS = interpolateColors(
+    productData.length,
+    interpolateRdYlBu,
+    {
+      colorStart: 0.1,
+      colorEnd: 1,
+      useEndAsStart: false
+    }
+  );
   const chartData = React.useMemo(
     () =>
       productData.map((product) =>
@@ -51,7 +62,7 @@ const InventoryLevelsChart = React.forwardRef<
         data: chartData,
         barPercentage: 0.6,
         borderRadius: 10,
-        backgroundColor: '#DAD7FE'
+        backgroundColor: CHART_COLORS
       }
     ]
   };
