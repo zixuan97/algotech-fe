@@ -14,6 +14,12 @@
   width: 45%;
 }
 
+.top-carrot {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
 .grid-toolbar {
   width: 100%;
   padding: 0 0 1em;
@@ -44,6 +50,11 @@
   flex-direction: column;
 }
 
+.content-body {
+  flex-direction: column;
+  margin: 2%;
+}
+
 .action-card {
   display: flex;
   flex-direction: row;
@@ -63,4 +74,9 @@
   width: 100%;
   display: flex;
   justify-content: space-between;
+}
+
+.order-summary-card {
+  display: flex;
+  justify-content: flex-end;
 }
