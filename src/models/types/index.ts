@@ -25,12 +25,12 @@ export enum FulfilmentStatus {
 }
 
 export enum OrderStatus {
-  PLACED = 'PLACED',
+  CREATED = 'CREATED',
   PAID = 'PAID',
   PREPARING = 'PREPARING',
   PREPARED = 'PREPARED', //Create New DO, associate to SalesOrder, status = READY_FOR_DELIVERY
   SHIPPED = 'SHIPPED', //Update associated DO, status = DELIVERY_IN_PROGRESS
-  DELIVERED = 'DELIVERED' //Update associated DO, status = DELIVERED
+  COMPLETED = 'DELIVERED' //Update associated DO, status = DELIVERED
   //not completed, need to wait for backend
 }
 
@@ -142,6 +142,7 @@ export interface DeliveryOrder {
   shippingType: ShippingType;
   currentLocation: string;
   eta: Date;
+  salesOrderId: number;
 }
 export interface SalesOrder {
   id: number;
