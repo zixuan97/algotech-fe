@@ -3,12 +3,22 @@ import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import DeliveryCellAction from 'src/components/delivery/DeliveryCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
+import '../../styles/pages/delivery/map.scss';
+import 'leaflet/dist/leaflet.css';
 import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { DeliveryOrder } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { getAllDeliveries } from 'src/services/deliveryServices';
 import { useNavigate } from 'react-router';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { Icon } from 'leaflet';
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
+
+const myIcon = new Icon({
+  iconUrl: markerIconPng,
+  iconSize: [25,41]
+ })
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'Delivery ID', flex: 1 },
@@ -66,9 +76,32 @@ const AllManualDeliveries = () => {
     setSearchField(e.target.value);
   };
 
+  // const [latLng, setLatLng] = React.useState([]);
+  // async function getAddress(postalCode) {
+  //   var genURL = “https://developers.onemap.sg/commonapi/search?searchVal=" + postalCode + “&returnGeom=Y&getAddrDetails=N&pageNum=1”;
+  //   var response = await fetch(genURL);
+  //   var data = await response.json();
+  //   var latlng = data.results[0].ADDRESS;
+  //   setAddress(address);
+  //   console.log(myAddress);
+  //   return address;
+  // }
+
+
   return (
     <div className='delivery'>
       <h1>All Manual Deliveries</h1>
+      <MapContainer center={[1.3667, 103.8]} zoom={12} minZoom={11} scrollWheelZoom={true}>
+        <TileLayer
+          attribution='&copy; <img src="https://www.onemap.gov.sg/docs/maps/images/oneMap64-01.png" style="height:20px;width:20px;"/> OneMap | Map data &copy; contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>'
+          url='https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png'
+        />
+        <Marker position={[1.3667, 103.8]} icon = {myIcon}>
+          <Popup>
+            Delivery 1 <br /> Singapore
+          </Popup>
+        </Marker>
+      </MapContainer>
       <div className='grid-toolbar'>
         <div className='search-bar'>
           <Search />
@@ -84,7 +117,7 @@ const AllManualDeliveries = () => {
           variant='contained'
           size='large'
           sx={{ height: 'fit-content' }}
-          onClick={() => navigate({ pathname: ''})}
+          onClick={() => navigate({ pathname: '' })}
         >
           Create Delivery
         </Button>
