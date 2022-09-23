@@ -25,7 +25,8 @@ import {
   AccountBalanceWalletRounded,
   PlaylistAddCheckCircleRounded,
   LocalShippingRounded,
-  TaskAltRounded
+  TaskAltRounded,
+  AddShoppingCart
 } from '@mui/icons-material';
 import { OrderStatus, PlatformType, SalesOrder } from 'src/models/types';
 import { useNavigate } from 'react-router-dom';
@@ -41,6 +42,11 @@ const steps = [
   {
     label: 'Order Paid',
     icon: <AccountBalanceWalletRounded sx={{ fontSize: 35 }} />,
+    nextAction: 'Begin Prep'
+  },
+  {
+    label: 'Preparing Order',
+    icon: <AddShoppingCart sx={{ fontSize: 35 }} />,
     nextAction: 'Complete Prep'
   },
   {
@@ -82,27 +88,27 @@ const SalesOrderDetails = () => {
       setSalesOrder(saleOrd);
       switch (saleOrd.orderStatus) {
         case OrderStatus.CREATED: {
-          setActiveStep(1);
+          setActiveStep(0);
           break;
         }
         case OrderStatus.PAID: {
-          setActiveStep(2);
+          setActiveStep(1);
           break;
         }
         case OrderStatus.PREPARING: {
-          setActiveStep(3);
+          setActiveStep(2);
           break;
         }
         case OrderStatus.PREPARED: {
-          setActiveStep(4);
+          setActiveStep(3);
           break;
         }
         case OrderStatus.SHIPPED: {
-          setActiveStep(5);
+          setActiveStep(4);
           break;
         }
         case OrderStatus.COMPLETED: {
-          setActiveStep(6);
+          setActiveStep(5);
           break;
         }
         default: {
@@ -111,28 +117,65 @@ const SalesOrderDetails = () => {
       }
       setLoading(false);
     }
-  }, [id, salesOrders]);
+  }, [salesOrders]);
 
   const nextStep = () => {
     switch (salesOrder?.orderStatus) {
       case OrderStatus.CREATED: {
-        setActiveStep(0);
-        break;
-      }
-      case OrderStatus.PAID: {
+        setSalesOrder((order) => {
+          return {
+            ...order!,
+            orderStatus: OrderStatus.PAID
+          };
+        });
         setActiveStep(1);
         break;
       }
-      case OrderStatus.PREPARED: {
+      case OrderStatus.PAID: {
+        setSalesOrder((order) => {
+          return {
+            ...order!,
+            orderStatus: OrderStatus.PREPARING
+          };
+        });
         setActiveStep(2);
         break;
       }
-      case OrderStatus.SHIPPED: {
+      case OrderStatus.PREPARING: {
+        setSalesOrder((order) => {
+          return {
+            ...order!,
+            orderStatus: OrderStatus.PREPARED
+          };
+        });
         setActiveStep(3);
         break;
       }
-      case OrderStatus.COMPLETED: {
+      case OrderStatus.PREPARED: {
+        setSalesOrder((order) => {
+          return {
+            ...order!,
+            orderStatus: OrderStatus.SHIPPED
+          };
+        });
+        //Note that IRL this should not allow users to go next step.
+        //It should ONLY allow users to print View DO.
+        //Only in 'View Delivery Order', can users to trigger to OrderStatus.SHIPPED
+        //This is only for display
         setActiveStep(4);
+        break;
+      }
+      case OrderStatus.SHIPPED: {
+        setSalesOrder((order) => {
+          return {
+            ...order!,
+            orderStatus: OrderStatus.COMPLETED
+          };
+        });
+        setActiveStep(5);
+        break;
+      }
+      case OrderStatus.COMPLETED: {
         break;
       }
       default: {
@@ -183,7 +226,7 @@ const SalesOrderDetails = () => {
               <Button
                 variant='contained'
                 size='medium'
-                onClick={() => nextStep()}
+                onClick={nextStep}
               >
                 {steps[activeStep].nextAction}
               </Button>
