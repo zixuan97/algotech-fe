@@ -27,7 +27,7 @@ const ProductDashboardCellAction = ({ id }: GridRenderCellParams) => {
         sx={{ fontSize: '0.75rem' }}
         onClick={() =>
           navigate({
-            pathname: '/orders/createProcurementOrder',
+            pathname: '/procurementOrders/createProcurementOrder',
             search: createSearchParams({
               id: id.toString()
             }).toString()

@@ -22,7 +22,12 @@ import {
   createProcurementOrder,
   getAllSuppliers
 } from 'src/services/procurementService';
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridRenderCellParams,
+  GridValueGetterParams
+} from '@mui/x-data-grid';
 import AddProductModal from 'src/components/procurement/AddProductModal';
 import '../../styles/pages/procurement.scss';
 import { ProcurementOrderItem } from 'src/models/types';
@@ -74,6 +79,23 @@ const CreateProcurementOrder = () => {
     });
   };
 
+  const handleEditSupplier = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewProcurementOrder((prev) => ({
+      ...prev,
+      supplier: suppliers.find(
+        (supplier) => supplier.id.toString() == e.target.value
+      )
+    }));
+  };
+
+  const handleEditLocation = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setNewProcurementOrder((prev) => ({
+      ...prev,
+      location: warehouseData.find(
+        (warehouse) => warehouse.id.toString() == e.target.value
+      )
+    }));
+
   const removeOrderItem = (id: string) => {
     const updatedOrderItems = orderItems.filter(
       (item) => item.id?.toString() != id
@@ -82,7 +104,6 @@ const CreateProcurementOrder = () => {
   };
 
   const handleAddOrderItem = async (
-    sku: string,
     rate: string,
     quantity: string,
     selectedProduct: Product | undefined
@@ -92,14 +113,12 @@ const CreateProcurementOrder = () => {
 
     if (selectedProduct) {
       let newProcurementOrderItem: NewProcurementOrderItem = {
-        id: selectedProduct.id,
         quantity: parseInt(quantity),
         rate: parseInt(rate),
         product: selectedProduct
       };
       let updatedOrderItems = Object.assign([], orderItems);
       setAddedProductsId((prev) => [...prev, selectedProduct.id]);
-      console.log(addedProductsId);
       updatedOrderItems.push(newProcurementOrderItem);
       setOrderItems(updatedOrderItems);
       setLoading(false);
@@ -111,8 +130,18 @@ const CreateProcurementOrder = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: 'product_sku', headerName: 'SKU', flex: 1 },
-    { field: 'product_name', headerName: 'Product Name', flex: 1 },
+    {
+      field: 'sku',
+      headerName: 'SKU',
+      flex: 1,
+      valueGetter: (params: GridValueGetterParams) => params.row.product.sku
+    },
+    {
+      field: 'name',
+      headerName: 'Product Name',
+      flex: 1,
+      valueGetter: (params: GridValueGetterParams) => params.row.product.name
+    },
     { field: 'rate', headerName: 'Rate per Unit', flex: 1 },
     { field: 'quantity', headerName: 'Quantity', flex: 1 },
     {
@@ -134,7 +163,7 @@ const CreateProcurementOrder = () => {
   ];
 
   const handleOrderCreation = async () => {
-    if (newProcurementOrder.supplier!.id === undefined) {
+    if (newProcurementOrder.supplier === undefined) {
       setAlert({
         severity: 'warning',
         message: 'Please Select a Supplier!'
@@ -147,7 +176,7 @@ const CreateProcurementOrder = () => {
       setNewProcurementOrder(newProcurementOrder);
     }
 
-    if (newProcurementOrder.location!.address === undefined) {
+    if (newProcurementOrder.location === undefined) {
       setAlert({
         severity: 'warning',
         message: 'Please Select a Warehouse Address!'
@@ -166,20 +195,21 @@ const CreateProcurementOrder = () => {
     setLoading(true);
     let finalProcurementOrderItems = orderItems.map(
       ({ product, quantity, rate }) => ({
-        product_sku: product?.sku,
+        productSku: product?.sku,
         quantity,
-        product_name: product?.name,
+        productName: product?.name,
         rate
       })
     );
 
     let reqBody = {
       description: newProcurementOrder.description,
-      payment_status: 'PENDING',
-      fulfilment_status: 'CREATED',
-      proc_order_items: finalProcurementOrderItems,
-      supplier_id: newProcurementOrder.supplier!.id,
-      warehouse_address: newProcurementOrder.location!.address
+      paymentStatus: 'PENDING',
+      fulfilmentStatus: 'CREATED',
+      procOrderItems: finalProcurementOrderItems,
+      supplierId: newProcurementOrder.supplier!.id,
+      warehouseName: newProcurementOrder.location!.name,
+      warehouseAddress: newProcurementOrder.location!.address
     };
 
     await asyncFetchCallback(
@@ -250,8 +280,8 @@ const CreateProcurementOrder = () => {
                   id='supplier-select-label'
                   label='Supplier'
                   name='supplier_id'
-                  value={newProcurementOrder.supplier!.id}
-                  onChange={handleEditProcurementOrder}
+                  value={newProcurementOrder.supplier?.id}
+                  onChange={handleEditSupplier}
                   select
                   required
                   fullWidth
@@ -268,14 +298,14 @@ const CreateProcurementOrder = () => {
                   id='warehouse-address-select-label'
                   label='Warehouse Name'
                   name='warehouse_address'
-                  value={newProcurementOrder.location!.address}
-                  onChange={handleEditProcurementOrder}
+                  value={newProcurementOrder.location?.address}
+                  onChange={handleEditLocation}
                   select
                   required
                   fullWidth
                 >
                   {warehouseData.map((option) => (
-                    <MenuItem key={option.id} value={option.address}>
+                    <MenuItem key={option.id} value={option.id}>
                       {option.name}
                     </MenuItem>
                   ))}
@@ -302,7 +332,7 @@ const CreateProcurementOrder = () => {
               columns={columns}
               rows={orderItems}
               autoHeight
-              getRowId={(row) => row.product_sku}
+              getRowId={(row) => row.product.id}
             />
             <div className='button-container'>
               <Button
