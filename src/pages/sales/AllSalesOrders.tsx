@@ -66,8 +66,8 @@ const Row = ({ row }: { row: SalesOrder }) => {
         <TableCell align='center'>
           <Chip
             label={
-              row.status.charAt(0).toUpperCase() +
-              row.status.slice(1).toLowerCase()
+              row.orderStatus.charAt(0).toUpperCase() +
+              row.orderStatus.slice(1).toLowerCase()
             }
           />
         </TableCell>

@@ -80,11 +80,7 @@ const SalesOrderDetails = () => {
 
     if (saleOrd) {
       setSalesOrder(saleOrd);
-      switch (saleOrd.status) {
-        case OrderStatus.CREATED: {
-          setActiveStep(0);
-          break;
-        }
+      switch (saleOrd.orderStatus) {
         case OrderStatus.PAID: {
           setActiveStep(1);
           break;
@@ -110,7 +106,7 @@ const SalesOrderDetails = () => {
   }, [id, salesOrders]);
 
   const nextStep = () => {
-    switch (salesOrder?.status) {
+    switch (salesOrder?.orderStatus) {
       case OrderStatus.CREATED: {
         setActiveStep(0);
         break;
