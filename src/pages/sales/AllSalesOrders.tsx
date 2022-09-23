@@ -31,7 +31,8 @@ import { PlatformType, SalesOrder } from 'src/models/types';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import salesContext from 'src/context/sales/salesContext';
 
-const platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
+let platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
+platforms.push('ALL');
 
 const Row = ({ row }: { row: SalesOrder }) => {
   const navigate = useNavigate();

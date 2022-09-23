@@ -7,6 +7,7 @@ import {
   Chip,
   Grid,
   IconButton,
+  makeStyles,
   Paper,
   Step,
   StepLabel,
@@ -43,27 +44,28 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 const steps = [
   {
     label: 'Order Placed',
-    icon: <ReceiptLongRounded />
+    icon: <ReceiptLongRounded sx={{ fontSize: 35 }} />,
+    nextAction: 'Confirm Payment'
   },
   {
     label: 'Order Paid',
-    icon: <AccountBalanceWalletRounded />
+    icon: <AccountBalanceWalletRounded sx={{ fontSize: 35 }} />,
+    nextAction: 'Complete Preperation'
   },
   {
-    label: 'Preparing Order',
-    icon: <ConstructionRounded />
-  },
-  {
-    label: 'Ready For Delivery',
-    icon: <PlaylistAddCheckCircleRounded />
+    label: 'Order Prepared',
+    icon: <PlaylistAddCheckCircleRounded sx={{ fontSize: 35 }} />,
+    nextAction: 'Schedule Delivery'
   },
   {
     label: 'Order Shipped',
-    icon: <LocalShippingRounded />
+    icon: <LocalShippingRounded sx={{ fontSize: 35 }} />,
+    nextAction: 'View Delivery'
   },
   {
     label: 'Order Received',
-    icon: <TaskAltRounded />
+    icon: <TaskAltRounded sx={{ fontSize: 35 }} />,
+    nextAction: 'View Delivery'
   }
 ];
 
@@ -94,24 +96,24 @@ const SalesOrderDetails = () => {
     if (saleOrd) {
       setSalesOrder(saleOrd);
       switch (saleOrd.status) {
+        case OrderStatus.CREATED: {
+          setActiveStep(0);
+          break;
+        }
         case OrderStatus.PAID: {
           setActiveStep(1);
           break;
         }
-        case OrderStatus.PREPARING: {
+        case OrderStatus.PREPARED: {
           setActiveStep(2);
           break;
         }
-        case OrderStatus.PREPARED: {
+        case OrderStatus.SHIPPED: {
           setActiveStep(3);
           break;
         }
-        case OrderStatus.SHIPPED: {
-          setActiveStep(5);
-          break;
-        }
-        case OrderStatus.DELIVERED: {
-          setActiveStep(6);
+        case OrderStatus.COMPLETED: {
+          setActiveStep(4);
           break;
         }
         default: {
@@ -121,7 +123,6 @@ const SalesOrderDetails = () => {
       setLoading(false);
     }
   }, [id, salesOrders]);
-
   return (
     <>
       <div className='top-carrot'>
@@ -156,14 +157,14 @@ const SalesOrderDetails = () => {
             >
               {steps.map((step) => (
                 <Step key={step.label}>
-                  <StepLabel>{step.label}</StepLabel>
+                  <StepLabel icon={step.icon}>{step.label}</StepLabel>
                 </Step>
               ))}
             </Stepper>
             <Paper elevation={2} className='action-card'>
               <Typography sx={{ fontSize: 'inherit' }}>Next Action:</Typography>
               <Button variant='contained' size='medium'>
-                Manage Order
+                {steps[activeStep].nextAction}
               </Button>
             </Paper>
           </div>

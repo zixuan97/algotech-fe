@@ -53,7 +53,7 @@ const SalesState = (props: PropsWithChildren) => {
         id: 2,
         orderId: '2',
         platformType: PlatformType.SHOPEE,
-        status: OrderStatus.PREPARING,
+        status: OrderStatus.PAID,
         createdTime: new Date(),
         customerName: 'Alex Ong',
         amount: 30,
@@ -105,6 +105,48 @@ const SalesState = (props: PropsWithChildren) => {
             price: 15,
             quantity: 2,
             productName: 'Pulut Hitam Popcorn'
+          }
+        ]
+      },
+      {
+        id: 4,
+        orderId: '4',
+        platformType: PlatformType.SHOPIFY,
+        status: OrderStatus.COMPLETED,
+        createdTime: new Date(),
+        customerName: 'Tony Quek',
+        amount: 290,
+        customerContactNo: '66667777',
+        currency: 'SGD',
+        customerAddress: 'Blk 147 NUS Road #14-63',
+        customerEmail: 'jkl@efg.com',
+        postalCode: '123654',
+        deliveryOrder: {
+          id: 2,
+          deliveryStatus: DeliveryStatus.DELIVERYINPROGRESS,
+          shippingDate: new Date(),
+          shippingType: ShippingType.MANUAL,
+          currentLocation: 'Blk 400 NUS Road #01-01',
+          eta: new Date()
+        },
+        salesOrderItems: [
+          {
+            saleOrderId: 4,
+            price: 60,
+            quantity: 4,
+            productName: 'Nasi Lemak Popcorn'
+          },
+          {
+            saleOrderId: 4,
+            price: 15,
+            quantity: 2,
+            productName: 'Pulut Hitam Popcorn'
+          },
+          {
+            saleOrderId: 4,
+            price: 10,
+            quantity: 2,
+            productName: 'Pork Cutlet Popcorn'
           }
         ]
       }
