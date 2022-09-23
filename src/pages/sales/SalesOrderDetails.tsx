@@ -110,8 +110,30 @@ const SalesOrderDetails = () => {
   }, [id, salesOrders]);
 
   const nextStep = () => {
-    if (activeStep < 4) {
-      setActiveStep(activeStep + 1);
+    switch (salesOrder?.status) {
+      case OrderStatus.CREATED: {
+        setActiveStep(0);
+        break;
+      }
+      case OrderStatus.PAID: {
+        setActiveStep(1);
+        break;
+      }
+      case OrderStatus.PREPARED: {
+        setActiveStep(2);
+        break;
+      }
+      case OrderStatus.SHIPPED: {
+        setActiveStep(3);
+        break;
+      }
+      case OrderStatus.COMPLETED: {
+        setActiveStep(4);
+        break;
+      }
+      default: {
+        break;
+      }
     }
   };
   return (

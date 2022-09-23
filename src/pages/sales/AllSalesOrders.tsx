@@ -63,10 +63,17 @@ const Row = ({ row }: { row: SalesOrder }) => {
           {row.customerName}
         </TableCell>
 
-        <TableCell align='center'>{row.status}</TableCell>
         <TableCell align='center'>
           <Chip
-            label={row.platformType}
+            label={
+              row.status.charAt(0).toUpperCase() +
+              row.status.slice(1).toLowerCase()
+            }
+          />
+        </TableCell>
+        <TableCell align='center'>
+          <Chip
+            label={row.platformType.toUpperCase()}
             color={
               row.platformType === PlatformType.SHOPEE
                 ? 'warning'
