@@ -51,7 +51,9 @@ export enum ShippingType {
 export enum PlatformType {
   OTHERS = 'OTHERS',
   SHOPIFY = 'SHOPIFY',
-  SHOPEE = 'SHOPEE'
+  SHOPEE = 'SHOPEE',
+  LAZADA = 'LAZADA',
+  REDMART = 'REDMART'
 }
 
 export interface User {

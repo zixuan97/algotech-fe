@@ -4,9 +4,7 @@ import {
   LocalGroceryStore,
   People,
   Receipt,
-  LocalShipping,
-  FamilyRestroomRounded,
-  PointOfSale
+  LocalShipping
 } from '@mui/icons-material';
 import { Button, Divider, Drawer, List, Toolbar } from '@mui/material';
 import React from 'react';
