@@ -1,6 +1,10 @@
 import { Card, Divider } from '@mui/material';
 import { Doughnut } from 'react-chartjs-2';
 import { PlatformType } from 'src/models/types';
+import { Chart as ChartJS, ChartOptions } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+ChartJS.register(ChartDataLabels);
 
 type PlatformData = {
   platform: PlatformType;
@@ -40,11 +44,28 @@ const labels = [
 
 const colors = ['#FFB46F', '#9BBFE0', '#F49A93', '#C6D68F', '#D9D9D9'];
 
-const options = {
+const options: ChartOptions = {
   plugins: {
     legend: {
       labels: {
         font: { size: 12 }
+      }
+    },
+    datalabels: {
+      formatter: (value: number) => value.toLocaleString()
+    },
+    tooltip: {
+      callbacks: {
+        label: (context) => {
+          const totalQty = (context.dataset.data as number[]).reduce(
+            (a, b) => a + b,
+            0
+          );
+          const percentage = `${((context.parsed / totalQty) * 100).toFixed(
+            2
+          )}%`;
+          return `${context.label}: ${context.formattedValue} (${percentage})`;
+        }
       }
     }
   }

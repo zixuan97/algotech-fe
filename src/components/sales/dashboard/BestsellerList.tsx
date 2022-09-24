@@ -16,8 +16,8 @@ const BestsellerList = ({ bestsellers }: BestsellerListProps) => {
       <Divider className='full-divider' sx={{ mb: 3 }} />
       <List>
         {bestsellers.map((bestseller) => (
-          <>
-            <ListItem key={bestseller.productName}>
+          <div key={bestseller.productName}>
+            <ListItem>
               <ListItemText
                 primary={bestseller.productName}
                 secondary={`${bestseller.quantity} items sold`}
@@ -25,7 +25,7 @@ const BestsellerList = ({ bestsellers }: BestsellerListProps) => {
               <Divider />
             </ListItem>
             <Divider variant='middle' component='li' light />
-          </>
+          </div>
         ))}
       </List>
     </Card>

@@ -95,9 +95,23 @@ const App = () => {
                 <Routes>
                   <Route path='/login' element={<Login />} />
                   <Route
+                    path='accounts/viewMyAccount'
+                    element={
+                      <AuthRoute unauthRedirect='/login'>
+                        <Home>
+                          <ViewMyAccount />
+                        </Home>
+                      </AuthRoute>
+                    }
+                  />
+
+                  <Route
                     path='/'
                     element={
-                      <AuthRoute redirectTo='/login'>
+                      <AuthRoute
+                        unauthRedirect='/login'
+                        unverifiedRedirect='/accounts/viewMyAccount'
+                      >
                         <Home />
                       </AuthRoute>
                     }
@@ -254,11 +268,6 @@ const App = () => {
                       <Route path='viewAccount' element={<ViewAccount />} />
                       <Route path='createNewUser' element={<CreateNewUser />} />
                     </Route>
-
-                    <Route
-                      path='accounts/viewMyAccount'
-                      element={<ViewMyAccount />}
-                    />
                   </Route>
                 </Routes>
               </Router>

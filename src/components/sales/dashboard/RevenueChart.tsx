@@ -41,6 +41,11 @@ const options = {
     y: {
       beginAtZero: true
     }
+  },
+  plugins: {
+    datalabels: {
+      formatter: (value: number) => value.toLocaleString()
+    }
   }
 };
 
