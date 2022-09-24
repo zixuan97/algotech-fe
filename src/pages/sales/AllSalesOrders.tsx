@@ -42,7 +42,7 @@ const Row = ({ row }: { row: SalesOrder }) => {
     navigate({
       pathname: '/sales/salesOrderDetails',
       search: createSearchParams({
-        id: row?.orderId.toString()
+        id: row?.id.toString()
       }).toString()
     });
   };
@@ -133,9 +133,15 @@ const Row = ({ row }: { row: SalesOrder }) => {
 };
 
 const AllSalesOrders = () => {
-  const { salesOrders } = React.useContext(salesContext);
+  const { salesOrders, refreshSalesOrder } = React.useContext(salesContext);
   const [searchField, setSearchField] = useState<string>('');
   const [filterPlatform, setFilterPlatform] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setLoading(true);
+    refreshSalesOrder(() => setLoading(false));
+  }, []);
 
   const filteredData = useMemo(
     () =>
