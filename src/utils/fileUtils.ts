@@ -2,6 +2,8 @@ import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import apiRoot from 'src/services/util/apiRoot';
 
+type PDFOrientation = 'portrait' | 'landscape';
+
 export const getBase64 = (
   file: File | null,
   onSuccess: (result: string | ArrayBuffer | null) => void,
@@ -37,24 +39,39 @@ export const downloadFile = (blob: string, fileName: string) => {
   link.remove();
 };
 
-export const createPdfWithHeaderImage = (
-  header: string,
-  imgFile: string
-): string => {
-  const pdf = new jsPDF('portrait', 'pt', 'a4', true);
+export const createPdfFromComponent = async (
+  component: HTMLDivElement,
+  orientation: PDFOrientation = 'portrait',
+  header?: string
+): Promise<string> => {
+  const pdf = new jsPDF(orientation, 'pt', 'a4', true);
+  const imgFile = await createImageFromComponent(component);
   const imgProperties = pdf.getImageProperties(imgFile);
   const pdfWidth = pdf.internal.pageSize.getWidth();
   const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width;
-  pdf.text(header, 15, 40);
-  pdf.addImage(
-    imgFile,
-    'PNG',
-    15,
-    70,
-    pdfWidth * 0.95,
-    pdfHeight * 0.95,
-    'FAST'
-  );
+  if (header) {
+    pdf.text(header, 15, 40);
+    pdf.addImage(
+      imgFile,
+      'PNG',
+      15,
+      70,
+      pdfWidth * 0.95,
+      pdfHeight * 0.95,
+      'FAST'
+    );
+  } else {
+    pdf.addImage(
+      imgFile,
+      'PNG',
+      15,
+      40,
+      pdfWidth * 0.95,
+      pdfHeight * 0.95,
+      'FAST'
+    );
+  }
+
   return URL.createObjectURL(pdf.output('blob'));
 };
 

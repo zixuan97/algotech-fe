@@ -43,8 +43,8 @@ const ListItemLink = ({
     <li>
       <ListItem
         button
-        component={renderLink}
         disabled={disabled}
+        component={renderLink}
         selected={location.pathname === to}
       >
         <ListItemIcon>{icon && icon}</ListItemIcon>

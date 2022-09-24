@@ -1,6 +1,6 @@
 import { TextField, Typography } from '@mui/material';
+import { DesktopDatePicker } from '@mui/x-date-pickers';
 import moment from 'moment';
-import React from 'react';
 import { MomentRange, YYYY_MM_DD } from 'src/utils/dateUtils';
 
 type DateRangePickerProps = {
@@ -14,29 +14,29 @@ const DateRangePicker = ({
 }: DateRangePickerProps) => {
   return (
     <>
-      <TextField
-        id='start-date'
+      <DesktopDatePicker
         label='Start Date'
-        type='date'
-        defaultValue={dateRange[0].format(YYYY_MM_DD)}
-        sx={{ width: 220 }}
-        onChange={(e) =>
-          updateDateRange((prev) => [moment(e.target.value), prev[1]])
+        value={dateRange[0].format(YYYY_MM_DD)}
+        minDate={moment('2000-01-01')}
+        shouldDisableDate={(date) => moment(date).isAfter(dateRange[1])}
+        onChange={(date) =>
+          updateDateRange((prev) => [moment(date).startOf('day'), prev[1]])
         }
-        InputLabelProps={{
-          shrink: true
-        }}
+        renderInput={(params) => <TextField {...params} />}
       />
       <Typography className='container-center'>to</Typography>
-      <TextField
-        id='end-date'
+      <DesktopDatePicker
         label='End Date'
-        type='date'
-        defaultValue={dateRange[1].format(YYYY_MM_DD)}
-        sx={{ width: 220 }}
-        InputLabelProps={{
-          shrink: true
+        value={dateRange[1].format(YYYY_MM_DD)}
+        maxDate={moment('2100-01-01')}
+        shouldDisableDate={(date) => {
+          console.log(date, dateRange[0]);
+          return moment(date).isBefore(dateRange[0]);
         }}
+        onChange={(date) =>
+          updateDateRange((prev) => [prev[0], moment(date).endOf('day')])
+        }
+        renderInput={(params) => <TextField {...params} />}
       />
     </>
   );
