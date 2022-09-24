@@ -1,0 +1,39 @@
+@use '../../variables/colors.scss';
+@use '../../variables/fonts.scss';
+@use '../../common/common.scss';
+
+.delivery-orders {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 2rem;
+}
+
+.delivery-orders-section-header {
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 2rem;
+}
+
+.delivery-orders-date-picker-section {
+  display: flex;
+  flex-direction: row;
+  padding-left: 2rem;
+  padding-top: 1rem;
+}
+
+.view-delivery-details {
+  width: 90%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.delivery-details-section-header {
+  display: flex;
+  flex-direction: row;
+  padding-left: 2rem;
+  padding-top: 2rem;
+  width: 100%;
+  align-items: center;
+}

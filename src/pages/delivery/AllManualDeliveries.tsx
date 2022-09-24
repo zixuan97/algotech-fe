@@ -1,7 +1,7 @@
 import React from 'react';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import DeliveryCellAction from 'src/components/delivery/DeliveryCellAction';
-import '../../styles/pages/inventory/inventory.scss';
+import '../../styles/pages/delivery/delivery.scss';
 import '../../styles/common/common.scss';
 import '../../styles/pages/delivery/map.scss';
 import 'leaflet/dist/leaflet.css';
@@ -13,19 +13,28 @@ import { getAllDeliveries } from 'src/services/deliveryServices';
 import { useNavigate } from 'react-router';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
-import markerIconPng from "leaflet/dist/images/marker-icon.png"
+import markerIconPng from 'leaflet/dist/images/marker-icon.png';
+import { Dayjs } from 'dayjs';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 const myIcon = new Icon({
   iconUrl: markerIconPng,
-  iconSize: [25,41]
- })
+  iconSize: [25, 41]
+});
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'Delivery ID', flex: 1 },
-  { field: 'deliveryStatus', headerName: 'Delivery Status', flex: 1 },
-  { field: 'shippingAddress', headerName: 'Address', flex: 1 },
-  { field: 'shippingDate', headerName: 'Order Date', flex: 1 },
-  { field: 'eta', headerName: 'Delivery Date', flex: 1 },
+  { field: 'salesOrderId', headerName: 'Order ID', flex: 1 },
+  { field: 'status', headerName: 'Delivery Status', flex: 1 },
+  {
+    field: 'shippingAddress',
+    headerName: 'Address',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) =>
+      params.row.salesOrder.customerAddress
+  },
+  { field: 'deliveryDate', headerName: 'Delivery Date', flex: 1 },
   {
     field: 'action',
     headerName: 'Action',
@@ -43,6 +52,8 @@ const AllManualDeliveries = () => {
   const [deliveryData, setDeliveryData] = React.useState<DeliveryOrder[]>([]);
   const [filteredData, setFilteredData] = React.useState<DeliveryOrder[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [startDate, setStartDate] = React.useState<Dayjs | null>(null);
+  const [endDate, setEndDate] = React.useState<Dayjs | null>(null);
 
   React.useEffect(() => {
     // TODO: implement error callback
@@ -60,16 +71,14 @@ const AllManualDeliveries = () => {
   React.useEffect(() => {
     setFilteredData(
       searchField
-        ? deliveryData.filter((category) =>
-            Object.values(category).some((value) =>
+        ? deliveryData.filter((delivery) =>
+            Object.values(delivery).some((value) =>
               String(value).toLowerCase().match(searchField.toLowerCase())
             )
           )
         : deliveryData
     );
   }, [searchField, deliveryData]);
-
-  console.log(filteredData);
 
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // here
@@ -87,16 +96,47 @@ const AllManualDeliveries = () => {
   //   return address;
   // }
 
-
   return (
-    <div className='delivery'>
-      <h1>All Manual Deliveries</h1>
-      <MapContainer center={[1.3667, 103.8]} zoom={12} minZoom={11} scrollWheelZoom={true}>
+    <div className='delivery-orders'>
+      <div className='delivery-orders-section-header'>
+        <h1>All Manual Deliveries for</h1>
+        <div className='delivery-orders-date-picker-section'>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label='Start Date'
+              value={startDate}
+              onChange={(newValue) => {
+                setStartDate(newValue);
+              }}
+              renderInput={(params) => <TextField {...params} />}
+            />
+          </LocalizationProvider>
+          <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
+            <h2>to</h2>
+          </div>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DatePicker
+              label='End Date'
+              value={endDate}
+              onChange={(newValue) => {
+                setEndDate(newValue);
+              }}
+              renderInput={(params) => <TextField {...params} />}
+            />
+          </LocalizationProvider>
+        </div>
+      </div>
+      <MapContainer
+        center={[1.3667, 103.8]}
+        zoom={12}
+        minZoom={11}
+        scrollWheelZoom={true}
+      >
         <TileLayer
           attribution='&copy; <img src="https://www.onemap.gov.sg/docs/maps/images/oneMap64-01.png" style="height:20px;width:20px;"/> OneMap | Map data &copy; contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>'
           url='https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png'
         />
-        <Marker position={[1.3667, 103.8]} icon = {myIcon}>
+        <Marker position={[1.3667, 103.8]} icon={myIcon}>
           <Popup>
             Delivery 1 <br /> Singapore
           </Popup>
@@ -119,7 +159,7 @@ const AllManualDeliveries = () => {
           sx={{ height: 'fit-content' }}
           onClick={() => navigate({ pathname: '' })}
         >
-          Create Delivery
+          Create Manual Delivery
         </Button>
       </div>
       <DataGrid
