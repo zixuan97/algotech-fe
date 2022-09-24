@@ -35,7 +35,10 @@ import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import inventoryContext from 'src/context/inventory/inventoryContext';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AddSalesOrderItemModal from './AddSalesOrderItemModal';
-import { completeOrderPrepSvc, getSalesOrderDetailsSvc } from 'src/services/salesService';
+import {
+  completeOrderPrepSvc,
+  getSalesOrderDetailsSvc
+} from 'src/services/salesService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 
 const steps = [
@@ -80,8 +83,7 @@ const SalesOrderDetails = () => {
   const [editSalesOrderItems, setEditSalesOrderItems] = useState<
     SalesOrderItem[]
   >([]);
-  const [newSalesOrderItem, setNewSalesOrderItem] =
-    useState<SalesOrderItem>();
+  const [newSalesOrderItem, setNewSalesOrderItem] = useState<SalesOrderItem>();
   const [loading, setLoading] = useState<boolean>(true);
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [activeStep, setActiveStep] = useState<number>(0);
@@ -116,10 +118,15 @@ const SalesOrderDetails = () => {
       align: 'center',
       flex: 1,
       renderCell: (params) => {
-        if (params.row.isNewAdded && salesOrder?.orderStatus === OrderStatus.PREPARING) {
+        if (
+          params.row.isNewAdded &&
+          salesOrder?.orderStatus === OrderStatus.PREPARING
+        ) {
           return (
             <>
-              <Button variant='contained' size='medium'
+              <Button
+                variant='contained'
+                size='medium'
                 onClick={() => {
                   removeItemFromList(params.row.productName);
                 }}
@@ -184,7 +191,7 @@ const SalesOrderDetails = () => {
             setAlert({
               severity: 'error',
               message:
-                'Sales Order does nto exist. You will be redirected back to the Accounts page.'
+                'Sales Order does nto exist. You will be redirected back to the Sales Order Overview page.'
             });
             setLoading(false);
             setTimeout(() => navigate('/allSalesOrders'), 3500);
@@ -223,14 +230,8 @@ const SalesOrderDetails = () => {
             salesOrderItems: editSalesOrderItems
           };
         });
-
-        asyncFetchCallback(
-          completeOrderPrepSvc(salesOrder), 
-          () => {
-            console.log('successful');
-          }
-        );
         setActiveStep(3);
+        updateSalesOrder();
         break;
       }
       case OrderStatus.PREPARED: {
@@ -266,6 +267,13 @@ const SalesOrderDetails = () => {
     }
   };
 
+  const updateSalesOrder = () => {
+    salesOrder &&
+      asyncFetchCallback(completeOrderPrepSvc(salesOrder) , () => {
+        console.log('success');
+      });
+  };
+
   const addNewItemToSalesOrderItem = () => {
     setEditSalesOrderItems((current) => [...current, newSalesOrderItem!]);
     setShowDialog(false);
@@ -283,7 +291,8 @@ const SalesOrderDetails = () => {
     setNewSalesOrderItem((orderItem) => {
       return {
         ...orderItem!,
-        [key]: event.target.value,
+        [key]:
+          key === 'quantity' ? event.target.valueAsNumber : event.target.value,
         price: 0,
         isNewAdded: true,
         salesOrderId: salesOrder?.id!,
@@ -297,7 +306,6 @@ const SalesOrderDetails = () => {
       (item) => item.productName !== productName
     );
     setEditSalesOrderItems(arr);
-
     setAvailProducts((prev) => [
       ...prev,
       products.find((prod) => {
@@ -305,8 +313,6 @@ const SalesOrderDetails = () => {
       })!
     ]);
   };
-
-  console.log('salesOrder',salesOrder);
 
   return (
     <>

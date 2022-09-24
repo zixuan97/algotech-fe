@@ -85,11 +85,10 @@ const AddSalesOrderItemModal = ({
               type='number'
               fullWidth
               variant='standard'
-              value={quantity}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 if (e.target.value) {
                   orderFieldOnChange(e, 'quantity');
-                  setQuantity(parseInt(e.target.value));
+                  setQuantity(e.target.valueAsNumber);
                 }
               }}
               InputLabelProps={{
