@@ -28,18 +28,11 @@ export enum OrderStatus {
   CREATED = 'CREATED',
   PAID = 'PAID',
   PREPARING = 'PREPARING',
-  PREPARED = 'PREPARED', //Create New DO, associate to SalesOrder, status = READY_FOR_DELIVERY
-  SHIPPED = 'SHIPPED', //Update associated DO, status = DELIVERY_IN_PROGRESS
-  COMPLETED = 'DELIVERED' //Update associated DO, status = DELIVERED
-  //not completed, need to wait for backend
-}
-
-export enum DeliveryStatus {
-  READYFORDELIVERY = 'READY_FOR_DELIVERY',
-  DELIVERYINPROGRESS = 'DELIVERY_IN_PROGRESS',
-  DELIVERED = 'DELIVERED',
+  PREPARED = 'PREPARED',
+  READY_FOR_DELIVERY = 'READY_FOR_DELIVERY',
+  SHIPPED = 'SHIPPED',
+  COMPLETED = 'DELIVERED',
   CANCELLED = 'CANCELLED'
-  //not completed, need to wait for backend
 }
 
 export enum ShippingType {
@@ -50,11 +43,11 @@ export enum ShippingType {
 }
 
 export enum PlatformType {
-  OTHERS = 'OTHERS',
+  LAZADA = 'LAZADA',
+  REDMART = 'REDMART',
   SHOPIFY = 'SHOPIFY',
   SHOPEE = 'SHOPEE',
-  LAZADA = 'LAZADA',
-  REDMART = 'REDMART'
+  OTHERS = 'OTHERS'
 }
 
 export interface User {
@@ -138,11 +131,11 @@ export interface Supplier {
 }
 export interface DeliveryOrder {
   id: number;
-  deliveryStatus: DeliveryStatus;
   shippingDate: Date;
   shippingType: ShippingType;
   currentLocation: string;
   eta: Date;
+  salesOrder: SalesOrder;
   salesOrderId: number;
 }
 export interface SalesOrder {
@@ -160,7 +153,6 @@ export interface SalesOrder {
   orderStatus: OrderStatus;
   customerRemarks?: string;
   salesOrderItems: SalesOrderItem[];
-  deliveryOrder?: DeliveryOrder;
 }
 export interface SalesOrderItem {
   id: number;
@@ -168,4 +160,6 @@ export interface SalesOrderItem {
   price: number;
   quantity: number;
   productName?: string;
+  createdTime?: Date;
+  isNewAdded?: boolean;
 }

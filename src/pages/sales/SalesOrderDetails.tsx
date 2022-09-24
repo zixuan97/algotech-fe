@@ -1,21 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import '../../styles/pages/orders.scss';
+import '../../styles/pages/sales/orders.scss';
 import '../../styles/common/common.scss';
 import {
   Box,
   Button,
   Chip,
+  Grid,
   IconButton,
   Paper,
   Step,
   StepLabel,
   Stepper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Tooltip,
   Typography
 } from '@mui/material';
@@ -28,10 +23,20 @@ import {
   TaskAltRounded,
   AddShoppingCart
 } from '@mui/icons-material';
-import { OrderStatus, PlatformType, SalesOrder } from 'src/models/types';
+import {
+  OrderStatus,
+  PlatformType,
+  Product,
+  SalesOrder,
+  SalesOrderItem
+} from 'src/models/types';
 import { useNavigate } from 'react-router-dom';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
-import salesContext from 'src/context/sales/salesContext';
+import inventoryContext from 'src/context/inventory/inventoryContext';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import AddSalesOrderItemModal from './AddSalesOrderItemModal';
+import { completeOrderPrepSvc, getSalesOrderDetailsSvc } from 'src/services/salesService';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 
 const steps = [
   {
@@ -68,56 +73,125 @@ const steps = [
 
 const SalesOrderDetails = () => {
   let params = new URLSearchParams(window.location.search);
-  const navigate = useNavigate();
-  //For now, will fetch from context, in future, will use API call
-  const { salesOrders } = React.useContext(salesContext);
-  const [salesOrder, setSalesOrder] = useState<SalesOrder>();
-  const [loading, setLoading] = React.useState<boolean>(true);
-  const [alert, setAlert] = useState<AlertType | null>(null);
-  const [activeStep, setActiveStep] = React.useState<number>(0);
-
   const id = params.get('id');
+  const navigate = useNavigate();
+  const { products } = React.useContext(inventoryContext);
+  const [salesOrder, setSalesOrder] = useState<SalesOrder>();
+  const [editSalesOrderItems, setEditSalesOrderItems] = useState<
+    SalesOrderItem[]
+  >([]);
+  const [newSalesOrderItem, setNewSalesOrderItem] =
+    useState<SalesOrderItem>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [alert, setAlert] = useState<AlertType | null>(null);
+  const [activeStep, setActiveStep] = useState<number>(0);
+  const [showDialog, setShowDialog] = useState<boolean>(false);
+  const [availProducts, setAvailProducts] = useState<Product[]>([]);
+
+  const columns: GridColDef[] = [
+    {
+      field: 'productName',
+      headerName: 'Product Name',
+      flex: 2,
+      valueGetter: (params) => params.row.productName
+    },
+    {
+      field: 'quantity',
+      type: 'number',
+      headerName: 'Quantity',
+      flex: 1
+    },
+    {
+      field: 'price',
+      type: 'number',
+      headerName: 'Price',
+      flex: 1,
+      valueGetter: (params) => params.row.price ?? 0,
+      valueFormatter: (params) => params.value.toFixed(2)
+    },
+    {
+      field: 'action',
+      headerName: 'Action',
+      headerAlign: 'center',
+      align: 'center',
+      flex: 1,
+      renderCell: (params) => {
+        if (params.row.isNewAdded && salesOrder?.orderStatus === OrderStatus.PREPARING) {
+          return (
+            <>
+              <Button variant='contained' size='medium'
+                onClick={() => {
+                  removeItemFromList(params.row.productName);
+                }}
+              >
+                Remove Item
+              </Button>
+            </>
+          );
+        }
+      }
+    }
+  ];
 
   useEffect(() => {
     setLoading(true);
-    const saleOrd = salesOrders.find((order) => {
-      return order.id === parseInt(id!);
-    });
+    id &&
+      asyncFetchCallback(
+        getSalesOrderDetailsSvc(id),
+        (salesOrder: SalesOrder) => {
+          if (salesOrder) {
+            setSalesOrder(salesOrder);
+            setEditSalesOrderItems([...salesOrder.salesOrderItems]);
+            setAvailProducts(
+              products.filter((product) => {
+                return salesOrder?.salesOrderItems.find(
+                  (orderItem) => orderItem.productName !== product.name
+                );
+              })
+            );
+            switch (salesOrder.orderStatus) {
+              case OrderStatus.CREATED: {
+                setActiveStep(0);
+                break;
+              }
+              case OrderStatus.PAID: {
+                setActiveStep(1);
+                break;
+              }
+              case OrderStatus.PREPARING: {
+                setActiveStep(2);
 
-    if (saleOrd) {
-      setSalesOrder(saleOrd);
-      switch (saleOrd.orderStatus) {
-        case OrderStatus.CREATED: {
-          setActiveStep(0);
-          break;
+                break;
+              }
+              case OrderStatus.PREPARED: {
+                setActiveStep(3);
+                break;
+              }
+              case OrderStatus.SHIPPED: {
+                setActiveStep(4);
+                break;
+              }
+              case OrderStatus.COMPLETED: {
+                setActiveStep(5);
+                break;
+              }
+              default: {
+                break;
+              }
+            }
+            setLoading(false);
+          } else {
+            setAlert({
+              severity: 'error',
+              message:
+                'Sales Order does nto exist. You will be redirected back to the Accounts page.'
+            });
+            setLoading(false);
+            setTimeout(() => navigate('/allSalesOrders'), 3500);
+          }
         }
-        case OrderStatus.PAID: {
-          setActiveStep(1);
-          break;
-        }
-        case OrderStatus.PREPARING: {
-          setActiveStep(2);
-          break;
-        }
-        case OrderStatus.PREPARED: {
-          setActiveStep(3);
-          break;
-        }
-        case OrderStatus.SHIPPED: {
-          setActiveStep(4);
-          break;
-        }
-        case OrderStatus.COMPLETED: {
-          setActiveStep(5);
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-      setLoading(false);
-    }
-  }, [salesOrders]);
+      );
+  }, [id, navigate, products]);
 
   const nextStep = () => {
     switch (salesOrder?.orderStatus) {
@@ -145,9 +219,17 @@ const SalesOrderDetails = () => {
         setSalesOrder((order) => {
           return {
             ...order!,
-            orderStatus: OrderStatus.PREPARED
+            orderStatus: OrderStatus.PREPARED,
+            salesOrderItems: editSalesOrderItems
           };
         });
+
+        asyncFetchCallback(
+          completeOrderPrepSvc(salesOrder), 
+          () => {
+            console.log('successful');
+          }
+        );
         setActiveStep(3);
         break;
       }
@@ -183,8 +265,61 @@ const SalesOrderDetails = () => {
       }
     }
   };
+
+  const addNewItemToSalesOrderItem = () => {
+    setEditSalesOrderItems((current) => [...current, newSalesOrderItem!]);
+    setShowDialog(false);
+    setAvailProducts((current) =>
+      current.filter((product) => {
+        return product.name !== newSalesOrderItem?.productName;
+      })
+    );
+  };
+
+  const updateNewSalesOrderItem = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    key: string
+  ) => {
+    setNewSalesOrderItem((orderItem) => {
+      return {
+        ...orderItem!,
+        [key]: event.target.value,
+        price: 0,
+        isNewAdded: true,
+        salesOrderId: salesOrder?.id!,
+        createdTime: salesOrder?.createdTime
+      };
+    });
+  };
+
+  const removeItemFromList = (productName: String) => {
+    const arr = editSalesOrderItems.filter(
+      (item) => item.productName !== productName
+    );
+    setEditSalesOrderItems(arr);
+
+    setAvailProducts((prev) => [
+      ...prev,
+      products.find((prod) => {
+        return prod.name === productName;
+      })!
+    ]);
+  };
+
+  console.log('salesOrder',salesOrder);
+
   return (
     <>
+      <AddSalesOrderItemModal
+        open={showDialog}
+        onClose={() => setShowDialog(false)}
+        title='Add New Product To This Order.'
+        body='Fill up the form to add new products to the order.'
+        availProducts={availProducts}
+        addNewSalesOrderItem={addNewItemToSalesOrderItem}
+        orderFieldOnChange={updateNewSalesOrderItem}
+      />
+
       <div className='top-carrot'>
         <Tooltip title='Return to Accounts' enterDelay={300}>
           <IconButton size='large' onClick={() => navigate(-1)}>
@@ -209,7 +344,7 @@ const SalesOrderDetails = () => {
 
       <div className='center-div'>
         <Box className='center-box'>
-          <div className='header-content'>
+          <div className='sales-header-content'>
             <Stepper
               activeStep={activeStep}
               alternativeLabel
@@ -222,52 +357,56 @@ const SalesOrderDetails = () => {
               ))}
             </Stepper>
             <Paper elevation={2} className='action-card'>
-              <Typography sx={{ fontSize: 'inherit' }}>Next Action:</Typography>
-              <Button
-                variant='contained'
-                size='medium'
-                onClick={nextStep}
-              >
-                {steps[activeStep].nextAction}
-              </Button>
+              <div className='order-info-grid'>
+                <Grid container spacing={1}>
+                  <Grid item xs={12}>
+                    Customer Name: {salesOrder?.customerName}
+                  </Grid>
+                  <Grid item xs={6}>
+                    Contact No.: {salesOrder?.customerContactNo}
+                  </Grid>
+                  <Grid item xs={12}>
+                    Email: {salesOrder?.customerEmail ?? 'NA'}
+                  </Grid>
+                  <Grid item xs={12}>
+                    Shipping Address: {salesOrder?.customerAddress}
+                  </Grid>
+                </Grid>
+              </div>
+              <div className='action-box'>
+                <Typography sx={{ fontSize: 'inherit' }}>
+                  Next Action:
+                </Typography>
+                <Button variant='contained' size='medium' onClick={nextStep}>
+                  {steps[activeStep].nextAction}
+                </Button>
+              </div>
             </Paper>
           </div>
 
           <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
 
-          <Paper elevation={2}>
+          <Paper elevation={3}>
             <div className='content-body'>
               <div className='grid-toolbar'>
-                <h4>Customer Name: {salesOrder?.customerName}</h4>
                 <h4>Order ID.: #{salesOrder?.id}</h4>
+                {salesOrder?.orderStatus === OrderStatus.PREPARING && (
+                  <Button
+                    variant='contained'
+                    size='medium'
+                    onClick={() => setShowDialog(true)}
+                  >
+                    Add Items
+                  </Button>
+                )}
               </div>
-
-              <TableContainer component={Paper}>
-                <Table aria-label='collapsible table'>
-                  <TableHead style={{ backgroundColor: '#BDBDBD' }}>
-                    <TableRow>
-                      <TableCell align='left' colSpan={7}>
-                        Products
-                      </TableCell>
-                      <TableCell align='right' colSpan={1}>
-                        Item Amount
-                      </TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {salesOrder?.salesOrderItems.map((item) => (
-                      <TableRow>
-                        <TableCell align='left' colSpan={7}>
-                          {item.productName} x{item.quantity}
-                        </TableCell>
-                        <TableCell align='right' colSpan={1}>
-                          ${item.price}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+              <DataGrid
+                columns={columns}
+                rows={editSalesOrderItems ?? []}
+                getRowId={(row) => editSalesOrderItems.indexOf(row)}
+                autoHeight
+                pageSize={5}
+              />
               <div className='order-summary-card'>
                 <div>
                   <h5>Merchandising Total: ${salesOrder?.amount}</h5>

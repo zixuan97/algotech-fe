@@ -1,6 +1,6 @@
-@use '../variables/colors.scss';
-@use '../variables/fonts.scss';
-@use '../common/common.scss';
+@use '../../variables/colors.scss';
+@use '../../variables/fonts.scss';
+@use '../../common/common.scss';
 
 .orders {
   display: flex;
@@ -44,7 +44,8 @@
   margin: 1%;
 }
 
-.header-content {
+.sales-header-content {
+  display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
@@ -52,17 +53,32 @@
 
 .content-body {
   flex-direction: column;
-  margin: 2%;
+  margin: 1%;
 }
 
 .action-card {
   display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 50%;
+  margin: 1%;
+  padding: 1%;
+}
+
+.order-info-grid {
+  display: flex;
+  width: 100%;
+  padding: 0 0 1em;
+}
+
+.action-box {
+  display: flex;
   flex-direction: row;
   justify-content: space-evenly;
   align-items: center;
-  width: 30%;
   margin: 1%;
-  padding: 1%;
+  min-width: 80%;
 }
 
 .sales-stepper {

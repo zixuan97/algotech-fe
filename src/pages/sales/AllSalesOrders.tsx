@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import '../../styles/pages/orders.scss';
+import '../../styles/pages/sales/orders.scss';
 import '../../styles/common/common.scss';
 import {
   Button,
@@ -32,7 +32,7 @@ import { createSearchParams, useNavigate } from 'react-router-dom';
 import salesContext from 'src/context/sales/salesContext';
 
 let platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
-platforms.push('ALL');
+platforms.unshift('ALL');
 
 const Row = ({ row }: { row: SalesOrder }) => {
   const navigate = useNavigate();
@@ -83,7 +83,7 @@ const Row = ({ row }: { row: SalesOrder }) => {
             }
           />
         </TableCell>
-        <TableCell align='center'>${row.amount}</TableCell>
+        <TableCell align='center'>${row.amount.toFixed(2)}</TableCell>
         <TableCell align='center'>{row.customerAddress ?? 'NA'}</TableCell>
         <TableCell align='center'>
           <Button
@@ -98,7 +98,7 @@ const Row = ({ row }: { row: SalesOrder }) => {
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
-          <Collapse in={open} timeout='auto' unmountOnExit>
+          <Collapse in={!open} timeout='auto' unmountOnExit>
             <Box sx={{ margin: '2%' }}>
               <div className='grid-toolbar'>
                 <h3>Order Details</h3>
@@ -115,10 +115,10 @@ const Row = ({ row }: { row: SalesOrder }) => {
                     >
                       <Grid item xs={3}>
                         {item.productName ?? 'NA'} x{item.quantity}, $
-                        {item.price}
+                        {item.price.toFixed(2)}
                       </Grid>
                       <Grid item xs={1}>
-                        ${item.quantity * item.price}
+                        ${(item.quantity * item.price).toFixed(2)}
                       </Grid>
                     </Grid>
                   </>
@@ -135,17 +135,21 @@ const Row = ({ row }: { row: SalesOrder }) => {
 const AllSalesOrders = () => {
   const { salesOrders, refreshSalesOrder } = React.useContext(salesContext);
   const [searchField, setSearchField] = useState<string>('');
-  const [filterPlatform, setFilterPlatform] = useState<string>('');
+  const [filterPlatform, setFilterPlatform] = useState<string>('ALL');
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     setLoading(true);
     refreshSalesOrder(() => setLoading(false));
+
+    if(salesOrders) {
+
+    }
   }, []);
 
   const filteredData = useMemo(
     () =>
-      filterPlatform || searchField
+      (filterPlatform || searchField) && filterPlatform !== 'ALL'
         ? salesOrders.filter(
             (saleOrder) =>
               (!filterPlatform || saleOrder.platformType === filterPlatform) &&
@@ -174,6 +178,7 @@ const AllSalesOrders = () => {
             style={{ width: '50%' }}
             value={filterPlatform}
             label='Filter'
+            defaultValue='ALL'
             placeholder='Platform'
             onChange={handleFilterChange}
           >
@@ -198,7 +203,7 @@ const AllSalesOrders = () => {
             sx={{ height: 'fit-content' }}
             onClick={() => {
               setSearchField('');
-              setFilterPlatform('');
+              setFilterPlatform('ALL');
             }}
           >
             Reset
