@@ -67,7 +67,7 @@ const AllGrabDeliveries = () => {
   };
 
   return (
-    <div className='delivery'>
+    <div className='delivery-orders'>
       <h1>All Grab Deliveries</h1>
       <div className='grid-toolbar'>
         <div className='search-bar'>

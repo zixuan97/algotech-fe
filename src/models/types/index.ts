@@ -144,7 +144,14 @@ export interface DeliveryOrder {
   currentLocation: string;
   eta: Date;
   salesOrderId: number;
+  courierType?: string;
+  deliveryPersonnel?: string;
+  method?: string;
+  carrier?: string;
+  parcelQty?: number;
+  parcelWeight?: number;
 }
+
 export interface SalesOrder {
   id: number;
   orderId: string;
