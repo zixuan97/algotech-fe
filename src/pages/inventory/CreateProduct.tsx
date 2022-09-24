@@ -23,12 +23,12 @@ import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft, Delete } from '@mui/icons-material';
 import { GridRowId } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router';
-import { Product, StockQuantity } from 'src/models/types';
+import { Product } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { createProduct } from 'src/services/productService';
 import { intersectionWith, omit } from 'lodash';
 import { getBase64 } from 'src/utils/fileUtils';
-import LocationGrid from 'src/components/inventory/LocationGrid';
+import LocationEditGrid from 'src/components/inventory/LocationEditGrid';
 import {
   AlertType,
   AxiosErrDataBody
@@ -316,7 +316,7 @@ const CreateProduct = () => {
                     />
                   </div>
                 </div>
-                <LocationGrid
+                <LocationEditGrid
                   stockQuantity={newProduct.stockQuantity ?? []}
                   updateStockQuantity={(stockQty) =>
                     setNewProduct((prev) => ({

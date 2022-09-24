@@ -60,6 +60,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import AllSalesOrder from './pages/sales/AllSalesOrders';
 import SalesOrderDetails from './pages/sales/SalesOrderDetails';
 import SalesState from './context/sales/SalesState';
+import NotFound from './pages/NotFound';
 
 const theme = createTheme({
   palette: {
@@ -268,6 +269,7 @@ const App = () => {
                       <Route path='viewAccount' element={<ViewAccount />} />
                       <Route path='createNewUser' element={<CreateNewUser />} />
                     </Route>
+                    <Route path='*' element={<NotFound />} />
                   </Route>
                 </Routes>
               </Router>
