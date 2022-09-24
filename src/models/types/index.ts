@@ -50,7 +50,6 @@ export enum PlatformType {
   OTHERS = 'OTHERS'
 }
 
-
 export enum DeliveryMode {
   STANDARD = 'STANDARD',
   EXPRESS = 'EXPRESS',
@@ -150,7 +149,7 @@ export interface DeliveryOrder {
   carrier?: string;
   parcelQty?: number;
   parcelWeight?: number;
-  deliveryMode?: string;
+  deliveryMode?: DeliveryMode;
 }
 export interface SalesOrder {
   id: number;
