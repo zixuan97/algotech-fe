@@ -50,6 +50,13 @@ export enum PlatformType {
   OTHERS = 'OTHERS'
 }
 
+
+export enum DeliveryMode {
+  STANDARD = 'STANDARD',
+  EXPRESS = 'EXPRESS',
+  PRIORITY = 'PRIORITY'
+}
+
 export interface User {
   id: number;
   firstName: string;
@@ -132,11 +139,18 @@ export interface Supplier {
 export interface DeliveryOrder {
   id: number;
   shippingDate: Date;
+  deliveryDate?: Date;
   shippingType: ShippingType;
   currentLocation: string;
   eta: Date;
   salesOrder: SalesOrder;
   salesOrderId: number;
+  courierType?: string;
+  deliveryPersonnel?: string;
+  carrier?: string;
+  parcelQty?: number;
+  parcelWeight?: number;
+  deliveryMode?: string;
 }
 export interface SalesOrder {
   id: number;
