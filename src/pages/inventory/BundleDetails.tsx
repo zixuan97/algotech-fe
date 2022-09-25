@@ -23,6 +23,7 @@ import {
   deleteBundle
 } from '../../services/bundleService';
 import { getProductById } from '../../services/productService';
+import ProductEditGrid from 'src/components/inventory/ProductEditGrid';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import TimeoutAlert, {
@@ -35,6 +36,8 @@ const columns: GridColDef[] = [
     field: 'name',
     headerName: 'Product Name',
     flex: 2,
+    // valueGetter: (params) => params
+    // valueFormatter: (params) => params.value.name
   },
   {
     field: 'action',
@@ -112,6 +115,10 @@ const BundleDetails = () => {
     setTableLoading(true);
     if (originalBundle) {
       setProductDetails(originalBundle?.bundleProduct ?? []);
+    }
+    if (productDetails.length) {
+      console.log("PRODUCTS HAVE BEEN SET");
+      console.log(productDetails);
     }
     setTableLoading(false);
   }, [originalBundle]);
@@ -330,7 +337,23 @@ const BundleDetails = () => {
                   </div>
                 </div>
                 {/* product table */}
-                {!edit && (
+                {edit ? (
+                  <ProductEditGrid
+                  productList={originalBundle?.bundleProduct ?? []}
+                  updateProductList={(bundleProduct) =>
+                    setEditBundle(
+                      (prev) =>
+                        prev && {
+                          ...prev,
+                          bundleProduct: bundleProduct.map((pdts) => ({
+                            ...pdts,
+                            bundleId: prev.id
+                          }))
+                        }
+                      )
+                  }
+                  />
+                ) : (
                   <DataGrid
                     columns={columns}
                     // rows={originalBundle?.bundleProduct ?? []}

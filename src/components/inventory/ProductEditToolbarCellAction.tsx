@@ -34,7 +34,7 @@ const ProductEditToolbarCellAction = ({
       {
         gridId,
         isNew: true,
-        
+
         id: availableProducts[0].id,
         sku: availableProducts[0].sku,
         name: availableProducts[0].name,
@@ -57,7 +57,7 @@ const ProductEditToolbarCellAction = ({
         color='primary'
         startIcon={<AddIcon />}
         onClick={handleClick}
-        disabled={!availableProducts.length || disableAdd}
+        // disabled={!availableProducts.length || disableAdd}
       >
         Add Product
       </Button>

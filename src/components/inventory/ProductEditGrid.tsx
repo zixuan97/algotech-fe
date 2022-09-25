@@ -13,37 +13,34 @@ import {
   GridActionsCellItem,
   GridEventListener,
   GridRowId,
-  GridRenderEditCellParams,
-  GridValueFormatterParams,
-  GridPreProcessEditCellProps,
-  GridValueSetterParams,
-  useGridApiContext
+  GridRenderEditCellParams
 } from '@mui/x-data-grid';
-import { Bundle, Product } from 'src/models/types';
+import { Product } from 'src/models/types';
 import ProductEditToolbarCellAction from './ProductEditToolbarCellAction';
 import ProductSelectCellAction from './ProductSelectCellAction';
 import inventoryContext from 'src/context/inventory/inventoryContext';
 import {
-  convertProductToGridRow,
   convertGridRowToProduct,
+  convertProductToGridRow,
   getAvailableProducts,
   ProductGridRow
 } from './inventoryHelper';
-import { toPairs, values } from 'lodash';
+import { toPairs } from 'lodash';
 
-type ProductGridProps = {
-  product: Product[];
-  updateProduct: (product: Product[]) => void;
+type ProductEditGridProps = {
+  productList: Product[];
+  updateProductList: (productList: Product[]) => void;
 };
 
-export default function ProductGrid({
-    product,
-    updateProduct
-}: ProductGridProps) {
+//TODO: create a generic version of Edtiable Grid
+export default function ProductEditGrid({
+  productList,
+  updateProductList
+}: ProductEditGridProps) {
   const { products } = React.useContext(inventoryContext);
   const [productGridRows, setProductGridRows] = React.useState<
     ProductGridRow[]
-  >(convertProductToGridRow(product));
+  >(convertProductToGridRow(productList));
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
     {}
   );
@@ -73,11 +70,11 @@ export default function ProductGrid({
   };
 
   const handleDeleteClick = (id: GridRowId) => () => {
-    const updatedStockQtyGridRows = productGridRows.filter(
+    const updatedProductGridRows = productGridRows.filter(
       (row) => row.gridId !== id
     );
-    setProductGridRows(updatedStockQtyGridRows);
-    updateProduct(convertGridRowToProduct(updatedStockQtyGridRows));
+    setProductGridRows(updatedProductGridRows);
+    updateProductList(convertGridRowToProduct(updatedProductGridRows));
   };
 
   const handleCancelClick = (id: GridRowId) => () => {
@@ -95,15 +92,13 @@ export default function ProductGrid({
   const processRowUpdate = (newRow: ProductGridRow) => {
     const updatedRow = {
       ...newRow,
-    //   quantity: isNaN(newRow.quantity) ? 0 : newRow.quantity,
-    //   price: isNaN(newRow.price) ? 0 : newRow.price,
       isNew: false
     };
     const updatedProductGridRows = productGridRows.map((row) =>
       row.gridId === newRow.gridId ? updatedRow : row
     );
     setProductGridRows(updatedProductGridRows);
-    updateProduct(convertGridRowToProduct(updatedProductGridRows));
+    updateProductList(convertGridRowToProduct(updatedProductGridRows));
     return updatedRow;
   };
 
@@ -122,27 +117,6 @@ export default function ProductGrid({
         />
       )
     },
-    // {
-    //   field: 'quantity',
-    //   headerName: 'Quantity',
-    //   type: 'number',
-    //   flex: 1,
-    //   editable: true,
-    //   renderEditCell: (params) => (
-    //     <PositiveNumberEditCellAction params={params} allowDecimals={false} />
-    //   )
-    // },
-    // {
-    //   field: 'price',
-    //   headerName: 'Price',
-    //   type: 'number',
-    //   flex: 1,
-    //   editable: true,
-    //   valueFormatter: (params) => params.value.toFixed(2),
-    //   renderEditCell: (params) => (
-    //     <PositiveNumberEditCellAction params={params} />
-    //   )
-    // },
     {
       field: 'actions',
       type: 'actions',
@@ -211,7 +185,7 @@ export default function ProductGrid({
         toolbar: {
           setRows: setProductGridRows,
           setRowModesModel,
-          availableLocations: availableProducts,
+          availableProducts,
           disableAdd: productGridRows.some((row) => row.isNew)
         }
       }}

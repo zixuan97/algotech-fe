@@ -46,6 +46,19 @@ export const getAvailableLocations = (
   );
 };
 
+// warehouse related
+
+export const isValidWarehouse = (
+  warehouseToValidate: Partial<Location> | null
+): boolean => {
+  if (!warehouseToValidate) return false;
+  return !!(
+    warehouseToValidate.name &&
+    warehouseToValidate.address
+  )
+}
+
+
 // bundle related
 
 export const isValidBundle = (
@@ -54,7 +67,8 @@ export const isValidBundle = (
   if (!bundleToValidate) return false;
   return !!(
     bundleToValidate.name &&
-    bundleToValidate.description
+    bundleToValidate.description &&
+    bundleToValidate.bundleProduct
   );
 };
 
