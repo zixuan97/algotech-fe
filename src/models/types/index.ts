@@ -143,7 +143,7 @@ export interface DeliveryOrder {
   shippingType: ShippingType;
   currentLocation: string;
   eta: Date;
-  salesOrder?: SalesOrder; //temporary change to optional
+  salesOrder: SalesOrder;
   salesOrderId: number;
   courierType?: string;
   deliveryPersonnel?: string;
