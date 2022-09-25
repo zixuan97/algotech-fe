@@ -6,13 +6,9 @@ import {
   TextField,
   Select,
   MenuItem,
-  SelectChangeEvent,
+  SelectChangeEvent
 } from '@mui/material';
-import {
-  Search,
-  Download,
-  FilterList
-} from '@mui/icons-material';
+import { Search, Download, FilterList } from '@mui/icons-material';
 import { PlatformType } from 'src/models/types';
 import salesContext from 'src/context/sales/salesContext';
 import SalesOrderTable from 'src/components/sales/order/SalesOrderTable';
@@ -33,14 +29,21 @@ const AllSalesOrders = () => {
 
   const filteredData = useMemo(
     () =>
-      (filterPlatform || searchField) && filterPlatform !== 'ALL'
-        ? salesOrders.filter(
-            (saleOrder) =>
-              (!filterPlatform || saleOrder.platformType === filterPlatform) &&
-              Object.values(saleOrder).some((value) =>
+      filterPlatform || searchField
+        ? salesOrders.filter((saleOrder) => {
+            if (filterPlatform === 'ALL') {
+              return Object.values(saleOrder).some((value) =>
                 String(value).toLowerCase().match(searchField.toLowerCase())
-              )
-          )
+              );
+            } else {
+              return (
+                saleOrder.platformType === filterPlatform &&
+                Object.values(saleOrder).some((value) =>
+                  String(value).toLowerCase().match(searchField.toLowerCase())
+                )
+              );
+            }
+          })
         : salesOrders,
     [salesOrders, filterPlatform, searchField]
   );
