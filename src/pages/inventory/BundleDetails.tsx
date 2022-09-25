@@ -111,7 +111,7 @@ const BundleDetails = () => {
   React.useEffect(() => { 
     setTableLoading(true);
     if (originalBundle) {
-      setProductDetails(originalBundle?.products ?? []);
+      setProductDetails(originalBundle?.bundleProduct ?? []);
     }
     setTableLoading(false);
   }, [originalBundle]);

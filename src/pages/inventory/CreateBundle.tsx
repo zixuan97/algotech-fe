@@ -53,7 +53,7 @@ const CreateBundle = () => {
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [newBundle, setNewBundle] = React.useState<Partial<Bundle>>({
-    products: []
+    bundleProduct: []
   });
 
   React.useEffect(() => {
@@ -212,11 +212,11 @@ const CreateBundle = () => {
                   </div>
                 </div>
                 <ProductGrid
-                  product={newBundle.products ?? []}
+                  product={newBundle.bundleProduct ?? []}
                   updateProduct={(pdt) =>
                     setNewBundle((prev) => ({
                       ...prev,
-                      products: pdt
+                      bundleProduct: pdt
                     }))
                   }
                 />
