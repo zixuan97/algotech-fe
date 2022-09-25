@@ -1,6 +1,7 @@
 import { randomId } from '@mui/x-data-grid-generator';
 import { omit } from 'lodash';
-import { Product, StockQuantity, Location } from 'src/models/types';
+import { Product, StockQuantity, Location, Bundle } from 'src/models/types';
+import { BundleProduct } from 'src/pages/inventory/CreateBundle';
 
 export interface StockQuantityGridRow extends StockQuantity {
   gridId: string;
@@ -41,6 +42,49 @@ export const getAvailableLocations = (
     (loc) =>
       !selectedLocations.find(
         (selected) => selected.location.id === loc.id && !selected.isNew
+      )
+  );
+};
+
+// bundle related
+
+export const isValidBundle = (
+  bundleToValidate: Partial<Bundle> | null
+): boolean => {
+  if (!bundleToValidate) return false;
+  return !!(
+    bundleToValidate.name &&
+    bundleToValidate.description
+  );
+};
+
+export interface ProductGridRow extends Product {
+  gridId: string;
+  isNew?: boolean;
+}
+
+export const convertProductToGridRow = (
+  product: Product[]
+): ProductGridRow[] => {
+  return product.map((pdt) => ({ ...pdt, gridId: randomId() }));
+};
+
+export const convertGridRowToProduct = (
+  productGridRows: ProductGridRow[]
+): Product[] => {
+  return productGridRows.map((pdt) =>
+    omit(pdt, ['gridId', 'isNew'])
+  );
+};
+
+export const getAvailableProducts = (
+  selectedProducts: ProductGridRow[],
+  allProducts: Product[]
+): Product[] => {
+  return allProducts.filter(
+    (pdt) =>
+      !selectedProducts.find(
+        (selected) => selected.id === pdt.id && !selected.isNew
       )
   );
 };

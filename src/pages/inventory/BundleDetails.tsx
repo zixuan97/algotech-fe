@@ -34,7 +34,7 @@ const columns: GridColDef[] = [
   {
     field: 'name',
     headerName: 'Product Name',
-    flex: 2
+    flex: 2,
   },
   {
     field: 'action',
@@ -76,6 +76,7 @@ const BundleDetails = () => {
       asyncFetchCallback(getBundleById(id), (bundle: Bundle) => {
         if (bundle) {
           setOriginalBundle(bundle);
+          setEditBundle(bundle);
           setLoading(false);
         } else {
           setAlert({
@@ -97,19 +98,23 @@ const BundleDetails = () => {
   }, [editBundle?.name, productDetails]);
 
   React.useEffect(() => {
-    setTableLoading(true);
     if (id) {
       asyncFetchCallback(getBundleById(id), (res) => {
         setOriginalBundle(res);
         setEditBundle(res);
-
         // asyncFetchCallback(getAllProductsByCategory(id), setProductDetails);
-        setTableLoading(false);
-
         setLoading(false);
       });
     }
   }, [id]);
+
+  React.useEffect(() => { 
+    setTableLoading(true);
+    if (originalBundle) {
+      setProductDetails(originalBundle?.products ?? []);
+    }
+    setTableLoading(false);
+  }, [originalBundle]);
 
   // React.useEffect(() => {
   //   if (originalBundle) {
@@ -295,22 +300,42 @@ const BundleDetails = () => {
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           handleFieldOnChange(e, 'name')
                         }
-                        placeholder='eg.: Asian Favourites'
+                        placeholder='eg.: Festive Favourites'
                       />
                     ) : (
                       <Typography
                         sx={{ padding: '15px' }}
                       >{`Bundle Name: ${editBundle?.name}`}</Typography>
                     )}
+
+                    {edit ? (
+                      <TextField
+                        required
+                        fullWidth
+                        id='outlined-required'
+                        label='Description'
+                        name='description'
+                        value={editBundle?.description}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          handleFieldOnChange(e, 'description')
+                        }
+                        placeholder='eg.: For Christmas period'
+                      />
+                    ) : (
+                      <Typography
+                        sx={{ padding: '15px' }}
+                      >{`Description: ${editBundle?.description}`}</Typography>
+                    )}
+
                   </div>
                 </div>
                 {/* product table */}
                 {!edit && (
                   <DataGrid
                     columns={columns}
-                    rows={originalBundle?.bundleProduct ?? []}
+                    // rows={originalBundle?.bundleProduct ?? []}
+                    rows={productDetails}
                     getRowId={(row) => row.productId}
-                    // rows={productDetails}
                     loading={tableLoading}
                     autoHeight
                     pageSize={5}
