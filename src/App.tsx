@@ -40,6 +40,7 @@ import CreateSupplier from './pages/procurement/CreateSupplier';
 import AllGrabDeliveries from './pages/delivery/AllGrabDeliveries';
 import AllManualDeliveries from './pages/delivery/AllManualDeliveries';
 import AllShippitDeliveries from './pages/delivery/AllShippitDeliveries';
+import CreateDeliveryOrder from './pages/delivery/CreateDelivery';
 import ManualDeliveryDetails from './pages/delivery/ManualDeliveryDetails';
 
 import Accounts from './pages/account/Accounts';
@@ -201,6 +202,10 @@ const App = () => {
                       element={<AllManualDeliveries />}
                     />
                     <Route
+                      path='delivery/allManualDeliveries/createDelivery'
+                      element={<CreateDeliveryOrder />}
+                    />
+                    <Route
                       path='delivery/allGrabDeliveries'
                       element={<AllGrabDeliveries />}
                     />
@@ -212,6 +217,7 @@ const App = () => {
                       path='delivery/manualDeliveryDetails'
                       element={<ManualDeliveryDetails />}
                     />
+
 
                     {/* --- Sales Routes --- */}
                     <Route

@@ -143,15 +143,17 @@ export interface DeliveryOrder {
   shippingType: ShippingType;
   currentLocation: string;
   eta: Date;
-  salesOrder: SalesOrder;
+  salesOrder?: SalesOrder; //temporary change to optional
   salesOrderId: number;
   courierType?: string;
   deliveryPersonnel?: string;
+  method?: string;
   carrier?: string;
   parcelQty?: number;
   parcelWeight?: number;
   deliveryMode?: DeliveryMode;
 }
+
 export interface SalesOrder {
   id: number;
   orderId: string;

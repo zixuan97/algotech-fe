@@ -3,7 +3,6 @@ import { SalesActionTypes, SalesStateAttr } from './salesContextTypes';
 import InventoryContext from './salesContext';
 import salesReducer from './salesReducer';
 import {
-  DeliveryStatus,
   OrderStatus,
   PlatformType,
   SalesOrder,

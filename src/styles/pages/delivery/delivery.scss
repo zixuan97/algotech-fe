@@ -3,11 +3,31 @@
 @use '../../common/common.scss';
 
 .delivery-orders {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  padding: 2rem;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 2rem;
 }
+
+  
+.delivery-grid-toolbar {
+    width: 40%;
+    display: flex;
+    padding: 0 0 1em;
+    gap: 15px 15px;
+    justify-content: flex-end;
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.create-delivery-box {
+    display: relative;
+    justify-content: flex-end;
+    flex-direction: column;
+    color: colors.$primary;
+    font-family: fonts.$primary-font;
+    width: 50%;
+  }
 
 .date-picker-text {
   display: flex;
