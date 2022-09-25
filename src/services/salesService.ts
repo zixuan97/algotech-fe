@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { SalesOrder } from 'src/models/types';
+import { OrderStatus, SalesOrder } from 'src/models/types';
 import apiRoot from './util/apiRoot';
 
 export const getAllSalesOrderSvc = (): Promise<SalesOrder[]> => {
@@ -13,7 +13,10 @@ export const getSalesOrderDetailsSvc = (id: string): Promise<SalesOrder> => {
 };
 
 export const completeOrderPrepSvc = (salesOrder: SalesOrder): Promise<any> => {
-  console.log('salesOrder HEREEEEEE', salesOrder);
   return axios.put(`${apiRoot}/sales`, salesOrder).then((res) => res.data);
+};
+
+export const updateSalesOrderStatusSvc = (id: string, orderStatus: OrderStatus): Promise<any> => {
+  return axios.put(`${apiRoot}/sales/status`, {id, orderStatus}).then((res) => res.data);
 };
 

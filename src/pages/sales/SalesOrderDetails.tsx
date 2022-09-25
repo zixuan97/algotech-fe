@@ -1,31 +1,17 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../styles/pages/sales/orders.scss';
 import '../../styles/common/common.scss';
 import {
   Box,
   Button,
-  Chip,
-  Grid,
   IconButton,
   Paper,
-  Step,
-  StepLabel,
-  Stepper,
   Tooltip,
   Typography
 } from '@mui/material';
-import {
-  ChevronLeft,
-  ReceiptLongRounded,
-  AccountBalanceWalletRounded,
-  PlaylistAddCheckCircleRounded,
-  LocalShippingRounded,
-  TaskAltRounded,
-  AddShoppingCart
-} from '@mui/icons-material';
+import { ChevronLeft } from '@mui/icons-material';
 import {
   OrderStatus,
-  PlatformType,
   Product,
   SalesOrder,
   SalesOrderItem
@@ -37,42 +23,15 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AddSalesOrderItemModal from './AddSalesOrderItemModal';
 import {
   completeOrderPrepSvc,
-  getSalesOrderDetailsSvc
+  getSalesOrderDetailsSvc,
+  updateSalesOrderStatusSvc
 } from 'src/services/salesService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-
-const steps = [
-  {
-    label: 'Order Placed',
-    icon: <ReceiptLongRounded sx={{ fontSize: 35 }} />,
-    nextAction: 'Confirm Payment'
-  },
-  {
-    label: 'Order Paid',
-    icon: <AccountBalanceWalletRounded sx={{ fontSize: 35 }} />,
-    nextAction: 'Begin Prep'
-  },
-  {
-    label: 'Preparing Order',
-    icon: <AddShoppingCart sx={{ fontSize: 35 }} />,
-    nextAction: 'Complete Prep'
-  },
-  {
-    label: 'Order Prepared',
-    icon: <PlaylistAddCheckCircleRounded sx={{ fontSize: 35 }} />,
-    nextAction: 'Schedule Delivery'
-  },
-  {
-    label: 'Order Shipped',
-    icon: <LocalShippingRounded sx={{ fontSize: 35 }} />,
-    nextAction: 'View Delivery'
-  },
-  {
-    label: 'Order Received',
-    icon: <TaskAltRounded sx={{ fontSize: 35 }} />,
-    nextAction: 'View Delivery'
-  }
-];
+import { steps } from 'src/components/sales/order/steps';
+import OrderInfoGrid from 'src/components/sales/order/OrderInfoGrid';
+import OrderSummaryCard from 'src/components/sales/order/OrderSummaryCard';
+import StatusStepper from 'src/components/sales/order/StatusStepper';
+import PlatformChip from 'src/components/sales/order/PlatformChip';
 
 const SalesOrderDetails = () => {
   let params = new URLSearchParams(window.location.search);
@@ -101,12 +60,16 @@ const SalesOrderDetails = () => {
       field: 'quantity',
       type: 'number',
       headerName: 'Quantity',
+      headerAlign: 'center',
+      align: 'center',
       flex: 1
     },
     {
       field: 'price',
       type: 'number',
       headerName: 'Price',
+      headerAlign: 'center',
+      align: 'center',
       flex: 1,
       valueGetter: (params) => params.row.price ?? 0,
       valueFormatter: (params) => params.value.toFixed(2)
@@ -118,10 +81,7 @@ const SalesOrderDetails = () => {
       align: 'center',
       flex: 1,
       renderCell: (params) => {
-        if (
-          params.row.isNewAdded &&
-          salesOrder?.orderStatus === OrderStatus.PREPARING
-        ) {
+        if (params.row.isNewAdded) {
           return (
             <>
               <Button
@@ -149,49 +109,18 @@ const SalesOrderDetails = () => {
           if (salesOrder) {
             setSalesOrder(salesOrder);
             setEditSalesOrderItems([...salesOrder.salesOrderItems]);
-            setAvailProducts(
-              products.filter((product) => {
-                return salesOrder?.salesOrderItems.find(
-                  (orderItem) => orderItem.productName !== product.name
-                );
-              })
+            setAvailProducts(products);
+            setActiveStep(
+              steps.findIndex(
+                (step) => step.currentState === salesOrder.orderStatus
+              )
             );
-            switch (salesOrder.orderStatus) {
-              case OrderStatus.CREATED: {
-                setActiveStep(0);
-                break;
-              }
-              case OrderStatus.PAID: {
-                setActiveStep(1);
-                break;
-              }
-              case OrderStatus.PREPARING: {
-                setActiveStep(2);
-
-                break;
-              }
-              case OrderStatus.PREPARED: {
-                setActiveStep(3);
-                break;
-              }
-              case OrderStatus.SHIPPED: {
-                setActiveStep(4);
-                break;
-              }
-              case OrderStatus.COMPLETED: {
-                setActiveStep(5);
-                break;
-              }
-              default: {
-                break;
-              }
-            }
             setLoading(false);
           } else {
             setAlert({
               severity: 'error',
               message:
-                'Sales Order does nto exist. You will be redirected back to the Sales Order Overview page.'
+                'Sales Order does not exist. You will be redirected back to the Sales Order Overview page.'
             });
             setLoading(false);
             setTimeout(() => navigate('/allSalesOrders'), 3500);
@@ -201,80 +130,42 @@ const SalesOrderDetails = () => {
   }, [id, navigate, products]);
 
   const nextStep = () => {
-    switch (salesOrder?.orderStatus) {
-      case OrderStatus.CREATED: {
-        setSalesOrder((order) => {
-          return {
-            ...order!,
-            orderStatus: OrderStatus.PAID
-          };
-        });
-        setActiveStep(1);
-        break;
+    if (activeStep < steps.length - 1) {
+      setActiveStep((prev) => prev + 1);
+      const newStatus = steps[activeStep + 1].currentState;
+      if (newStatus === OrderStatus.PREPARED) {
+        salesOrder &&
+          asyncFetchCallback(
+            completeOrderPrepSvc(
+              salesOrder && {
+                ...salesOrder,
+                orderStatus: newStatus,
+                salesOrderItems: editSalesOrderItems
+              }
+            ),
+            () => {
+              setSalesOrder(
+                (order) =>
+                  order && {
+                    ...order,
+                    orderStatus: newStatus,
+                    salesOrderItems: editSalesOrderItems.map((item) => {
+                      delete item.isNewAdded;
+                      return item;
+                    })
+                  }
+              );
+            }
+          );
+      } else {
+        setSalesOrder((order) => order && { ...order, orderStatus: newStatus });
       }
-      case OrderStatus.PAID: {
-        setSalesOrder((order) => {
-          return {
-            ...order!,
-            orderStatus: OrderStatus.PREPARING
-          };
-        });
-        setActiveStep(2);
-        break;
-      }
-      case OrderStatus.PREPARING: {
-        setSalesOrder((order) => {
-          return {
-            ...order!,
-            orderStatus: OrderStatus.PREPARED,
-            salesOrderItems: editSalesOrderItems
-          };
-        });
-        setActiveStep(3);
-        updateSalesOrder();
-        break;
-      }
-      case OrderStatus.PREPARED: {
-        setSalesOrder((order) => {
-          return {
-            ...order!,
-            orderStatus: OrderStatus.SHIPPED
-          };
-        });
-        //Note that IRL this should not allow users to go next step.
-        //It should ONLY allow users to print View DO.
-        //Only in 'View Delivery Order', can users to trigger to OrderStatus.SHIPPED
-        //This is only for display
-        setActiveStep(4);
-        break;
-      }
-      case OrderStatus.SHIPPED: {
-        setSalesOrder((order) => {
-          return {
-            ...order!,
-            orderStatus: OrderStatus.COMPLETED
-          };
-        });
-        setActiveStep(5);
-        break;
-      }
-      case OrderStatus.COMPLETED: {
-        break;
-      }
-      default: {
-        break;
-      }
+      id &&
+        asyncFetchCallback(updateSalesOrderStatusSvc(id, newStatus), () => {});
     }
   };
 
-  const updateSalesOrder = () => {
-    salesOrder &&
-      asyncFetchCallback(completeOrderPrepSvc(salesOrder) , () => {
-        console.log('success');
-      });
-  };
-
-  const addNewItemToSalesOrderItem = () => {
+  const addNewItemToEditSalesOrderItems = () => {
     setEditSalesOrderItems((current) => [...current, newSalesOrderItem!]);
     setShowDialog(false);
     setAvailProducts((current) =>
@@ -302,10 +193,15 @@ const SalesOrderDetails = () => {
   };
 
   const removeItemFromList = (productName: String) => {
-    const arr = editSalesOrderItems.filter(
-      (item) => item.productName !== productName
+    const temp = [...editSalesOrderItems];
+    temp.splice(
+      temp.indexOf(
+        temp.find((item) => {
+          return item.productName === productName && item.isNewAdded;
+        })!
+      )
     );
-    setEditSalesOrderItems(arr);
+    setEditSalesOrderItems(temp);
     setAvailProducts((prev) => [
       ...prev,
       products.find((prod) => {
@@ -322,63 +218,30 @@ const SalesOrderDetails = () => {
         title='Add New Product To This Order.'
         body='Fill up the form to add new products to the order.'
         availProducts={availProducts}
-        addNewSalesOrderItem={addNewItemToSalesOrderItem}
+        addNewSalesOrderItem={addNewItemToEditSalesOrderItems}
         orderFieldOnChange={updateNewSalesOrderItem}
       />
 
       <div className='top-carrot'>
-        <Tooltip title='Return to Accounts' enterDelay={300}>
+        <Tooltip title='Return to Sales Order' enterDelay={300}>
           <IconButton size='large' onClick={() => navigate(-1)}>
             <ChevronLeft />
           </IconButton>
         </Tooltip>
-
-        <div style={{ margin: '1%' }}>
-          <Typography>Placed With</Typography>
-          <Chip
-            label={salesOrder?.platformType}
-            color={
-              salesOrder?.platformType === PlatformType.SHOPEE
-                ? 'warning'
-                : salesOrder?.platformType === PlatformType.SHOPIFY
-                ? 'primary'
-                : 'info'
-            }
-          />
-        </div>
+        <PlatformChip salesOrder={salesOrder!} pretext={'Placed with'} />
       </div>
 
       <div className='center-div'>
         <Box className='center-box'>
           <div className='sales-header-content'>
-            <Stepper
-              activeStep={activeStep}
-              alternativeLabel
-              className='sales-stepper'
-            >
-              {steps.map((step) => (
-                <Step key={step.label}>
-                  <StepLabel icon={step.icon}>{step.label}</StepLabel>
-                </Step>
-              ))}
-            </Stepper>
+            <StatusStepper activeStep={activeStep} />
             <Paper elevation={2} className='action-card'>
-              <div className='order-info-grid'>
-                <Grid container spacing={1}>
-                  <Grid item xs={12}>
-                    Customer Name: {salesOrder?.customerName}
-                  </Grid>
-                  <Grid item xs={6}>
-                    Contact No.: {salesOrder?.customerContactNo}
-                  </Grid>
-                  <Grid item xs={12}>
-                    Email: {salesOrder?.customerEmail ?? 'NA'}
-                  </Grid>
-                  <Grid item xs={12}>
-                    Shipping Address: {salesOrder?.customerAddress}
-                  </Grid>
-                </Grid>
-              </div>
+              <OrderInfoGrid
+                custName={salesOrder?.customerName!}
+                contactNo={salesOrder?.customerContactNo!}
+                email={salesOrder?.customerEmail ?? 'NA'}
+                address={salesOrder?.customerAddress!}
+              />
               <div className='action-box'>
                 <Typography sx={{ fontSize: 'inherit' }}>
                   Next Action:
@@ -397,13 +260,17 @@ const SalesOrderDetails = () => {
               <div className='grid-toolbar'>
                 <h4>Order ID.: #{salesOrder?.id}</h4>
                 {salesOrder?.orderStatus === OrderStatus.PREPARING && (
-                  <Button
-                    variant='contained'
-                    size='medium'
-                    onClick={() => setShowDialog(true)}
-                  >
-                    Add Items
-                  </Button>
+                  <div className='button-group'>
+                    <Button
+                      variant='contained'
+                      size='medium'
+                      onClick={() => {
+                        setShowDialog(true);
+                      }}
+                    >
+                      Add Items
+                    </Button>
+                  </div>
                 )}
               </div>
               <DataGrid
@@ -413,19 +280,7 @@ const SalesOrderDetails = () => {
                 autoHeight
                 pageSize={5}
               />
-              <div className='order-summary-card'>
-                <div>
-                  <h5>Merchandising Total: ${salesOrder?.amount}</h5>
-                  <h5>Shipping: -</h5>
-                  <h5>Order Subtotal: ${salesOrder?.amount}</h5>
-                  <h5>
-                    Payment Method:
-                    {salesOrder?.platformType === PlatformType.OTHERS
-                      ? ' PayNow'
-                      : ' eCommerce'}
-                  </h5>
-                </div>
-              </div>
+              <OrderSummaryCard salesOrder={salesOrder!} />
             </div>
           </Paper>
         </Box>
