@@ -18,6 +18,7 @@ import { UserRole } from 'src/models/types';
 
 type SidebarProps = {
   sidebarWidth: string;
+  disabled?: boolean;
 };
 
 type MenuOpen = {
@@ -40,7 +41,7 @@ const menuOpenDefaultState: MenuOpen = {
   hr: false
 };
 
-const Sidebar = ({ sidebarWidth }: SidebarProps) => {
+const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
   const [menuOpen, setMenuOpen] =
     React.useState<MenuOpen>(menuOpenDefaultState);
 
@@ -83,6 +84,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             open={menuOpen.inventory}
             toggleOpen={(open) => toggleMenuOpen('inventory', open)}
             icon={<Inventory />}
+            disabled={disabled}
           >
             <ListItemLink primary='Dashboard' to='/inventory/dashboard' />
             <ListItemLink primary='All Products' to='/inventory/allProducts' />
@@ -103,6 +105,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             open={menuOpen.sales}
             toggleOpen={(open) => toggleMenuOpen('sales', open)}
             icon={<LocalGroceryStore />}
+            disabled={disabled}
           >
             <List component='div' disablePadding>
               <ListItemLink primary='Dashboard' to='/sales/dashboard' />
@@ -123,6 +126,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             open={menuOpen.procurement}
             toggleOpen={(open) => toggleMenuOpen('procurement', open)}
             icon={<Receipt />}
+            disabled={disabled}
           >
             <ListItemLink
               primary='Procurement Orders'
@@ -139,6 +143,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
             open={menuOpen.delivery}
             toggleOpen={(open) => toggleMenuOpen('delivery', open)}
             icon={<LocalShipping />}
+            disabled={disabled}
           >
             <ListItemLink
               primary='Manual Deliveries'
@@ -166,6 +171,7 @@ const Sidebar = ({ sidebarWidth }: SidebarProps) => {
               icon={<People />}
               primary='User Accounts'
               to='/accounts'
+              disabled={disabled}
               typographyProps={{ fontWeight: 500 }}
             />
           </RoleComponent>

@@ -13,17 +13,11 @@ import {
   GridActionsCellItem,
   GridEventListener,
   GridRowId,
-  GridRenderEditCellParams,
-  GridValueFormatterParams,
-  GridPreProcessEditCellProps,
-  GridValueSetterParams,
-  useGridApiContext
+  GridRenderEditCellParams
 } from '@mui/x-data-grid';
-import { Location, PartialBy, StockQuantity } from 'src/models/types';
-import { ProductLocationRow } from 'src/pages/inventory/CreateProduct';
+import { Location, StockQuantity } from 'src/models/types';
 import EditToolbarCellAction from './EditToolbarCellAction';
 import LocationSelectCellAction from './LocationSelectCellAction';
-import { TextField } from '@mui/material';
 import PositiveNumberEditCellAction from './PositiveNumberEditCellAction';
 import inventoryContext from 'src/context/inventory/inventoryContext';
 import {
@@ -32,18 +26,18 @@ import {
   getAvailableLocations,
   StockQuantityGridRow
 } from './inventoryHelper';
-import { toPairs, values } from 'lodash';
+import { toPairs } from 'lodash';
 
-type LocationGridProps = {
+type LocationEditGridProps = {
   stockQuantity: StockQuantity[];
   updateStockQuantity: (stockQuantity: StockQuantity[]) => void;
 };
 
 //TODO: create a generic version of Edtiable Grid
-export default function LocationGrid({
+export default function LocationEditGrid({
   stockQuantity,
   updateStockQuantity
-}: LocationGridProps) {
+}: LocationEditGridProps) {
   const { locations } = React.useContext(inventoryContext);
   const [stockQtyGridRows, setStockQtyGridRows] = React.useState<
     StockQuantityGridRow[]

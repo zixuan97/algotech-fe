@@ -22,7 +22,7 @@ const Appbar = ({ sidebarWidth }: AppbarProps) => {
 
   const handleViewProfile = () => {
     handleClose();
-    navigate(`accounts/viewMyAccount?id=${user?.id}`);
+    navigate(`/accounts/viewMyAccount`);
   };
 
   const handleClose = () => {

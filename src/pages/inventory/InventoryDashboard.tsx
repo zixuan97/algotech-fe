@@ -9,9 +9,8 @@ import { Link } from 'react-router-dom';
 import ProductDashboardCellAction from 'src/components/inventory/ProductDashboardCellAction';
 import InventoryLevelsChart from 'src/components/inventory/InventoryTurnoverChart';
 import {
-  createPdfWithHeaderImage,
+  createPdfFromComponent,
   downloadFile,
-  createImageFromComponent,
   getExcelFromApi
 } from 'src/utils/fileUtils';
 import StockPriorityCell from 'src/components/inventory/StockPriorityCell';
@@ -95,14 +94,15 @@ const InventoryDashboard = () => {
 
   const generateChartPdf = React.useCallback(async () => {
     if (pdfRef.current) {
-      const fileName = `InventoryTurnover-${getTodayFormattedDate(
-        DDMMYYYY
-      )}.pdf`;
-      const pdf = createPdfWithHeaderImage(
-        'Inventory Levels Chart',
-        await createImageFromComponent(pdfRef.current)
+      const pdf = await createPdfFromComponent(
+        pdfRef.current,
+        'portrait',
+        'Inventory Levels Chart'
       );
-      downloadFile(pdf, fileName);
+      downloadFile(
+        pdf,
+        `InventoryTurnover-${getTodayFormattedDate(DDMMYYYY)}.pdf`
+      );
     }
   }, [pdfRef]);
 

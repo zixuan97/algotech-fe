@@ -14,6 +14,7 @@ type NestedListProps = {
   open: boolean;
   toggleOpen: (open: boolean) => void;
   children: React.ReactNode;
+  disabled?: boolean;
 };
 
 const NestedList = ({
@@ -21,11 +22,12 @@ const NestedList = ({
   icon,
   open,
   toggleOpen,
-  children
+  children,
+  disabled = false
 }: NestedListProps) => {
   return (
     <>
-      <ListItem button onClick={() => toggleOpen(!open)}>
+      <ListItem button disabled={disabled} onClick={() => toggleOpen(!open)}>
         <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText
           primary={title}

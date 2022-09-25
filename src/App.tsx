@@ -40,6 +40,7 @@ import CreateSupplier from './pages/procurement/CreateSupplier';
 import AllGrabDeliveries from './pages/delivery/AllGrabDeliveries';
 import AllManualDeliveries from './pages/delivery/AllManualDeliveries';
 import AllShippitDeliveries from './pages/delivery/AllShippitDeliveries';
+import ManualDeliveryDetails from './pages/delivery/ManualDeliveryDetails';
 
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
@@ -60,6 +61,7 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import AllSalesOrder from './pages/sales/AllSalesOrders';
 import SalesOrderDetails from './pages/sales/SalesOrderDetails';
 import SalesState from './context/sales/SalesState';
+import NotFound from './pages/NotFound';
 
 const theme = createTheme({
   palette: {
@@ -95,9 +97,23 @@ const App = () => {
                 <Routes>
                   <Route path='/login' element={<Login />} />
                   <Route
+                    path='accounts/viewMyAccount'
+                    element={
+                      <AuthRoute unauthRedirect='/login'>
+                        <Home>
+                          <ViewMyAccount />
+                        </Home>
+                      </AuthRoute>
+                    }
+                  />
+
+                  <Route
                     path='/'
                     element={
-                      <AuthRoute redirectTo='/login'>
+                      <AuthRoute
+                        unauthRedirect='/login'
+                        unverifiedRedirect='/accounts/viewMyAccount'
+                      >
                         <Home />
                       </AuthRoute>
                     }
@@ -192,6 +208,10 @@ const App = () => {
                       path='delivery/allShippitDeliveries'
                       element={<AllShippitDeliveries />}
                     />
+                    <Route
+                      path='delivery/manualDeliveryDetails'
+                      element={<ManualDeliveryDetails />}
+                    />
 
                     {/* --- Sales Routes --- */}
                     <Route
@@ -254,11 +274,7 @@ const App = () => {
                       <Route path='viewAccount' element={<ViewAccount />} />
                       <Route path='createNewUser' element={<CreateNewUser />} />
                     </Route>
-
-                    <Route
-                      path='accounts/viewMyAccount'
-                      element={<ViewMyAccount />}
-                    />
+                    <Route path='*' element={<NotFound />} />
                   </Route>
                 </Routes>
               </Router>

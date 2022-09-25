@@ -9,8 +9,6 @@ export const READABLE_DDMM = 'DD MMM';
 
 export type MomentRange = [moment.Moment, moment.Moment];
 
-export const NOW = moment();
-
 export const getTodayFormattedDate = (format: string) => {
-  return NOW.format(format);
+  return moment().format(format);
 };

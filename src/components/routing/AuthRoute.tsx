@@ -1,17 +1,32 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
 import AuthContext from '../../context/auth/authContext';
 
 type AuthRouteProps = {
   children: JSX.Element;
-  redirectTo: string;
+  unauthRedirect: string;
+  unverifiedRedirect?: string;
 };
 
-const AuthRoute = ({ children, redirectTo }: AuthRouteProps): JSX.Element => {
+const AuthRoute = ({
+  children,
+  unauthRedirect,
+  unverifiedRedirect
+}: AuthRouteProps): JSX.Element => {
   const authContext = useContext(AuthContext);
-  const { isAuthenticated } = authContext;
+  const { isAuthenticated, user } = authContext;
 
-  return isAuthenticated ? children : <Navigate to={redirectTo} />;
+  const verified = user?.isVerified ?? true;
+
+  if (isAuthenticated) {
+    if (unverifiedRedirect) {
+      return verified ? children : <Navigate to={unverifiedRedirect} />;
+    } else {
+      return children;
+    }
+  } else {
+    return <Navigate to={unauthRedirect} />;
+  }
 };
 
 export default AuthRoute;

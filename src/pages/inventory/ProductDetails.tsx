@@ -31,7 +31,7 @@ import {
 } from 'src/services/productService';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
-import LocationGrid from 'src/components/inventory/LocationGrid';
+import LocationEditGrid from 'src/components/inventory/LocationEditGrid';
 import { intersectionWith, omit } from 'lodash';
 import TimeoutAlert, {
   AlertType,
@@ -458,7 +458,7 @@ const ProductDetails = () => {
                   </div>
                 </div>
                 {edit ? (
-                  <LocationGrid
+                  <LocationEditGrid
                     stockQuantity={originalProduct?.stockQuantity ?? []}
                     updateStockQuantity={(stockQuantity) =>
                       setEditProduct(
