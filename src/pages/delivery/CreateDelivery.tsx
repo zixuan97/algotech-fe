@@ -15,7 +15,7 @@ import '../../styles/common/common.scss';
 import '../../styles/pages/delivery/delivery.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import { SalesOrder, DeliveryOrder, DeliveryStatus, ShippingType } from 'src/models/types';
+import { SalesOrder, DeliveryOrder, ShippingType } from 'src/models/types';
 import { createDeliveryOrder } from '../../services/deliveryServices';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import TimeoutAlert, {
@@ -29,12 +29,12 @@ import validator from 'validator';
 const CreateDeliveryOrder= () => {
   const placeholderSupplier: DeliveryOrder = {
     id: 0,
-    deliveryStatus: DeliveryStatus.READYFORDELIVERY,
     shippingDate: new Date(),
     shippingType: ShippingType.MANUAL,
     currentLocation: '',
     eta: new Date(),
     salesOrderId: 0,
+    // salesOrder: ,
     courierType: '',
     deliveryPersonnel: '',
     method: '',
@@ -77,7 +77,7 @@ const CreateDeliveryOrder= () => {
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (newDeliveryOrder?.deliveryStatus && newDeliveryOrder?.shippingDate && newDeliveryOrder?.shippingType) {
+    if (newDeliveryOrder?.shippingDate && newDeliveryOrder?.shippingType) {
       setLoading(true);
       await asyncFetchCallback(
         createDeliveryOrder(newDeliveryOrder),
@@ -147,7 +147,7 @@ const CreateDeliveryOrder= () => {
                       id='outlined-required'
                       label='Delivery Status'
                       name='status'
-                      value={newDeliveryOrder?.deliveryStatus}
+                      value={newDeliveryOrder?.currentLocation}
                     //   error={
                     //     !validator.isEmail(newSupplier?.email) &&
                     //     !!newSupplier?.email
