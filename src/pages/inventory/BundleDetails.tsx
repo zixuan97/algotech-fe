@@ -24,7 +24,11 @@ import {
 } from '../../services/bundleService';
 import { getProductById } from '../../services/productService';
 import ProductEditGrid from 'src/components/inventory/ProductEditGrid';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { 
+  DataGrid, 
+  GridColDef, 
+  GridValueGetterParams 
+} from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import TimeoutAlert, {
   AlertType,
@@ -36,8 +40,7 @@ const columns: GridColDef[] = [
     field: 'name',
     headerName: 'Product Name',
     flex: 2,
-    // valueGetter: (params) => params
-    // valueFormatter: (params) => params.value.name
+    valueGetter: (params: GridValueGetterParams) => params.row.product.name
   },
   {
     field: 'action',
@@ -105,7 +108,6 @@ const BundleDetails = () => {
       asyncFetchCallback(getBundleById(id), (res) => {
         setOriginalBundle(res);
         setEditBundle(res);
-        // asyncFetchCallback(getAllProductsByCategory(id), setProductDetails);
         setLoading(false);
       });
     }
@@ -116,43 +118,8 @@ const BundleDetails = () => {
     if (originalBundle) {
       setProductDetails(originalBundle?.bundleProduct ?? []);
     }
-    if (productDetails.length) {
-      console.log("PRODUCTS HAVE BEEN SET");
-      console.log(productDetails);
-    }
     setTableLoading(false);
   }, [originalBundle]);
-
-  // React.useEffect(() => {
-  //   if (originalBundle) {
-  //     Promise.all(
-  //       originalBundle.bundleProduct.map(async (qty) => {
-  //         // const product = await getProductById(qty.id);
-  //         return {
-  //           // id: qty.id,
-  //           // sku: qty.sku,
-  //           // name: qty.name,
-  //           // image: qty.image,
-  //           // qtyThreshold: qty.qtyThreshold,
-  //           // brand: qty.brand,
-  //           // categories: qty.categories,
-  //           // stockQuantity: qty.stockQuantity,
-  //           qty,
-  //         };
-  //       })
-  //     ).then(
-  //       (res) => {
-  //         setTableLoading(false);
-  //         setProductDetails(res);
-  //         console.log('PRODUCT DETAILSSSS');
-  //         console.log(productDetails);
-  //       },
-  //       () => setTableLoading(false)
-  //     );
-  //   }
-  // }, [originalBundle]);
-
-
 
   const handleDeleteButtonClick = () => {
     setModalOpen(false);
