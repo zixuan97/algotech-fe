@@ -23,7 +23,12 @@ import {
   deleteBundle
 } from '../../services/bundleService';
 import { getProductById } from '../../services/productService';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import ProductEditGrid from 'src/components/inventory/ProductEditGrid';
+import { 
+  DataGrid, 
+  GridColDef, 
+  GridValueGetterParams 
+} from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import TimeoutAlert, {
   AlertType,
@@ -34,7 +39,8 @@ const columns: GridColDef[] = [
   {
     field: 'name',
     headerName: 'Product Name',
-    flex: 2
+    flex: 2,
+    valueGetter: (params: GridValueGetterParams) => params.row.product.name
   },
   {
     field: 'action',
@@ -76,6 +82,7 @@ const BundleDetails = () => {
       asyncFetchCallback(getBundleById(id), (bundle: Bundle) => {
         if (bundle) {
           setOriginalBundle(bundle);
+          setEditBundle(bundle);
           setLoading(false);
         } else {
           setAlert({
@@ -97,50 +104,22 @@ const BundleDetails = () => {
   }, [editBundle?.name, productDetails]);
 
   React.useEffect(() => {
-    setTableLoading(true);
     if (id) {
       asyncFetchCallback(getBundleById(id), (res) => {
         setOriginalBundle(res);
         setEditBundle(res);
-
-        // asyncFetchCallback(getAllProductsByCategory(id), setProductDetails);
-        setTableLoading(false);
-
         setLoading(false);
       });
     }
   }, [id]);
 
-  // React.useEffect(() => {
-  //   if (originalBundle) {
-  //     Promise.all(
-  //       originalBundle.bundleProduct.map(async (qty) => {
-  //         // const product = await getProductById(qty.id);
-  //         return {
-  //           // id: qty.id,
-  //           // sku: qty.sku,
-  //           // name: qty.name,
-  //           // image: qty.image,
-  //           // qtyThreshold: qty.qtyThreshold,
-  //           // brand: qty.brand,
-  //           // categories: qty.categories,
-  //           // stockQuantity: qty.stockQuantity,
-  //           qty,
-  //         };
-  //       })
-  //     ).then(
-  //       (res) => {
-  //         setTableLoading(false);
-  //         setProductDetails(res);
-  //         console.log('PRODUCT DETAILSSSS');
-  //         console.log(productDetails);
-  //       },
-  //       () => setTableLoading(false)
-  //     );
-  //   }
-  // }, [originalBundle]);
-
-
+  React.useEffect(() => { 
+    setTableLoading(true);
+    if (originalBundle) {
+      setProductDetails(originalBundle?.bundleProduct ?? []);
+    }
+    setTableLoading(false);
+  }, [originalBundle]);
 
   const handleDeleteButtonClick = () => {
     setModalOpen(false);
@@ -295,22 +274,58 @@ const BundleDetails = () => {
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           handleFieldOnChange(e, 'name')
                         }
-                        placeholder='eg.: Asian Favourites'
+                        placeholder='eg.: Festive Favourites'
                       />
                     ) : (
                       <Typography
                         sx={{ padding: '15px' }}
                       >{`Bundle Name: ${editBundle?.name}`}</Typography>
                     )}
+
+                    {edit ? (
+                      <TextField
+                        required
+                        fullWidth
+                        id='outlined-required'
+                        label='Description'
+                        name='description'
+                        value={editBundle?.description}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          handleFieldOnChange(e, 'description')
+                        }
+                        placeholder='eg.: For Christmas period'
+                      />
+                    ) : (
+                      <Typography
+                        sx={{ padding: '15px' }}
+                      >{`Description: ${editBundle?.description}`}</Typography>
+                    )}
+
                   </div>
                 </div>
                 {/* product table */}
-                {!edit && (
+                {edit ? (
+                  <ProductEditGrid
+                  productList={originalBundle?.bundleProduct ?? []}
+                  updateProductList={(bundleProduct) =>
+                    setEditBundle(
+                      (prev) =>
+                        prev && {
+                          ...prev,
+                          bundleProduct: bundleProduct.map((pdts) => ({
+                            ...pdts,
+                            bundleId: prev.id
+                          }))
+                        }
+                      )
+                  }
+                  />
+                ) : (
                   <DataGrid
                     columns={columns}
-                    rows={originalBundle?.bundleProduct ?? []}
+                    // rows={originalBundle?.bundleProduct ?? []}
+                    rows={productDetails}
                     getRowId={(row) => row.productId}
-                    // rows={productDetails}
                     loading={tableLoading}
                     autoHeight
                     pageSize={5}

@@ -92,6 +92,7 @@ export interface Location {
   id: number;
   name: string;
   address: string;
+  stockQuantity: StockQuantity[];
 }
 
 export interface StockQuantity {
