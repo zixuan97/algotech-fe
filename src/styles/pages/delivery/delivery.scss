@@ -28,3 +28,25 @@
     font-family: fonts.$primary-font;
     width: 50%;
   }
+
+.date-picker-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.view-delivery-details {
+  width: 90%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.delivery-details-section-header {
+  display: flex;
+  flex-direction: row;
+  padding-left: 2rem;
+  padding-top: 2rem;
+  width: 100%;
+  align-items: center;
+}

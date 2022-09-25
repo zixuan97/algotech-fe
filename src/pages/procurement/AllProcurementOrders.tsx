@@ -10,7 +10,7 @@ import {
 import { GridRenderCellParams } from '@mui/x-data-grid';
 import '../../styles/pages/procurement.scss';
 import { Button, Chip, ChipProps } from '@mui/material';
-import { ProcurementOrder, Supplier } from 'src/models/types';
+import { ProcurementOrder } from 'src/models/types';
 import { getAllProcurementOrders } from 'src/services/procurementService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import ViewOrderButton from 'src/components/procurement/ViewOrderButton';
