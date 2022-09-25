@@ -9,17 +9,10 @@
   padding: 2rem;
 }
 
-.delivery-orders-section-header {
+.date-picker-text {
   display: flex;
-  flex-direction: row;
-  padding-bottom: 2rem;
-}
-
-.delivery-orders-date-picker-section {
-  display: flex;
-  flex-direction: row;
-  padding-left: 2rem;
-  padding-top: 1rem;
+  align-items: center;
+  justify-content: center;
 }
 
 .view-delivery-details {

@@ -5,7 +5,7 @@ import '../../styles/pages/delivery/delivery.scss';
 import '../../styles/common/common.scss';
 import '../../styles/pages/delivery/map.scss';
 import 'leaflet/dist/leaflet.css';
-import { Button, TextField } from '@mui/material';
+import { Button, Stack, TextField, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { DeliveryOrder } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
@@ -14,10 +14,9 @@ import { useNavigate } from 'react-router';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import markerIconPng from 'leaflet/dist/images/marker-icon.png';
-import { Dayjs } from 'dayjs';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import DateRangePicker from 'src/components/common/DateRangePicker';
+import { MomentRange } from 'src/utils/dateUtils';
+import moment from 'moment';
 
 const myIcon = new Icon({
   iconUrl: markerIconPng,
@@ -52,8 +51,10 @@ const AllManualDeliveries = () => {
   const [deliveryData, setDeliveryData] = React.useState<DeliveryOrder[]>([]);
   const [filteredData, setFilteredData] = React.useState<DeliveryOrder[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [startDate, setStartDate] = React.useState<Dayjs | null>(null);
-  const [endDate, setEndDate] = React.useState<Dayjs | null>(null);
+  const [dateRange, setDateRange] = React.useState<MomentRange>([
+    moment().startOf('day'),
+    moment().endOf('day')
+  ]);
 
   React.useEffect(() => {
     // TODO: implement error callback
@@ -98,34 +99,23 @@ const AllManualDeliveries = () => {
 
   return (
     <div className='delivery-orders'>
-      <div className='delivery-orders-section-header'>
-        <h1>All Manual Deliveries for</h1>
-        <div className='delivery-orders-date-picker-section'>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label='Start Date'
-              value={startDate}
-              onChange={(newValue) => {
-                setStartDate(newValue);
-              }}
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </LocalizationProvider>
-          <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
-            <h2>to</h2>
-          </div>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DatePicker
-              label='End Date'
-              value={endDate}
-              onChange={(newValue) => {
-                setEndDate(newValue);
-              }}
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </LocalizationProvider>
-        </div>
-      </div>
+      <Stack
+        direction='row'
+        width='100%'
+        alignItems='center'
+        justifyContent='space-between'
+      >
+        <h1>All Manual Deliveries</h1>
+        <Stack direction='row' spacing={2}>
+          <Typography className='date-picker-text'>
+            View deliveries from
+          </Typography>
+          <DateRangePicker
+            dateRange={dateRange}
+            updateDateRange={setDateRange}
+          />
+        </Stack>
+      </Stack>
       <MapContainer
         center={[1.3667, 103.8]}
         zoom={12}
