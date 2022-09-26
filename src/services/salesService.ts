@@ -2,9 +2,12 @@ import axios from 'axios';
 import { OrderStatus, SalesOrder } from 'src/models/types';
 import apiRoot from './util/apiRoot';
 
-export const getAllSalesOrderSvc = (): Promise<SalesOrder[]> => {
+export const getAllSalesOrderSvc = (
+  time_from: string,
+  time_to: string
+): Promise<SalesOrder[]> => {
   return axios
-    .get(`${apiRoot}/sales/all`)
+    .post(`${apiRoot}/sales/timefilter`, { time_from, time_to })
     .then((res) => res.data);
 };
 
@@ -16,7 +19,11 @@ export const completeOrderPrepSvc = (salesOrder: SalesOrder): Promise<any> => {
   return axios.put(`${apiRoot}/sales`, salesOrder).then((res) => res.data);
 };
 
-export const updateSalesOrderStatusSvc = (id: string, orderStatus: OrderStatus): Promise<any> => {
-  return axios.put(`${apiRoot}/sales/status`, {id, orderStatus}).then((res) => res.data);
+export const updateSalesOrderStatusSvc = (
+  id: string,
+  orderStatus: OrderStatus
+): Promise<any> => {
+  return axios
+    .put(`${apiRoot}/sales/status`, { id, orderStatus })
+    .then((res) => res.data);
 };
-

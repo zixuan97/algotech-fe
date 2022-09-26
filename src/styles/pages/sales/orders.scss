@@ -20,11 +20,12 @@
   justify-content: space-between;
 }
 
-.grid-toolbar {
+.order-grid-toolbar {
+  margin: 1%;
   width: 100%;
   padding: 0 0 1em;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
 }
 
@@ -91,7 +92,7 @@
 }
 
 .Mui-completed {
-  color: #0D6E11;
+  color: #0d6e11;
 }
 
 .Mui-active {

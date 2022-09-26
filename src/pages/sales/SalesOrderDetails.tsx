@@ -160,8 +160,7 @@ const SalesOrderDetails = () => {
       } else {
         setSalesOrder((order) => order && { ...order, orderStatus: newStatus });
       }
-      id &&
-        asyncFetchCallback(updateSalesOrderStatusSvc(id, newStatus), () => {});
+      id && updateSalesOrderStatusSvc(id, newStatus);
     }
   };
 
@@ -234,7 +233,7 @@ const SalesOrderDetails = () => {
       <div className='center-div'>
         <Box className='center-box'>
           <div className='sales-header-content'>
-            <StatusStepper activeStep={activeStep} />
+            <StatusStepper orderStatus={salesOrder?.orderStatus!} />
             <Paper elevation={2} className='action-card'>
               <OrderInfoGrid
                 custName={salesOrder?.customerName!}

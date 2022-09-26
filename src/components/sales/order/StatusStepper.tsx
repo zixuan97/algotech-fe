@@ -1,11 +1,18 @@
 import { Step, StepLabel, Stepper } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { OrderStatus } from 'src/models/types';
 import { steps } from './steps';
 
 interface props {
-  activeStep: number;
+  orderStatus: OrderStatus;
 }
 
-const StatusStepper = ({ activeStep }: props) => {
+const StatusStepper = ({ orderStatus }: props) => {
+  const [activeStep, setActiveStep] = useState<number>(0);
+  useEffect(() => {
+    setActiveStep(steps.findIndex((step) => step.currentState === orderStatus));
+  }, [orderStatus]);
+
   return (
     <Stepper activeStep={activeStep} alternativeLabel className='sales-stepper'>
       {steps.map((step) => (
