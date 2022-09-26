@@ -136,6 +136,7 @@ export interface Supplier {
   name: string;
   address: string;
 }
+
 export interface DeliveryOrder {
   id: number;
   shippingDate: Date;
