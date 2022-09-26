@@ -146,6 +146,10 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
             disabled={disabled}
           >
             <ListItemLink
+              primary='Delivery Assignment'
+              to='/delivery/deliveryAssignment'
+            />
+            <ListItemLink
               primary='Manual Deliveries'
               to='/delivery/allManualDeliveries'
             />
