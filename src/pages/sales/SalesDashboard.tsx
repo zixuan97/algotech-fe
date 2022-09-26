@@ -10,7 +10,19 @@ import OrdersCard from 'src/components/sales/dashboard/OrdersCard';
 import PlatformPieChart from 'src/components/sales/dashboard/PlatformPieChart';
 import RevenueChart from 'src/components/sales/dashboard/RevenueChart';
 import SalesOrdersGrid from 'src/components/sales/dashboard/SalesOrdersGrid';
-import inventoryContext from 'src/context/inventory/inventoryContext';
+import {
+  DailySales,
+  SalesBestseller,
+  SalesOrder,
+  SalesRevenue
+} from 'src/models/types';
+import {
+  getDailySalesByRangeSvc,
+  getSalesBestsellersByRangeSvc,
+  getSalesOrdersByRangeSvc,
+  getSalesRevenueByRangeSvc
+} from 'src/services/salesService';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   DDMMYYYY,
   getTodayFormattedDate,
@@ -21,19 +33,40 @@ import { createPdfFromComponent, downloadFile } from 'src/utils/fileUtils';
 import '../../styles/common/common.scss';
 
 const SalesDashboard = () => {
-  const { products } = React.useContext(inventoryContext);
+  const pdfRef = React.createRef<HTMLDivElement>();
+
+  // data
+  const [salesOrders, setSalesOrders] = React.useState<SalesOrder[]>([]);
+  const [bestSellers, setBestSellers] = React.useState<SalesBestseller[]>([]);
+  const [dailySales, setDailySales] = React.useState<DailySales[]>([]);
+  const [revenue, setRevenue] = React.useState<SalesRevenue[]>([]);
+
+  // component state
+  const [pdfLoading, setPdfLoading] = React.useState<boolean>(false);
   const [dateRange, setDateRange] = React.useState<MomentRange>([
     moment().startOf('day'),
     moment().endOf('day')
   ]);
-  const [pdfLoading, setPdfLoading] = React.useState<boolean>(false);
 
-  const pdfRef = React.createRef<HTMLDivElement>();
-
-  const bestSellers = products.map((prd) => ({
-    productName: prd.name,
-    quantity: Math.floor(Math.random() * 1000) + 1
-  }));
+  React.useEffect(() => {
+    asyncFetchCallback(getSalesOrdersByRangeSvc(dateRange), setSalesOrders);
+    asyncFetchCallback(getSalesBestsellersByRangeSvc(dateRange), (res) => {
+      const sortedBestsellers = res.sort((a, b) => b.quantity - a.quantity);
+      setBestSellers(sortedBestsellers);
+    });
+    asyncFetchCallback(getDailySalesByRangeSvc(dateRange), (res) => {
+      const sortedDailySales = res.sort((a, b) =>
+        moment(a.createddate).diff(b.createddate)
+      );
+      setDailySales(sortedDailySales);
+    });
+    asyncFetchCallback(getSalesRevenueByRangeSvc(dateRange), (res) => {
+      const sortedRevenue = res.sort((a, b) =>
+        moment(a.createddate).diff(b.createddate)
+      );
+      setRevenue(sortedRevenue);
+    });
+  }, [dateRange]);
 
   const generateDashboardPdf = React.useCallback(async () => {
     setPdfLoading(true);
@@ -85,11 +118,14 @@ const SalesDashboard = () => {
             <h4>At a glance</h4>
           </Grid>
           <Grid item xs={6}>
-            <OrdersCard />
+            <OrdersCard dailySales={dailySales} />
           </Grid>
           <Grid item xs={6}>
             <NumberCard
-              value='$1,234,567.89'
+              value={`$${revenue.reduce(
+                (prev, curr) => prev + curr.revenue,
+                0
+              )}`}
               text={`Revenue earned from ${dateRange[0].format(
                 READABLE_DDMMYY
               )} to ${dateRange[1].format(READABLE_DDMMYY)}`}
@@ -101,13 +137,13 @@ const SalesDashboard = () => {
             />
           </Grid>
           <Grid item xs={6}>
-            <RevenueChart />
+            <RevenueChart revenue={revenue} />
           </Grid>
           <Grid item xs={3}>
             <BestsellerList bestsellers={bestSellers} />
           </Grid>
           <Grid item xs={3}>
-            <PlatformPieChart />
+            <PlatformPieChart salesOrders={salesOrders} />
           </Grid>
           <Grid item xs={12}>
             <Divider
@@ -123,7 +159,7 @@ const SalesDashboard = () => {
       </div>
       <div style={{ width: '100%', marginBottom: 10 }}>
         <h3>Sales Orders</h3>
-        <SalesOrdersGrid />
+        <SalesOrdersGrid salesOrders={salesOrders} />
       </div>
     </div>
   );
