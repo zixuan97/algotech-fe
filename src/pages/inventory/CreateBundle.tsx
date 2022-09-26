@@ -26,10 +26,14 @@ import { useNavigate } from 'react-router';
 import { Bundle, Product } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { createBundle } from 'src/services/bundleService';
+import { 
+  getProductById,
+  getAllProductsByBundle 
+} from 'src/services/productService';
 import { intersectionWith, omit } from 'lodash';
 import { getBase64 } from 'src/utils/fileUtils';
 // import ProductGrid from 'src/components/inventory/ProductGrid';
-import ProductEditGrid from 'src/components/inventory/ProductEditGrid';
+import BundleProductEditGrid from 'src/components/inventory/BundleProductEditGrid';
 import {
   AlertType,
   AxiosErrDataBody
@@ -37,12 +41,12 @@ import {
 import inventoryContext from '../../context/inventory/inventoryContext';
 import { isValidBundle } from 'src/components/inventory/inventoryHelper';
 
-export interface BundleProduct {
+export interface BundleProductItem {
   id: number;
   isNew?: boolean;
 }
 
-export interface BundleProductRow extends BundleProduct {
+export interface BundleProductRow extends BundleProductItem {
   gridId: GridRowId;
 }
 
@@ -69,6 +73,8 @@ const CreateBundle = () => {
   };
 
   const handleSave = async (e: FormEvent) => {
+    console.log("NEW BUNDLE");
+    console.log(newBundle);
     e.preventDefault();
 
     if (newBundle) {
@@ -149,12 +155,14 @@ const CreateBundle = () => {
                     />
                   </div>
                 </div>
-                <ProductEditGrid
-                  productList={newBundle.bundleProduct ?? []}
+                <BundleProductEditGrid
+                  // productList={newBundle.bundleProduct ?? []}
+                  productList={[]}
                   updateProductList={(pdts) =>
                     setNewBundle((prev) => ({
                       ...prev,
                       bundleProduct: pdts
+                      // map thjis back to names
                     }))
                   }
                 />

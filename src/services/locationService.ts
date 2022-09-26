@@ -10,7 +10,7 @@ export interface LocationUpdateType {
   id: number;
   name: string;
   address: string;
-  products: Product[];
+  stockQuantity: StockQuantity[];
 }
 
 export interface LocationUpdateNoProductsType

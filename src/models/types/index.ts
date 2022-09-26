@@ -97,8 +97,9 @@ export interface Location {
 
 export interface StockQuantity {
   productId?: number;
-  location: Location;
-  price: number;
+  product?: Product;
+  locationId?: number;
+  location?: Location;
   quantity: number;
 }
 
@@ -106,8 +107,12 @@ export interface Bundle {
   id: number;
   name: string;
   description: string;
-  // price: number;
-  bundleProduct: Product[];
+  bundleProduct: BundleProduct[];
+}
+
+export interface BundleProduct {
+  product: Product;
+  productId: number;
 }
 
 export interface ProcurementOrder {

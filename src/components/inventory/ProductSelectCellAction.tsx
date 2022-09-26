@@ -6,12 +6,12 @@ import {
 } from '@mui/material';
 import { GridRenderCellParams, useGridApiContext } from '@mui/x-data-grid';
 import { unionWith } from 'lodash';
-import { Product } from 'src/models/types';
+import { Product, BundleProduct } from 'src/models/types';
 
 type ProductSelectCellActionProps = {
-  params: GridRenderCellParams<Product>;
+  params: GridRenderCellParams<BundleProduct>;
   allProducts: Product[];
-  availableProducts: Product[];
+  availableProducts: BundleProduct[];
 };
 
 const ProductSelectCellAction = ({
@@ -27,27 +27,28 @@ const ProductSelectCellAction = ({
       id: gridId,
       field,
       value: allProducts.find((pdt) => pdt.id === e.target.value)
+      //this is the issue rn
     });
   };
 
-  const displayedLocations = value
-    ? unionWith(availableProducts, [value], (a, b) => a.id === b.id)
+  const displayedProducts = value
+    ? unionWith(availableProducts, [value], (a, b) => a.productId === b.productId)
     : availableProducts;
 
   return (
     <FormControl fullWidth sx={{ p: '0.5em' }}>
       <Select
         id='location-select'
-        value={value?.id}
+        value={value?.productId}
         renderValue={(value) =>
           allProducts.find((pdt) => pdt.id === value)?.name
         }
         size='small'
         onChange={handleChange}
       >
-        {displayedLocations.map((product) => (
-          <MenuItem key={product.id} value={product.id}>
-            {product.name}
+        {displayedProducts.map((bundleProduct) => (
+          <MenuItem key={bundleProduct.productId} value={bundleProduct.productId}>
+            {bundleProduct.product.name}
           </MenuItem>
         ))}
       </Select>

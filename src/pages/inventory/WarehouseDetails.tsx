@@ -23,42 +23,20 @@ import {
   updateLocation,
   updateLocationWithoutProducts
 } from '../../services/locationService';
-import { getProductById, getAllProductsByLocation } from '../../services/productService';
-import { 
-  DataGrid, 
-  GridColDef,
-  GridValueGetterParams
-} from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { omit } from 'lodash';
 import TimeoutAlert, {
   AlertType,
   AxiosErrDataBody
  } from 'src/components/common/TimeoutAlert';
+import StockQuantityProductModal from 'src/components/inventory/StockQuantityProductModal';
+import { getAllProducts } from 'src/services/productService';
+import { DataGrid, GridColDef, GridRenderCellParams, GridValueGetterParams } from '@mui/x-data-grid';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const columns: GridColDef[] = [
-  {
-    field: 'name',
-    headerName: 'Product Name',
-    flex: 2,
-    valueGetter: (params: GridValueGetterParams) => params.row.product.name
-  },
-  {
-    field: 'quantity',
-    headerName: 'Quantity',
-    flex: 1,
-    // valueGetter: (params: GridValueGetterParams) => params.row.
+export type NewLocation = Partial<Location> & {};
+type NewStockQuantityProduct = Partial<StockQuantity>;
 
-  },
-  {
-    field: 'action',
-    headerName: 'Action',
-    headerAlign: 'right',
-    align: 'right',
-    flex: 1,
-    renderCell: ProductCellAction
-  }
-];
 
 const LocationDetails = () => {
   const navigate = useNavigate();
@@ -68,22 +46,26 @@ const LocationDetails = () => {
   const current = useLocation();
   const location = current.state as Location;
 
+  const [allProducts, setAllProducts] = React.useState<Product[]>([]);
+  const [addedProductsId, setAddedProductsId] = React.useState<number[]>([]);
+  const [productIdToDisplay, setProductIdToDisplay] = React.useState<number>();
+
   const [loading, setLoading] = React.useState<boolean>(true);
   const [tableLoading, setTableLoading] = React.useState<boolean>(false);
   const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
 
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [deleteModalOpen, setDeleteModalOpen] = React.useState<boolean>(false);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
 
   const [originalLocation, setOriginalLocation] =
     React.useState<Location>(location);
   const [editLocation, setEditLocation] = React.useState<Location>(location);
-  const [productDetails, setProductDetails] = React.useState<Product[]>(
-    []
-  );
+
   const [stockQuantityDetails, setStockQuantityDetails] = React.useState<StockQuantity[]>(
     []
   );
+  const [newStockQtyPdts, setNewStockQtyPdts] = React.useState<NewStockQuantityProduct[]>([]);
 
   const [edit, setEdit] = React.useState<boolean>(false);
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
@@ -112,28 +94,31 @@ const LocationDetails = () => {
   }, [editLocation?.name, editLocation?.address]);
 
   React.useEffect(() => {
-    // setTableLoading(true);
     if (id) {
+      asyncFetchCallback(getAllProducts(), setAllProducts);
+
       asyncFetchCallback(getLocationById(id), (res) => {
         setOriginalLocation(res);
         setEditLocation(res);
-        // asyncFetchCallback(getAllProductsByLocation(id), setProductDetails);
-        // setTableLoading(false);
         setLoading(false);
       });
+
+      // setModalOpen(true);
+      setProductIdToDisplay(parseInt(id));
+
     }
   }, [id]);
 
   React.useEffect(() => { 
     setTableLoading(true);
     if (originalLocation) {
-      setStockQuantityDetails(originalLocation?.stockQuantity ?? []);
+      setStockQuantityDetails(originalLocation?.stockQuantity);
     }
     setTableLoading(false);
-  }, [originalLocation]);
+}, [originalLocation]);
 
   const handleDeleteButtonClick = () => {
-    setModalOpen(false);
+    setDeleteModalOpen(false);
     setBackdropLoading(true);
     if (originalLocation) {
       asyncFetchCallback(
@@ -171,11 +156,108 @@ const LocationDetails = () => {
     });
   };
 
+  const handleAddStockQtyPdt = async (
+    quantity: string,
+    selectedProduct: Product | undefined
+  ) => {
+    setModalOpen(false);
+    setLoading(true);
+
+    if (selectedProduct) {
+      let newStockQtyPdt: NewStockQuantityProduct = {
+        quantity: parseInt(quantity),
+        product: selectedProduct
+      };
+      let updatedStockQtyPdts = Object.assign([], newStockQtyPdts);
+      setAddedProductsId((prev) => [...prev, selectedProduct.id]);
+      updatedStockQtyPdts.push(newStockQtyPdt);
+      setNewStockQtyPdts(updatedStockQtyPdts);
+      setLoading(false);
+      setAlert({
+        severity: 'success',
+        message: 'Product added to warehouse successfully!'
+      });
+    }
+  };
+
+  const removeStockQtyPdt = (id: string) => {
+    const updatedStockQtyPdts = newStockQtyPdts.filter(
+      (item) => item.productId?.toString() != id
+    );
+    setNewStockQtyPdts(updatedStockQtyPdts);
+  }
+
+  const columns: GridColDef[] = [
+    {
+      field: 'name',
+      headerName: 'Product Name',
+      flex: 2,
+      valueGetter: (params: GridValueGetterParams) => params.row.product.name
+    },
+    {
+      field: 'quantity',
+      headerName: 'Quantity',
+      flex: 1
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      flex: 1,
+      renderCell: ({ id }: GridRenderCellParams) => {
+        return (
+          <Button
+            variant='outlined'
+            startIcon={<DeleteIcon />}
+            onClick={() => removeStockQtyPdt(id.toString())}
+          >
+            Delete
+          </Button>
+        );
+      }
+      // renderCell: ({ id }: GridRenderCellParams) => {
+      //   if (!edit) {
+      //     return ProductCellAction;
+      //   } else {
+      //     return (
+      //       <Button
+      //         variant='outlined'
+      //         startIcon={<DeleteIcon />}
+      //         onClick={() => removeStockQtyPdt(id.toString())}
+      //       >
+      //         Delete
+      //       </Button>
+      //     );
+      //   }
+      // }
+    }
+  ];
+
   const handleSave = async () => {
-    if (editLocation) {
+    if (editLocation || newStockQtyPdts) {
       setBackdropLoading(true);
+
+      let finalNewLocationStockQtyPdts = newStockQtyPdts.map(
+        ({product, quantity}) => ({
+          product: product!,
+          quantity: quantity!
+        })
+      )
+
+      let reqBody = {
+        id: editLocation.id,
+        name: editLocation.name,
+        address: editLocation.address,
+        stockQuantity: finalNewLocationStockQtyPdts
+      }
+
+      setEditLocation(reqBody);
+
+      console.log("REQUEST BODY");
+      console.log(reqBody);
+
       asyncFetchCallback(
-        updateLocationWithoutProducts(editLocation),
+        // updateLocationWithoutProducts(editLocation),
+        updateLocation(editLocation),
         () => {
           setAlert({
             severity: 'success',
@@ -257,13 +339,13 @@ const LocationDetails = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
-                onClick={() => setModalOpen(true)}
+                onClick={() => setDeleteModalOpen(true)}
               >
                 Delete
               </Button>
               <ConfirmationModal
-                open={modalOpen}
-                onClose={() => setModalOpen(false)}
+                open={deleteModalOpen}
+                onClose={() => setDeleteModalOpen(false)}
                 onConfirm={handleDeleteButtonClick}
                 title='Delete Warehouse'
                 body='Are you sure you want to delete this warehouse?'
@@ -315,8 +397,36 @@ const LocationDetails = () => {
                     )}
                   </div>
                 </div>
+                  {/* <b>Products in Warehouse</b> */}
+                  <DataGrid
+                    columns={columns}
+                    rows={stockQuantityDetails}
+                    getRowId={(row) => row.product.id}
+                    loading={tableLoading}
+                    autoHeight
+                    pageSize={10}
+                  />
+                  {edit && (
+                    <Button
+                    variant='contained'
+                    size='medium'
+                    sx={{ height: 'fit-content' }}
+                    onClick={() => setModalOpen(true)}
+                    >
+                      Add Product to Warehouse
+                    </Button>
+                  )}
+
+                  <StockQuantityProductModal
+                    productIdToDisplay={productIdToDisplay}
+                    open={modalOpen}
+                    onClose={() => setModalOpen(false)}
+                    onConfirm={handleAddStockQtyPdt}
+                    title='Add Product to Warehouse'
+                    addedProductsId={addedProductsId}
+                  />
                 {/*product table*/}
-                {!edit && (
+                {/* {!edit && (
                   <DataGrid
                     columns={columns}
                     rows={stockQuantityDetails}
@@ -325,7 +435,7 @@ const LocationDetails = () => {
                     autoHeight
                     pageSize={5}
                   />
-                )}
+                )} */}
               </FormGroup>
             </form>
           </Paper>

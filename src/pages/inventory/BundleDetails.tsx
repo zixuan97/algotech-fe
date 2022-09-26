@@ -15,15 +15,15 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { Bundle, Product } from '../../models/types';
+import { Bundle, Product, BundleProduct } from '../../models/types';
 import ProductCellAction from '../../components/inventory/ProductCellAction';
 import {
   getBundleById,
   updateBundle,
   deleteBundle
 } from '../../services/bundleService';
-import { getProductById } from '../../services/productService';
-import ProductEditGrid from 'src/components/inventory/ProductEditGrid';
+import { getAllProductsByBundle } from '../../services/productService';
+import BundleProductEditGrid from 'src/components/inventory/BundleProductEditGrid';
 import { 
   DataGrid, 
   GridColDef, 
@@ -70,7 +70,7 @@ const BundleDetails = () => {
   const [originalBundle, setOriginalBundle] =
     React.useState<Bundle>(bundle);
   const [editBundle, setEditBundle] = React.useState<Bundle>(bundle);
-  const [productDetails, setProductDetails] = React.useState<Product[]>(
+  const [productDetails, setProductDetails] = React.useState<BundleProduct[]>(
     []
   );
 
@@ -104,22 +104,38 @@ const BundleDetails = () => {
   }, [editBundle?.name, productDetails]);
 
   React.useEffect(() => {
+    setTableLoading(true);
     if (id) {
       asyncFetchCallback(getBundleById(id), (res) => {
         setOriginalBundle(res);
         setEditBundle(res);
+
+        // asyncFetchCallback(getAllProductsByBundle(id), setProductDetails);
+        setProductDetails(res.bundleProduct);
+        setTableLoading(false);
+
         setLoading(false);
       });
     }
   }, [id]);
 
-  React.useEffect(() => { 
+  React.useEffect(() => {
     setTableLoading(true);
-    if (originalBundle) {
-      setProductDetails(originalBundle?.bundleProduct ?? []);
+    if (id) {
+      asyncFetchCallback(getBundleById(id), (res) => {
+        setProductDetails(res.bundleProduct);
+        setTableLoading(false);
+      });
     }
-    setTableLoading(false);
-  }, [originalBundle]);
+  }, [id, editBundle]);
+
+  // React.useEffect(() => { 
+  //   setTableLoading(true);
+  //   if (originalBundle) {
+  //     // setProductDetails(originalBundle?.bundleProduct ?? []);
+  //   }
+  //   setTableLoading(false);
+  // }, [originalBundle]);
 
   const handleDeleteButtonClick = () => {
     setModalOpen(false);
@@ -161,6 +177,10 @@ const BundleDetails = () => {
   };
 
   const handleSave = async () => {
+    console.log('ORIGINAL BUNDLE');
+    console.log(originalBundle);
+    console.log("EDITED BUNDLE");
+    console.log(editBundle);
     if (editBundle) {
       setBackdropLoading(true);
       asyncFetchCallback(
@@ -173,6 +193,7 @@ const BundleDetails = () => {
           setBackdropLoading(false);
           setEditBundle(editBundle);
           setOriginalBundle(editBundle);
+
         },
         (err) => {
           const resData = err.response?.data as AxiosErrDataBody;
@@ -305,20 +326,28 @@ const BundleDetails = () => {
                 </div>
                 {/* product table */}
                 {edit ? (
-                  <ProductEditGrid
-                  productList={originalBundle?.bundleProduct ?? []}
-                  updateProductList={(bundleProduct) =>
-                    setEditBundle(
-                      (prev) =>
-                        prev && {
-                          ...prev,
-                          bundleProduct: bundleProduct.map((pdts) => ({
-                            ...pdts,
-                            bundleId: prev.id
-                          }))
-                        }
-                      )
-                  }
+                  <BundleProductEditGrid
+                    productList={productDetails}
+                    updateProductList={(pdts) =>
+                      setEditBundle((prev) => ({
+                        ...prev,
+                        bundleProduct: pdts
+                        // map thjis back to names
+                      }))
+                    }
+                    // updateProductList={(pdts) =>
+                    //   setEditBundle(
+                    //     (prev) =>
+                    //       prev && {
+                    //         ...prev,
+                    //         bundleProduct: pdts.map((pdt) => ({
+                    //           ...pdt,
+                    //           productId: pdt.id
+                    //         }))
+                    //       }
+                    //   )
+                    //     // map thjis back to names depending on ProductEditGrid
+                    //   }
                   />
                 ) : (
                   <DataGrid
