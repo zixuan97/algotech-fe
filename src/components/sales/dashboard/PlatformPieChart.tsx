@@ -1,38 +1,11 @@
-import { Card, Divider } from '@mui/material';
+import { Card, Divider, Typography } from '@mui/material';
 import { Doughnut } from 'react-chartjs-2';
-import { PlatformType } from 'src/models/types';
+import { PlatformType, SalesOrder } from 'src/models/types';
 import { Chart as ChartJS, ChartTypeRegistry, TooltipItem } from 'chart.js';
+import { OrderedMap } from 'immutable';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 ChartJS.register(ChartDataLabels);
-
-type PlatformData = {
-  platform: PlatformType;
-  orders: number;
-};
-
-const platformData = [
-  {
-    platform: PlatformType.SHOPEE,
-    orders: 1000
-  },
-  {
-    platform: PlatformType.LAZADA,
-    orders: 5000
-  },
-  {
-    platform: PlatformType.REDMART,
-    orders: 2000
-  },
-  {
-    platform: PlatformType.SHOPIFY,
-    orders: 3500
-  },
-  {
-    platform: PlatformType.OTHERS,
-    orders: 10000
-  }
-];
 
 const labels = [
   PlatformType.SHOPEE,
@@ -52,7 +25,7 @@ const options = {
       }
     },
     datalabels: {
-      formatter: (value: number) => value.toLocaleString()
+      formatter: (value: number) => (value > 0 ? value.toLocaleString() : '')
     },
     tooltip: {
       callbacks: {
@@ -71,16 +44,34 @@ const options = {
   }
 };
 
-const arrangeOrderDataByPlatform = (platformData: PlatformData[]): number[] => {
-  const map = new Map<PlatformType, number>();
-  platformData.forEach((data) => {
-    const { platform, orders } = data;
-    map.set(platform, orders);
+// const getOrderDataByPlatform = (platformData: PlatformData[]): number[] => {
+//   const map = new Map<PlatformType, number>();
+//   platformData.forEach((data) => {
+//     const { platform, orders } = data;
+//     map.set(platform, orders);
+//   });
+//   return labels.map((lbl) => map.get(lbl) ?? 0);
+// };
+
+const getOrderDataByPlatform = (salesOrders: SalesOrder[]): number[] => {
+  // OrderedMap is immutable
+  let map = OrderedMap<PlatformType, number>(labels.map((lbl) => [lbl, 0]));
+  salesOrders.forEach((salesOrder) => {
+    console.log(salesOrder.platformType, map.get(salesOrder.platformType));
+    map = map.set(
+      salesOrder.platformType,
+      map.get(salesOrder.platformType, 0) + 1
+    );
   });
-  return labels.map((lbl) => map.get(lbl) ?? 0);
+  console.log(map);
+  return [...map.values()];
 };
 
-const PlatformPieChart = () => {
+type PlatformPieChartProps = {
+  salesOrders: SalesOrder[];
+};
+
+const PlatformPieChart = ({ salesOrders }: PlatformPieChartProps) => {
   const data = {
     labels: labels.map(
       (lbl) => lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()
@@ -88,7 +79,7 @@ const PlatformPieChart = () => {
     datasets: [
       {
         label: 'Sales by Platform',
-        data: arrangeOrderDataByPlatform(platformData),
+        data: getOrderDataByPlatform(salesOrders),
         backgroundColor: colors,
         hoverOffset: 10
       }
@@ -98,7 +89,13 @@ const PlatformPieChart = () => {
     <Card style={{ padding: '0.5em 2em 2em', height: '48vh' }}>
       <h3>Sales by Platform</h3>
       <Divider className='full-divider' sx={{ mb: 3 }} />
-      <Doughnut data={data} options={options} />
+      {salesOrders.length ? (
+        <Doughnut data={data} options={options} />
+      ) : (
+        <Typography sx={{ fontSize: '0.8em', opacity: 0.8 }}>
+          No orders placed within current time range.
+        </Typography>
+      )}
     </Card>
   );
 };

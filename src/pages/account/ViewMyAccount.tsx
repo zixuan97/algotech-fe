@@ -42,8 +42,6 @@ const ViewMyAccount = () => {
 
   const prevUserVerification = usePrevious(user?.isVerified);
 
-  console.log(prevUserVerification);
-
   React.useEffect(() => {
     if (user) {
       setEditUser(user);

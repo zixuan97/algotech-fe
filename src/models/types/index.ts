@@ -97,7 +97,9 @@ export interface Location {
 
 export interface StockQuantity {
   productId?: number;
-  location: Location;
+  locationId?: number;
+  product?: Product;
+  location?: Location;
   price: number;
   quantity: number;
 }
@@ -178,4 +180,20 @@ export interface SalesOrderItem {
   productName?: string;
   createdTime?: Date;
   isNewAdded?: boolean;
+}
+
+export interface DailySales {
+  // TODO: change to number once BE is fixed
+  salesorders: string;
+  createddate: Date;
+}
+
+export interface SalesBestseller {
+  quantity: number;
+  productname: string;
+}
+
+export interface SalesRevenue {
+  revenue: number;
+  createddate: Date;
 }
