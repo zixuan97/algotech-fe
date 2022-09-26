@@ -15,7 +15,7 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { Location, Product } from '../../models/types';
+import { Location, Product, StockQuantity } from '../../models/types';
 import ProductCellAction from '../../components/inventory/ProductCellAction';
 import {
   deleteLocation,
@@ -24,7 +24,11 @@ import {
   updateLocationWithoutProducts
 } from '../../services/locationService';
 import { getProductById, getAllProductsByLocation } from '../../services/productService';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { 
+  DataGrid, 
+  GridColDef,
+  GridValueGetterParams
+} from '@mui/x-data-grid';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { omit } from 'lodash';
 import TimeoutAlert, {
@@ -36,13 +40,15 @@ const columns: GridColDef[] = [
   {
     field: 'name',
     headerName: 'Product Name',
-    flex: 2
+    flex: 2,
+    valueGetter: (params: GridValueGetterParams) => params.row.product.name
   },
   {
     field: 'quantity',
     headerName: 'Quantity',
     flex: 1,
-    valueGetter: (params) => params.value.name
+    // valueGetter: (params: GridValueGetterParams) => params.row.
+
   },
   {
     field: 'action',
@@ -72,8 +78,10 @@ const LocationDetails = () => {
   const [originalLocation, setOriginalLocation] =
     React.useState<Location>(location);
   const [editLocation, setEditLocation] = React.useState<Location>(location);
-  const [products, setProducts] = React.useState<Product[]>([]);
   const [productDetails, setProductDetails] = React.useState<Product[]>(
+    []
+  );
+  const [stockQuantityDetails, setStockQuantityDetails] = React.useState<StockQuantity[]>(
     []
   );
 
@@ -104,19 +112,25 @@ const LocationDetails = () => {
   }, [editLocation?.name, editLocation?.address]);
 
   React.useEffect(() => {
-    setTableLoading(true);
+    // setTableLoading(true);
     if (id) {
       asyncFetchCallback(getLocationById(id), (res) => {
         setOriginalLocation(res);
         setEditLocation(res);
-
-        asyncFetchCallback(getAllProductsByLocation(id), setProductDetails);
-        setTableLoading(false);
-
+        // asyncFetchCallback(getAllProductsByLocation(id), setProductDetails);
+        // setTableLoading(false);
         setLoading(false);
       });
     }
   }, [id]);
+
+  React.useEffect(() => { 
+    setTableLoading(true);
+    if (originalLocation) {
+      setStockQuantityDetails(originalLocation?.stockQuantity ?? []);
+    }
+    setTableLoading(false);
+  }, [originalLocation]);
 
   const handleDeleteButtonClick = () => {
     setModalOpen(false);
@@ -305,7 +319,8 @@ const LocationDetails = () => {
                 {!edit && (
                   <DataGrid
                     columns={columns}
-                    rows={productDetails}
+                    rows={stockQuantityDetails}
+                    getRowId={(row) => row.product.id}
                     loading={tableLoading}
                     autoHeight
                     pageSize={5}
