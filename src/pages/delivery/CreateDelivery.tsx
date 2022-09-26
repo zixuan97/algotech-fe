@@ -8,14 +8,15 @@ import {
   Tooltip,
   IconButton,
   Backdrop,
-  CircularProgress
+  CircularProgress,
+  InputAdornment
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
 import '../../styles/pages/delivery/delivery.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import { SalesOrder, DeliveryOrder, ShippingType } from 'src/models/types';
+import { SalesOrder, DeliveryOrder} from 'src/models/types';
 import { createDeliveryOrder } from '../../services/deliveryServices';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import TimeoutAlert, {
@@ -23,46 +24,31 @@ import TimeoutAlert, {
   AxiosErrDataBody
 } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import dayjs, { Dayjs } from 'dayjs';
 
-//how do I look through the sales order to get sales order that I am creating a delivery order for?
 
 const CreateDeliveryOrder= () => {
-  const placeholderSupplier: DeliveryOrder = {
-    id: 0,
-    shippingDate: new Date(),
-    shippingType: ShippingType.MANUAL,
-    currentLocation: '',
-    eta: new Date(),
-    salesOrderId: 0,
-    // salesOrder: ,
-    courierType: '',
-    deliveryPersonnel: '',
-    method: '',
-    carrier: '',
-    parcelQty: 0,
-    parcelWeight: 0
-  };
 
   const navigate = useNavigate();
 
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [newDeliveryOrder, setNewDeliveryOrder] =
-    React.useState<DeliveryOrder>(placeholderSupplier);
+  const [newDeliveryOrder, setNewDeliveryOrder] = React.useState<DeliveryOrder>();
+  const [salesOrder, setSalesOrder] = React.useState<SalesOrder>();
 
   const [edit, setEdit] = React.useState<boolean>(false);
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
 
-//to disable the button if user has not filled in all the fields
-  
-//   React.useEffect(() => {
-//     const shouldDisable = !(
-//       newDeliveryOrder?.deliveryStatus &&
-//       newDeliveryOrder?.email &&
-//       newDeliveryOrder?.address
-//     );
-//     setDisableSave(shouldDisable);
-//   }, [newSupplier?.name, newSupplier?.email, newSupplier?.address]);
+
+  const [date, setDate] = React.useState<Dayjs | null>(
+    dayjs('2022-09-18T21:11:54'),
+  );
+
+  const handleDateChange = (newDate: Dayjs | null) => {
+    setDate(newDate);
+  };
+
 
   const handleEditDeliveryOrder = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewDeliveryOrder((prev) => {
@@ -74,33 +60,93 @@ const CreateDeliveryOrder= () => {
     });
   };
 
-  const handleSave = async (e: FormEvent) => {
-    e.preventDefault();
+  // const handleSave = async (e: FormEvent) => {
+  //   e.preventDefault();
 
-    if (newDeliveryOrder?.shippingDate && newDeliveryOrder?.shippingType) {
-      setLoading(true);
-      await asyncFetchCallback(
-        createDeliveryOrder(newDeliveryOrder),
-        () => {
-          setLoading(false);
-          setAlert({
-            severity: 'success',
-            message:
-              'Delivery Order successfully created! You will be redirected back to the All Manual Deliveries page now.'
-          });
-          //remember to fill in!
-          setTimeout(() => navigate(''), 3500);
-        },
-        (err) => {
-          const resData = err.response?.data as AxiosErrDataBody;
-          setLoading(false);
-          setAlert({
-            severity: 'error',
-            message: `Error creating delivery order: ${resData.message}`
-          });
-        }
-      );
+  //   if (newDeliveryOrder?.shippingDate && newDeliveryOrder?.shippingType) {
+  //     setLoading(true);
+  //     await asyncFetchCallback(
+  //       createDeliveryOrder(newDeliveryOrder),
+  //       () => {
+  //         setLoading(false);
+  //         setAlert({
+  //           severity: 'success',
+  //           message:
+  //             'Delivery Order successfully created! You will be redirected back to the All Manual Deliveries page now.'
+  //         });
+  //         //remember to fill in!
+  //         setTimeout(() => navigate(''), 3500);
+  //       },
+  //       (err) => {
+  //         const resData = err.response?.data as AxiosErrDataBody;
+  //         setLoading(false);
+  //         setAlert({
+  //           severity: 'error',
+  //           message: `Error creating delivery order: ${resData.message}`
+  //         });
+  //       }
+  //     );
+  //   }
+  // };
+
+
+  const handleDeliveryCreation = async () => {
+    if (newDeliveryOrder?.currentLocation === undefined) {
+      setAlert({
+        severity: 'warning',
+        message: 'Please Select Delivery Location!'
+      });
+      return;
     }
+
+    if (newDeliveryOrder?.shippingType === undefined) {
+      setAlert({
+        severity: 'warning',
+        message: 'Please Select Shipping Type!'
+      });
+      return;
+    }
+
+    if (newDeliveryOrder?.deliveryDate === undefined) {
+      setAlert({
+        severity: 'warning',
+        message: 'Please Select Delivery Date!'
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    let reqBody = {
+      ShippingType: newDeliveryOrder.shippingType,
+      courierType: newDeliveryOrder.courierType,
+      deliveryDate: newDeliveryOrder.deliveryDate,
+      deliveryPersonnel: newDeliveryOrder.deliveryPersonnel,
+      method: newDeliveryOrder.method,
+      // status: salesOrder.orderStatus,
+      parcelQty: newDeliveryOrder.parcelQty,
+      parcelWeight: newDeliveryOrder.parcelWeight,
+      salesOrderId: newDeliveryOrder.salesOrderId
+    };
+
+    await asyncFetchCallback(
+      createDeliveryOrder(reqBody),
+      (res) => {
+        setLoading(false);
+        setAlert({
+          severity: 'success',
+          message: 'Delivery Order successfully created! You will be redirected back to the All Manual Deliveries page now.'
+        });
+        setTimeout(() => navigate(''), 3000);
+      },
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message: 'Error creating delivery order!'
+        });
+      }
+    );
   };
 
   return (
@@ -127,10 +173,20 @@ const CreateDeliveryOrder= () => {
             >
               <CircularProgress color='inherit' />
             </Backdrop>
-            <form onSubmit={handleSave}>
+            <form onSubmit={handleDeliveryCreation}>
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
                   <div className='product-text-fields'>
+                   <TextField
+                      required
+                      fullWidth
+                      id='outlined-required'
+                      label='Shipping Address'
+                      name='address'
+                      value={newDeliveryOrder?.currentLocation}
+                      onChange={handleEditDeliveryOrder}
+                      placeholder='eg.: 123 Clementi Road, #01-01, Singapore 12345'
+                    />
                     <TextField
                       required
                       fullWidth
@@ -140,36 +196,84 @@ const CreateDeliveryOrder= () => {
                       value={newDeliveryOrder?.shippingType}
                       onChange={handleEditDeliveryOrder}
                       placeholder='eg.: Manual'
+                      // {.map((option) => (
+                      //   <option key={option.value} value={option.value}>
+                      //     {option.label}
+                      //   </option>
+                      // ))}
                     />
                     <TextField
                       required
                       fullWidth
                       id='outlined-required'
-                      label='Delivery Status'
+                      label='Courier Type'
                       name='status'
-                      value={newDeliveryOrder?.currentLocation}
-                    //   error={
-                    //     !validator.isEmail(newSupplier?.email) &&
-                    //     !!newSupplier?.email
-                    //   }
-                    //   helperText={
-                    //     !validator.isEmail(newSupplier?.email) &&
-                    //     !!newSupplier?.email
-                    //       ? 'Enter a valid email: example@email.com'
-                    //       : ''
-                    //   }
+                      value={newDeliveryOrder?.courierType}
                       onChange={handleEditDeliveryOrder}
-                    //   placeholder=''
+                      placeholder='eg.: Standard'
+                    />
+                    <DesktopDatePicker
+                      label="Delivery Date"
+                      inputFormat="MM/DD/YYYY"
+                      value={date}
+                      onChange={handleDateChange}
+                      renderInput={(params) => <TextField {...params} />}
                     />
                     <TextField
                       required
                       fullWidth
                       id='outlined-required'
-                      label='Shipping Address'
-                      name='address'
-                      value={newDeliveryOrder?.currentLocation}
+                      label='Delivery Personnel'
+                      value={newDeliveryOrder?.deliveryPersonnel}
                       onChange={handleEditDeliveryOrder}
-                      placeholder='eg.: 123 Clementi Road, #01-01, Singapore 12345'
+                      placeholder='eg.: Delivery Man'
+                    />
+                    <TextField
+                      required
+                      fullWidth
+                      id='outlined-required'
+                      label='Delivery Method'
+                      value={newDeliveryOrder?.method}
+                      onChange={handleEditDeliveryOrder}
+                      placeholder='eg.: Standard'
+                    />
+                    <TextField
+                      required
+                      fullWidth
+                      id='outlined-required'
+                      label='Carrier'
+                      value={newDeliveryOrder?.carrier}
+                      onChange={handleEditDeliveryOrder}
+                      placeholder='eg.: Ninjavan'
+                    />
+                    <TextField
+                      required
+                      fullWidth
+                      id='outlined-required'
+                      label='Status'
+                      value={newDeliveryOrder?.salesOrder.orderStatus}
+                      onChange={handleEditDeliveryOrder}
+                    />
+                    <TextField
+                    type = "number"
+                      required
+                      fullWidth
+                      id='outlined-required'
+                      label='Parcel Quantity'
+                      value={newDeliveryOrder?.parcelQty}
+                      onChange={handleEditDeliveryOrder}
+                    />
+                    <TextField
+                      type = "number"
+                      required
+                      fullWidth
+                      id='outlined-required'
+                      label='Parcel Weight'
+                      value={newDeliveryOrder?.parcelWeight}
+                      onChange={handleEditDeliveryOrder}
+                      InputProps={{
+                        endAdornment: <InputAdornment position="end">kg</InputAdornment>,
+                      }}
                     />
                   </div>
                 </div>
@@ -189,11 +293,6 @@ const CreateDeliveryOrder= () => {
                     variant='contained'
                     className='create-btn'
                     color='primary'
-                    // disabled={
-                    //   disableSave ||
-                    //   (!validator.isEmail(newSupplier?.email) &&
-                    //     !!newSupplier?.email)
-                    // }
                   >
                     Create Delivery Order
                   </Button>
