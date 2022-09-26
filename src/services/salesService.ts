@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {
   DailySales,
+  OrderStatus,
   SalesBestseller,
   SalesOrder,
   SalesRevenue
@@ -12,8 +13,8 @@ export const getSalesOrderDetailsSvc = (
   salesOrderId: string
 ): Promise<SalesOrder> => {
   return axios
-  .get(`${apiRoot}/sales/details/${salesOrderId}`)
-  .then((res) => res.data);
+    .get(`${apiRoot}/sales/details/${salesOrderId}`)
+    .then((res) => res.data);
 };
 
 export const getAllSalesOrderSvc = (): Promise<SalesOrder[]> => {
@@ -66,4 +67,12 @@ export const getSalesBestsellersByRangeSvc = (
   return axios
     .post(`${apiRoot}/sales/timefilterbyday/bestseller`, timeFilter)
     .then((res) => res.data);
+};
+
+export const completeOrderPrepSvc = (salesOrder: SalesOrder): Promise<any> => {
+  return axios.put(`${apiRoot}/sales`, salesOrder).then((res) => res.data);
+};
+
+export const updateSalesOrderStatusSvc = (id: string, orderStatus: OrderStatus): Promise<any> => {
+  return axios.put(`${apiRoot}/sales`, {id, orderStatus}).then((res) => res.data);
 };

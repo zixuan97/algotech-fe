@@ -59,10 +59,8 @@ import InventoryState from './context/inventory/InventoryState';
 import SalesDashboard from './pages/sales/SalesDashboard';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
-
 import AllSalesOrder from './pages/sales/AllSalesOrders';
 import SalesOrderDetails from './pages/sales/SalesOrderDetails';
-import SalesState from './context/sales/SalesState';
 import NotFound from './pages/NotFound';
 
 const theme = createTheme({
@@ -93,7 +91,6 @@ const App = () => {
       <LocalizationProvider dateAdapter={AdapterMoment}>
         <AuthState>
           <InventoryState>
-            <SalesState>
               <ToastContainer />
               <Router>
                 <Routes>
@@ -289,7 +286,6 @@ const App = () => {
                   </Route>
                 </Routes>
               </Router>
-            </SalesState>
           </InventoryState>
         </AuthState>
       </LocalizationProvider>

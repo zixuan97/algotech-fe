@@ -19,7 +19,7 @@ import { MomentRange } from 'src/utils/dateUtils';
 import moment from 'moment';
 import { SalesOrder } from '../../models/types/index';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getAllSalesOrderWithTimeSvc } from 'src/services/salesService';
+import { getSalesOrdersByRangeSvc } from 'src/services/salesService';
 
 let platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
 platforms.unshift('ALL');
@@ -34,15 +34,9 @@ const AllSalesOrders = () => {
   ]);
 
   useEffect(() => {
-    asyncFetchCallback(
-      getAllSalesOrderWithTimeSvc(
-        dateRange[0].toISOString(),
-        dateRange[1].toISOString()
-      ),
-      (res) => {
-        setSalesOrders(res);
-      }
-    );
+    asyncFetchCallback(getSalesOrdersByRangeSvc(dateRange), (res) => {
+      setSalesOrders(res);
+    });
   }, [dateRange]);
 
   const filteredData = useMemo(
