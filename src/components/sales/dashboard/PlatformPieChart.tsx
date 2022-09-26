@@ -57,13 +57,11 @@ const getOrderDataByPlatform = (salesOrders: SalesOrder[]): number[] => {
   // OrderedMap is immutable
   let map = OrderedMap<PlatformType, number>(labels.map((lbl) => [lbl, 0]));
   salesOrders.forEach((salesOrder) => {
-    console.log(salesOrder.platformType, map.get(salesOrder.platformType));
     map = map.set(
       salesOrder.platformType,
       map.get(salesOrder.platformType, 0) + 1
     );
   });
-  console.log(map);
   return [...map.values()];
 };
 
@@ -72,6 +70,7 @@ type PlatformPieChartProps = {
 };
 
 const PlatformPieChart = ({ salesOrders }: PlatformPieChartProps) => {
+  // TODO: change to API call once implemented
   const data = {
     labels: labels.map(
       (lbl) => lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()
