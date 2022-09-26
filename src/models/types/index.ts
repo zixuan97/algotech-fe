@@ -136,6 +136,7 @@ export interface Supplier {
   name: string;
   address: string;
 }
+
 export interface DeliveryOrder {
   id: number;
   shippingDate: Date;
@@ -143,7 +144,7 @@ export interface DeliveryOrder {
   shippingType: ShippingType;
   currentLocation: string;
   eta: Date;
-  salesOrder?: SalesOrder; //temporary change to optional
+  salesOrder: SalesOrder;
   salesOrderId: number;
   courierType?: string;
   deliveryPersonnel?: string;
@@ -178,4 +179,20 @@ export interface SalesOrderItem {
   productName?: string;
   createdTime?: Date;
   isNewAdded?: boolean;
+}
+
+export interface DailySales {
+  // TODO: change to number once BE is fixed
+  salesorders: string;
+  createddate: Date;
+}
+
+export interface SalesBestseller {
+  quantity: number;
+  productname: string;
+}
+
+export interface SalesRevenue {
+  revenue: number;
+  createddate: Date;
 }

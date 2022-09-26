@@ -1,7 +1,6 @@
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import moment from 'moment';
-import React from 'react';
-import salesContext from 'src/context/sales/salesContext';
+import { SalesOrder } from 'src/models/types';
 import { READABLE_DDMMYY_TIME } from 'src/utils/dateUtils';
 
 const columns: GridColDef[] = [
@@ -11,7 +10,7 @@ const columns: GridColDef[] = [
     flex: 1
   },
   {
-    field: 'status',
+    field: 'orderStatus',
     headerName: 'Status',
     flex: 1
   },
@@ -42,25 +41,27 @@ const columns: GridColDef[] = [
     valueGetter: (params) => moment(params.value),
     valueFormatter: (params) => params.value.format(READABLE_DDMMYY_TIME),
     flex: 1.2
-  },
-  {
-    field: 'deliveryOrder',
-    headerName: 'Delivery Status',
-    valueGetter: (params) => params.value?.deliveryStatus ?? '',
-    flex: 1.4
   }
+  //   {
+  //     field: 'deliveryOrder',
+  //     headerName: 'Delivery Status',
+  //     valueGetter: (params) => params.value?.deliveryStatus ?? '',
+  //     flex: 1.4
+  //   }
 ];
 
-const SalesOrdersGrid = () => {
-  const { salesOrders } = React.useContext(salesContext);
+type SalesOrderGridProps = {
+  salesOrders: SalesOrder[];
+};
 
+const SalesOrdersGrid = ({ salesOrders }: SalesOrderGridProps) => {
   return (
     <DataGrid
       sx={{ fontSize: '0.8em' }}
       columns={columns}
       rows={salesOrders}
       autoHeight
-      pageSize={5}
+      pageSize={10}
     />
   );
 };

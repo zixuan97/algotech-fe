@@ -29,10 +29,7 @@ const DateRangePicker = ({
         label='End Date'
         value={dateRange[1].format(YYYY_MM_DD)}
         maxDate={moment('2100-01-01')}
-        shouldDisableDate={(date) => {
-          console.log(date, dateRange[0]);
-          return moment(date).isBefore(dateRange[0]);
-        }}
+        shouldDisableDate={(date) => moment(date).isBefore(dateRange[0])}
         onChange={(date) =>
           updateDateRange((prev) => [prev[0], moment(date).endOf('day')])
         }
