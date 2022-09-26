@@ -13,7 +13,7 @@ export const getSalesOrderDetailsSvc = (
   salesOrderId: string
 ): Promise<SalesOrder> => {
   return axios
-    .get(`${apiRoot}/sales/details/${salesOrderId}`)
+    .get(`${apiRoot}/sales/id/${salesOrderId}`)
     .then((res) => res.data);
 };
 
