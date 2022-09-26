@@ -1,158 +1,61 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import '../../styles/pages/orders.scss';
+import '../../styles/pages/sales/orders.scss';
 import '../../styles/common/common.scss';
 import {
   Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
-  Paper,
   Select,
   MenuItem,
   SelectChangeEvent,
-  IconButton,
-  Collapse,
-  Box,
-  Grid,
-  Chip
+  Stack,
+  Typography,
+  Divider
 } from '@mui/material';
-import {
-  Search,
-  Download,
-  FilterList,
-  KeyboardArrowUp,
-  KeyboardArrowDown
-} from '@mui/icons-material';
-import { PlatformType, SalesOrder } from 'src/models/types';
-import { createSearchParams, useNavigate } from 'react-router-dom';
-import salesContext from 'src/context/sales/salesContext';
+import { Search, FilterList } from '@mui/icons-material';
+import { PlatformType } from 'src/models/types';
+import SalesOrderTable from 'src/components/sales/order/SalesOrderTable';
+import DateRangePicker from 'src/components/common/DateRangePicker';
+import { MomentRange } from 'src/utils/dateUtils';
+import moment from 'moment';
+import { SalesOrder } from '../../models/types/index';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { getSalesOrdersByRangeSvc } from 'src/services/salesService';
 
 let platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
-platforms.push('ALL');
-
-const Row = ({ row }: { row: SalesOrder }) => {
-  const navigate = useNavigate();
-  const [open, setOpen] = React.useState(true);
-
-  const navToViewSalesOrder = () => {
-    navigate({
-      pathname: '/sales/salesOrderDetails',
-      search: createSearchParams({
-        id: row?.id.toString()
-      }).toString()
-    });
-  };
-
-  return (
-    <>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-        <TableCell align='center'>
-          <IconButton
-            aria-label='expand row'
-            size='small'
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-          </IconButton>
-        </TableCell>
-        <TableCell component='th' scope='row' align='center'>
-          {row.customerName}
-        </TableCell>
-
-        <TableCell align='center'>
-          <Chip
-            label={
-              row.orderStatus.charAt(0).toUpperCase() +
-              row.orderStatus.slice(1).toLowerCase()
-            }
-          />
-        </TableCell>
-        <TableCell align='center'>
-          <Chip
-            label={row.platformType.toUpperCase()}
-            color={
-              row.platformType === PlatformType.SHOPEE
-                ? 'warning'
-                : row.platformType === PlatformType.SHOPIFY
-                ? 'primary'
-                : 'info'
-            }
-          />
-        </TableCell>
-        <TableCell align='center'>${row.amount}</TableCell>
-        <TableCell align='center'>{row.customerAddress ?? 'NA'}</TableCell>
-        <TableCell align='center'>
-          <Button
-            variant='contained'
-            size='large'
-            sx={{ height: 'fit-content' }}
-            onClick={() => navToViewSalesOrder()}
-          >
-            Manage Order
-          </Button>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
-          <Collapse in={open} timeout='auto' unmountOnExit>
-            <Box sx={{ margin: '2%' }}>
-              <div className='grid-toolbar'>
-                <h3>Order Details</h3>
-                <h3>Order ID.: #{row.orderId}</h3>
-              </div>
-
-              {row.salesOrderItems?.map((item) => {
-                return (
-                  <>
-                    <Grid
-                      container
-                      spacing={1}
-                      style={{ alignItems: 'center' }}
-                    >
-                      <Grid item xs={3}>
-                        {item.productName ?? 'NA'} x{item.quantity}, $
-                        {item.price}
-                      </Grid>
-                      <Grid item xs={1}>
-                        ${item.quantity * item.price}
-                      </Grid>
-                    </Grid>
-                  </>
-                );
-              })}
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </>
-  );
-};
+platforms.unshift('ALL');
 
 const AllSalesOrders = () => {
-  const { salesOrders, refreshSalesOrder } = React.useContext(salesContext);
+  const [salesOrders, setSalesOrders] = useState<SalesOrder[]>([]);
   const [searchField, setSearchField] = useState<string>('');
-  const [filterPlatform, setFilterPlatform] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
+  const [filterPlatform, setFilterPlatform] = useState<string>('ALL');
+  const [dateRange, setDateRange] = React.useState<MomentRange>([
+    moment().startOf('day').subtract(10, 'day'),
+    moment().endOf('day')
+  ]);
 
   useEffect(() => {
-    setLoading(true);
-    refreshSalesOrder(() => setLoading(false));
-  }, []);
+    asyncFetchCallback(getSalesOrdersByRangeSvc(dateRange), (res) => {
+      setSalesOrders(res);
+    });
+  }, [dateRange]);
 
   const filteredData = useMemo(
     () =>
       filterPlatform || searchField
-        ? salesOrders.filter(
-            (saleOrder) =>
-              (!filterPlatform || saleOrder.platformType === filterPlatform) &&
-              Object.values(saleOrder).some((value) =>
+        ? salesOrders.filter((saleOrder) => {
+            if (filterPlatform === 'ALL') {
+              return Object.values(saleOrder).some((value) =>
                 String(value).toLowerCase().match(searchField.toLowerCase())
-              )
-          )
+              );
+            } else {
+              return (
+                saleOrder.platformType === filterPlatform &&
+                Object.values(saleOrder).some((value) =>
+                  String(value).toLowerCase().match(searchField.toLowerCase())
+                )
+              );
+            }
+          })
         : salesOrders,
     [salesOrders, filterPlatform, searchField]
   );
@@ -166,14 +69,30 @@ const AllSalesOrders = () => {
 
   return (
     <div className='orders'>
-      <h1>All Orders</h1>
-      <div className='grid-toolbar'>
+      <Stack
+        direction='row'
+        width='100%'
+        alignItems='center'
+        justifyContent='space-between'
+      >
+        <h1>Sales Orders</h1>
+        <Stack direction='row' spacing={3}>
+          <Typography className='container-center'>View sales from</Typography>
+          <DateRangePicker
+            dateRange={dateRange}
+            updateDateRange={setDateRange}
+          />
+        </Stack>
+      </Stack>
+      <Divider className='full-divider' />
+      <div className='order-grid-toolbar'>
         <div className='search-bar'>
           <FilterList />
           <Select
             style={{ width: '50%' }}
             value={filterPlatform}
             label='Filter'
+            defaultValue='ALL'
             placeholder='Platform'
             onChange={handleFilterChange}
           >
@@ -198,42 +117,14 @@ const AllSalesOrders = () => {
             sx={{ height: 'fit-content' }}
             onClick={() => {
               setSearchField('');
-              setFilterPlatform('');
+              setFilterPlatform('ALL');
             }}
           >
             Reset
           </Button>
         </div>
-        <Button
-          variant='contained'
-          size='large'
-          sx={{ height: 'fit-content' }}
-          endIcon={<Download />}
-          onClick={() => {}}
-        >
-          Download CSV
-        </Button>
       </div>
-      <TableContainer component={Paper}>
-        <Table aria-label='collapsible table'>
-          <TableHead>
-            <TableRow>
-              <TableCell />
-              <TableCell align='center'>Order For</TableCell>
-              <TableCell align='center'>Status</TableCell>
-              <TableCell align='center'>Platform</TableCell>
-              <TableCell align='center'>Order Amount</TableCell>
-              <TableCell align='center'>Delivery Details</TableCell>
-              <TableCell align='center'>Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredData.map((salesOrder) => (
-              <Row key={salesOrder.id} row={salesOrder} />
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <SalesOrderTable filteredData={filteredData} />
     </div>
   );
 };

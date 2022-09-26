@@ -173,7 +173,7 @@ const ViewAccount = () => {
           }
         }
       );
-  }, []);
+  }, [id, navigate]);
 
   const userFieldOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
