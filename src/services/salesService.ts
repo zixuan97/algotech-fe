@@ -2,7 +2,11 @@ import axios from 'axios';
 import { OrderStatus, SalesOrder } from 'src/models/types';
 import apiRoot from './util/apiRoot';
 
-export const getAllSalesOrderSvc = (
+export const getAllSalesOrderSvc = (): Promise<SalesOrder[]> => {
+  return axios.get(`${apiRoot}/sales/all`).then((res) => res.data);
+};
+
+export const getAllSalesOrderWithTimeSvc = (
   time_from: string,
   time_to: string
 ): Promise<SalesOrder[]> => {

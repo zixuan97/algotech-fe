@@ -11,7 +11,7 @@ import {
   Typography,
   Divider
 } from '@mui/material';
-import { Search, Download, FilterList } from '@mui/icons-material';
+import { Search, FilterList } from '@mui/icons-material';
 import { PlatformType } from 'src/models/types';
 import SalesOrderTable from 'src/components/sales/order/SalesOrderTable';
 import DateRangePicker from 'src/components/common/DateRangePicker';
@@ -19,7 +19,7 @@ import { MomentRange } from 'src/utils/dateUtils';
 import moment from 'moment';
 import { SalesOrder } from '../../models/types/index';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getAllSalesOrderSvc } from 'src/services/salesService';
+import { getAllSalesOrderWithTimeSvc } from 'src/services/salesService';
 
 let platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
 platforms.unshift('ALL');
@@ -35,7 +35,7 @@ const AllSalesOrders = () => {
 
   useEffect(() => {
     asyncFetchCallback(
-      getAllSalesOrderSvc(
+      getAllSalesOrderWithTimeSvc(
         dateRange[0].toISOString(),
         dateRange[1].toISOString()
       ),
@@ -44,6 +44,7 @@ const AllSalesOrders = () => {
       }
     );
   }, [dateRange]);
+
   const filteredData = useMemo(
     () =>
       filterPlatform || searchField
