@@ -27,11 +27,11 @@ import {
   updateSalesOrderStatusSvc
 } from 'src/services/salesService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { steps } from 'src/components/sales/order/steps';
-import OrderInfoGrid from 'src/components/sales/order/OrderInfoGrid';
-import OrderSummaryCard from 'src/components/sales/order/OrderSummaryCard';
-import StatusStepper from 'src/components/sales/order/StatusStepper';
-import PlatformChip from 'src/components/sales/order/PlatformChip';
+import { steps } from '../../components/sales/order/steps';
+import OrderInfoGrid from '../../components/sales/order/OrderInfoGrid';
+import OrderSummaryCard from '../../components/sales/order/OrderSummaryCard';
+import StatusStepper from '../../components/sales/order/StatusStepper';
+import PlatformChip from '../../components/sales/order/PlatformChip';
 
 const SalesOrderDetails = () => {
   let params = new URLSearchParams(window.location.search);
@@ -130,7 +130,7 @@ const SalesOrderDetails = () => {
   }, [id, navigate, products]);
 
   const nextStep = () => {
-    if (activeStep < steps.length - 1) {
+    if (activeStep < steps.length - 1 && activeStep < 3) {
       setActiveStep((prev) => prev + 1);
       const newStatus = steps[activeStep + 1].currentState;
       if (newStatus === OrderStatus.PREPARED) {

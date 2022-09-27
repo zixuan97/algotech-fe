@@ -74,5 +74,5 @@ export const completeOrderPrepSvc = (salesOrder: SalesOrder): Promise<any> => {
 };
 
 export const updateSalesOrderStatusSvc = (id: string, orderStatus: OrderStatus): Promise<any> => {
-  return axios.put(`${apiRoot}/sales`, {id, orderStatus}).then((res) => res.data);
+  return axios.put(`${apiRoot}/sales/status`, {id, orderStatus}).then((res) => res.data);
 };
