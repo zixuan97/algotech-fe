@@ -8,7 +8,8 @@ import {
   Stepper,
   Paper,
   Typography,
-  Button
+  Button,
+  Grid
 } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import {
@@ -16,6 +17,10 @@ import {
   LocalShippingRounded,
   TaskAltRounded
 } from '@mui/icons-material';
+import { useSearchParams } from 'react-router-dom';
+import { DeliveryOrder } from 'src/models/types';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { getDeliveryOrderById } from 'src/services/deliveryServices';
 
 const steps = [
   {
@@ -36,7 +41,30 @@ const steps = [
 
 const ManualDeliveryDetails = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+
   const [activeStep, setActiveStep] = React.useState<number>(0);
+  const [originalDeliveryOrder, setOriginalDeliveryOrder] =
+    React.useState<DeliveryOrder>();
+  const [updatedDeliveryOrder, setUpdatedDeliveryOrder] =
+    React.useState<DeliveryOrder>();
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    setLoading(true);
+    if (id) {
+      asyncFetchCallback(
+        getDeliveryOrderById(id),
+        (res) => {
+          setOriginalDeliveryOrder(res);
+          setUpdatedDeliveryOrder(res);
+          setLoading(false);
+        },
+        () => setLoading(false)
+      );
+    }
+  }, [id]);
 
   return (
     <div className='view-delivery-details'>
@@ -57,12 +85,81 @@ const ManualDeliveryDetails = () => {
           ))}
         </Stepper>
       </div>
-      <div className='delivery-details-action'>
-        <Paper elevation={2} className='action-card'>
+      <div className='delivery-details-action-section'>
+        <Paper elevation={2} className='delivery-details-action-card'>
           <Typography sx={{ fontSize: 'inherit' }}>Next Action:</Typography>
           <Button variant='contained' size='medium' onClick={() => {}}>
             {steps[activeStep].nextAction}
           </Button>
+        </Paper>
+      </div>
+      <div className='delivery-detail-cards'>
+        <Paper elevation={2} className='delivery-address-card'>
+          <div className='delivery-address-grid'>
+            <h3 className='labelText'>Delivery Address</h3>
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <h4 className='labelText'>Name</h4>
+                <Typography>John Tan</Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <h4 className='labelText'>Address Line 1</h4>
+                <Typography>123 Bedok Road</Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <h4 className='labelText'>Address Line 2</h4>
+                <Typography>#01-09</Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <h4 className='labelText'>Country</h4>
+                <Typography>Singapore</Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <h4 className='labelText'>Postal Code</h4>
+                <Typography>434503</Typography>
+              </Grid>
+            </Grid>
+          </div>
+        </Paper>
+        <Paper elevation={2} className='delivery-mode-card'>
+          <div className='delivery-mode-grid'>
+            <h3 className='labelText'>Delivery Mode</h3>
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <h4 className='labelText'>Delivery Method</h4>
+                <Typography>Manual Delivery</Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <h4 className='labelText'>To be Delivered By</h4>
+                <Typography>Jane (Intern)</Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <h4 className='labelText'>Comments</h4>
+                <Typography>
+                  Jane will deliver otw to work on Monday.
+                </Typography>
+              </Grid>
+              <div className='delivery-actions-button-container'>
+                <Button
+                  variant='contained'
+                  size='medium'
+                  sx={{ height: 'fit-content' }}
+                  onClick={() => {}}
+                >
+                  Download DO
+                </Button>
+
+                <Button
+                  variant='contained'
+                  size='medium'
+                  sx={{ height: 'fit-content' }}
+                  onClick={() => {}}
+                >
+                  Download Waybill
+                </Button>
+              </div>
+            </Grid>
+          </div>
         </Paper>
       </div>
     </div>
