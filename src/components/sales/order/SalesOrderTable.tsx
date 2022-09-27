@@ -17,6 +17,7 @@ import {
   TableRow
 } from '@mui/material';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
+import _ from 'lodash';
 import React from 'react';
 import { createSearchParams, useNavigate } from 'react-router-dom';
 import { SalesOrder } from 'src/models/types';
@@ -56,7 +57,7 @@ const Row = ({ row }: { row: SalesOrder }) => {
         </TableCell>
 
         <TableCell align='center'>
-          <Chip label={row.orderStatus} />
+          <Chip label={_.startCase(row.orderStatus.toLowerCase())} />
         </TableCell>
         <TableCell align='center'>
           <PlatformChip salesOrder={row!} />

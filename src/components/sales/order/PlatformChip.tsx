@@ -1,4 +1,5 @@
 import { Chip, Typography } from '@mui/material';
+import _ from 'lodash';
 import { PlatformType, SalesOrder } from 'src/models/types';
 
 interface props {
@@ -7,11 +8,12 @@ interface props {
 }
 
 const PlatformChip = ({ salesOrder, pretext }: props) => {
+  
   return (
     <div style={{ margin: '1%' }}>
       {pretext && <Typography>{pretext}</Typography>}
       <Chip
-        label={salesOrder?.platformType}
+        label={_.startCase(salesOrder?.platformType.toLowerCase())}
         color={
           salesOrder?.platformType === PlatformType.SHOPEE
             ? 'warning'
