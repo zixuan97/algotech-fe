@@ -10,7 +10,11 @@ import { Button, Stack, TextField, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { DeliveryOrder, ShippingType } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getAllDeliveries, getAllDeliveriesPostalCode, getAllDeliveriesPostalCodeByDate} from 'src/services/deliveryServices';
+import {
+  getAllDeliveries,
+  getAllDeliveriesPostalCode,
+  getAllDeliveriesPostalCodeByDate
+} from 'src/services/deliveryServices';
 import { useNavigate } from 'react-router';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
@@ -26,6 +30,7 @@ const myIcon = new Icon({
   iconSize: [25, 41]
 });
 
+// TODO: Check if delivery date is undefined
 const columns: GridColDef[] = [
   { field: 'salesOrderId', headerName: 'Order ID', flex: 1 },
   { field: 'status', headerName: 'Delivery Status', flex: 1 },
@@ -61,7 +66,10 @@ const AllManualDeliveries = () => {
   ]);
 
   React.useEffect(() => {
-    asyncFetchCallback(getAllDeliveriesPostalCodeByDate(dateRange), setDeliveryPostalCode);
+    asyncFetchCallback(
+      getAllDeliveriesPostalCodeByDate(dateRange),
+      setDeliveryPostalCode
+    );
   }, [dateRange]);
 
   React.useEffect(() => {
@@ -123,14 +131,12 @@ const AllManualDeliveries = () => {
           attribution='&copy; <img src="https://www.onemap.gov.sg/docs/maps/images/oneMap64-01.png" style="height:20px;width:20px;"/> OneMap | Map data &copy; contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>'
           url='https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png'
         />
-        {deliveryPostalCode.map((data)=> {
+        {deliveryPostalCode.map((data) => {
           return (
-            <Marker position={[data.LATITUDE,data.LONGTITUDE]} icon = {myIcon}>
-            <Popup>
-              {data.ADDRESS}
-            </Popup>
-          </Marker>
-          )
+            <Marker position={[data.LATITUDE, data.LONGTITUDE]} icon={myIcon}>
+              <Popup>{data.ADDRESS}</Popup>
+            </Marker>
+          );
         })}
       </MapContainer>
       <div className='grid-toolbar'>
