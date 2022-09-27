@@ -19,7 +19,7 @@ import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import { useSearchParams } from 'react-router-dom';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
@@ -34,8 +34,18 @@ import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import moment from 'moment';
 
 const columns: GridColDef[] = [
-  { field: 'product_sku', headerName: 'SKU', flex: 1 },
-  { field: 'product_name', headerName: 'Product Name', flex: 1 },
+  {
+    field: 'sku',
+    headerName: 'SKU',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) => params.row.product.sku
+  },
+  {
+    field: 'name',
+    headerName: 'Product Name',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) => params.row.product.name
+  },
   { field: 'rate', headerName: 'Rate per Unit', flex: 1 },
   { field: 'quantity', headerName: 'Quantity', flex: 1 }
 ];
@@ -123,8 +133,8 @@ const ProcurementOrderDetails = () => {
     let reqBody = {
       id: originalOrder?.id,
       description: originalOrder?.description,
-      payment_status: originalOrder?.paymentStatus,
-      fulfilment_status:
+      paymentStatus: originalOrder?.paymentStatus,
+      fulfilmentStatus:
         originalOrder?.fulfilmentStatus === FulfilmentStatus.CREATED
           ? FulfilmentStatus.ARRIVED
           : FulfilmentStatus.COMPLETED
@@ -152,7 +162,13 @@ const ProcurementOrderDetails = () => {
         });
         setLoading(false);
       },
-      (err) => {}
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message: 'Fulfilment Status was not updated successfully.'
+        });
+      }
     );
   };
 
@@ -162,8 +178,8 @@ const ProcurementOrderDetails = () => {
     let reqBody = {
       id: originalOrder?.id,
       description: updatedOrder?.description,
-      payment_status: updatedOrder?.paymentStatus,
-      fulfilment_status: originalOrder?.fulfilmentStatus
+      paymentStatus: updatedOrder?.paymentStatus,
+      fulfilmentStatus: originalOrder?.fulfilmentStatus
     };
 
     await asyncFetchCallback(
@@ -176,7 +192,13 @@ const ProcurementOrderDetails = () => {
         });
         setLoading(false);
       },
-      (err) => {}
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message: 'Procurement Order was not updated successfully.'
+        });
+      }
     );
   };
 
