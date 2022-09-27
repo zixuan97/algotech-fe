@@ -187,7 +187,17 @@ const ProcurementOrderDetails = () => {
     await asyncFetchCallback(
       editProcurementOrder(reqBody),
       (res) => {
-        setOriginalOrder(updatedOrder);
+        setOriginalOrder((originalOrder) => {
+          if (originalOrder) {
+            return {
+              ...originalOrder,
+              paymentStatus: updatedOrder!.paymentStatus,
+              description: updatedOrder!.description
+            };
+          } else {
+            return originalOrder;
+          }
+        });
         setAlert({
           severity: 'success',
           message: 'Procurement Order updated successfully.'
