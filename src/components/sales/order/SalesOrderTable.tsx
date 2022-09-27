@@ -130,21 +130,27 @@ const SalesOrderTable = ({ filteredData }: props) => {
 
   return (
     <TableContainer component={Paper}>
-      <Table aria-label='collapsible table'>
+      <Table
+        aria-label='collapsible table'
+        style={{ width: '100%', tableLayout: 'fixed' }}
+      >
         <TableHead>
           <TableRow>
-            <TableCell />
+            <TableCell width={25} />
             <TableCell align='center'>Order For</TableCell>
             <TableCell align='center'>Status</TableCell>
             <TableCell align='center'>Platform</TableCell>
             <TableCell align='center'>Order Amount</TableCell>
-            <TableCell align='center'>Delivery Details</TableCell>
+            <TableCell align='center'>Delivery Address</TableCell>
             <TableCell align='center'>Actions</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody>
+        <TableBody style={{ width: '100%' }}>
           {(rowsPerPage > 0
-            ? filteredData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            ? filteredData.slice(
+                page * rowsPerPage,
+                page * rowsPerPage + rowsPerPage
+              )
             : filteredData
           ).map((salesOrder) => (
             <Row key={salesOrder.id} row={salesOrder} />
