@@ -10,6 +10,12 @@ export const getAllDeliveries = async (): Promise<DeliveryOrder[]> => {
   return axios.get(`${apiRoot}/delivery/all`).then((res) => res.data);
 };
 
+export const getAllShippitDeliveries = async (): Promise<DeliveryOrder[]> => {
+  return axios
+    .get(`${apiRoot}/delivery/shippit/orders/all`)
+    .then((res) => res.data);
+};
+
 export const getDeliveryOrderById = async (
   id: string | number
 ): Promise<DeliveryOrder> => {
