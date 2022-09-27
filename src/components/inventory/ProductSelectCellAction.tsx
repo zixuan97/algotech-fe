@@ -26,7 +26,18 @@ const ProductSelectCellAction = ({
     apiRef.current.setEditCellValue({
       id: gridId,
       field,
-      value: { product: allProducts.find((pdt) => pdt.id === e.target.value), productId: e.target.value } ,
+      value: e.target.value
+
+      // value: { 
+      //   // product: allProducts.find((pdt) => pdt.id === e.target.value), 
+
+      //   bundleId: availableProducts.find((bp) => bp.bundleId === e.target.value),
+      //   bundleName: availableProducts.find((bp) => bp.bundleName === e.target.value),
+      //   productId: e.target.value, 
+      //   productSku: allProducts.find((pdt) => pdt.sku === e.target.value),
+      //   productName: allProducts.find((pdt) => pdt.name === e.target.value),
+        
+      // } ,
       // name: allProducts.find((pdt) => pdt.id === e.target.value)?.name,
       //this is the issue rn
     });
@@ -56,7 +67,7 @@ const ProductSelectCellAction = ({
       >
         {displayedProducts.map((bundleProduct) => (
           <MenuItem key={bundleProduct.productId} value={bundleProduct.productId}>
-            {bundleProduct?.product?.name}
+            {bundleProduct?.productName}
           </MenuItem>
         ))}
       </Select>

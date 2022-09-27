@@ -16,7 +16,7 @@ import {
   GridRenderEditCellParams,
   GridValueGetterParams
 } from '@mui/x-data-grid';
-import { Product, BundleProduct } from 'src/models/types';
+import { Bundle, Product, BundleProduct } from 'src/models/types';
 import ProductEditToolbarCellAction from './ProductEditToolbarCellAction';
 import ProductSelectCellAction from './ProductSelectCellAction';
 import inventoryContext from 'src/context/inventory/inventoryContext';
@@ -29,16 +29,18 @@ import {
 } from './inventoryHelper';
 import { toPairs } from 'lodash';
 
-type ProductEditGridProps = {
+type BundleProductEditGridProps = {
+  thisBundle: Bundle,
   productList: BundleProduct[];
   updateProductList: (productList: BundleProduct[]) => void;
 };
 
 //TODO: create a generic version of Edtiable Grid
 export default function BundleProductEditGrid({
+  thisBundle,
   productList,
   updateProductList
-}: ProductEditGridProps) {
+}: BundleProductEditGridProps) {
   const { products } = React.useContext(inventoryContext);
   // const [bundleProducts, setBundleProducts] = React.useState<BundleProduct[]>(convertProductsToBundleProducts(products));
   const [productGridRows, setProductGridRows] = React.useState<
@@ -49,7 +51,7 @@ export default function BundleProductEditGrid({
   );
 
   const availableProducts = React.useMemo(
-    () => convertProductsToBundleProducts(getAvailableProducts(productGridRows, products)),
+    () => convertProductsToBundleProducts(thisBundle, getAvailableProducts(productGridRows, products)),
     [productGridRows, products]
   );
 
@@ -99,8 +101,8 @@ export default function BundleProductEditGrid({
       ...newRow,
       isNew: false,
       // hotfix
-      product: newRow.product?.product,
-      productId: newRow.product?.productId,
+      // product: newRow.product?.product,
+      // productId: newRow.product?.productId,
     };
     console.log("updated_row",updatedRow);
     const updatedProductGridRows = productGridRows.map((row) =>
@@ -115,13 +117,13 @@ export default function BundleProductEditGrid({
 
   const columns: GridColumns = [
     {
-      field: 'product',
+      field: 'productId',
       headerName: 'Product Name',
       flex: 2,
       editable: true,
       //if field is names, parse in names instead
-      // valueGetter: (params: GridValueGetterParams) => params.row.product.name,
-      valueFormatter: ({ value }) => value?.name,
+      valueGetter: (params: GridValueGetterParams) => params.row.productName,
+      // valueFormatter: ({ value }) => value?.name,
       renderEditCell: (params: GridRenderEditCellParams<BundleProduct>) => (
         <ProductSelectCellAction
           params={params}
@@ -196,6 +198,7 @@ export default function BundleProductEditGrid({
       }}
       componentsProps={{
         toolbar: {
+          thisBundle: thisBundle,
           setRows: setProductGridRows,
           setRowModesModel,
           availableProducts,

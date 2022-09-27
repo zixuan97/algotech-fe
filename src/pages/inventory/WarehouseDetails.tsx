@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
+import { useNavigate, createSearchParams, useSearchParams, useLocation } from 'react-router-dom';
 import {
   Backdrop,
   Box,
@@ -65,7 +65,7 @@ const LocationDetails = () => {
   const [stockQuantityDetails, setStockQuantityDetails] = React.useState<StockQuantity[]>(
     []
   );
-  const [newStockQtyPdts, setNewStockQtyPdts] = React.useState<NewStockQuantityProduct[]>([]);
+  // const [newStockQtyPdts, setNewStockQtyPdts] = React.useState<NewStockQuantityProduct[]>([]);
 
   const [edit, setEdit] = React.useState<boolean>(false);
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
@@ -163,28 +163,41 @@ const LocationDetails = () => {
     setModalOpen(false);
     setLoading(true);
 
-    if (selectedProduct) {
-      let newStockQtyPdt: NewStockQuantityProduct = {
+    console.log("selected_product", selectedProduct);
+    console.log("quantity", quantity);
+
+    if (selectedProduct && id) {
+      let newStockQtyPdt: StockQuantity = {
+        locationId: parseInt(id),
         quantity: parseInt(quantity),
         product: selectedProduct
       };
-      let updatedStockQtyPdts = Object.assign([], newStockQtyPdts);
+      console.log("new_stock_qty_pdt:", newStockQtyPdt);
+
+      let updatedStockQtyPdts = Object.assign([], stockQuantityDetails);
+      console.log("updatedStockQtyPdts", updatedStockQtyPdts);
+
       setAddedProductsId((prev) => [...prev, selectedProduct.id]);
       updatedStockQtyPdts.push(newStockQtyPdt);
-      setNewStockQtyPdts(updatedStockQtyPdts);
+      console.log("updatedStockQtyPdts AFTER PUSH", updatedStockQtyPdts);
+
+      setStockQuantityDetails(updatedStockQtyPdts);
+
       setLoading(false);
       setAlert({
         severity: 'success',
-        message: 'Product added to warehouse successfully!'
+        message: 'Product added to warehouse successfully! Remember to save changes.'
       });
     }
   };
 
   const removeStockQtyPdt = (id: string) => {
-    const updatedStockQtyPdts = newStockQtyPdts.filter(
-      (item) => item.productId?.toString() != id
+    console.log("id to be deleted:", id);
+    const updatedStockQtyPdts = stockQuantityDetails.filter(
+      (item) => item.product?.id.toString() !== id
     );
-    setNewStockQtyPdts(updatedStockQtyPdts);
+    setStockQuantityDetails(updatedStockQtyPdts);
+    console.log("remove: updatedStockQtyPdts", updatedStockQtyPdts)
   }
 
   const columns: GridColDef[] = [
@@ -203,41 +216,56 @@ const LocationDetails = () => {
       field: 'actions',
       headerName: 'Actions',
       flex: 1,
-      renderCell: ({ id }: GridRenderCellParams) => {
-        return (
-          <Button
-            variant='outlined'
-            startIcon={<DeleteIcon />}
-            onClick={() => removeStockQtyPdt(id.toString())}
-          >
-            Delete
-          </Button>
-        );
-      }
       // renderCell: ({ id }: GridRenderCellParams) => {
-      //   if (!edit) {
-      //     return ProductCellAction;
-      //   } else {
-      //     return (
-      //       <Button
-      //         variant='outlined'
-      //         startIcon={<DeleteIcon />}
-      //         onClick={() => removeStockQtyPdt(id.toString())}
-      //       >
-      //         Delete
-      //       </Button>
-      //     );
-      //   }
+      //   return (
+      //     <Button
+      //       variant='outlined'
+      //       startIcon={<DeleteIcon />}
+      //       onClick={() => removeStockQtyPdt(id.toString())}
+      //     >
+      //       Delete
+      //     </Button>
+      //   );
       // }
+      renderCell: ({ id }: GridRenderCellParams) => {
+        if (!edit) {
+          return (
+          <Button
+            variant='contained'
+            onClick={() =>
+              navigate({
+                pathname: '/inventory/productDetails',
+                search: createSearchParams({
+                  id: id.toString()
+                }).toString()
+              })
+            }
+          >
+          View Details
+          </Button>
+          )
+        } else {
+          return (
+            <Button
+              variant='outlined'
+              startIcon={<DeleteIcon />}
+              onClick={() => removeStockQtyPdt(id.toString())}
+            >
+              Delete
+            </Button>
+          );
+        }
+      }
     }
   ];
 
   const handleSave = async () => {
-    if (editLocation || newStockQtyPdts) {
+    if (editLocation || stockQuantityDetails) {
       setBackdropLoading(true);
 
-      let finalNewLocationStockQtyPdts = newStockQtyPdts.map(
-        ({product, quantity}) => ({
+      let finalNewLocationStockQtyPdts = stockQuantityDetails.map(
+        ({locationId, product, quantity}) => ({
+          locationId: locationId!,
           product: product!,
           quantity: quantity!
         })
@@ -252,12 +280,11 @@ const LocationDetails = () => {
 
       setEditLocation(reqBody);
 
-      console.log("REQUEST BODY");
-      console.log(reqBody);
+      console.log("REQUEST BODY:", reqBody);
 
       asyncFetchCallback(
         // updateLocationWithoutProducts(editLocation),
-        updateLocation(editLocation),
+        updateLocation(reqBody),
         () => {
           setAlert({
             severity: 'success',
@@ -330,6 +357,7 @@ const LocationDetails = () => {
                   onClick={() => {
                     setEdit(false);
                     setEditLocation(originalLocation);
+                    console.log("edit location", editLocation);
                   }}
                 >
                   Discard Changes

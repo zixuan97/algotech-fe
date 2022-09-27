@@ -127,7 +127,7 @@ const BundleDetails = () => {
         setTableLoading(false);
       });
     }
-  }, [id, editBundle]);
+  }, [id, editBundle, originalBundle]);
 
   // React.useEffect(() => { 
   //   setTableLoading(true);
@@ -326,6 +326,7 @@ const BundleDetails = () => {
                 {/* product table */}
                 {edit ? (
                   <BundleProductEditGrid
+                    thisBundle={editBundle}
                     productList={productDetails}
                     updateProductList={(pdts) =>
                       setEditBundle((prev) => ({

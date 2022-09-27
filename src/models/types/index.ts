@@ -111,8 +111,11 @@ export interface Bundle {
 }
 
 export interface BundleProduct {
-  product: Product;
+  bundleId: number;
   productId: number;
+  productSku: String,
+  bundleName: String,
+  productName: String,
 }
 
 export interface ProcurementOrder {

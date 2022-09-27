@@ -22,6 +22,7 @@ type StockQuantityProductModalProps = {
   open: boolean;
   onClose: () => void;
   onConfirm: (
+    // locationId: string,
     quantity: string,
     selectedProduct: Product | undefined
   ) => void;
@@ -42,6 +43,7 @@ const StockQuantityProductModal = ({
   const [sku, setSku] = React.useState<string>('');
   const [quantity, setQuantity] = React.useState<string>('');
   const [products, setProducts] = React.useState<Product[]>([]);
+  // const [locationId, setLocationId] = React.useState<string>('');
   const [selectedProduct, setSelectedProduct] = React.useState<Product>();
   const [alert, setAlert] = React.useState<AlertType | null>(null);
 

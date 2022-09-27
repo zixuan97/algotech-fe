@@ -156,6 +156,7 @@ const CreateBundle = () => {
                   </div>
                 </div>
                 <BundleProductEditGrid
+                  thisBundle={newBundle}
                   // productList={newBundle.bundleProduct ?? []}
                   productList={[]}
                   updateProductList={(pdts) =>

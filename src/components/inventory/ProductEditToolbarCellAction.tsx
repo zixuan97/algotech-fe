@@ -6,11 +6,12 @@ import {
   GridToolbarContainer
 } from '@mui/x-data-grid';
 import { BundleProductRow } from 'src/pages/inventory/CreateBundle';
-import { Product } from 'src/models/types';
+import { Product, Bundle, BundleProduct } from 'src/models/types';
 import { randomId } from '@mui/x-data-grid-generator';
 import { BundleProductGridRow } from './inventoryHelper';
 
 interface ProductEditToolbarProps {
+  thisBundle: Bundle;
   setRows: (
     newRows: (oldRows: BundleProductGridRow[]) => BundleProductGridRow[]
   ) => void;
@@ -22,6 +23,7 @@ interface ProductEditToolbarProps {
 }
 
 const ProductEditToolbarCellAction = ({
+  thisBundle,
   setRows,
   setRowModesModel,
   availableProducts,
@@ -35,8 +37,12 @@ const ProductEditToolbarCellAction = ({
         gridId,
         isNew: true,
 
-        product: availableProducts[0],
-        productId: availableProducts[0].id
+        // product: availableProducts[0],
+        bundleId: thisBundle.id,
+        productId: availableProducts[0].id,
+        productSku: availableProducts[0].sku,
+        bundleName: thisBundle.name,
+        productName: availableProducts[0].name,
 
         // id: availableProducts[0].id,
         // sku: availableProducts[0].sku,
