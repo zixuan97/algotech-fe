@@ -98,7 +98,7 @@ const CreateProcurementOrder = () => {
 
   const removeOrderItem = (id: string) => {
     const updatedOrderItems = orderItems.filter(
-      (item) => item.id?.toString() != id
+      (item) => item.product?.id.toString() !== id
     );
     setOrderItems(updatedOrderItems);
   };
