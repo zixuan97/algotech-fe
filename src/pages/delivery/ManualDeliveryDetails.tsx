@@ -17,6 +17,10 @@ import {
   LocalShippingRounded,
   TaskAltRounded
 } from '@mui/icons-material';
+import { useSearchParams } from 'react-router-dom';
+import { DeliveryOrder } from 'src/models/types';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { getDeliveryOrderById } from 'src/services/deliveryServices';
 
 const steps = [
   {
@@ -37,7 +41,30 @@ const steps = [
 
 const ManualDeliveryDetails = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+
   const [activeStep, setActiveStep] = React.useState<number>(0);
+  const [originalDeliveryOrder, setOriginalDeliveryOrder] =
+    React.useState<DeliveryOrder>();
+  const [updatedDeliveryOrder, setUpdatedDeliveryOrder] =
+    React.useState<DeliveryOrder>();
+  const [loading, setLoading] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    setLoading(true);
+    if (id) {
+      asyncFetchCallback(
+        getDeliveryOrderById(id),
+        (res) => {
+          setOriginalDeliveryOrder(res);
+          setUpdatedDeliveryOrder(res);
+          setLoading(false);
+        },
+        () => setLoading(false)
+      );
+    }
+  }, [id]);
 
   return (
     <div className='view-delivery-details'>

@@ -1,21 +1,30 @@
 import React from 'react';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import DeliveryCellAction from 'src/components/delivery/DeliveryCellAction';
-import '../../styles/pages/inventory/inventory.scss';
+import '../../styles/pages/delivery/delivery.scss';
 import '../../styles/common/common.scss';
 import { Button, TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { DeliveryOrder } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getAllDeliveries } from 'src/services/deliveryServices';
+import { getAllShippitDeliveries } from 'src/services/deliveryServices';
 import { useNavigate } from 'react-router';
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'Delivery ID', flex: 1 },
-  { field: 'deliveryStatus', headerName: 'Delivery Status', flex: 1 },
-  { field: 'shippingAddress', headerName: 'Address', flex: 1 },
-  { field: 'shippingDate', headerName: 'Order Date', flex: 1 },
-  { field: 'eta', headerName: 'Delivery Date', flex: 1 },
+  { field: 'shippitTrackingNum', headerName: 'Tracking Number', flex: 1 },
+  { field: 'deliveryMode', headerName: 'Delivery Mode', flex: 1 },
+  {
+    field: 'deliveryDate',
+    headerName: 'Delivery Date',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) => {
+      if (params.value !== null) {
+        return params.value;
+      } else {
+        return 'Delivery in Progress';
+      }
+    }
+  },
   {
     field: 'action',
     headerName: 'Action',
@@ -38,7 +47,7 @@ const AllShippitDeliveries = () => {
     // TODO: implement error callback
     setLoading(true);
     asyncFetchCallback(
-      getAllDeliveries(),
+      getAllShippitDeliveries(),
       (res) => {
         setLoading(false);
         setDeliveryData(res);
@@ -84,7 +93,7 @@ const AllShippitDeliveries = () => {
           variant='contained'
           size='large'
           sx={{ height: 'fit-content' }}
-          onClick={() => navigate({ pathname: ''})}
+          onClick={() => navigate({ pathname: '' })}
         >
           Create Delivery
         </Button>
@@ -94,6 +103,7 @@ const AllShippitDeliveries = () => {
         rows={filteredData}
         autoHeight
         loading={loading}
+        getRowId={(row) => row.shippitTrackingNum}
       />
     </div>
   );

@@ -1,7 +1,6 @@
 import React from 'react';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import DeliveryCellAction from 'src/components/delivery/DeliveryCellAction';
-import '../../styles/pages/delivery/delivery.scss';
 import '../../styles/common/common.scss';
 import '../../styles/pages/delivery/map.scss';
 import '../../styles/pages/delivery/delivery.scss';

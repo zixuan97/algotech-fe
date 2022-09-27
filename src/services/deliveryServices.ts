@@ -10,8 +10,22 @@ export const getAllDeliveries = async (): Promise<DeliveryOrder[]> => {
   return axios.get(`${apiRoot}/delivery/all`).then((res) => res.data);
 };
 
+export const getAllShippitDeliveries = async (): Promise<DeliveryOrder[]> => {
+  return axios
+    .get(`${apiRoot}/delivery/shippit/orders/all`)
+    .then((res) => res.data);
+};
+
+export const getDeliveryOrderById = async (
+  id: string | number
+): Promise<DeliveryOrder> => {
+  return axios.get(`${apiRoot}/delivery/${id}`).then((res) => res.data);
+};
+
 //how do I get all postal codes of deliveries?
-export const getAllDeliveriesPostalCode = async (): Promise<DeliveryOrder[]> => {
+export const getAllDeliveriesPostalCode = async (): Promise<
+  DeliveryOrder[]
+> => {
   return axios.post(`${apiRoot}/delivery/latlong`).then((res) => res.data);
 };
 

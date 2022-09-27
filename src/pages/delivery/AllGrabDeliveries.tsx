@@ -3,12 +3,15 @@ import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import DeliveryCellAction from 'src/components/delivery/DeliveryCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
-import { Button, TextField } from '@mui/material';
+import { Button, TextField, Stack, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { DeliveryOrder } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { getAllDeliveries } from 'src/services/deliveryServices';
 import { useNavigate } from 'react-router';
+import DateRangePicker from 'src/components/common/DateRangePicker';
+import { MomentRange } from 'src/utils/dateUtils';
+import moment from 'moment';
 
 const columns: GridColDef[] = [
   { field: 'id', headerName: 'Delivery ID', flex: 1 },
@@ -33,6 +36,10 @@ const AllGrabDeliveries = () => {
   const [deliveryData, setDeliveryData] = React.useState<DeliveryOrder[]>([]);
   const [filteredData, setFilteredData] = React.useState<DeliveryOrder[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [dateRange, setDateRange] = React.useState<MomentRange>([
+    moment().startOf('day'),
+    moment().endOf('day')
+  ]);
 
   React.useEffect(() => {
     // TODO: implement error callback
@@ -68,7 +75,23 @@ const AllGrabDeliveries = () => {
 
   return (
     <div className='delivery-orders'>
-      <h1>All Grab Deliveries</h1>
+      <Stack
+        direction='row'
+        width='100%'
+        alignItems='center'
+        justifyContent='space-between'
+      >
+        <h1>All Grab Deliveries</h1>
+        <Stack direction='row' spacing={2}>
+          <Typography className='date-picker-text'>
+            View deliveries from
+          </Typography>
+          <DateRangePicker
+            dateRange={dateRange}
+            updateDateRange={setDateRange}
+          />
+        </Stack>
+      </Stack>
       <div className='grid-toolbar'>
         <div className='search-bar'>
           <Search />
@@ -84,7 +107,7 @@ const AllGrabDeliveries = () => {
           variant='contained'
           size='large'
           sx={{ height: 'fit-content' }}
-          onClick={() => navigate({ pathname: ''})}
+          onClick={() => navigate({ pathname: '' })}
         >
           Create Delivery
         </Button>
