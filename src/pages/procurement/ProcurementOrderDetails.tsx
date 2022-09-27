@@ -131,9 +131,10 @@ const ProcurementOrderDetails = () => {
     setLoading(true);
 
     let reqBody = {
-      id: originalOrder?.id,
+      id: Number(originalOrder?.id),
       description: originalOrder?.description,
       paymentStatus: originalOrder?.paymentStatus,
+      supplierId: originalOrder?.supplier.id,
       fulfilmentStatus:
         originalOrder?.fulfilmentStatus === FulfilmentStatus.CREATED
           ? FulfilmentStatus.ARRIVED
@@ -147,7 +148,7 @@ const ProcurementOrderDetails = () => {
           if (originalOrder) {
             return {
               ...originalOrder,
-              fulfilment_status:
+              fulfilmentStatus:
                 originalOrder?.fulfilmentStatus === FulfilmentStatus.CREATED
                   ? FulfilmentStatus.ARRIVED
                   : FulfilmentStatus.COMPLETED
@@ -176,10 +177,11 @@ const ProcurementOrderDetails = () => {
     setLoading(true);
 
     let reqBody = {
-      id: originalOrder?.id,
+      id: Number(originalOrder?.id),
       description: updatedOrder?.description,
       paymentStatus: updatedOrder?.paymentStatus,
-      fulfilmentStatus: originalOrder?.fulfilmentStatus
+      fulfilmentStatus: originalOrder?.fulfilmentStatus,
+      supplierId: originalOrder?.supplier.id
     };
 
     await asyncFetchCallback(
@@ -279,7 +281,7 @@ const ProcurementOrderDetails = () => {
                 <TextField
                   id='payment-status-select-label'
                   label='Payment Status'
-                  name='payment_status'
+                  name='paymentStatus'
                   value={updatedOrder?.paymentStatus}
                   onChange={handleEditProcurementOrder}
                   select
