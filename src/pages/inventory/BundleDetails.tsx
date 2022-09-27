@@ -177,9 +177,8 @@ const BundleDetails = () => {
   };
 
   const handleSave = async () => {
-    console.log('ORIGINAL BUNDLE');
-    console.log(originalBundle);
-    console.log("EDITED BUNDLE");
+    console.log('ORIGINAL BUNDLE', originalBundle);
+    console.log('EDITED BUNDLE', editBundle);
     console.log(editBundle);
     if (editBundle) {
       setBackdropLoading(true);
@@ -346,8 +345,8 @@ const BundleDetails = () => {
                     //         }))
                     //       }
                     //   )
-                    //     // map thjis back to names depending on ProductEditGrid
-                    //   }
+                        // map thjis back to names depending on ProductEditGrid
+                      // }
                   />
                 ) : (
                   <DataGrid

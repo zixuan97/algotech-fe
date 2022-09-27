@@ -26,7 +26,8 @@ const ProductSelectCellAction = ({
     apiRef.current.setEditCellValue({
       id: gridId,
       field,
-      value: allProducts.find((pdt) => pdt.id === e.target.value)
+      value: { product: allProducts.find((pdt) => pdt.id === e.target.value), productId: e.target.value } ,
+      // name: allProducts.find((pdt) => pdt.id === e.target.value)?.name,
       //this is the issue rn
     });
   };
@@ -35,20 +36,27 @@ const ProductSelectCellAction = ({
     ? unionWith(availableProducts, [value], (a, b) => a.productId === b.productId)
     : availableProducts;
 
+  console.log("display_product", displayedProducts);
+
   return (
     <FormControl fullWidth sx={{ p: '0.5em' }}>
       <Select
         id='location-select'
+        name="select-option"
         value={value?.productId}
-        renderValue={(value) =>
-          allProducts.find((pdt) => pdt.id === value)?.name
+        renderValue={(value) => {
+          console.log("render_value",value);
+          console.log("all_pdts", allProducts);
+          return allProducts.find((pdt) => pdt.id === value)?.name
+        }
+          
         }
         size='small'
         onChange={handleChange}
       >
         {displayedProducts.map((bundleProduct) => (
           <MenuItem key={bundleProduct.productId} value={bundleProduct.productId}>
-            {bundleProduct.product.name}
+            {bundleProduct?.product?.name}
           </MenuItem>
         ))}
       </Select>

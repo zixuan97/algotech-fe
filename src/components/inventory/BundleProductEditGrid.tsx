@@ -69,6 +69,7 @@ export default function BundleProductEditGrid({
   };
 
   const handleSaveClick = (id: GridRowId) => () => {
+    console.log("Save Click_PROD_ID", id);
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
@@ -93,14 +94,21 @@ export default function BundleProductEditGrid({
   };
 
   const processRowUpdate = (newRow: BundleProductGridRow) => {
+    console.log("new_row", newRow);
     const updatedRow = {
       ...newRow,
-      isNew: false
+      isNew: false,
+      // hotfix
+      product: newRow.product?.product,
+      productId: newRow.product?.productId,
     };
+    console.log("updated_row",updatedRow);
     const updatedProductGridRows = productGridRows.map((row) =>
       row.gridId === newRow.gridId ? updatedRow : row
     );
+    console.log("process_row_update", updatedProductGridRows)
     setProductGridRows(updatedProductGridRows);
+    console.log("convert_", convertGridRowToBundleProduct(updatedProductGridRows))
     updateProductList(convertGridRowToBundleProduct(updatedProductGridRows));
     return updatedRow;
   };
@@ -112,8 +120,8 @@ export default function BundleProductEditGrid({
       flex: 2,
       editable: true,
       //if field is names, parse in names instead
-      valueGetter: (params: GridValueGetterParams) => params.row.product.name,
-      // valueFormatter: (params) => params.value.name,
+      // valueGetter: (params: GridValueGetterParams) => params.row.product.name,
+      valueFormatter: ({ value }) => value?.name,
       renderEditCell: (params: GridRenderEditCellParams<BundleProduct>) => (
         <ProductSelectCellAction
           params={params}
