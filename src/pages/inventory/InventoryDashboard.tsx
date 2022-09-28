@@ -82,7 +82,6 @@ const InventoryDashboard = () => {
   React.useEffect(() => {
     const fetchData = async () => {
       await fetchEventSource(`${apiRoot}/shopify/webhook`, {
-        mode: 'no-cors',
         headers: {
           Accept: 'text/event-stream'
         },
