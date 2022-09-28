@@ -43,7 +43,7 @@ export const getAvailableLocations = (
   return allLocations.filter(
     (loc) =>
       !selectedLocations.find(
-        (selected) => selected.location.id === loc.id && !selected.isNew
+        (selected) => selected.location!.id === loc.id && !selected.isNew
       )
   );
 };

@@ -34,7 +34,6 @@ type BundleProductEditGridProps = {
   updateBundleProductList: (bundleProductList: BundleProduct[]) => void;
 };
 
-//TODO: create a generic version of Edtiable Grid
 export default function BundleProductEditGrid({
   bundleProductList,
   updateBundleProductList

@@ -21,18 +21,12 @@ import {
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft, Delete } from '@mui/icons-material';
-import { DataGrid, GridColDef, GridEventListener, GridRenderCellParams, GridRowId, GridRowParams, GridValueGetterParams, MuiEvent } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router';
 import { Bundle, Product, BundleProduct } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { createBundle } from 'src/services/bundleService';
-import { 
-  getProductById,
-  getAllProductsByBundle 
-} from 'src/services/productService';
 import { intersectionWith, omit } from 'lodash';
 import { getBase64 } from 'src/utils/fileUtils';
-// import ProductGrid from 'src/components/inventory/ProductGrid';
 import BundleProductEditGrid from 'src/components/inventory/BundleProductEditGrid';
 import {
   AlertType,
@@ -40,21 +34,11 @@ import {
 } from '../../components/common/TimeoutAlert';
 import inventoryContext from '../../context/inventory/inventoryContext';
 import { isValidBundle } from 'src/components/inventory/inventoryHelper';
-import DeleteIcon from '@mui/icons-material/Delete';
 import BundleProductModal from 'src/components/inventory/BundleProductModal';
 import { useSearchParams } from 'react-router-dom';
 import { idID } from '@mui/material/locale';
 import { isConstructorDeclaration } from 'typescript';
 import PositiveNumberEditCellAction from 'src/components/inventory/PositiveNumberEditCellAction';
-
-// export interface BundleProductItem {
-//   id: number;
-//   isNew?: boolean;
-// }
-
-// export interface BundleProductRow extends BundleProductItem {
-//   gridId: GridRowId;
-// }
 
 export type NewBundle = Partial<Bundle> & {};
 type NewBundleProduct = Partial<BundleProduct>;
@@ -92,7 +76,6 @@ const CreateBundle = () => {
   };
 
   const handleSave = async (e: FormEvent) => {
-    // console.log("NEW BUNDLE", newBundle);
     e.preventDefault();
 
     if (newBundle) {
@@ -174,13 +157,11 @@ const CreateBundle = () => {
                   </div>
                 </div>
                 <BundleProductEditGrid
-                  // productList={newBundle.bundleProduct ?? []}
                   bundleProductList={newBundle.bundleProduct ?? []}
                   updateBundleProductList={(pdts) =>
                     setNewBundle((prev) => ({
                       ...prev,
                       bundleProduct: pdts
-                      // map thjis back to names
                     }))
                   }
                 />

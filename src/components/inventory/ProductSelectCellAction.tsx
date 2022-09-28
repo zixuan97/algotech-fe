@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import { GridRenderCellParams, useGridApiContext } from '@mui/x-data-grid';
 import { unionWith } from 'lodash';
-import { Product, BundleProduct } from 'src/models/types';
+import { Product } from 'src/models/types';
 
 type ProductSelectCellActionProps = {
   params: GridRenderCellParams<Product>;

@@ -171,9 +171,6 @@ const BundleDetails = () => {
   };
 
   const handleSave = async () => {
-    console.log('ORIGINAL BUNDLE', originalBundle);
-    console.log('EDITED BUNDLE', editBundle);
-    console.log(editBundle);
     if (editBundle) {
       setBackdropLoading(true);
       asyncFetchCallback(
