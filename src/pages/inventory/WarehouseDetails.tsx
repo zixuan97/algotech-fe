@@ -24,7 +24,7 @@ import {
   updateLocationWithoutProducts
 } from '../../services/locationService';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import { omit } from 'lodash';
+import _, { omit } from 'lodash';
 import TimeoutAlert, {
   AlertType,
   AxiosErrDataBody
@@ -48,7 +48,7 @@ const LocationDetails = () => {
 
   const [allProducts, setAllProducts] = React.useState<Product[]>([]);
   const [addedProductsId, setAddedProductsId] = React.useState<number[]>([]);
-  const [productIdToDisplay, setProductIdToDisplay] = React.useState<number>();
+  const [editAddProductsId, setEditAddProductsId] = React.useState<number[]>([]);
 
   const [loading, setLoading] = React.useState<boolean>(true);
   const [tableLoading, setTableLoading] = React.useState<boolean>(false);
@@ -100,12 +100,19 @@ const LocationDetails = () => {
       asyncFetchCallback(getLocationById(id), (res) => {
         setOriginalLocation(res);
         setEditLocation(res);
+
+        res.stockQuantity.forEach((sq) => 
+          {if (sq.productId) {
+            addedProductsId.push(sq.productId);
+          } else if (sq.product) {
+            addedProductsId.push(sq.product.id);
+          }}
+        );
+        // setAddedProductsId(addedProductsId);
+        console.log("addedProductsId", addedProductsId);
+      
         setLoading(false);
       });
-
-      // setModalOpen(true);
-      setProductIdToDisplay(parseInt(id));
-
     }
   }, [id]);
 
@@ -178,6 +185,8 @@ const LocationDetails = () => {
       console.log("updatedStockQtyPdts", updatedStockQtyPdts);
 
       setAddedProductsId((prev) => [...prev, selectedProduct.id]);
+      setEditAddProductsId((prev) => [...prev, selectedProduct.id]);
+
       updatedStockQtyPdts.push(newStockQtyPdt);
       console.log("updatedStockQtyPdts AFTER PUSH", updatedStockQtyPdts);
 
@@ -191,13 +200,19 @@ const LocationDetails = () => {
     }
   };
 
-  const removeStockQtyPdt = (id: string) => {
-    console.log("id to be deleted:", id);
+  const removeStockQtyPdt = (delId: string) => {
+    console.log("id to be deleted:", delId);
     const updatedStockQtyPdts = stockQuantityDetails.filter(
-      (item) => item.product?.id.toString() !== id
+      (item) => item.product?.id.toString() !== delId
     );
     setStockQuantityDetails(updatedStockQtyPdts);
     console.log("remove: updatedStockQtyPdts", updatedStockQtyPdts)
+
+    const updatedAddedProductsId = addedProductsId.filter(
+      (item) => item.toString() !== delId
+    );
+    setAddedProductsId(updatedAddedProductsId);
+
   }
 
   const columns: GridColDef[] = [
@@ -278,7 +293,8 @@ const LocationDetails = () => {
         stockQuantity: finalNewLocationStockQtyPdts
       }
 
-      setEditLocation(reqBody);
+      //this line isnt working?? why
+      // setEditLocation(reqBody);
 
       console.log("REQUEST BODY:", reqBody);
 
@@ -286,6 +302,18 @@ const LocationDetails = () => {
         // updateLocationWithoutProducts(editLocation),
         updateLocation(reqBody),
         () => {
+          setEditLocation((editLocation) => {
+            if (editLocation) {
+              return {
+                ...editLocation,
+                name: editLocation.name,
+                address: editLocation.address,
+                stockQuantity: finalNewLocationStockQtyPdts
+              };
+            } else {
+              return editLocation;
+            }
+          });
           setAlert({
             severity: 'success',
             message: 'Warehouse successfully edited.'
@@ -357,7 +385,36 @@ const LocationDetails = () => {
                   onClick={() => {
                     setEdit(false);
                     setEditLocation(originalLocation);
-                    console.log("edit location", editLocation);
+                    // console.log("edit_location", editLocation);
+                    console.log("original_location", originalLocation);
+                    if (originalLocation) {
+                      setStockQuantityDetails(originalLocation?.stockQuantity);
+                      
+                      setAddedProductsId([]);
+
+                      stockQuantityDetails.forEach((sq) => 
+                        {if (sq.productId) {
+                          addedProductsId.push(sq.productId);
+                        } else if (sq.product) {
+                          addedProductsId.push(sq.product.id);
+                        }}
+                      );
+
+                    }
+
+
+                    setEditAddProductsId([]);
+
+                    console.log("DISCARD editAddProductsId", editAddProductsId);
+                    console.log("DISCARD addedProductsId", addedProductsId);
+                    // var filtered = addedProductsId.filter((item) => !editAddProductsId.includes(item));
+                    // console.log("filtered", filtered);
+                    
+                    // console.log("set to 0", addedProductsId);
+                    // setAddedProductsId(filtered);
+                    // console.log("DISCARD after filter addedProductsId", addedProductsId);
+
+
                   }}
                 >
                   Discard Changes
@@ -446,7 +503,6 @@ const LocationDetails = () => {
                   )}
 
                   <StockQuantityProductModal
-                    productIdToDisplay={productIdToDisplay}
                     open={modalOpen}
                     onClose={() => setModalOpen(false)}
                     onConfirm={handleAddStockQtyPdt}

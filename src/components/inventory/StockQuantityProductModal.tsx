@@ -18,7 +18,6 @@ import '../../styles/pages/procurement.scss';
 import TimeoutAlert, { AlertType } from '../common/TimeoutAlert';
 
 type StockQuantityProductModalProps = {
-  productIdToDisplay: number | undefined;
   open: boolean;
   onClose: () => void;
   onConfirm: (
@@ -32,7 +31,6 @@ type StockQuantityProductModalProps = {
 };
 
 const StockQuantityProductModal = ({
-  productIdToDisplay,
   open,
   onClose,
   onConfirm,
@@ -93,18 +91,11 @@ const StockQuantityProductModal = ({
   };
 
   React.useEffect(() => {
-    if (productIdToDisplay) {
-      let product = products.find((item) => item.id === productIdToDisplay);
-      if (product) {
-        setSku(product.sku);
-        setSelectedProduct(product);
-      }
-    }
     setAlert(null);
     asyncFetchCallback(getAllProducts(), (res) =>
       setProducts(res.filter((item) => !addedProductsId.includes(item.id)))
     );
-  }, [open, onClose, addedProductsId, productIdToDisplay]);
+  }, [open, onClose, addedProductsId]);
 
   return (
     <div>
