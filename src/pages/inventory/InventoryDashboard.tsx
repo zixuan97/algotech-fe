@@ -18,6 +18,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import { DDMMYYYY, getTodayFormattedDate } from 'src/utils/dateUtils';
 import inventoryContext from 'src/context/inventory/inventoryContext';
 import apiRoot from 'src/services/util/apiRoot';
+import { EventSourcePolyfill } from 'event-source-polyfill';
 
 export enum StockPriorityType {
   LOW = 1,
@@ -79,7 +80,7 @@ const InventoryDashboard = () => {
   const pdfRef = React.createRef<HTMLDivElement>();
 
   React.useEffect(() => {
-    const eventSource = new EventSource(`${apiRoot}/shopify/webhook`);
+    const eventSource = new EventSourcePolyfill(`${apiRoot}/shopify/webhook`);
     eventSource.onopen = () => console.log('eventsource opened');
     eventSource.onmessage = (e) => {
       console.log('receiving data');
