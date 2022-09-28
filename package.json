@@ -6,6 +6,7 @@
     "@date-io/moment": "^2.15.0",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@mui/icons-material": "^5.10.3",
     "@mui/lab": "^5.0.0-alpha.99",
     "@mui/material": "^5.10.5",
@@ -25,6 +26,7 @@
     "chart.js": "^3.9.1",
     "chartjs-plugin-datalabels": "^2.1.0",
     "d3-scale-chromatic": "^3.0.0",
+    "event-source-polyfill": "^1.0.31",
     "html2canvas": "^1.4.1",
     "immutable": "^4.1.0",
     "js-file-download": "^0.4.12",
@@ -73,6 +75,7 @@
     ]
   },
   "devDependencies": {
+    "@types/event-source-polyfill": "^1.0.0",
     "@types/leaflet": "^1.8.0",
     "@types/react-router": "^5.1.18",
     "@types/react-router-dom": "^5.3.3",
