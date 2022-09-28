@@ -49,7 +49,7 @@ const Row = ({ row }: { row: SalesOrder }) => {
             size='small'
             onClick={() => setOpen(!open)}
           >
-            {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+            {open ? <KeyboardArrowDown/> : <KeyboardArrowUp  />}
           </IconButton>
         </TableCell>
         <TableCell component='th' scope='row' align='center'>

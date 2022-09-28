@@ -16,7 +16,7 @@ import {
   SalesOrder,
   SalesOrderItem
 } from 'src/models/types';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, createSearchParams } from 'react-router-dom';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import inventoryContext from 'src/context/inventory/inventoryContext';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
@@ -32,6 +32,7 @@ import OrderInfoGrid from '../../components/sales/order/OrderInfoGrid';
 import OrderSummaryCard from '../../components/sales/order/OrderSummaryCard';
 import StatusStepper from '../../components/sales/order/StatusStepper';
 import PlatformChip from '../../components/sales/order/PlatformChip';
+import ConfirmationModal from 'src/components/common/ConfirmationModal';
 
 const SalesOrderDetails = () => {
   let params = new URLSearchParams(window.location.search);
@@ -48,6 +49,7 @@ const SalesOrderDetails = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [availProducts, setAvailProducts] = useState<Product[]>([]);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   const columns: GridColDef[] = [
     {
@@ -130,37 +132,20 @@ const SalesOrderDetails = () => {
   }, [id, navigate, products]);
 
   const nextStep = () => {
-    if (activeStep < steps.length - 1 && activeStep < 3) {
-      setActiveStep((prev) => prev + 1);
+    if (activeStep < steps.length - 1 && activeStep <= 3) {
       const newStatus = steps[activeStep + 1].currentState;
       if (newStatus === OrderStatus.PREPARED) {
-        salesOrder &&
-          asyncFetchCallback(
-            completeOrderPrepSvc(
-              salesOrder && {
-                ...salesOrder,
-                orderStatus: newStatus,
-                salesOrderItems: editSalesOrderItems
-              }
-            ),
-            () => {
-              setSalesOrder(
-                (order) =>
-                  order && {
-                    ...order,
-                    orderStatus: newStatus,
-                    salesOrderItems: editSalesOrderItems.map((item) => {
-                      delete item.isNewAdded;
-                      return item;
-                    })
-                  }
-              );
-            }
-          );
+        setModalOpen(true);
+      } else if (newStatus === OrderStatus.READY_FOR_DELIVERY) {
+        id && navigate({
+          pathname: '/delivery/allManualDeliveries/createDelivery',
+          search: createSearchParams({
+            id: id.toString()
+          }).toString()
+        });
       } else {
-        setSalesOrder((order) => order && { ...order, orderStatus: newStatus });
+        updateSalesOrderStatus(newStatus);
       }
-      id && updateSalesOrderStatusSvc(id, newStatus);
     }
   };
 
@@ -209,6 +194,57 @@ const SalesOrderDetails = () => {
     ]);
   };
 
+  const updateSalesOrderWithNewSalesOrderItem = () => {
+    salesOrder &&
+      asyncFetchCallback(
+        completeOrderPrepSvc(
+          salesOrder && {
+            ...salesOrder,
+            orderStatus: OrderStatus.PREPARED,
+            salesOrderItems: editSalesOrderItems
+          }
+        ),
+        () => {
+          setSalesOrder(
+            (order) =>
+              order && {
+                ...order,
+                orderStatus: OrderStatus.PREPARED,
+                salesOrderItems: editSalesOrderItems.map((item) => {
+                  delete item.isNewAdded;
+                  return item;
+                })
+              }
+          );
+          updateSalesOrderStatus(OrderStatus.PREPARED);
+          setModalOpen(false);
+        }
+      );
+  };
+
+  const updateSalesOrderStatus = (newStatus: OrderStatus) => {
+    id &&
+      asyncFetchCallback(
+        updateSalesOrderStatusSvc(id, newStatus),
+        () => {
+          setAlert({
+            severity: 'success',
+            message: `The order status has been updated. You can now ${steps[
+              activeStep + 1
+            ].nextAction.toLowerCase()}.`
+          });
+          setSalesOrder((order) => order && { ...order, orderStatus: newStatus });
+          setActiveStep((prev) => prev + 1);
+        },
+        () => {
+          setAlert({
+            severity: 'error',
+            message: `The order cannot be updated at this moment. Contact the admin for assistance.`
+          });
+        }
+      );
+  };
+
   return (
     <>
       <AddSalesOrderItemModal
@@ -221,6 +257,16 @@ const SalesOrderDetails = () => {
         orderFieldOnChange={updateNewSalesOrderItem}
       />
 
+      <ConfirmationModal
+        title='Update Order State'
+        body='You are updating the order, it is irreversible, are you sure?'
+        onConfirm={updateSalesOrderWithNewSalesOrderItem}
+        open={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+        }}
+      />
+
       <div className='top-carrot'>
         <Tooltip title='Return to Sales Order' enterDelay={300}>
           <IconButton size='large' onClick={() => navigate(-1)}>
@@ -229,18 +275,13 @@ const SalesOrderDetails = () => {
         </Tooltip>
         <PlatformChip salesOrder={salesOrder!} pretext={'Placed with'} />
       </div>
-
       <div className='center-div'>
         <Box className='center-box'>
           <div className='sales-header-content'>
             <StatusStepper orderStatus={salesOrder?.orderStatus!} />
+            <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
             <Paper elevation={2} className='action-card'>
-              <OrderInfoGrid
-                custName={salesOrder?.customerName!}
-                contactNo={salesOrder?.customerContactNo!}
-                email={salesOrder?.customerEmail ?? 'NA'}
-                address={salesOrder?.customerAddress!}
-              />
+              <OrderInfoGrid salesOrder={salesOrder!} />
               <div className='action-box'>
                 <Typography sx={{ fontSize: 'inherit' }}>
                   Next Action:
@@ -251,8 +292,6 @@ const SalesOrderDetails = () => {
               </div>
             </Paper>
           </div>
-
-          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
 
           <Paper elevation={3}>
             <div className='content-body'>

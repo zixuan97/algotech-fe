@@ -9,7 +9,9 @@ import {
   SelectChangeEvent,
   Stack,
   Typography,
-  Divider
+  Divider,
+  InputLabel,
+  FormControl
 } from '@mui/material';
 import { Search, FilterList } from '@mui/icons-material';
 import { PlatformType } from 'src/models/types';
@@ -88,20 +90,23 @@ const AllSalesOrders = () => {
       <div className='order-grid-toolbar'>
         <div className='search-bar'>
           <FilterList />
-          <Select
-            style={{ width: '50%' }}
-            value={filterPlatform}
-            label='Filter'
-            defaultValue='ALL'
-            placeholder='Platform'
-            onChange={handleFilterChange}
-          >
-            {platforms.map((option) => (
-              <MenuItem key={option} value={option}>
-                {option}
-              </MenuItem>
-            ))}
-          </Select>
+          <FormControl style={{ width: '50%' }}>
+            <InputLabel id='search-platform'>Platform</InputLabel>
+            <Select
+              id='search-platform'
+              value={filterPlatform}
+              label='Platform'
+              placeholder='Platform'
+              onChange={handleFilterChange}
+            >
+              {platforms.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           <Search />
           <TextField
             id='search'
