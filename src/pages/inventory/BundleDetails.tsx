@@ -34,6 +34,7 @@ import TimeoutAlert, {
   AlertType,
   AxiosErrDataBody
  } from 'src/components/common/TimeoutAlert';
+import { isValidBundle } from 'src/components/inventory/inventoryHelper';
 
 const columns: GridColDef[] = [
   {
@@ -102,11 +103,8 @@ const BundleDetails = () => {
   }, [id, navigate]);
 
   React.useEffect(() => {
-    const shouldDisable = !(
-      editBundle?.name && productDetails
-    );
-    setDisableSave(shouldDisable);
-  }, [editBundle?.name, productDetails]);
+    setDisableSave(!isValidBundle(editBundle));
+  }, [editBundle]);
 
   React.useEffect(() => {
     setTableLoading(true);
