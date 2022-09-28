@@ -1,28 +1,32 @@
 import React from 'react';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridValueFormatterParams,
+  GridValueGetterParams
+} from '@mui/x-data-grid';
 import DeliveryCellAction from 'src/components/delivery/DeliveryCellAction';
 import '../../styles/common/common.scss';
 import '../../styles/pages/delivery/map.scss';
 import '../../styles/pages/delivery/delivery.scss';
 import 'leaflet/dist/leaflet.css';
-import { Button, Stack, TextField, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
-import { DeliveryOrder, ShippingType } from '../../models/types';
+import { DeliveryOrder } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
-  getAllDeliveries,
   getAllDeliveriesPostalCode,
-  getAllDeliveriesPostalCodeByDate
+  getAllDeliveriesPostalCodeByDate,
+  getManualDeliveryOrdersByRangeSvc
 } from 'src/services/deliveryServices';
 import { useNavigate } from 'react-router';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
-import { arrayBuffer } from 'stream/consumers';
-import axios from 'axios';
 import markerIconPng from 'leaflet/dist/images/marker-icon.png';
 import DateRangePicker from 'src/components/common/DateRangePicker';
 import { MomentRange } from 'src/utils/dateUtils';
 import moment from 'moment';
+import DeliveryOrderStatusCell from 'src/components/delivery/DeliveryOrderStatusCell';
 
 const myIcon = new Icon({
   iconUrl: markerIconPng,
@@ -31,16 +35,35 @@ const myIcon = new Icon({
 
 // TODO: Check if delivery date is undefined
 const columns: GridColDef[] = [
-  { field: 'salesOrderId', headerName: 'Order ID', flex: 1 },
-  { field: 'status', headerName: 'Delivery Status', flex: 1 },
   {
-    field: 'shippingAddress',
+    field: 'salesOrderId',
+    headerName: 'Order ID',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) => params.row.salesOrder.id
+  },
+  {
+    field: 'orderStatus',
+    headerName: 'Delivery Status',
+    flex: 1,
+    renderCell: DeliveryOrderStatusCell
+  },
+  {
+    field: 'salesOrder',
     headerName: 'Address',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) =>
       params.row.salesOrder.customerAddress
   },
-  { field: 'deliveryDate', headerName: 'Delivery Date', flex: 1 },
+  {
+    field: 'deliveryDate',
+    headerName: 'Delivery Date',
+    flex: 1,
+    valueFormatter: (params: GridValueFormatterParams<Date>) => {
+      let date = params.value;
+      let valueFormatted = moment(date).format('DD/MM/YYYY');
+      return valueFormatted;
+    }
+  },
   {
     field: 'action',
     headerName: 'Action',
@@ -54,9 +77,7 @@ const columns: GridColDef[] = [
 const AllManualDeliveries = () => {
   const navigate = useNavigate();
 
-  const [searchField, setSearchField] = React.useState<string>('');
   const [deliveryData, setDeliveryData] = React.useState<DeliveryOrder[]>([]);
-  const [filteredData, setFilteredData] = React.useState<DeliveryOrder[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [deliveryPostalCode, setDeliveryPostalCode] = React.useState<any[]>([]);
   const [dateRange, setDateRange] = React.useState<MomentRange>([
@@ -74,32 +95,14 @@ const AllManualDeliveries = () => {
   React.useEffect(() => {
     // TODO: implement error callback
     setLoading(true);
-    asyncFetchCallback(
-      getAllDeliveries(),
-      (res) => {
-        setLoading(false);
-        setDeliveryData(res);
-      },
-      () => setLoading(false)
-    );
-  }, []);
-
-  React.useEffect(() => {
-    setFilteredData(
-      searchField
-        ? deliveryData.filter((delivery) =>
-            Object.values(delivery).some((value) =>
-              String(value).toLowerCase().match(searchField.toLowerCase())
-            )
-          )
-        : deliveryData
-    );
-  }, [searchField, deliveryData]);
-
-  const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // here
-    setSearchField(e.target.value);
-  };
+    asyncFetchCallback(getManualDeliveryOrdersByRangeSvc(dateRange), (res) => {
+      const sortedDeliveryDate = res.sort((a, b) =>
+        moment(a.deliveryDate).diff(b.deliveryDate)
+      );
+      setDeliveryData(sortedDeliveryDate);
+    });
+    setLoading(false);
+  }, [dateRange]);
 
   return (
     <div className='delivery-orders'>
@@ -138,32 +141,14 @@ const AllManualDeliveries = () => {
           );
         })}
       </MapContainer>
-      <div className='grid-toolbar'>
-        <div className='search-bar'>
-          <Search />
-          <TextField
-            id='search'
-            label='Search'
-            margin='normal'
-            fullWidth
-            onChange={handleSearchFieldChange}
-          />
-        </div>
-        <Button
-          variant='contained'
-          size='large'
-          sx={{ height: 'fit-content' }}
-          onClick={() => navigate({ pathname: 'createDelivery' })}
-        >
-          Create Manual Delivery
-        </Button>
+      <div className='data-grid-container'>
+        <DataGrid
+          columns={columns}
+          rows={deliveryData}
+          autoHeight
+          loading={loading}
+        />
       </div>
-      <DataGrid
-        columns={columns}
-        rows={filteredData}
-        autoHeight
-        loading={loading}
-      />
     </div>
   );
 };

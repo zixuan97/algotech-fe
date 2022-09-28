@@ -11,7 +11,9 @@ import {
   Button,
   Grid,
   TextField,
-  MenuItem
+  MenuItem,
+  Backdrop,
+  CircularProgress
 } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import {
@@ -20,7 +22,7 @@ import {
   TaskAltRounded
 } from '@mui/icons-material';
 import { useSearchParams } from 'react-router-dom';
-import { DeliveryOrder, User, UserRole } from 'src/models/types';
+import { DeliveryOrder, OrderStatus, User, UserRole } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { getDeliveryOrderById } from 'src/services/deliveryServices';
 import { getAllUserSvc } from 'src/services/accountService';
@@ -28,17 +30,20 @@ import authContext from 'src/context/auth/authContext';
 
 const steps = [
   {
-    label: 'Ready for Delivery',
+    currentState: OrderStatus.READY_FOR_DELIVERY,
+    label: 'Delivery Scheduled',
     icon: <PlaylistAddCheckCircleRounded sx={{ fontSize: 35 }} />,
-    nextAction: 'Out for Delivery'
+    nextAction: 'Order Shipped'
   },
   {
-    label: 'Out for Delivery',
+    currentState: OrderStatus.SHIPPED,
+    label: 'Order Shipped',
     icon: <LocalShippingRounded sx={{ fontSize: 35 }} />,
     nextAction: 'Order Delivered'
   },
   {
-    label: 'Order Delivered',
+    currentState: OrderStatus.COMPLETED,
+    label: 'Order Received',
     icon: <TaskAltRounded sx={{ fontSize: 35 }} />
   }
 ];
@@ -68,6 +73,11 @@ const ManualDeliveryDetails = () => {
         (res) => {
           setOriginalDeliveryOrder(res);
           setUpdatedDeliveryOrder(res);
+          setActiveStep(
+            steps.findIndex(
+              (step) => step.currentState === res.salesOrder.orderStatus
+            )
+          );
           setLoading(false);
         },
         () => setLoading(false)
@@ -80,7 +90,10 @@ const ManualDeliveryDetails = () => {
     if (user) {
       if (user.role === UserRole.ADMIN || user.role === UserRole.FULLTIME) {
         asyncFetchCallback(getAllUserSvc(), (users: Array<User>) => {
-          setUsers(users);
+          let filteredUsers = users.filter(
+            (user) => user.role !== UserRole.CUSTOMER
+          );
+          setUsers(filteredUsers);
         });
       } else {
         let users: User[] = [];
@@ -100,7 +113,7 @@ const ManualDeliveryDetails = () => {
               <ChevronLeft />
             </IconButton>
           </Tooltip>
-          <h1>View Manual Delivery Order ID: #1</h1>
+          <h1>View Manual Delivery Order ID: #{originalDeliveryOrder?.id}</h1>
         </div>
         <div className='delivery-edit-button-container'>
           <Button
@@ -116,7 +129,9 @@ const ManualDeliveryDetails = () => {
           >
             {edit ? 'Save Changes' : 'Edit'}
           </Button>
-          {!edit && <Button variant='contained'>Cancel Delivery</Button>}
+          {!edit && activeStep === 0 && (
+            <Button variant='contained'>Cancel Delivery</Button>
+          )}
           {edit && (
             <Button
               variant='contained'
@@ -129,8 +144,17 @@ const ManualDeliveryDetails = () => {
           )}
         </div>
       </div>
+      <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={loading}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop>
       <div className='delivery-details-stepper'>
-        <Stepper activeStep={0} alternativeLabel>
+        <Stepper activeStep={activeStep} alternativeLabel>
           {steps.map((step) => (
             <Step key={step.label}>
               <StepLabel icon={step.icon}>{step.label}</StepLabel>
@@ -138,14 +162,16 @@ const ManualDeliveryDetails = () => {
           ))}
         </Stepper>
       </div>
-      <div className='delivery-details-action-section'>
-        <Paper elevation={2} className='delivery-details-action-card'>
-          <Typography sx={{ fontSize: 'inherit' }}>Next Action:</Typography>
-          <Button variant='contained' size='medium' onClick={() => {}}>
-            {steps[activeStep].nextAction}
-          </Button>
-        </Paper>
-      </div>
+      {activeStep !== 2 && (
+        <div className='delivery-details-action-section'>
+          <Paper elevation={2} className='delivery-details-action-card'>
+            <Typography sx={{ fontSize: 'inherit' }}>Next Action:</Typography>
+            <Button variant='contained' size='medium' onClick={() => {}}>
+              {steps[activeStep].nextAction}
+            </Button>
+          </Paper>
+        </div>
+      )}
       <div className='delivery-detail-cards'>
         <Paper elevation={2} className='delivery-address-card'>
           <div className='delivery-address-grid'>
@@ -153,15 +179,15 @@ const ManualDeliveryDetails = () => {
             <Grid container spacing={2}>
               <Grid item xs={4}>
                 <h4 className='labelText'>Name</h4>
-                <Typography>John Tan</Typography>
+                <Typography>
+                  {originalDeliveryOrder?.salesOrder.customerName}
+                </Typography>
               </Grid>
-              <Grid item xs={4}>
-                <h4 className='labelText'>Address Line 1</h4>
-                <Typography>123 Bedok Road</Typography>
-              </Grid>
-              <Grid item xs={4}>
-                <h4 className='labelText'>Address Line 2</h4>
-                <Typography>#01-09</Typography>
+              <Grid item xs={8}>
+                <h4 className='labelText'>Address</h4>
+                <Typography>
+                  {originalDeliveryOrder?.salesOrder.customerAddress}
+                </Typography>
               </Grid>
               <Grid item xs={4}>
                 <h4 className='labelText'>Country</h4>
@@ -169,7 +195,9 @@ const ManualDeliveryDetails = () => {
               </Grid>
               <Grid item xs={4}>
                 <h4 className='labelText'>Postal Code</h4>
-                <Typography>434503</Typography>
+                <Typography>
+                  {originalDeliveryOrder?.salesOrder.postalCode}
+                </Typography>
               </Grid>
             </Grid>
           </div>
@@ -180,7 +208,7 @@ const ManualDeliveryDetails = () => {
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <h4 className='labelText'>Delivery Method</h4>
-                <Typography>Manual Delivery</Typography>
+                <Typography>{originalDeliveryOrder?.deliveryMode}</Typography>
               </Grid>
               <Grid item xs={6}>
                 <h4 className='labelText'>Delivered By</h4>
@@ -204,7 +232,10 @@ const ManualDeliveryDetails = () => {
                   </div>
                 ) : (
                   <div>
-                    <Typography>Jane (Intern)</Typography>
+                    <Typography>
+                      {originalDeliveryOrder?.assignedUser?.firstName} (
+                      {originalDeliveryOrder?.assignedUser?.role})
+                    </Typography>
                   </div>
                 )}
               </Grid>
@@ -223,7 +254,9 @@ const ManualDeliveryDetails = () => {
                   />
                 ) : (
                   <Typography>
-                    Jane will deliver otw to work on Monday.
+                    {originalDeliveryOrder?.comments
+                      ? originalDeliveryOrder?.comments
+                      : 'No comments'}
                   </Typography>
                 )}
               </Grid>
