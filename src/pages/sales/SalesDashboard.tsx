@@ -1,6 +1,18 @@
-import { Download, MoreVert } from '@mui/icons-material';
+import { Download, FilterList, MoreVert, Search } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
-import { Divider, Grid, IconButton, Stack, Typography } from '@mui/material';
+import {
+  Button,
+  Divider,
+  FormControl,
+  Grid,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 import DateRangePicker from 'src/components/common/DateRangePicker';
@@ -12,6 +24,7 @@ import RevenueChart from 'src/components/sales/dashboard/RevenueChart';
 import SalesOrdersGrid from 'src/components/sales/dashboard/SalesOrdersGrid';
 import {
   DailySales,
+  PlatformType,
   SalesBestseller,
   SalesOrder,
   SalesRevenue
@@ -31,6 +44,14 @@ import {
 } from 'src/utils/dateUtils';
 import { createPdfFromComponent, downloadFile } from 'src/utils/fileUtils';
 import '../../styles/common/common.scss';
+import '../../styles/pages/sales/orders.scss';
+
+const ALL_PLATFORMS = 'ALL';
+
+const platforms = [
+  ALL_PLATFORMS,
+  ...Object.keys(PlatformType).filter((v) => isNaN(Number(v)))
+];
 
 const SalesDashboard = () => {
   const pdfRef = React.createRef<HTMLDivElement>();
@@ -47,6 +68,27 @@ const SalesDashboard = () => {
     moment().startOf('day'),
     moment().endOf('day')
   ]);
+
+  // search fields
+  const [searchField, setSearchField] = React.useState<string>('');
+  const [searchPlatform, setSearchPlatform] = React.useState<string>(
+    platforms[0]
+  );
+
+  const filteredSalesOrders = React.useMemo(
+    () =>
+      searchField || searchPlatform
+        ? salesOrders.filter(
+            (salesOrder) =>
+              (searchPlatform === ALL_PLATFORMS ||
+                salesOrder.platformType === searchPlatform) &&
+              Object.values(salesOrder).some((value) =>
+                String(value).toLowerCase().match(searchField.toLowerCase())
+              )
+          )
+        : salesOrders,
+    [searchField, searchPlatform, salesOrders]
+  );
 
   React.useEffect(() => {
     asyncFetchCallback(getSalesOrdersByRangeSvc(dateRange), setSalesOrders);
@@ -122,10 +164,9 @@ const SalesDashboard = () => {
           </Grid>
           <Grid item xs={6}>
             <NumberCard
-              value={`$${revenue.reduce(
-                (prev, curr) => prev + curr.revenue,
-                0
-              )}`}
+              value={`$${revenue
+                .reduce((prev, curr) => prev + curr.revenue, 0)
+                .toFixed(2)}`}
               text={`Revenue earned from ${dateRange[0].format(
                 READABLE_DDMMYY
               )} to ${dateRange[1].format(READABLE_DDMMYY)}`}
@@ -159,7 +200,48 @@ const SalesDashboard = () => {
       </div>
       <div style={{ width: '100%', marginBottom: 10 }}>
         <h3>Sales Orders</h3>
-        <SalesOrdersGrid salesOrders={salesOrders} />
+        <div className='order-grid-toolbar'>
+          <div className='search-bar'>
+            <FilterList />
+            <FormControl style={{ width: '50%' }}>
+              <InputLabel id='search-platform'>Platform</InputLabel>
+              <Select
+                id='search-platform'
+                value={searchPlatform}
+                label='Platform'
+                placeholder='Platform'
+                onChange={(e) => setSearchPlatform(e.target.value)}
+              >
+                {platforms.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <Search />
+            <TextField
+              id='search'
+              label='Search'
+              fullWidth
+              value={searchField}
+              placeholder='Input Search Field ...'
+              onChange={(e) => setSearchField(e.target.value)}
+            />
+            <Button
+              variant='contained'
+              size='large'
+              sx={{ height: 'fit-content' }}
+              onClick={() => {
+                setSearchField('');
+                setSearchPlatform(platforms[0]);
+              }}
+            >
+              Reset
+            </Button>
+          </div>
+        </div>
+        <SalesOrdersGrid salesOrders={filteredSalesOrders} />
       </div>
     </div>
   );
