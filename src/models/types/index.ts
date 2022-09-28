@@ -141,6 +141,12 @@ export interface Supplier {
   email: string;
   name: string;
   address: string;
+  supplierProduct: SupplierProduct[];
+}
+
+export interface SupplierProduct {
+  product: Product;
+  rate: number;
 }
 
 export interface DeliveryOrder {
