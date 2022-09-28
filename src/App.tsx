@@ -89,7 +89,9 @@ const App = () => {
   }, [token]);
 
   React.useEffect(() => {
-    const eventSource = new EventSource(`${apiRoot}/shopify`);
+    const eventSource = new EventSource(`${apiRoot}/shopify`, {
+      withCredentials: true
+    });
     eventSource.onmessage = (e) => console.log(e.data);
     return () => {
       eventSource.close();
