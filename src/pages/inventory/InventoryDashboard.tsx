@@ -17,6 +17,7 @@ import StockPriorityCell from 'src/components/inventory/StockPriorityCell';
 import DownloadIcon from '@mui/icons-material/Download';
 import { DDMMYYYY, getTodayFormattedDate } from 'src/utils/dateUtils';
 import inventoryContext from 'src/context/inventory/inventoryContext';
+import apiRoot from 'src/services/util/apiRoot';
 
 export enum StockPriorityType {
   LOW = 1,
@@ -76,6 +77,18 @@ const columns: GridColDef[] = [
 const InventoryDashboard = () => {
   const { products, refreshProducts } = React.useContext(inventoryContext);
   const pdfRef = React.createRef<HTMLDivElement>();
+
+  React.useEffect(() => {
+    const eventSource = new EventSource(`${apiRoot}/shopify/webhook`);
+    eventSource.onopen = () => console.log('eventsource opened');
+    eventSource.onmessage = (e) => {
+      console.log('receiving data');
+      console.log(e.data);
+    };
+    return () => {
+      eventSource.close();
+    };
+  }, []);
 
   const computeProductsWithLowStock = () => {
     let count = 0;

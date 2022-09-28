@@ -62,7 +62,6 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import AllSalesOrder from './pages/sales/AllSalesOrders';
 import SalesOrderDetails from './pages/sales/SalesOrderDetails';
 import NotFound from './pages/NotFound';
-import apiRoot from './services/util/apiRoot';
 
 const theme = createTheme({
   palette: {
@@ -87,14 +86,6 @@ const App = () => {
   React.useEffect(() => {
     setAuthToken(localStorage.token);
   }, [token]);
-
-  React.useEffect(() => {
-    const eventSource = new EventSource(`${apiRoot}/shopify/webhook`);
-    eventSource.onmessage = (e) => console.log(e.data);
-    return () => {
-      eventSource.close();
-    };
-  }, []);
 
   return (
     <ThemeProvider theme={theme}>
