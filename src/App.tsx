@@ -89,9 +89,7 @@ const App = () => {
   }, [token]);
 
   React.useEffect(() => {
-    const eventSource = new EventSource(`${apiRoot}/shopify/webhook`, {
-      withCredentials: true
-    });
+    const eventSource = new EventSource(`${apiRoot}/shopify/webhook`);
     eventSource.onmessage = (e) => console.log(e.data);
     return () => {
       eventSource.close();
