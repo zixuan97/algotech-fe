@@ -257,7 +257,7 @@ const SalesOrderDetails = () => {
           <Paper elevation={3}>
             <div className='content-body'>
               <div className='grid-toolbar'>
-                <h4>Order ID.: #{salesOrder?.id}</h4>
+                <h4>Order ID.: #{salesOrder?.orderId}</h4>
                 {salesOrder?.orderStatus === OrderStatus.PREPARING && (
                   <div className='button-group'>
                     <Button
