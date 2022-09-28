@@ -41,6 +41,7 @@ import validator from 'validator';
 import { getBase64 } from 'src/utils/fileUtils';
 import inventoryContext from 'src/context/inventory/inventoryContext';
 import { isValidProduct } from 'src/components/inventory/inventoryHelper';
+import WarehouseCellAction from 'src/components/inventory/WarehouseCellAction';
 
 const columns: GridColDef[] = [
   {
@@ -56,12 +57,20 @@ const columns: GridColDef[] = [
     flex: 1
   },
   {
-    field: 'price',
-    type: 'number',
-    headerName: 'Price',
+    field: 'action',
+    headerName: 'Action',
+    headerAlign: 'right',
+    align: 'right',
     flex: 1,
-    valueFormatter: (params) => params.value.toFixed(2)
+    renderCell: WarehouseCellAction
   }
+  // {
+  //   field: 'price',
+  //   type: 'number',
+  //   headerName: 'Price',
+  //   flex: 1,
+  //   valueFormatter: (params) => params.value.toFixed(2)
+  // }
 ];
 
 const ProductDetails = () => {
@@ -243,7 +252,7 @@ const ProductDetails = () => {
                   }
                 }}
               >
-                {edit ? 'SAVE CHANGES' : 'EDIT'}
+                {edit ? 'Save Changes' : 'Edit'}
               </Button>
               {edit && (
                 <Button
@@ -255,7 +264,7 @@ const ProductDetails = () => {
                     setEditProduct(originalProduct);
                   }}
                 >
-                  DISCARD CHANGES
+                  Discard Changes
                 </Button>
               )}
               <Button
@@ -264,7 +273,7 @@ const ProductDetails = () => {
                 color='primary'
                 onClick={() => setModalOpen(true)}
               >
-                DELETE
+                Delete
               </Button>
               <ConfirmationModal
                 open={modalOpen}

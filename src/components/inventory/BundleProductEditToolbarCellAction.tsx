@@ -5,14 +5,13 @@ import {
   GridRowModesModel,
   GridToolbarContainer
 } from '@mui/x-data-grid';
-import { BundleProductRow } from 'src/pages/inventory/CreateBundle';
-import { Product } from 'src/models/types';
+import { Product, Bundle, BundleProduct } from 'src/models/types';
 import { randomId } from '@mui/x-data-grid-generator';
-import { ProductGridRow } from './inventoryHelper';
+import { BundleProductGridRow } from './inventoryHelper';
 
-interface ProductEditToolbarProps {
+interface BundleProductEditToolbarProps {
   setRows: (
-    newRows: (oldRows: ProductGridRow[]) => ProductGridRow[]
+    newRows: (oldRows: BundleProductGridRow[]) => BundleProductGridRow[]
   ) => void;
   setRowModesModel: (
     newModel: (oldModel: GridRowModesModel) => GridRowModesModel
@@ -21,12 +20,12 @@ interface ProductEditToolbarProps {
   disableAdd: boolean;
 }
 
-const ProductEditToolbarCellAction = ({
+const BundleProductEditToolbarCellAction = ({
   setRows,
   setRowModesModel,
   availableProducts,
   disableAdd
-}: ProductEditToolbarProps) => {
+}: BundleProductEditToolbarProps) => {
   const handleClick = () => {
     const gridId = randomId();
     setRows((oldRows) => [
@@ -35,14 +34,9 @@ const ProductEditToolbarCellAction = ({
         gridId,
         isNew: true,
 
-        id: availableProducts[0].id,
-        sku: availableProducts[0].sku,
-        name: availableProducts[0].name,
-        image: availableProducts[0].image,
-        qtyThreshold: availableProducts[0].qtyThreshold,
-        brand: availableProducts[0].brand,
-        categories: availableProducts[0].categories,
-        stockQuantity: availableProducts[0].stockQuantity
+        product: availableProducts[0],
+        productId: availableProducts[0].id,
+        quantity: 0
       }
     ]);
     setRowModesModel((oldModel) => ({
@@ -57,7 +51,7 @@ const ProductEditToolbarCellAction = ({
         color='primary'
         startIcon={<AddIcon />}
         onClick={handleClick}
-        // disabled={!availableProducts.length || disableAdd}
+        disabled={!availableProducts.length || disableAdd}
       >
         Add Product
       </Button>
@@ -65,4 +59,4 @@ const ProductEditToolbarCellAction = ({
   );
 };
 
-export default ProductEditToolbarCellAction;
+export default BundleProductEditToolbarCellAction;

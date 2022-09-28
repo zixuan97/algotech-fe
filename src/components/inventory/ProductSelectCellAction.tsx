@@ -30,24 +30,27 @@ const ProductSelectCellAction = ({
     });
   };
 
-  const displayedLocations = value
+  const displayedProducts = value
     ? unionWith(availableProducts, [value], (a, b) => a.id === b.id)
     : availableProducts;
+
+  console.log("display_product", displayedProducts);
 
   return (
     <FormControl fullWidth sx={{ p: '0.5em' }}>
       <Select
         id='location-select'
+        name="select-option"
         value={value?.id}
-        renderValue={(value) =>
+        renderValue={(value) => 
           allProducts.find((pdt) => pdt.id === value)?.name
         }
         size='small'
         onChange={handleChange}
       >
-        {displayedLocations.map((product) => (
-          <MenuItem key={product.id} value={product.id}>
-            {product.name}
+        {displayedProducts.map((pdt) => (
+          <MenuItem key={pdt.id} value={pdt.id}>
+            {pdt?.name}
           </MenuItem>
         ))}
       </Select>

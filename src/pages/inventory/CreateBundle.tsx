@@ -21,40 +21,47 @@ import {
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft, Delete } from '@mui/icons-material';
-import { GridRowId } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router';
-import { Bundle, Product } from 'src/models/types';
+import { Bundle, Product, BundleProduct } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { createBundle } from 'src/services/bundleService';
 import { intersectionWith, omit } from 'lodash';
 import { getBase64 } from 'src/utils/fileUtils';
-// import ProductGrid from 'src/components/inventory/ProductGrid';
-import ProductEditGrid from 'src/components/inventory/ProductEditGrid';
+import BundleProductEditGrid from 'src/components/inventory/BundleProductEditGrid';
 import {
   AlertType,
   AxiosErrDataBody
 } from '../../components/common/TimeoutAlert';
 import inventoryContext from '../../context/inventory/inventoryContext';
 import { isValidBundle } from 'src/components/inventory/inventoryHelper';
+import BundleProductModal from 'src/components/inventory/BundleProductModal';
+import { useSearchParams } from 'react-router-dom';
+import { idID } from '@mui/material/locale';
+import { isConstructorDeclaration } from 'typescript';
+import PositiveNumberEditCellAction from 'src/components/inventory/PositiveNumberEditCellAction';
 
-export interface BundleProduct {
-  id: number;
-  isNew?: boolean;
-}
-
-export interface BundleProductRow extends BundleProduct {
-  gridId: GridRowId;
-}
+export type NewBundle = Partial<Bundle> & {};
+type NewBundleProduct = Partial<BundleProduct>;
 
 const CreateBundle = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  // const id = searchParams.get('id');
 
   const [disableCreate, setDisableCreate] = React.useState<boolean>(true);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [newBundle, setNewBundle] = React.useState<Partial<Bundle>>({
+
+  // const [newBundleProducts, setNewBundleProducts] = React.useState<NewBundleProduct[]>([]);
+  const [newBundle, setNewBundle] = React.useState<NewBundle>({
     bundleProduct: []
   });
+
+  // const [bundleProductDetails, setBundleProductDetails] = React.useState<BundleProduct[]>([]);
+  // const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  // const [tableLoading, setTableLoading] = React.useState<boolean>(false);
+  // const [addedProductsId, setAddedProductsId] = React.useState<number[]>([]);
+
 
   React.useEffect(() => {
     setDisableCreate(!isValidBundle(newBundle));
@@ -94,7 +101,7 @@ const CreateBundle = () => {
       );
     }
   };
-
+  
   return (
     <div>
       <Tooltip title='Return to Previous Page' enterDelay={300}>
@@ -149,15 +156,32 @@ const CreateBundle = () => {
                     />
                   </div>
                 </div>
-                <ProductEditGrid
-                  productList={newBundle.bundleProduct ?? []}
-                  updateProductList={(pdts) =>
+                <BundleProductEditGrid
+                  bundleProductList={newBundle.bundleProduct ?? []}
+                  updateBundleProductList={(pdts) =>
                     setNewBundle((prev) => ({
                       ...prev,
                       bundleProduct: pdts
                     }))
                   }
                 />
+                  {/* {(
+                    <Button
+                    variant='contained'
+                    size='medium'
+                    sx={{ height: 'fit-content' }}
+                    onClick={() => setModalOpen(true)}
+                    >
+                      Add Products to Bundle
+                    </Button>
+                  )}
+                  <BundleProductModal
+                    open={modalOpen}
+                    onClose={() => setModalOpen(false)}
+                    onConfirm={handleAddBundleProducts}
+                    title='Add Products to Bundle'
+                    addedProductsId={addedProductsId}
+                  /> */}
                 <div className='button-group'>
                   <Button
                     variant='text'
@@ -165,7 +189,7 @@ const CreateBundle = () => {
                     color='primary'
                     onClick={() => navigate('/inventory/allBundles')}
                   >
-                    CANCEL
+                    Cancel
                   </Button>
                   <Button
                     type='submit'
@@ -174,7 +198,7 @@ const CreateBundle = () => {
                     color='primary'
                     disabled={disableCreate}
                   >
-                    CREATE BUNDLE
+                    Create Bundle
                   </Button>
                 </div>
               </FormGroup>
