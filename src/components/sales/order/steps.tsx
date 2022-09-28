@@ -5,7 +5,8 @@ import {
     PlaylistAddCheckCircleRounded,
     LocalShippingRounded,
     TaskAltRounded,
-    AddShoppingCart
+    AddShoppingCart,
+    DepartureBoardRounded
   } from '@mui/icons-material';
 
 
@@ -37,7 +38,7 @@ export const steps = [
   {
     currentState: OrderStatus.READY_FOR_DELIVERY,
     label: 'Delivery Scheduled',
-    icon: <PlaylistAddCheckCircleRounded sx={{ fontSize: 35 }} />,
+    icon: <DepartureBoardRounded sx={{ fontSize: 35 }} />,
     nextAction: 'Confirm Pickup'
   },
   {

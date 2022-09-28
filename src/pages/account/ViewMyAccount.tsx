@@ -11,10 +11,13 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Alert
+  Alert,
+  OutlinedInput,
+  InputAdornment,
+  IconButton
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
-import { ExpandMore } from '@mui/icons-material';
+import { ExpandMore, Visibility, VisibilityOff } from '@mui/icons-material';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import { editUserSvc, updatePasswordSvc } from 'src/services/accountService';
@@ -22,6 +25,7 @@ import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
 import authContext from 'src/context/auth/authContext';
 import usePrevious from 'src/hooks/usePrevious';
+import PasswordEndAdornment from 'src/components/account/PasswordEndAdornment';
 
 const ViewMyAccount = () => {
   const navigate = useNavigate();
@@ -39,6 +43,7 @@ const ViewMyAccount = () => {
   const [showNewPwdError, setShowNewPwdError] = useState<boolean>(false);
   const [showCfmPwdError, setShowCfmPwdError] = useState<boolean>(false);
   const [expandPwPanel, setExpandPwPanel] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const prevUserVerification = usePrevious(user?.isVerified);
 
@@ -299,8 +304,9 @@ const ViewMyAccount = () => {
                               </Grid>
                               <Grid item xs={12}>
                                 <TextField
-                                  fullWidth
                                   required
+                                  fullWidth
+                                  type={showPassword ? 'text' : 'password'}
                                   error={
                                     (newPassword === currentPassword ||
                                       validator.isEmpty(currentPassword)) &&
@@ -315,21 +321,31 @@ const ViewMyAccount = () => {
                                       ? 'Current Password field is empty'
                                       : ''
                                   }
-                                  id='outlined-quantity'
+                                  id='outlined-currPwd'
                                   label='Current Password'
                                   name='currPwd'
-                                  placeholder='*********'
                                   value={currentPassword}
+                                  variant="outlined"
                                   onChange={(e: any) => {
                                     setCurrentPassword(e.target.value);
                                     setShowCurrPwdError(true);
                                   }}
+                                  InputProps={{
+                                    endAdornment: (
+                                      <PasswordEndAdornment
+                                      showPassword={showPassword}
+                                      setShowPassword={() =>
+                                        setShowPassword((prev) => !prev)}
+                                      />
+                                    ),
+                                  }}
                                 />
                               </Grid>
                               <Grid item xs={12}>
-                                <TextField
-                                  fullWidth
+                              <TextField
                                   required
+                                  fullWidth
+                                  type={showPassword ? 'text' : 'password'}
                                   error={
                                     (confirmPassword !== newPassword ||
                                       newPassword === currentPassword ||
@@ -350,21 +366,31 @@ const ViewMyAccount = () => {
                                       ? 'Password length needs 8 characters'
                                       : ''
                                   }
-                                  id='outlined-quantity'
+                                  id='outlined-newPwd'
                                   label='New Password'
                                   name='newPwd'
-                                  placeholder='*********'
                                   value={newPassword}
+                                  variant="outlined"
                                   onChange={(e: any) => {
                                     setNewPassword(e.target.value);
                                     setShowNewPwdError(true);
                                   }}
+                                  InputProps={{
+                                    endAdornment: (
+                                      <PasswordEndAdornment
+                                      showPassword={showPassword}
+                                      setShowPassword={() =>
+                                        setShowPassword((prev) => !prev)}
+                                      />
+                                    ),
+                                  }}
                                 />
                               </Grid>
                               <Grid item xs={12}>
-                                <TextField
-                                  fullWidth
+                              <TextField
                                   required
+                                  fullWidth
+                                  type={showPassword ? 'text' : 'password'}
                                   error={
                                     (confirmPassword !== newPassword ||
                                       confirmPassword === currentPassword ||
@@ -382,14 +408,23 @@ const ViewMyAccount = () => {
                                       ? 'Password length needs 8 characters'
                                       : ''
                                   }
-                                  id='outlined-quantity'
+                                  id='outlined-cfm-new-pwd'
                                   label='Confirm New Password'
                                   name='cfmNewPwd'
-                                  placeholder='*********'
                                   value={confirmPassword}
+                                  variant="outlined"
                                   onChange={(e: any) => {
                                     setConfirmPassword(e.target.value);
                                     setShowCfmPwdError(true);
+                                  }}
+                                  InputProps={{
+                                    endAdornment: (
+                                      <PasswordEndAdornment
+                                      showPassword={showPassword}
+                                      setShowPassword={() =>
+                                        setShowPassword((prev) => !prev)}
+                                      />
+                                    ),
                                   }}
                                 />
                               </Grid>
