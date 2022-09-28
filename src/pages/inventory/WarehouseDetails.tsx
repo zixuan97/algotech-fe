@@ -108,7 +108,7 @@ const LocationDetails = () => {
             addedProductsId.push(sq.product.id);
           }}
         );
-        // setAddedProductsId(addedProductsId);
+        setAddedProductsId(addedProductsId);
         console.log("addedProductsId", addedProductsId);
       
         setLoading(false);
@@ -231,17 +231,6 @@ const LocationDetails = () => {
       field: 'actions',
       headerName: 'Actions',
       flex: 1,
-      // renderCell: ({ id }: GridRenderCellParams) => {
-      //   return (
-      //     <Button
-      //       variant='outlined'
-      //       startIcon={<DeleteIcon />}
-      //       onClick={() => removeStockQtyPdt(id.toString())}
-      //     >
-      //       Delete
-      //     </Button>
-      //   );
-      // }
       renderCell: ({ id }: GridRenderCellParams) => {
         if (!edit) {
           return (
@@ -388,21 +377,46 @@ const LocationDetails = () => {
                     // console.log("edit_location", editLocation);
                     console.log("original_location", originalLocation);
                     if (originalLocation) {
-                      setStockQuantityDetails(originalLocation?.stockQuantity);
+                      //gives original array
+                      console.log("original_location stock qty", originalLocation?.stockQuantity);
                       
+                      //this line isnt working
+                      // setStockQuantityDetails(originalLocation?.stockQuantity);
+
+                      console.log("products to be reset_editProdId:", editAddProductsId);
+
+                      const updatedStockQtyPdts = stockQuantityDetails.filter(
+                        (item) => { if (item.product) {
+                          return !editAddProductsId.includes(item.product?.id);
+                        } else if (item.productId) {
+                          return !editAddProductsId.includes(item.productId);
+                        } else {
+                          return false;
+                        }}
+                      );
+                      console.log("remove: updatedStockQtyPdts", updatedStockQtyPdts)
+                      
+                      //this line isnt working
+                      setStockQuantityDetails(updatedStockQtyPdts);
+
+                      console.log("DISCARD stock qty", stockQuantityDetails);
+                      //should give original array
+                      
+                      //this isnt working
                       setAddedProductsId([]);
 
-                      stockQuantityDetails.forEach((sq) => 
+                      originalLocation?.stockQuantity.forEach((sq) => 
                         {if (sq.productId) {
                           addedProductsId.push(sq.productId);
                         } else if (sq.product) {
                           addedProductsId.push(sq.product.id);
                         }}
                       );
+                      setAddedProductsId(addedProductsId);
 
                     }
 
-
+                    //this isnt working either
                     setEditAddProductsId([]);
 
                     console.log("DISCARD editAddProductsId", editAddProductsId);

@@ -106,21 +106,6 @@ export const convertGridRowToBundleProduct = (
   );
 };
 
-export const convertProductsToBundleProducts = (
-  bundle: Bundle,
-  product: Product[]
-): BundleProduct[] => {
-  // return product.map((pdt) => pdt )
-  return product.map((pdt) => ({ 
-    bundleId: bundle.id,
-    productId: pdt.id,
-    productSku: pdt.sku,
-    bundleName: bundle.name,
-    productName: pdt.name
-    // product: pdt, 
-  }));
-}
-
 export const getAvailableProducts = (
   selectedProducts: BundleProductGridRow[],
   allProducts: Product[]

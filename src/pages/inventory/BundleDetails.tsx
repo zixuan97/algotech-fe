@@ -43,6 +43,11 @@ const columns: GridColDef[] = [
     valueGetter: (params: GridValueGetterParams) => params.row.product.name
   },
   {
+    field: 'quantity',
+    headerName: 'Quantity',
+    flex: 1,
+  },
+  {
     field: 'action',
     headerName: 'Action',
     headerAlign: 'right',
@@ -98,7 +103,7 @@ const BundleDetails = () => {
 
   React.useEffect(() => {
     const shouldDisable = !(
-      editBundle?.name && productDetails //editCategory?.productCategory
+      editBundle?.name && productDetails
     );
     setDisableSave(shouldDisable);
   }, [editBundle?.name, productDetails]);
@@ -110,7 +115,6 @@ const BundleDetails = () => {
         setOriginalBundle(res);
         setEditBundle(res);
 
-        // asyncFetchCallback(getAllProductsByBundle(id), setProductDetails);
         setProductDetails(res.bundleProduct);
         setTableLoading(false);
 
@@ -128,14 +132,6 @@ const BundleDetails = () => {
       });
     }
   }, [id, editBundle, originalBundle]);
-
-  // React.useEffect(() => { 
-  //   setTableLoading(true);
-  //   if (originalBundle) {
-  //     // setProductDetails(originalBundle?.bundleProduct ?? []);
-  //   }
-  //   setTableLoading(false);
-  // }, [originalBundle]);
 
   const handleDeleteButtonClick = () => {
     setModalOpen(false);
@@ -326,33 +322,17 @@ const BundleDetails = () => {
                 {/* product table */}
                 {edit ? (
                   <BundleProductEditGrid
-                    thisBundle={editBundle}
-                    productList={productDetails}
-                    updateProductList={(pdts) =>
+                    bundleProductList={productDetails}
+                    updateBundleProductList={(pdts) =>
                       setEditBundle((prev) => ({
                         ...prev,
                         bundleProduct: pdts
-                        // map thjis back to names
                       }))
                     }
-                    // updateProductList={(pdts) =>
-                    //   setEditBundle(
-                    //     (prev) =>
-                    //       prev && {
-                    //         ...prev,
-                    //         bundleProduct: pdts.map((pdt) => ({
-                    //           ...pdt,
-                    //           productId: pdt.id
-                    //         }))
-                    //       }
-                    //   )
-                        // map thjis back to names depending on ProductEditGrid
-                      // }
                   />
                 ) : (
                   <DataGrid
                     columns={columns}
-                    // rows={originalBundle?.bundleProduct ?? []}
                     rows={productDetails}
                     getRowId={(row) => row.productId}
                     loading={tableLoading}
