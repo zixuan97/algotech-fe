@@ -6,6 +6,7 @@
     "@date-io/moment": "^2.15.0",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@mui/icons-material": "^5.10.3",
     "@mui/lab": "^5.0.0-alpha.99",
     "@mui/material": "^5.10.5",
