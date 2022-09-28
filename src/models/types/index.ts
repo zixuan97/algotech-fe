@@ -183,7 +183,7 @@ export interface SalesOrderItem {
 
 export interface DailySales {
   // TODO: change to number once BE is fixed
-  salesorders: string;
+  salesorders: number;
   createddate: Date;
 }
 

@@ -44,15 +44,6 @@ const options = {
   }
 };
 
-// const getOrderDataByPlatform = (platformData: PlatformData[]): number[] => {
-//   const map = new Map<PlatformType, number>();
-//   platformData.forEach((data) => {
-//     const { platform, orders } = data;
-//     map.set(platform, orders);
-//   });
-//   return labels.map((lbl) => map.get(lbl) ?? 0);
-// };
-
 const getOrderDataByPlatform = (salesOrders: SalesOrder[]): number[] => {
   // OrderedMap is immutable
   let map = OrderedMap<PlatformType, number>(labels.map((lbl) => [lbl, 0]));

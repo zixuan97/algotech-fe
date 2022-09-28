@@ -6,29 +6,6 @@ import { DailySales } from 'src/models/types';
 import { READABLE_DDMM } from 'src/utils/dateUtils';
 import NumberCard from '../../common/NumberCard';
 
-const orderData = [
-  {
-    date: moment().subtract(4, 'days'),
-    ordersReceived: 1000
-  },
-  {
-    date: moment().subtract(3, 'days'),
-    ordersReceived: 2400
-  },
-  {
-    date: moment().subtract(2, 'days'),
-    ordersReceived: 3000
-  },
-  {
-    date: moment().subtract(1, 'days'),
-    ordersReceived: 2134
-  },
-  {
-    date: moment(),
-    ordersReceived: 4312
-  }
-];
-
 const options = {
   scales: {
     x: {
@@ -76,7 +53,7 @@ const OrdersCard = ({ dailySales }: OrdersCardProps) => {
   };
 
   const ordersReceived = dailySales.reduce(
-    (prev, curr) => prev + parseInt(curr.salesorders),
+    (prev, curr) => prev + curr.salesorders,
     0
   );
 
