@@ -17,8 +17,7 @@ import StockPriorityCell from 'src/components/inventory/StockPriorityCell';
 import DownloadIcon from '@mui/icons-material/Download';
 import { DDMMYYYY, getTodayFormattedDate } from 'src/utils/dateUtils';
 import inventoryContext from 'src/context/inventory/inventoryContext';
-import apiRoot from 'src/services/util/apiRoot';
-import { fetchEventSource } from '@microsoft/fetch-event-source';
+import Pusher from 'pusher-js';
 
 export enum StockPriorityType {
   LOW = 1,
@@ -80,31 +79,44 @@ const InventoryDashboard = () => {
   const pdfRef = React.createRef<HTMLDivElement>();
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      await fetchEventSource(`${apiRoot}/shopify/webhook`, {
-        headers: {
-          Accept: 'text/event-stream'
-        },
-        onopen: async (res) => {
-          if (res.ok && res.status === 200) {
-            console.log('Connection made ', res);
-          } else if (
-            res.status >= 400 &&
-            res.status < 500 &&
-            res.status !== 429
-          ) {
-            console.log('Client side error ', res);
-          }
-        },
-        onmessage(event) {
-          console.log(event.data);
-        },
-        onclose() {
-          console.log('Connection closed by the server');
-        }
-      });
-    };
-    fetchData();
+    // const fetchData = async () => {
+    //   await fetchEventSource(`${apiRoot}/shopify/webhook`, {
+    //     headers: {
+    //       Accept: 'text/event-stream'
+    //     },
+    //     onopen: async (res) => {
+    //       if (res.ok && res.status === 200) {
+    //         console.log('Connection made ', res);
+    //       } else if (
+    //         res.status >= 400 &&
+    //         res.status < 500 &&
+    //         res.status !== 429
+    //       ) {
+    //         console.log('Client side error ', res);
+    //       }
+    //     },
+    //     onmessage(event) {
+    //       console.log(event.data);
+    //     },
+    //     onclose() {
+    //       console.log('Connection closed by the server');
+    //     }
+    //   });
+    // };
+    // fetchData();
+    // const eventsource = new EventSource(`${apiRoot}/shopify/webhook`);
+    // eventsource.onopen = (e) => console.log('eventsource opened');
+    // eventsource.onmessage = (e) => console.log(e.data);
+    // return () => eventsource.close();
+
+    var pusher = new Pusher('33f7d7f44d38ff91c104', {
+      cluster: 'ap1'
+    });
+
+    var channel = pusher.subscribe('algotech-pusher');
+    channel.bind('shopify-webhook', function (data: any) {
+      console.log(data);
+    });
   }, []);
 
   const computeProductsWithLowStock = () => {
