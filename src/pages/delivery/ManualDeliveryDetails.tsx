@@ -22,11 +22,22 @@ import {
   TaskAltRounded
 } from '@mui/icons-material';
 import { useSearchParams } from 'react-router-dom';
-import { DeliveryOrder, OrderStatus, User, UserRole } from 'src/models/types';
+import {
+  DeliveryOrder,
+  OrderStatus,
+  SalesOrder,
+  User,
+  UserRole
+} from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getDeliveryOrderById } from 'src/services/deliveryServices';
+import {
+  editDeliveryOrder,
+  getDeliveryOrderById
+} from 'src/services/deliveryServices';
 import { getAllUserSvc } from 'src/services/accountService';
 import authContext from 'src/context/auth/authContext';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import ConfirmationModal from 'src/components/common/ConfirmationModal';
 
 const steps = [
   {
@@ -64,6 +75,8 @@ const ManualDeliveryDetails = () => {
   const [users, setUsers] = React.useState<User[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [edit, setEdit] = React.useState<boolean>(false);
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setLoading(true);
@@ -93,6 +106,7 @@ const ManualDeliveryDetails = () => {
           let filteredUsers = users.filter(
             (user) => user.role !== UserRole.CUSTOMER
           );
+          filteredUsers.push(user);
           setUsers(filteredUsers);
         });
       } else {
@@ -103,6 +117,141 @@ const ManualDeliveryDetails = () => {
     }
     setLoading(false);
   }, [user]);
+
+  const handleCancelUpdate = async () => {
+    setEdit(false);
+    setUpdatedDeliveryOrder(originalDeliveryOrder);
+  };
+
+  const handleEditDeliveryOrder = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    await setUpdatedDeliveryOrder((prev) => {
+      if (prev) {
+        return { ...prev, [e.target.name]: e.target.value };
+      } else {
+        return prev;
+      }
+    });
+  };
+
+  const handleEditAssignedUser = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    let newAssignedUser = users.find(
+      (user) => user.id.toString() == e.target.value
+    );
+
+    await setUpdatedDeliveryOrder((prev) => {
+      if (prev) {
+        return { ...prev, assignedUser: newAssignedUser };
+      } else {
+        return prev;
+      }
+    });
+  };
+
+  const handleDeliveryOrderUpdate = async () => {
+    setLoading(true);
+
+    let reqBody = {
+      id: originalDeliveryOrder?.id,
+      comments: updatedDeliveryOrder?.comments,
+      salesOrderId: originalDeliveryOrder?.salesOrderId,
+      assignedUserId: updatedDeliveryOrder?.assignedUser?.id
+    };
+
+    await asyncFetchCallback(
+      editDeliveryOrder(reqBody),
+      (res) => {
+        setOriginalDeliveryOrder((originalDeliveryOrder) => {
+          if (originalDeliveryOrder) {
+            return {
+              ...originalDeliveryOrder,
+              comments: updatedDeliveryOrder!.comments,
+              assignedUser: updatedDeliveryOrder!.assignedUser
+            };
+          } else {
+            return originalDeliveryOrder;
+          }
+        });
+        setAlert({
+          severity: 'success',
+          message: 'Delivery Order updated successfully.'
+        });
+        setLoading(false);
+      },
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message: 'Delivery Order was not updated successfully.'
+        });
+      }
+    );
+  };
+
+  const handleDeliveryOrderStatusUpdate = async () => {
+    setModalOpen(false);
+    setLoading(true);
+
+    setActiveStep((prev) => prev + 1);
+
+    let reqBody = {
+      id: originalDeliveryOrder?.id,
+      salesOrderId: originalDeliveryOrder?.salesOrderId,
+      assignedUserId: originalDeliveryOrder?.assignedUser?.id,
+      orderStatus:
+        originalDeliveryOrder?.salesOrder.orderStatus ===
+        OrderStatus.READY_FOR_DELIVERY
+          ? OrderStatus.SHIPPED
+          : OrderStatus.COMPLETED
+    };
+
+    await asyncFetchCallback(
+      editDeliveryOrder(reqBody),
+      (res) => {
+        let updatedOrderStatus;
+        if (
+          originalDeliveryOrder?.salesOrder.orderStatus ===
+          OrderStatus.READY_FOR_DELIVERY
+        ) {
+          updatedOrderStatus = OrderStatus.SHIPPED;
+        } else {
+          updatedOrderStatus = OrderStatus.COMPLETED;
+        }
+
+        let updatedOrder = Object.assign(
+          {},
+          originalDeliveryOrder?.salesOrder,
+          { orderStatus: updatedOrderStatus }
+        );
+
+        setOriginalDeliveryOrder((originalDeliveryOrder) => {
+          if (originalDeliveryOrder) {
+            return {
+              ...originalDeliveryOrder,
+              salesOrder: updatedOrder
+            };
+          } else {
+            return originalDeliveryOrder;
+          }
+        });
+        setAlert({
+          severity: 'success',
+          message: 'Delivery Order Status updated successfully.'
+        });
+        setLoading(false);
+      },
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message: 'Delivery Order Status was not updated successfully.'
+        });
+      }
+    );
+  };
 
   return (
     <div className='view-delivery-details'>
@@ -122,7 +271,7 @@ const ManualDeliveryDetails = () => {
               if (!edit) {
                 setEdit(true);
               } else {
-                // handleOrderUpdate();
+                handleDeliveryOrderUpdate();
                 setEdit(false);
               }
             }}
@@ -137,7 +286,7 @@ const ManualDeliveryDetails = () => {
               variant='contained'
               size='medium'
               sx={{ width: 'fit-content' }}
-              onClick={() => {}}
+              onClick={handleCancelUpdate}
             >
               Cancel
             </Button>
@@ -153,6 +302,15 @@ const ManualDeliveryDetails = () => {
       >
         <CircularProgress color='inherit' />
       </Backdrop>
+      {alert && (
+        <div className='delivery-details-alert'>
+          <TimeoutAlert
+            alert={alert}
+            timeout={6000}
+            clearAlert={() => setAlert(null)}
+          />
+        </div>
+      )}
       <div className='delivery-details-stepper'>
         <Stepper activeStep={activeStep} alternativeLabel>
           {steps.map((step) => (
@@ -166,9 +324,20 @@ const ManualDeliveryDetails = () => {
         <div className='delivery-details-action-section'>
           <Paper elevation={2} className='delivery-details-action-card'>
             <Typography sx={{ fontSize: 'inherit' }}>Next Action:</Typography>
-            <Button variant='contained' size='medium' onClick={() => {}}>
+            <Button
+              variant='contained'
+              size='medium'
+              onClick={() => setModalOpen(true)}
+            >
               {steps[activeStep].nextAction}
             </Button>
+            <ConfirmationModal
+              open={modalOpen}
+              onClose={() => setModalOpen(false)}
+              onConfirm={handleDeliveryOrderStatusUpdate}
+              title='Update Delivery Status'
+              body='Are you sure you want to update the delivery status? This action cannot be reversed.'
+            />
           </Paper>
         </div>
       )}
@@ -208,7 +377,7 @@ const ManualDeliveryDetails = () => {
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <h4 className='labelText'>Delivery Method</h4>
-                <Typography>{originalDeliveryOrder?.deliveryMode}</Typography>
+                <Typography>{originalDeliveryOrder?.shippingType}</Typography>
               </Grid>
               <Grid item xs={6}>
                 <h4 className='labelText'>Delivered By</h4>
@@ -218,8 +387,8 @@ const ManualDeliveryDetails = () => {
                       id='delivery-personnel-select-label'
                       label='Delivered By'
                       name='deliveredBy'
-                      value={''}
-                      onChange={() => {}}
+                      value={updatedDeliveryOrder?.assignedUser?.id}
+                      onChange={handleEditAssignedUser}
                       select
                       fullWidth
                     >
@@ -245,9 +414,9 @@ const ManualDeliveryDetails = () => {
                   <TextField
                     id='outlined-required'
                     label='Comments'
-                    name=''
-                    value={''}
-                    onChange={() => {}}
+                    name='comments'
+                    value={updatedDeliveryOrder?.comments}
+                    onChange={handleEditDeliveryOrder}
                     placeholder='Enter updated comments here.'
                     fullWidth
                     multiline

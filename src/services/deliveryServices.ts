@@ -35,6 +35,10 @@ export const getDeliveryOrderById = async (
   return axios.get(`${apiRoot}/delivery/${id}`).then((res) => res.data);
 };
 
+export const editDeliveryOrder = async (body: object): Promise<void> => {
+  return axios.put(`${apiRoot}/delivery`, body);
+};
+
 //how do I get all postal codes of deliveries?
 export const getAllDeliveriesPostalCode = async (): Promise<
   DeliveryOrder[]
