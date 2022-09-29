@@ -46,7 +46,7 @@ import DeliveryAssignment from './pages/delivery/DeliveryAssignment';
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ViewMyAccount from './pages/account/ViewMyAccount';
 import AllCategories from './pages/inventory/AllCategories';
@@ -61,6 +61,9 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import AllSalesOrder from './pages/sales/AllSalesOrders';
 import SalesOrderDetails from './pages/sales/SalesOrderDetails';
 import NotFound from './pages/NotFound';
+import { subscribeToShopify } from './services/webhook/pusher';
+import { SalesOrder } from './models/types';
+import { startCase } from 'lodash';
 
 const theme = createTheme({
   palette: {
@@ -85,6 +88,18 @@ const App = () => {
   React.useEffect(() => {
     setAuthToken(localStorage.token);
   }, [token]);
+
+  subscribeToShopify((salesOrder: SalesOrder) => {
+    console.log(salesOrder);
+    toast(
+      `New order has come in from ${startCase(
+        salesOrder.platformType.toLowerCase()
+      )}\nOrder number: ${salesOrder.orderId}`,
+      {
+        toastId: salesOrder.orderId
+      }
+    );
+  });
 
   return (
     <ThemeProvider theme={theme}>
