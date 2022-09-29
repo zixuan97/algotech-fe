@@ -113,9 +113,9 @@ const InventoryDashboard = () => {
       cluster: 'ap1'
     });
 
-    var channel = pusher.subscribe('my-channel');
-    channel.bind('my-event', function (data: any) {
-      console.log(JSON.stringify(data));
+    var channel = pusher.subscribe('algotech-pusher');
+    channel.bind('shopify-webhook', function (data: any) {
+      console.log(data);
     });
   }, []);
 
