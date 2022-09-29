@@ -37,7 +37,6 @@ import AllSuppliers from './pages/procurement/AllSuppliers';
 import SupplierDetails from './pages/procurement/SupplierDetails';
 import CreateSupplier from './pages/procurement/CreateSupplier';
 
-import AllGrabDeliveries from './pages/delivery/AllGrabDeliveries';
 import AllManualDeliveries from './pages/delivery/AllManualDeliveries';
 import AllShippitDeliveries from './pages/delivery/AllShippitDeliveries';
 import CreateDeliveryOrder from './pages/delivery/CreateDelivery';
@@ -197,10 +196,6 @@ const App = () => {
                   <Route
                     path='delivery/allManualDeliveries/createDelivery'
                     element={<CreateDeliveryOrder />}
-                  />
-                  <Route
-                    path='delivery/allGrabDeliveries'
-                    element={<AllGrabDeliveries />}
                   />
                   <Route
                     path='delivery/allShippitDeliveries'

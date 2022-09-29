@@ -10,6 +10,19 @@ export const getAllDeliveries = async (): Promise<DeliveryOrder[]> => {
   return axios.get(`${apiRoot}/delivery/all`).then((res) => res.data);
 };
 
+export const getManualDeliveryOrdersByRangeSvc = (
+  dateRange: MomentRange
+): Promise<DeliveryOrder[]> => {
+  const reqBody = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format(),
+    shippingType: 'MANUAL'
+  };
+  return axios
+    .post(`${apiRoot}/delivery/timefilter/all`, reqBody)
+    .then((res) => res.data);
+};
+
 export const getAllShippitDeliveries = async (): Promise<DeliveryOrder[]> => {
   return axios
     .get(`${apiRoot}/delivery/shippit/orders/all`)

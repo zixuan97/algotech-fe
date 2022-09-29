@@ -16,7 +16,7 @@ import '../../styles/common/common.scss';
 import '../../styles/pages/delivery/delivery.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import { SalesOrder, DeliveryOrder} from 'src/models/types';
+import { SalesOrder, DeliveryOrder } from 'src/models/types';
 import { createDeliveryOrder } from '../../services/deliveryServices';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import TimeoutAlert, {
@@ -27,28 +27,25 @@ import validator from 'validator';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 import dayjs, { Dayjs } from 'dayjs';
 
-
-const CreateDeliveryOrder= () => {
-
+const CreateDeliveryOrder = () => {
   const navigate = useNavigate();
 
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [newDeliveryOrder, setNewDeliveryOrder] = React.useState<DeliveryOrder>();
+  const [newDeliveryOrder, setNewDeliveryOrder] =
+    React.useState<DeliveryOrder>();
   const [salesOrder, setSalesOrder] = React.useState<SalesOrder>();
 
   const [edit, setEdit] = React.useState<boolean>(false);
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
 
-
   const [date, setDate] = React.useState<Dayjs | null>(
-    dayjs('2022-09-18T21:11:54'),
+    dayjs('2022-09-18T21:11:54')
   );
 
   const handleDateChange = (newDate: Dayjs | null) => {
     setDate(newDate);
   };
-
 
   const handleEditDeliveryOrder = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewDeliveryOrder((prev) => {
@@ -89,7 +86,6 @@ const CreateDeliveryOrder= () => {
   //   }
   // };
 
-
   const handleDeliveryCreation = async () => {
     if (newDeliveryOrder?.currentLocation === undefined) {
       setAlert({
@@ -121,7 +117,7 @@ const CreateDeliveryOrder= () => {
       ShippingType: newDeliveryOrder.shippingType,
       courierType: newDeliveryOrder.courierType,
       deliveryDate: newDeliveryOrder.deliveryDate,
-      deliveryPersonnel: newDeliveryOrder.deliveryPersonnel,
+      deliveryPersonnel: '',
       method: newDeliveryOrder.method,
       // status: salesOrder.orderStatus,
       parcelQty: newDeliveryOrder.parcelQty,
@@ -135,7 +131,8 @@ const CreateDeliveryOrder= () => {
         setLoading(false);
         setAlert({
           severity: 'success',
-          message: 'Delivery Order successfully created! You will be redirected back to the All Manual Deliveries page now.'
+          message:
+            'Delivery Order successfully created! You will be redirected back to the All Manual Deliveries page now.'
         });
         setTimeout(() => navigate(''), 3000);
       },
@@ -158,7 +155,7 @@ const CreateDeliveryOrder= () => {
       </Tooltip>
 
       <div className='create-product'>
-        <Box className='create-delivery-box' >
+        <Box className='create-delivery-box'>
           <div className='header-content'>
             <h1>Create Delivery Order</h1>
           </div>
@@ -177,7 +174,7 @@ const CreateDeliveryOrder= () => {
               <FormGroup className='create-product-form'>
                 <div className='top-content'>
                   <div className='product-text-fields'>
-                   <TextField
+                    <TextField
                       required
                       fullWidth
                       id='outlined-required'
@@ -213,8 +210,8 @@ const CreateDeliveryOrder= () => {
                       placeholder='eg.: Standard'
                     />
                     <DesktopDatePicker
-                      label="Delivery Date"
-                      inputFormat="MM/DD/YYYY"
+                      label='Delivery Date'
+                      inputFormat='MM/DD/YYYY'
                       value={date}
                       onChange={handleDateChange}
                       renderInput={(params) => <TextField {...params} />}
@@ -224,7 +221,7 @@ const CreateDeliveryOrder= () => {
                       fullWidth
                       id='outlined-required'
                       label='Delivery Personnel'
-                      value={newDeliveryOrder?.deliveryPersonnel}
+                      value={''}
                       onChange={handleEditDeliveryOrder}
                       placeholder='eg.: Delivery Man'
                     />
@@ -255,7 +252,7 @@ const CreateDeliveryOrder= () => {
                       onChange={handleEditDeliveryOrder}
                     />
                     <TextField
-                    type = "number"
+                      type='number'
                       required
                       fullWidth
                       id='outlined-required'
@@ -264,7 +261,7 @@ const CreateDeliveryOrder= () => {
                       onChange={handleEditDeliveryOrder}
                     />
                     <TextField
-                      type = "number"
+                      type='number'
                       required
                       fullWidth
                       id='outlined-required'
@@ -272,7 +269,9 @@ const CreateDeliveryOrder= () => {
                       value={newDeliveryOrder?.parcelWeight}
                       onChange={handleEditDeliveryOrder}
                       InputProps={{
-                        endAdornment: <InputAdornment position="end">kg</InputAdornment>,
+                        endAdornment: (
+                          <InputAdornment position='end'>kg</InputAdornment>
+                        )
                       }}
                     />
                   </div>
@@ -282,9 +281,7 @@ const CreateDeliveryOrder= () => {
                     variant='text'
                     className='cancel-btn'
                     color='primary'
-                    onClick={() =>
-                      navigate({ pathname: '' })
-                    }
+                    onClick={() => navigate({ pathname: '' })}
                   >
                     Cancel
                   </Button>

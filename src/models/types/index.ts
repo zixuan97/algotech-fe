@@ -159,7 +159,8 @@ export interface DeliveryOrder {
   salesOrder: SalesOrder;
   salesOrderId: number;
   courierType?: string;
-  deliveryPersonnel?: string;
+  comments?: string;
+  assignedUser?: User;
   method?: string;
   carrier?: string;
   parcelQty?: number;
