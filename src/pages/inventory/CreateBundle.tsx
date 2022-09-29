@@ -4,20 +4,12 @@ import {
   FormGroup,
   TextField,
   Paper,
-  MenuItem,
   Button,
   Tooltip,
   IconButton,
-  FormControl,
-  InputLabel,
-  Select,
-  OutlinedInput,
-  SelectChangeEvent,
-  Toolbar,
   Alert,
   Backdrop,
   CircularProgress,
-  Typography
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft, Delete } from '@mui/icons-material';
