@@ -192,6 +192,15 @@ export interface SalesOrderItem {
   productName?: string;
   createdTime?: Date;
   isNewAdded?: boolean;
+  salesOrderBundleItems: SalesOrderBundleItem[];
+}
+
+export interface SalesOrderBundleItem {
+  id?: number;
+  salesOrderItemId?: number;
+  productName: string;
+  quantity: number;
+  isNewAdded?: boolean;
 }
 
 export interface DailySales {

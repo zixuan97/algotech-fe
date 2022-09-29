@@ -14,6 +14,7 @@ import {
   OrderStatus,
   Product,
   SalesOrder,
+  SalesOrderBundleItem,
   SalesOrderItem
 } from 'src/models/types';
 import { useNavigate, createSearchParams } from 'react-router-dom';
@@ -33,6 +34,7 @@ import OrderSummaryCard from '../../components/sales/order/OrderSummaryCard';
 import StatusStepper from '../../components/sales/order/StatusStepper';
 import PlatformChip from '../../components/sales/order/PlatformChip';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import ViewCurrentBundleModal from './ViewCurrentBundleModal';
 
 const SalesOrderDetails = () => {
   let params = new URLSearchParams(window.location.search);
@@ -50,6 +52,13 @@ const SalesOrderDetails = () => {
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [availProducts, setAvailProducts] = useState<Product[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [showCurrentBundleModal, setShowCurrentBundleModal] =
+    useState<boolean>(false);
+  const [currentSalesOrderBundleItems, setCurrentSalesOrderBundleItems] =
+    useState<SalesOrderBundleItem[]>([]);
+  const [editSalesOrderBundleItems, setEditSalesOrderBundleItems] = useState<
+    SalesOrderBundleItem[]
+  >([]);
 
   const columns: GridColDef[] = [
     {
@@ -97,6 +106,26 @@ const SalesOrderDetails = () => {
               </Button>
             </>
           );
+        } else if (params.row.salesOrderBundleItems.length > 0) {
+          return (
+            <>
+              <Button
+                onClick={() => {
+                  setCurrentSalesOrderBundleItems(
+                    params.row.salesOrderBundleItems
+                  );
+                  setEditSalesOrderBundleItems(
+                    params.row.salesOrderBundleItems
+                  );
+                  setShowCurrentBundleModal(true);
+                }}
+                variant='contained'
+                size='medium'
+              >
+                View Bundle
+              </Button>
+            </>
+          );
         }
       }
     }
@@ -137,12 +166,13 @@ const SalesOrderDetails = () => {
       if (newStatus === OrderStatus.PREPARED) {
         setModalOpen(true);
       } else if (newStatus === OrderStatus.READY_FOR_DELIVERY) {
-        id && navigate({
-          pathname: '/delivery/allManualDeliveries/createDelivery',
-          search: createSearchParams({
-            id: id.toString()
-          }).toString()
-        });
+        id &&
+          navigate({
+            pathname: '/delivery/allManualDeliveries/createDelivery',
+            search: createSearchParams({
+              id: id.toString()
+            }).toString()
+          });
       } else {
         updateSalesOrderStatus(newStatus);
       }
@@ -233,7 +263,9 @@ const SalesOrderDetails = () => {
               activeStep + 1
             ].nextAction.toLowerCase()}.`
           });
-          setSalesOrder((order) => order && { ...order, orderStatus: newStatus });
+          setSalesOrder(
+            (order) => order && { ...order, orderStatus: newStatus }
+          );
           setActiveStep((prev) => prev + 1);
         },
         () => {
@@ -265,6 +297,15 @@ const SalesOrderDetails = () => {
         onClose={() => {
           setModalOpen(false);
         }}
+      />
+
+      <ViewCurrentBundleModal
+        open={showCurrentBundleModal}
+        onClose={() => setShowCurrentBundleModal(false)}
+        title='Items in the bundle.'
+        body='These are the items in your bundle.'
+        availProducts={availProducts}
+        editSalesOrderBundleItems={editSalesOrderBundleItems}
       />
 
       <div className='top-carrot'>
