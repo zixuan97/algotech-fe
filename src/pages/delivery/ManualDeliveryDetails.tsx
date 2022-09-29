@@ -22,13 +22,7 @@ import {
   TaskAltRounded
 } from '@mui/icons-material';
 import { useSearchParams } from 'react-router-dom';
-import {
-  DeliveryOrder,
-  OrderStatus,
-  SalesOrder,
-  User,
-  UserRole
-} from 'src/models/types';
+import { DeliveryOrder, OrderStatus, User, UserRole } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   editDeliveryOrder,
@@ -38,6 +32,9 @@ import { getAllUserSvc } from 'src/services/accountService';
 import authContext from 'src/context/auth/authContext';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import apiRoot from 'src/services/util/apiRoot';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
+import moment from 'moment';
 
 const steps = [
   {
@@ -77,6 +74,8 @@ const ManualDeliveryDetails = () => {
   const [edit, setEdit] = React.useState<boolean>(false);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [cancelDeliveryModalOpen, setCancelDeliveryModalOpen] =
+    React.useState<boolean>(false);
 
   React.useEffect(() => {
     setLoading(true);
@@ -253,6 +252,77 @@ const ManualDeliveryDetails = () => {
     );
   };
 
+  const handleCancelDeliveryOrder = async () => {
+    setCancelDeliveryModalOpen(false);
+    setLoading(true);
+
+    setActiveStep((prev) => prev + 1);
+
+    let reqBody = {
+      id: originalDeliveryOrder?.id,
+      salesOrderId: originalDeliveryOrder?.salesOrderId,
+      assignedUserId: originalDeliveryOrder?.assignedUser?.id,
+      orderStatus: OrderStatus.CANCELLED
+    };
+
+    await asyncFetchCallback(
+      editDeliveryOrder(reqBody),
+      (res) => {
+        let updatedOrder = Object.assign(
+          {},
+          originalDeliveryOrder?.salesOrder,
+          { orderStatus: OrderStatus.CANCELLED }
+        );
+
+        setOriginalDeliveryOrder((originalDeliveryOrder) => {
+          if (originalDeliveryOrder) {
+            return {
+              ...originalDeliveryOrder,
+              salesOrder: updatedOrder
+            };
+          } else {
+            return originalDeliveryOrder;
+          }
+        });
+        setAlert({
+          severity: 'success',
+          message: 'Delivery Order cancelled.'
+        });
+        setLoading(false);
+      },
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message: 'Delivery Order was not cancelled successfully.'
+        });
+      }
+    );
+  };
+
+  const handleDownloadDeliveryOrder = async () => {
+    if (id) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', `${apiRoot}/delivery/pdf/${id}`, true);
+      xhr.responseType = 'arraybuffer';
+      xhr.onload = function (e) {
+        if (this.status == 200) {
+          var blob = new Blob([this.response], {
+            type: 'application/pdf'
+          });
+          var link = document.createElement('a');
+          link.href = window.URL.createObjectURL(blob);
+          let deliveryDate = moment(originalDeliveryOrder?.deliveryDate).format(
+            'DDMMYYYY'
+          );
+          link.download = `DeliveryOrder-${deliveryDate}`;
+          link.click();
+        }
+      };
+      xhr.send();
+    }
+  };
+
   return (
     <div className='view-delivery-details'>
       <div className='view-delivery-details-top-section'>
@@ -279,8 +349,20 @@ const ManualDeliveryDetails = () => {
             {edit ? 'Save Changes' : 'Edit'}
           </Button>
           {!edit && activeStep === 0 && (
-            <Button variant='contained'>Cancel Delivery</Button>
+            <Button
+              variant='contained'
+              onClick={() => setCancelDeliveryModalOpen(true)}
+            >
+              Cancel Delivery
+            </Button>
           )}
+          <ConfirmationModal
+            open={cancelDeliveryModalOpen}
+            onClose={() => setCancelDeliveryModalOpen(false)}
+            onConfirm={handleCancelDeliveryOrder}
+            title='Cancel Delivery Over'
+            body='Are you sure you want to cancel the delivery order? This action cannot be reversed.'
+          />
           {edit && (
             <Button
               variant='contained'
@@ -373,7 +455,7 @@ const ManualDeliveryDetails = () => {
         </Paper>
         <Paper elevation={2} className='delivery-mode-card'>
           <div className='delivery-mode-grid'>
-            <h3 className='labelText'>Delivery Mode</h3>
+            <h3 className='labelText'>Delivery Details</h3>
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <h4 className='labelText'>Delivery Method</h4>
@@ -408,7 +490,15 @@ const ManualDeliveryDetails = () => {
                   </div>
                 )}
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={6}>
+                <h4 className='labelText'>Delivery Date</h4>
+                <Typography>
+                  {moment(originalDeliveryOrder?.deliveryDate).format(
+                    'DD/MM/YYYY'
+                  )}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
                 <h4 className='labelText'>Comments</h4>
                 {edit ? (
                   <TextField
@@ -431,21 +521,13 @@ const ManualDeliveryDetails = () => {
               </Grid>
               <div className='delivery-actions-button-container'>
                 <Button
-                  variant='contained'
+                  variant='outlined'
+                  startIcon={<PictureAsPdfIcon />}
                   size='medium'
                   sx={{ height: 'fit-content' }}
-                  onClick={() => {}}
+                  onClick={handleDownloadDeliveryOrder}
                 >
                   Download DO
-                </Button>
-
-                <Button
-                  variant='contained'
-                  size='medium'
-                  sx={{ height: 'fit-content' }}
-                  onClick={() => {}}
-                >
-                  Download Waybill
                 </Button>
               </div>
             </Grid>

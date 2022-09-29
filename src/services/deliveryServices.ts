@@ -24,9 +24,7 @@ export const getManualDeliveryOrdersByRangeSvc = (
 };
 
 export const getAllShippitDeliveries = async (): Promise<DeliveryOrder[]> => {
-  return axios
-    .get(`${apiRoot}/delivery/shippit/orders/all`)
-    .then((res) => res.data);
+  return axios.get(`${apiRoot}/delivery/shippit/all`).then((res) => res.data);
 };
 
 export const getDeliveryOrderById = async (
