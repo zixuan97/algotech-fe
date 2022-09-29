@@ -112,9 +112,9 @@
 .delivery-actions-button-container {
   display: flex;
   flex-direction: row;
-  padding-top: 4rem;
+  padding-top: 3rem;
   width: 100%;
-  justify-content: space-evenly;
+  justify-content: center;
 }
 
 .view-delivery-details-top-section {
@@ -146,4 +146,22 @@
   flex-direction: row;
   padding-left: 4rem;
   padding-bottom: 2rem;
+}
+
+.shippit-deliveries-heading {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+}
+
+.track-order-button-container {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 4rem;
+  gap: 10px 10px;
+  margin: 2% 2% 2% 2%;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  text-align: center;
+  flex-direction: row;
+  width: 70%;
 }

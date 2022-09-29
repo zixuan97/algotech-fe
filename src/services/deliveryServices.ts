@@ -27,6 +27,14 @@ export const getAllShippitDeliveries = async (): Promise<DeliveryOrder[]> => {
   return axios.get(`${apiRoot}/delivery/shippit/all`).then((res) => res.data);
 };
 
+export const trackShippitDeliveryOrder = async (
+  trackingNum: string
+): Promise<Object> => {
+  return axios
+    .get(`${apiRoot}/delivery/shippit/${trackingNum}`)
+    .then((res) => res.data);
+};
+
 export const getDeliveryOrderById = async (
   id: string | number
 ): Promise<DeliveryOrder> => {

@@ -13,7 +13,8 @@ import {
   TextField,
   MenuItem,
   Backdrop,
-  CircularProgress
+  CircularProgress,
+  StepContent
 } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import {
@@ -397,7 +398,10 @@ const ManualDeliveryDetails = () => {
         <Stepper activeStep={activeStep} alternativeLabel>
           {steps.map((step) => (
             <Step key={step.label}>
-              <StepLabel icon={step.icon}>{step.label}</StepLabel>
+              <StepLabel icon={step.icon}>
+                {step.label}
+                20/09/2022
+              </StepLabel>
             </Step>
           ))}
         </Stepper>
