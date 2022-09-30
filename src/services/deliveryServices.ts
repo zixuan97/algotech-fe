@@ -39,13 +39,6 @@ export const editDeliveryOrder = async (body: object): Promise<void> => {
   return axios.put(`${apiRoot}/delivery`, body);
 };
 
-//how do I get all postal codes of deliveries?
-export const getAllDeliveriesPostalCode = async (): Promise<
-  DeliveryOrder[]
-> => {
-  return axios.post(`${apiRoot}/delivery/latlong`).then((res) => res.data);
-};
-
 export const createDeliveryOrder = async (body: object): Promise<void> => {
   return axios.post(`${apiRoot}/delivery`, body);
 };
@@ -59,5 +52,36 @@ export const getAllDeliveriesPostalCodeByDate = (
   };
   return axios
     .post(`${apiRoot}/delivery/latlong`, timeFilter)
+    .then((res) => res.data);
+};
+
+export const getAllAssignedManualDeliveries = async (
+  id: any
+): Promise<DeliveryOrder[]> => {
+  return axios.get(`${apiRoot}/delivery/deliveryAssignment/${id}`).then((res) => res.data);
+};
+
+
+export const getCurrentLocationLatLng = async (
+  address: string | any
+): Promise<any> => {
+  return axios
+    .post(`${apiRoot}/delivery/getCurrentLatLng`, address)
+    .then((res) => res.data);
+};
+
+export const getAllUnassignedDeliveries = async (): Promise<DeliveryOrder[]> => {
+  return axios.get(`${apiRoot}/delivery/unassigned/user`).then((res) => res.data);
+};
+
+export const getAllUnassignedDeliveriesPostalCodeByDate = (
+  dateRange: MomentRange
+): Promise<DeliveryOrder[]> => {
+  const timeFilter = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format()
+  };
+  return axios
+    .post(`${apiRoot}/delivery/unassigned/latlong`, timeFilter)
     .then((res) => res.data);
 };
