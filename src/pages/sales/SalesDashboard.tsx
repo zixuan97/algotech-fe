@@ -42,7 +42,11 @@ import {
   MomentRange,
   READABLE_DDMMYY
 } from 'src/utils/dateUtils';
-import { createPdfFromComponent, downloadFile } from 'src/utils/fileUtils';
+import {
+  createPdfFromComponent,
+  downloadFile,
+  getExcelFromApiWithDate
+} from 'src/utils/fileUtils';
 import '../../styles/common/common.scss';
 import '../../styles/pages/sales/orders.scss';
 
@@ -203,7 +207,7 @@ const SalesDashboard = () => {
         <div className='order-grid-toolbar'>
           <div className='search-bar'>
             <FilterList />
-            <FormControl style={{ width: '50%' }}>
+            <FormControl style={{ width: '35%' }}>
               <InputLabel id='search-platform'>Platform</InputLabel>
               <Select
                 id='search-platform'
@@ -238,6 +242,21 @@ const SalesDashboard = () => {
               }}
             >
               Reset
+            </Button>
+            <Button
+              variant='contained'
+              size='large'
+              sx={{ height: 'fit-content' }}
+              onClick={() =>
+                getExcelFromApiWithDate(
+                  'POST',
+                  '/sales/excel',
+                  `SalesData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`,
+                  dateRange
+                )
+              }
+            >
+              Export
             </Button>
           </div>
         </div>

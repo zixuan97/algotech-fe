@@ -1,6 +1,7 @@
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import apiRoot from 'src/services/util/apiRoot';
+import { MomentRange } from './dateUtils';
 
 type PDFOrientation = 'portrait' | 'landscape';
 
@@ -92,4 +93,30 @@ export const getExcelFromApi = (
     }
   };
   xhr.send();
+};
+
+export const getExcelFromApiWithDate = (
+  httpMethod: string,
+  api: string,
+  fileName: string,
+  dateRange: MomentRange
+) => {
+  const timeFilter = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format()
+  };
+  const xhr = new XMLHttpRequest();
+  xhr.open(httpMethod, `${apiRoot}${api}`, true);
+  xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
+  xhr.responseType = 'arraybuffer';
+  xhr.onload = function (e) {
+    if (this.status === 200) {
+      const blob = new Blob([this.response], {
+        type: 'application/octet-stream'
+      });
+      downloadFile(window.URL.createObjectURL(blob), fileName);
+    }
+  };
+  xhr.send(JSON.stringify(timeFilter));
+
 };

@@ -23,6 +23,9 @@ const OrderInfoGrid = ({ salesOrder }: props) => {
         <Grid item xs={12}>
           Shipping Address: {salesOrder?.customerAddress!}
         </Grid>
+        <Grid item xs={12}>
+          Customer Comments: {salesOrder?.customerRemarks! ?? '-'}
+        </Grid>
       </Grid>
     </div>
   );
