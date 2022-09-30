@@ -15,14 +15,13 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { Bundle, Product, BundleProduct } from '../../models/types';
+import { Bundle, BundleProduct } from '../../models/types';
 import ProductCellAction from '../../components/inventory/ProductCellAction';
 import {
   getBundleById,
   updateBundle,
   deleteBundle
 } from '../../services/bundleService';
-import { getAllProductsByBundle } from '../../services/productService';
 import BundleProductEditGrid from 'src/components/inventory/BundleProductEditGrid';
 import { 
   DataGrid, 
@@ -105,15 +104,14 @@ const BundleDetails = () => {
   React.useEffect(() => {
     setDisableSave(!isValidBundle(editBundle));
 
-    if (editBundle) {
-      if (editBundle.bundleProduct) {
-        editBundle.bundleProduct?.forEach((bundlePdt) => {
-          if (bundlePdt.quantity.toString() === "0") {
-            setDisableSave(true);
-          }
-        });
-      }
+    if (editBundle && editBundle.bundleProduct) {
+      editBundle.bundleProduct?.forEach((bundlePdt) => {
+        if (bundlePdt.quantity.toString() === "0") {
+          setDisableSave(true);
+        }
+      });
     }
+    
   }, [editBundle]);
 
   React.useEffect(() => {

@@ -14,12 +14,10 @@ import {
   GridEventListener,
   GridRowId,
   GridRenderEditCellParams,
-  GridValueGetterParams
 } from '@mui/x-data-grid';
-import { Product, Supplier, SupplierProduct } from 'src/models/types';
+import { Product, SupplierProduct } from 'src/models/types';
 import SupplierProductEditToolbarCellAction from './SupplierProductEditToolbarCellAction';
 import ProductSelectCellAction from '../inventory/ProductSelectCellAction';
-import PositiveNumberEditCellAction from '../inventory/PositiveNumberEditCellAction';
 import inventoryContext from 'src/context/inventory/inventoryContext';
 import {
   convertGridRowToSupplierProduct,
@@ -28,7 +26,7 @@ import {
   SupplierProductGridRow,
 } from './procurementHelper';
 import { toPairs } from 'lodash';
-import { randomId } from '@mui/x-data-grid-generator';
+import PositiveNonZeroNumberEditCellAction from '../inventory/PositiveNonZeroNumberEditCellAction';
 
 type SupplierProductEditGridProps = {
     supplierProductList: SupplierProduct[];
@@ -113,7 +111,8 @@ type SupplierProductEditGridProps = {
         headerName: 'Product Name',
         flex: 2,
         editable: true,
-        valueGetter: (params: GridValueGetterParams) => params.row.product.name,
+        // valueGetter: (params: GridValueGetterParams) => params.row.product.name,
+        valueFormatter: (params) => params.value.name,
         renderEditCell: (params: GridRenderEditCellParams<Product>) => (
           <ProductSelectCellAction
             params={params}
@@ -130,7 +129,7 @@ type SupplierProductEditGridProps = {
         editable: true,
         valueFormatter: (params) => params.value.toFixed(2),
         renderEditCell: (params) => (
-          <PositiveNumberEditCellAction params={params} />
+          <PositiveNonZeroNumberEditCellAction params={params} />
         )
       },
       {

@@ -11,7 +11,6 @@ import {
   Tooltip,
   Typography,
   CircularProgress,
-  Alert
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -23,7 +22,6 @@ import {
   updateSupplier
 } from '../../services/supplierService';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import { getAllSuppliers } from 'src/services/procurementService';
 import validator from 'validator';
 import TimeoutAlert, {
   AlertType,
@@ -91,6 +89,7 @@ const SupplierDetails = () => {
       asyncFetchCallback(getSupplierById(id), (supplier: Supplier) => {
         if (supplier) {
           setOriginalSupplier(supplier);
+          console.log(originalSupplier);
           setEditSupplier(supplier);
           setLoading(false);
         } else {
@@ -345,7 +344,7 @@ const SupplierDetails = () => {
                   </div>
                 </div>
                 {/* product table */}
-                {/* {edit ? (
+                {edit ? (
                   <SupplierProductEditGrid
                     supplierProductList={supplierProducts}
                     updateSupplierProductList={(pdts) =>
@@ -364,7 +363,7 @@ const SupplierDetails = () => {
                     autoHeight
                     pageSize={5}
                   />
-                )} */}
+                )}
               </FormGroup>
             </form>
           </Paper>

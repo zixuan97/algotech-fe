@@ -12,9 +12,9 @@ import {
   CircularProgress,
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
-import { ChevronLeft, Delete } from '@mui/icons-material';
+import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import { Bundle, Product, BundleProduct } from 'src/models/types';
+import { Bundle } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { createBundle } from 'src/services/bundleService';
 import BundleProductEditGrid from 'src/components/inventory/BundleProductEditGrid';
@@ -23,14 +23,11 @@ import {
   AxiosErrDataBody
 } from '../../components/common/TimeoutAlert';
 import { isValidBundle } from 'src/components/inventory/inventoryHelper';
-import { useSearchParams } from 'react-router-dom';
 
 export type NewBundle = Partial<Bundle> & {};
-type NewBundleProduct = Partial<BundleProduct>;
 
 const CreateBundle = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
 
   const [disableCreate, setDisableCreate] = React.useState<boolean>(true);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
@@ -69,7 +66,7 @@ const CreateBundle = () => {
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(newBundle);
+
     if (newBundle) {
       setLoading(true);
       await asyncFetchCallback(
@@ -78,7 +75,7 @@ const CreateBundle = () => {
           setLoading(false);
           setAlert({
             severity: 'success',
-            message: 'Bundle successfully created!'
+            message: 'Bundle successfully created! You will be redirected back to the All Bundles page now.'
           });
           setTimeout(() => navigate('/inventory/allBundles'), 3000);
         },

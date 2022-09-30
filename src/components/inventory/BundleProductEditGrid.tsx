@@ -15,7 +15,7 @@ import {
   GridRowId,
   GridRenderEditCellParams,
 } from '@mui/x-data-grid';
-import { Bundle, Product, BundleProduct } from 'src/models/types';
+import { Product, BundleProduct } from 'src/models/types';
 import BundleProductEditToolbarCellAction from './BundleProductEditToolbarCellAction';
 import ProductSelectCellAction from './ProductSelectCellAction';
 import PositiveNumberEditCellAction from './PositiveNumberEditCellAction';
@@ -112,7 +112,6 @@ export default function BundleProductEditGrid({
       headerName: 'Product Name',
       flex: 2,
       editable: true,
-      // valueGetter: (params: GridValueGetterParams) => params.row.product.name,
       valueFormatter: (params) => params.value.name,
       renderEditCell: (params: GridRenderEditCellParams<Product>) => (
         <ProductSelectCellAction
