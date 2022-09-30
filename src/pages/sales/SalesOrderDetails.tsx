@@ -25,6 +25,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AddSalesOrderItemModal from './AddSalesOrderItemModal';
 import {
   completeOrderPrepSvc,
+  getSalesOrderDetailsByOrderIdSvc,
   getSalesOrderDetailsSvc,
   updateSalesOrderStatusSvc
 } from 'src/services/salesService';
@@ -33,13 +34,14 @@ import { steps } from '../../components/sales/order/steps';
 import OrderInfoGrid from '../../components/sales/order/OrderInfoGrid';
 import OrderSummaryCard from '../../components/sales/order/OrderSummaryCard';
 import StatusStepper from '../../components/sales/order/StatusStepper';
-import PlatformChip from '../../components/sales/order/PlatformChip';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import ViewCurrentBundleModal from './ViewCurrentBundleModal';
 
 const SalesOrderDetails = () => {
   let params = new URLSearchParams(window.location.search);
+  // search by either or
   const id = params.get('id');
+  const orderId = params.get('orderId');
   const navigate = useNavigate();
   const { products } = React.useContext(inventoryContext);
   const [salesOrder, setSalesOrder] = useState<SalesOrder>();
@@ -139,33 +141,39 @@ const SalesOrderDetails = () => {
 
   useEffect(() => {
     setLoading(true);
-    id &&
+    const successCallback = (salesOrder: SalesOrder) => {
+      setSalesOrder(salesOrder);
+      setEditSalesOrderItems([...salesOrder.salesOrderItems]);
+      setAvailProducts(products);
+      setAvailBundleProducts(products);
+      setActiveStep(
+        steps.findIndex((step) => step.currentState === salesOrder.orderStatus)
+      );
+      setLoading(false);
+    };
+    const errorCallback = () => {
+      setAlert({
+        severity: 'error',
+        message:
+          'Sales Order does not exist. You will be redirected back to the Sales Order Overview page.'
+      });
+      setLoading(false);
+      setTimeout(() => navigate('/sales/allSalesOrders'), 3500);
+    };
+    if (id) {
       asyncFetchCallback(
         getSalesOrderDetailsSvc(id),
-        (salesOrder: SalesOrder) => {
-          if (salesOrder) {
-            setSalesOrder(salesOrder);
-            setEditSalesOrderItems([...salesOrder.salesOrderItems]);
-            setAvailProducts(products);
-            setAvailBundleProducts(products);
-            setActiveStep(
-              steps.findIndex(
-                (step) => step.currentState === salesOrder.orderStatus
-              )
-            );
-            setLoading(false);
-          } else {
-            setAlert({
-              severity: 'error',
-              message:
-                'Sales Order does not exist. You will be redirected back to the Sales Order Overview page.'
-            });
-            setLoading(false);
-            setTimeout(() => navigate('/allSalesOrders'), 3500);
-          }
-        }
+        successCallback,
+        errorCallback
       );
-  }, [id, navigate, products]);
+    } else if (orderId) {
+      asyncFetchCallback(
+        getSalesOrderDetailsByOrderIdSvc(orderId),
+        successCallback,
+        errorCallback
+      );
+    }
+  }, [id, orderId, navigate, products]);
 
   const nextStep = () => {
     if (activeStep < steps.length - 1 && activeStep <= 3) {
@@ -177,11 +185,11 @@ const SalesOrderDetails = () => {
         (salesOrder?.platformType === PlatformType.SHOPIFY ||
           salesOrder?.platformType === PlatformType.OTHERS)
       ) {
-        id &&
+        salesOrder.id &&
           navigate({
             pathname: '/delivery/createDelivery',
             search: createSearchParams({
-              id: id.toString()
+              id: salesOrder.id.toString()
             }).toString()
           });
       } else if (
@@ -189,11 +197,11 @@ const SalesOrderDetails = () => {
         (salesOrder?.platformType === PlatformType.SHOPIFY ||
           salesOrder?.platformType === PlatformType.OTHERS)
       ) {
-        id &&
+        salesOrder.id &&
           navigate({
             pathname: '/delivery/createDelivery',
             search: createSearchParams({
-              id: id.toString()
+              id: salesOrder.id.toString()
             }).toString()
           });
       } else {
@@ -203,9 +211,9 @@ const SalesOrderDetails = () => {
   };
 
   const updateSalesOrderStatus = (newStatus: OrderStatus) => {
-    id &&
+    salesOrder?.id &&
       asyncFetchCallback(
-        updateSalesOrderStatusSvc(id, newStatus),
+        updateSalesOrderStatusSvc(salesOrder.id, newStatus),
         () => {
           setAlert({
             severity: 'success',
