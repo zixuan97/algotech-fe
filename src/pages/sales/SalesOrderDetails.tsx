@@ -51,14 +51,15 @@ const SalesOrderDetails = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [availProducts, setAvailProducts] = useState<Product[]>([]);
+  const [availBundleProducts, setAvailBundleProducts] = useState<Product[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [showCurrentBundleModal, setShowCurrentBundleModal] =
     useState<boolean>(false);
-  const [currentSalesOrderBundleItems, setCurrentSalesOrderBundleItems] =
-    useState<SalesOrderBundleItem[]>([]);
   const [editSalesOrderBundleItems, setEditSalesOrderBundleItems] = useState<
     SalesOrderBundleItem[]
   >([]);
+  const [newSalesOrderBundleItem, setNewSalesOrderBundleItem] =
+    useState<SalesOrderBundleItem>();
 
   const columns: GridColDef[] = [
     {
@@ -106,14 +107,11 @@ const SalesOrderDetails = () => {
               </Button>
             </>
           );
-        } else if (params.row.salesOrderBundleItems.length > 0) {
+        } else if (params.row.salesOrderBundleItems.length > 0 && salesOrder?.orderStatus === OrderStatus.PREPARING) {
           return (
             <>
               <Button
                 onClick={() => {
-                  setCurrentSalesOrderBundleItems(
-                    params.row.salesOrderBundleItems
-                  );
                   setEditSalesOrderBundleItems(
                     params.row.salesOrderBundleItems
                   );
@@ -141,6 +139,7 @@ const SalesOrderDetails = () => {
             setSalesOrder(salesOrder);
             setEditSalesOrderItems([...salesOrder.salesOrderItems]);
             setAvailProducts(products);
+            setAvailBundleProducts(products);
             setActiveStep(
               steps.findIndex(
                 (step) => step.currentState === salesOrder.orderStatus
@@ -277,6 +276,48 @@ const SalesOrderDetails = () => {
       );
   };
 
+  const removeItemFromBundleItems = (productName: String) => {
+    const temp = [...editSalesOrderBundleItems];
+    temp.splice(
+      temp.indexOf(
+        temp.find((item) => {
+          return item.productName === productName && item.isNewAdded;
+        })!
+      )
+    );
+    setEditSalesOrderBundleItems(temp);
+    setAvailBundleProducts((prev) => [
+      ...prev,
+      products.find((prod) => {
+        return prod.name === productName;
+      })!
+    ]);
+  };
+
+  const addNewItemToBundleItems = () => {
+    setEditSalesOrderBundleItems((current) => [...current, newSalesOrderBundleItem!]);
+    setAvailBundleProducts((current) =>
+      current.filter((product) => {
+        return product.name !== newSalesOrderBundleItem?.productName;
+      })
+    );
+  };
+
+  const updateNewSalesOrderBundleItem = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    key: string
+  ) => {
+    setNewSalesOrderBundleItem((bundleItem) => {
+      return {
+        ...bundleItem!,
+        [key]:
+          key === 'quantity' ? event.target.valueAsNumber : event.target.value,
+        isNewAdded: true,
+        salesOrderId: salesOrder?.id!,
+      };
+    });
+  };
+
   return (
     <>
       <AddSalesOrderItemModal
@@ -304,8 +345,11 @@ const SalesOrderDetails = () => {
         onClose={() => setShowCurrentBundleModal(false)}
         title='Items in the bundle.'
         body='These are the items in your bundle.'
-        availProducts={availProducts}
+        availProducts={availBundleProducts}
         editSalesOrderBundleItems={editSalesOrderBundleItems}
+        updateNewSalesOrderBundleItem={updateNewSalesOrderBundleItem}
+        addNewItemToBundleItems={addNewItemToBundleItems}
+        removeItemFromBundleItems={removeItemFromBundleItems}
       />
 
       <div className='top-carrot'>
