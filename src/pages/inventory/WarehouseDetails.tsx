@@ -16,26 +16,21 @@ import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import { Location, Product, StockQuantity } from '../../models/types';
-import ProductCellAction from '../../components/inventory/ProductCellAction';
 import {
   deleteLocation,
   getLocationById,
   updateLocation,
-  updateLocationWithoutProducts
 } from '../../services/locationService';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import _, { omit } from 'lodash';
 import TimeoutAlert, {
   AlertType,
   AxiosErrDataBody
  } from 'src/components/common/TimeoutAlert';
 import StockQuantityProductModal from 'src/components/inventory/StockQuantityProductModal';
-import { getAllProducts } from 'src/services/productService';
 import { DataGrid, GridColDef, GridRenderCellParams, GridValueGetterParams } from '@mui/x-data-grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 export type NewLocation = Partial<Location> & {};
-type NewStockQuantityProduct = Partial<StockQuantity>;
 
 
 const LocationDetails = () => {
@@ -46,7 +41,6 @@ const LocationDetails = () => {
   const current = useLocation();
   const location = current.state as Location;
 
-  const [allProducts, setAllProducts] = React.useState<Product[]>([]);
   const [addedProductsId, setAddedProductsId] = React.useState<number[]>([]);
   const [editAddProductsId, setEditAddProductsId] = React.useState<number[]>([]);
 
@@ -65,7 +59,6 @@ const LocationDetails = () => {
   const [stockQuantityDetails, setStockQuantityDetails] = React.useState<StockQuantity[]>(
     []
   );
-  // const [newStockQtyPdts, setNewStockQtyPdts] = React.useState<NewStockQuantityProduct[]>([]);
 
   const [edit, setEdit] = React.useState<boolean>(false);
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
@@ -95,8 +88,6 @@ const LocationDetails = () => {
 
   React.useEffect(() => {
     if (id) {
-      asyncFetchCallback(getAllProducts(), setAllProducts);
-
       asyncFetchCallback(getLocationById(id), (res) => {
         setOriginalLocation(res);
         setEditLocation(res);
@@ -282,13 +273,7 @@ const LocationDetails = () => {
         stockQuantity: finalNewLocationStockQtyPdts
       }
 
-      //this line isnt working?? why
-      // setEditLocation(reqBody);
-
-      console.log("REQUEST BODY:", reqBody);
-
       asyncFetchCallback(
-        // updateLocationWithoutProducts(editLocation),
         updateLocation(reqBody),
         () => {
           setEditLocation((editLocation) => {
@@ -349,7 +334,6 @@ const LocationDetails = () => {
             <h1>{title}</h1>
             <div className='button-group'>
               {loading && <CircularProgress color='secondary' />}
-              {/* need to handle the cannot save after x seconds */}
               <Button
                 variant='contained'
                 className='create-btn'
@@ -374,17 +358,8 @@ const LocationDetails = () => {
                   onClick={() => {
                     setEdit(false);
                     setEditLocation(originalLocation);
-                    // console.log("edit_location", editLocation);
-                    console.log("original_location", originalLocation);
+
                     if (originalLocation) {
-                      //gives original array
-                      console.log("original_location stock qty", originalLocation?.stockQuantity);
-                      
-                      //this line isnt working
-                      // setStockQuantityDetails(originalLocation?.stockQuantity);
-
-                      console.log("products to be reset_editProdId:", editAddProductsId);
-
                       const updatedStockQtyPdts = stockQuantityDetails.filter(
                         (item) => { if (item.product) {
                           return !editAddProductsId.includes(item.product?.id);
@@ -394,15 +369,9 @@ const LocationDetails = () => {
                           return false;
                         }}
                       );
-                      console.log("remove: updatedStockQtyPdts", updatedStockQtyPdts)
                       
-                      //this line isnt working
                       setStockQuantityDetails(updatedStockQtyPdts);
 
-                      console.log("DISCARD stock qty", stockQuantityDetails);
-                      //should give original array
-                      
-                      //this isnt working
                       setAddedProductsId([]);
 
                       originalLocation?.stockQuantity.forEach((sq) => 
@@ -415,20 +384,10 @@ const LocationDetails = () => {
                       setAddedProductsId(addedProductsId);
 
                     }
-
-                    //this isnt working either
                     setEditAddProductsId([]);
 
                     console.log("DISCARD editAddProductsId", editAddProductsId);
                     console.log("DISCARD addedProductsId", addedProductsId);
-                    // var filtered = addedProductsId.filter((item) => !editAddProductsId.includes(item));
-                    // console.log("filtered", filtered);
-                    
-                    // console.log("set to 0", addedProductsId);
-                    // setAddedProductsId(filtered);
-                    // console.log("DISCARD after filter addedProductsId", addedProductsId);
-
-
                   }}
                 >
                   Discard Changes
@@ -523,17 +482,6 @@ const LocationDetails = () => {
                     title='Add Product to Warehouse'
                     addedProductsId={addedProductsId}
                   />
-                {/*product table*/}
-                {/* {!edit && (
-                  <DataGrid
-                    columns={columns}
-                    rows={stockQuantityDetails}
-                    getRowId={(row) => row.product.id}
-                    loading={tableLoading}
-                    autoHeight
-                    pageSize={5}
-                  />
-                )} */}
               </FormGroup>
             </form>
           </Paper>

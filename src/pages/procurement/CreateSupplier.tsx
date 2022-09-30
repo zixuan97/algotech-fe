@@ -14,10 +14,10 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import { Supplier, SupplierProduct } from '../../models/types';
+import { Supplier } from '../../models/types';
 import { createSupplier } from '../../services/supplierService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import TimeoutAlert, {
+import {
   AlertType,
   AxiosErrDataBody
 } from 'src/components/common/TimeoutAlert';
@@ -26,7 +26,6 @@ import { isValidSupplier } from 'src/components/procurement/procurementHelper';
 import SupplierProductEditGrid from 'src/components/procurement/SupplierProductEditGrid';
 
 export type NewSupplier = Partial<Supplier> & {};
-type NewSupplierProduct = Partial<SupplierProduct>;
 
 const CreateSupplier = () => {
   const navigate = useNavigate();
@@ -39,8 +38,6 @@ const CreateSupplier = () => {
     email: '',
     supplierProduct: []
   });
-
-  // const [edit, setEdit] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setDisableSave(!isValidSupplier(newSupplier));

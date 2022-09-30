@@ -14,12 +14,10 @@ import {
   GridEventListener,
   GridRowId,
   GridRenderEditCellParams,
-  GridValueGetterParams
 } from '@mui/x-data-grid';
-import { Product, Supplier, SupplierProduct } from 'src/models/types';
+import { Product, SupplierProduct } from 'src/models/types';
 import SupplierProductEditToolbarCellAction from './SupplierProductEditToolbarCellAction';
 import ProductSelectCellAction from '../inventory/ProductSelectCellAction';
-import PositiveNumberEditCellAction from '../inventory/PositiveNumberEditCellAction';
 import inventoryContext from 'src/context/inventory/inventoryContext';
 import {
   convertGridRowToSupplierProduct,
@@ -28,7 +26,6 @@ import {
   SupplierProductGridRow,
 } from './procurementHelper';
 import { toPairs } from 'lodash';
-import { randomId } from '@mui/x-data-grid-generator';
 import PositiveNonZeroNumberEditCellAction from '../inventory/PositiveNonZeroNumberEditCellAction';
 
 type SupplierProductEditGridProps = {

@@ -11,7 +11,6 @@ import {
   Tooltip,
   Typography,
   CircularProgress,
-  Alert
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -23,7 +22,6 @@ import {
   updateSupplier
 } from '../../services/supplierService';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import { getAllSuppliers } from 'src/services/procurementService';
 import validator from 'validator';
 import TimeoutAlert, {
   AlertType,
@@ -80,10 +78,6 @@ const SupplierDetails = () => {
     React.useState<Supplier>(supplier);
   const [editSupplier, setEditSupplier] = React.useState<Supplier>(supplier);
   const [supplierProducts, setSupplierProducts] = React.useState<SupplierProduct[]>(
-    []
-  );
-
-  const [emptyArray, setEmptyArray] = React.useState<SupplierProduct[]>(
     []
   );
 

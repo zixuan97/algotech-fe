@@ -13,81 +13,79 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
-import { Location, Product, StockQuantity } from '../../models/types';
+import { Location } from '../../models/types';
 import { createLocation } from '../../services/locationService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import TimeoutAlert, {
   AlertType,
   AxiosErrDataBody
  } from 'src/components/common/TimeoutAlert';
-import StockQuantityProductModal from 'src/components/inventory/StockQuantityProductModal';
-import { getAllProducts } from 'src/services/productService';
-import { useSearchParams } from 'react-router-dom';
-import { GridColDef, GridRenderCellParams, GridValueGetterParams } from '@mui/x-data-grid';
-import DeleteIcon from '@mui/icons-material/Delete';
+// import StockQuantityProductModal from 'src/components/inventory/StockQuantityProductModal';
+// import { getAllProducts } from 'src/services/productService';
+// import { useSearchParams } from 'react-router-dom';
+// import { GridColDef, GridRenderCellParams, GridValueGetterParams } from '@mui/x-data-grid';
+// import DeleteIcon from '@mui/icons-material/Delete';
 
 export type NewLocation = Partial<Location> & {};
-type NewStockQuantityProduct = Partial<StockQuantity>;
+// type NewStockQuantityProduct = Partial<StockQuantity>;
 
 const CreateWarehouse = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const id = searchParams.get('id');
+  // const [searchParams] = useSearchParams();
+  // const id = searchParams.get('id');
 
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [newLocation, setNewLocation] = React.useState<NewLocation>({});
 
-  const [newStockQtyPdts, setNewStockQtyPdts] = React.useState<NewStockQuantityProduct[]>([]);
+  // const [newStockQtyPdts, setNewStockQtyPdts] = React.useState<NewStockQuantityProduct[]>([]);
 
-  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  // const [modalOpen, setModalOpen] = React.useState<boolean>(false);
 
-  const [allProducts, setAllProducts] = React.useState<Product[]>([]);
-  const [addedProductsId, setAddedProductsId] = React.useState<number[]>([]);
-  const [productIdToDisplay, setProductIdToDisplay] = React.useState<number>();
+  // const [allProducts, setAllProducts] = React.useState<Product[]>([]);
+  // const [addedProductsId, setAddedProductsId] = React.useState<number[]>([]);
+  // const [productIdToDisplay, setProductIdToDisplay] = React.useState<number>();
 
 
-  const columns: GridColDef[] = [
-    {
-      field: 'sku',
-      headerName: 'SKU',
-      flex: 1,
-      valueGetter: (params: GridValueGetterParams) => params.row.product.sku
-    },
-    {
-      field: 'name',
-      headerName: 'Product Name',
-      flex: 1,
-      valueGetter: (params: GridValueGetterParams) => params.row.product.name
-    },
-    { field: 'quantity', headerName: 'Quantity', flex: 1 },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      flex: 1,
-      renderCell: ({ id }: GridRenderCellParams) => {
-        return (
-          <Button
-            variant='outlined'
-            startIcon={<DeleteIcon />}
-            onClick={() => removeStockQtyPdt(id.toString())}
-          >
-            Delete
-          </Button>
-        );
-      }
-    }
+  // const columns: GridColDef[] = [
+  //   {
+  //     field: 'sku',
+  //     headerName: 'SKU',
+  //     flex: 1,
+  //     valueGetter: (params: GridValueGetterParams) => params.row.product.sku
+  //   },
+  //   {
+  //     field: 'name',
+  //     headerName: 'Product Name',
+  //     flex: 1,
+  //     valueGetter: (params: GridValueGetterParams) => params.row.product.name
+  //   },
+  //   { field: 'quantity', headerName: 'Quantity', flex: 1 },
+  //   {
+  //     field: 'actions',
+  //     headerName: 'Actions',
+  //     flex: 1,
+  //     renderCell: ({ id }: GridRenderCellParams) => {
+  //       return (
+  //         <Button
+  //           variant='outlined'
+  //           startIcon={<DeleteIcon />}
+  //           onClick={() => removeStockQtyPdt(id.toString())}
+  //         >
+  //           Delete
+  //         </Button>
+  //       );
+  //     }
+  //   }
+  // ]
 
-  ]
-
-  React.useEffect(() => {
-    asyncFetchCallback(getAllProducts(), setAllProducts);
-
-    if (id) {
-      setModalOpen(true);
-      setProductIdToDisplay(parseInt(id));
-    }
-  }, [id]);
+  // React.useEffect(() => {
+  //   asyncFetchCallback(getAllProducts(), setAllProducts);
+  //   if (id) {
+  //     setModalOpen(true);
+  //     setProductIdToDisplay(parseInt(id));
+  //   }
+  // }, [id]);
 
   const handleEditLocation = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewLocation((prev) => {
@@ -99,36 +97,36 @@ const CreateWarehouse = () => {
     });
   };
 
-  const handleAddStockQtyPdt = async (
-    quantity: string,
-    selectedProduct: Product | undefined
-  ) => {
-    setModalOpen(false);
-    setLoading(true);
+  // const handleAddStockQtyPdt = async (
+  //   quantity: string,
+  //   selectedProduct: Product | undefined
+  // ) => {
+  //   setModalOpen(false);
+  //   setLoading(true);
 
-    if (selectedProduct) {
-      let newStockQtyPdt: NewStockQuantityProduct = {
-        quantity: parseInt(quantity),
-        product: selectedProduct
-      };
-      let updatedStockQtyPdts = Object.assign([], newStockQtyPdts);
-      setAddedProductsId((prev) => [...prev, selectedProduct.id]);
-      updatedStockQtyPdts.push(newStockQtyPdt);
-      setNewStockQtyPdts(updatedStockQtyPdts);
-      setLoading(false);
-      setAlert({
-        severity: 'success',
-        message: 'Product added to warehouse successfully!'
-      });
-    }
-  };
+  //   if (selectedProduct) {
+  //     let newStockQtyPdt: NewStockQuantityProduct = {
+  //       quantity: parseInt(quantity),
+  //       product: selectedProduct
+  //     };
+  //     let updatedStockQtyPdts = Object.assign([], newStockQtyPdts);
+  //     setAddedProductsId((prev) => [...prev, selectedProduct.id]);
+  //     updatedStockQtyPdts.push(newStockQtyPdt);
+  //     setNewStockQtyPdts(updatedStockQtyPdts);
+  //     setLoading(false);
+  //     setAlert({
+  //       severity: 'success',
+  //       message: 'Product added to warehouse successfully!'
+  //     });
+  //   }
+  // };
 
-  const removeStockQtyPdt = (id: string) => {
-    const updatedStockQtyPdts = newStockQtyPdts.filter(
-      (item) => item.productId?.toString() != id
-    );
-    setNewStockQtyPdts(updatedStockQtyPdts);
-  }
+  // const removeStockQtyPdt = (id: string) => {
+  //   const updatedStockQtyPdts = newStockQtyPdts.filter(
+  //     (item) => item.productId?.toString() != id
+  //   );
+  //   setNewStockQtyPdts(updatedStockQtyPdts);
+  // }
 
   const handleSave = async (e: FormEvent) => {
     
@@ -153,17 +151,17 @@ const CreateWarehouse = () => {
     if (newLocation) {
       setLoading(true);
 
-      let finalNewLocationStockQtyPdts = newStockQtyPdts.map(
-        ({product, quantity}) => ({
-          product: product!,
-          quantity: quantity!
-        })
-      )
+      // let finalNewLocationStockQtyPdts = newStockQtyPdts.map(
+      //   ({product, quantity}) => ({
+      //     product: product!,
+      //     quantity: quantity!
+      //   })
+      // )
 
       let reqBody = {
         name: newLocation.name,
         address: newLocation.address,
-        stockQuantity: finalNewLocationStockQtyPdts
+        // stockQuantity: finalNewLocationStockQtyPdts
       }
 
       await asyncFetchCallback(
@@ -188,29 +186,6 @@ const CreateWarehouse = () => {
           });
         }
       );
-
-      // await asyncFetchCallback(
-      //   createLocation(newLocation),
-      //   () => {
-      //     setLoading(false);
-      //     setAlert({
-      //       severity: 'success',
-      //       message:
-      //         'Warehouse successfully created! You will be redirected back to the All Warehouses page now.'
-      //     });
-      //     setTimeout(() => {
-      //       navigate('/inventory/warehouses');
-      //     }, 3000);
-      //   },
-      //   (err) => {
-      //     const resData = err.response?.data as AxiosErrDataBody;
-      //     setLoading(false);
-      //     setAlert({
-      //       severity: 'error',
-      //       message: `Error creating warehouse: ${resData.message}`
-      //     });
-      //   }
-      // );
     }
   };
 

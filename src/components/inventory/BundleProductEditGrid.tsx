@@ -15,7 +15,7 @@ import {
   GridRowId,
   GridRenderEditCellParams,
 } from '@mui/x-data-grid';
-import { Bundle, Product, BundleProduct } from 'src/models/types';
+import { Product, BundleProduct } from 'src/models/types';
 import BundleProductEditToolbarCellAction from './BundleProductEditToolbarCellAction';
 import ProductSelectCellAction from './ProductSelectCellAction';
 import PositiveNumberEditCellAction from './PositiveNumberEditCellAction';
