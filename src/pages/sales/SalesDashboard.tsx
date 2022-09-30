@@ -207,7 +207,7 @@ const SalesDashboard = () => {
         <div className='order-grid-toolbar'>
           <div className='search-bar'>
             <FilterList />
-            <FormControl style={{ width: '50%' }}>
+            <FormControl style={{ width: '35%' }}>
               <InputLabel id='search-platform'>Platform</InputLabel>
               <Select
                 id='search-platform'
@@ -244,7 +244,6 @@ const SalesDashboard = () => {
               Reset
             </Button>
             <Button
-              startIcon={<Download />}
               variant='contained'
               size='large'
               sx={{ height: 'fit-content' }}
