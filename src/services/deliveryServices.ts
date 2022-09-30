@@ -41,6 +41,18 @@ export const confirmShippitOrder = async (
   return axios.post(`${apiRoot}/delivery/shippit/confirm/${trackingNum}`);
 };
 
+export const bookShippitDelivery = async (
+  trackingNum: string
+): Promise<void> => {
+  return axios.post(`${apiRoot}/delivery/shippit/book/${trackingNum}`);
+};
+
+export const getShippitLabel = async (trackingNum: string): Promise<string> => {
+  return axios
+    .get(`${apiRoot}/delivery/shippit/label/${trackingNum}`)
+    .then((res) => res.data);
+};
+
 export const getDeliveryOrderById = async (
   id: string | number
 ): Promise<DeliveryOrder> => {

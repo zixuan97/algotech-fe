@@ -175,7 +175,7 @@ export interface DeliveryOrder {
   parcelWeight?: number;
   deliveryMode?: DeliveryMode;
   shippitTrackingNum: string;
-  deliveryStatus?: DeliveryStatus[];
+  deliveryStatus?: DeliveryStatus;
 }
 
 export interface SalesOrder {
