@@ -5,7 +5,7 @@ import '../../styles/common/actionCells.scss';
 import { useNavigate } from 'react-router';
 import { createSearchParams } from 'react-router-dom';
 
-const DeliveryCellAction = ({ id }: GridRenderCellParams) => {
+const DeliveryAssignmentAction = ({ id }: GridRenderCellParams) => {
   const navigate = useNavigate();
   return (
     <div className='action-cell-fit-content'>
@@ -14,16 +14,16 @@ const DeliveryCellAction = ({ id }: GridRenderCellParams) => {
         onClick={() =>
           navigate({
             pathname: '/delivery/manualDeliveryDetails',
-            // search: createSearchParams({
-            //   id: id.toString()
-            // }).toString()
+            search: createSearchParams({
+              id: id.toString()
+            }).toString()
           })
         }
       >
-        View Delivery Info
+        Take On Delivery
       </Button>
     </div>
   );
 };
 
-export default DeliveryCellAction;
+export default DeliveryAssignmentAction;

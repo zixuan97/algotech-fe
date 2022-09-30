@@ -104,6 +104,16 @@ const BundleDetails = () => {
 
   React.useEffect(() => {
     setDisableSave(!isValidBundle(editBundle));
+
+    if (editBundle) {
+      if (editBundle.bundleProduct) {
+        editBundle.bundleProduct?.forEach((bundlePdt) => {
+          if (bundlePdt.quantity.toString() === "0") {
+            setDisableSave(true);
+          }
+        });
+      }
+    }
   }, [editBundle]);
 
   React.useEffect(() => {

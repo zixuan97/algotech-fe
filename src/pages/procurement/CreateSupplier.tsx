@@ -58,6 +58,8 @@ const CreateSupplier = () => {
     e.preventDefault();
 
     if (newSupplier) {
+      console.log('newSupplier', newSupplier);
+
       setLoading(true);
       await asyncFetchCallback(
         createSupplier(newSupplier as Supplier),
