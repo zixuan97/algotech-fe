@@ -430,7 +430,6 @@ const SalesOrderDetails = () => {
             <ChevronLeft />
           </IconButton>
         </Tooltip>
-        <PlatformChip salesOrder={salesOrder!} pretext={'Placed with'} />
       </div>
       <div className='center-div'>
         <Box className='center-box'>
