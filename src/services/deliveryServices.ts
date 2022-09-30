@@ -24,8 +24,14 @@ export const getManualDeliveryOrdersByRangeSvc = (
 };
 
 export const getAllShippitDeliveries = async (): Promise<DeliveryOrder[]> => {
+  return axios.get(`${apiRoot}/delivery/shippit/all`).then((res) => res.data);
+};
+
+export const trackShippitDeliveryOrder = async (
+  trackingNum: string
+): Promise<Object> => {
   return axios
-    .get(`${apiRoot}/delivery/shippit/orders/all`)
+    .get(`${apiRoot}/delivery/shippit/${trackingNum}`)
     .then((res) => res.data);
 };
 
@@ -33,6 +39,14 @@ export const getDeliveryOrderById = async (
   id: string | number
 ): Promise<DeliveryOrder> => {
   return axios.get(`${apiRoot}/delivery/${id}`).then((res) => res.data);
+};
+
+export const getDeliveryOrderByTracking = async (
+  trackingNum: string
+): Promise<DeliveryOrder> => {
+  return axios
+    .get(`${apiRoot}/delivery/track/${trackingNum}`)
+    .then((res) => res.data);
 };
 
 export const editDeliveryOrder = async (body: object): Promise<void> => {

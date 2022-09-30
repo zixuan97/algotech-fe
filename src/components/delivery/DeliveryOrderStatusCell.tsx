@@ -16,10 +16,15 @@ const DeliveryOrderStatusCell = ({ row }: GridRenderCellParams) => {
       label='Shipped'
       style={{ backgroundColor: '#FB8832', fontFamily: 'Poppins' }}
     />
-  ) : (
+  ) : orderStatus === OrderStatus.COMPLETED ? (
     <Chip
       label='Completed'
       style={{ backgroundColor: '#0d6e11', fontFamily: 'Poppins' }}
+    />
+  ) : (
+    <Chip
+      label='Cancelled'
+      style={{ backgroundColor: '#F12B2C', fontFamily: 'Poppins' }}
     />
   );
 };

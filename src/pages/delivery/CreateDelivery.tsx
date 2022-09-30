@@ -1,303 +1,221 @@
-import React, { FormEvent } from 'react';
-import {
-  Box,
-  FormGroup,
-  TextField,
-  Paper,
-  Button,
-  Tooltip,
-  IconButton,
-  Backdrop,
-  CircularProgress,
-  InputAdornment
-} from '@mui/material';
-import '../../styles/pages/inventory/inventory.scss';
-import '../../styles/common/common.scss';
-import '../../styles/pages/delivery/delivery.scss';
-import { ChevronLeft } from '@mui/icons-material';
+import React from 'react';
 import { useNavigate } from 'react-router';
-import { SalesOrder, DeliveryOrder } from 'src/models/types';
-import { createDeliveryOrder } from '../../services/deliveryServices';
-import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import TimeoutAlert, {
-  AlertType,
-  AxiosErrDataBody
-} from 'src/components/common/TimeoutAlert';
-import validator from 'validator';
-import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
-import dayjs, { Dayjs } from 'dayjs';
+import {
+  Grid,
+  IconButton,
+  MenuItem,
+  Paper,
+  TextField,
+  Tooltip,
+  Typography
+} from '@mui/material';
+import { ChevronLeft } from '@mui/icons-material';
+import { useSearchParams } from 'react-router-dom';
+import { SalesOrder, User, UserRole } from 'src/models/types';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { getSalesOrderDetailsSvc } from 'src/services/salesService';
+import { getAllUserSvc } from 'src/services/accountService';
+import authContext from 'src/context/auth/authContext';
+import { DesktopDatePicker } from '@mui/x-date-pickers';
+import moment from 'moment';
+
+const shippingType = [
+  { id: 1, value: 'Manual' },
+  { id: 2, value: 'Shippit' }
+];
 
 const CreateDeliveryOrder = () => {
   const navigate = useNavigate();
 
-  const [alert, setAlert] = React.useState<AlertType | null>(null);
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get('id');
+
+  const { user, loadUser } = React.useContext(authContext);
+
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [newDeliveryOrder, setNewDeliveryOrder] =
-    React.useState<DeliveryOrder>();
+  const [deliveryOption, setDeliveryOption] = React.useState<string>('Manual');
   const [salesOrder, setSalesOrder] = React.useState<SalesOrder>();
+  const [users, setUsers] = React.useState<User[]>([]);
 
-  const [edit, setEdit] = React.useState<boolean>(false);
-  const [disableSave, setDisableSave] = React.useState<boolean>(true);
-
-  const [date, setDate] = React.useState<Dayjs | null>(
-    dayjs('2022-09-18T21:11:54')
-  );
-
-  const handleDateChange = (newDate: Dayjs | null) => {
-    setDate(newDate);
-  };
-
-  const handleEditDeliveryOrder = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewDeliveryOrder((prev) => {
-      if (prev) {
-        return { ...prev, [e.target.name]: e.target.value };
-      } else {
-        return prev;
-      }
-    });
-  };
-
-  // const handleSave = async (e: FormEvent) => {
-  //   e.preventDefault();
-
-  //   if (newDeliveryOrder?.shippingDate && newDeliveryOrder?.shippingType) {
-  //     setLoading(true);
-  //     await asyncFetchCallback(
-  //       createDeliveryOrder(newDeliveryOrder),
-  //       () => {
-  //         setLoading(false);
-  //         setAlert({
-  //           severity: 'success',
-  //           message:
-  //             'Delivery Order successfully created! You will be redirected back to the All Manual Deliveries page now.'
-  //         });
-  //         //remember to fill in!
-  //         setTimeout(() => navigate(''), 3500);
-  //       },
-  //       (err) => {
-  //         const resData = err.response?.data as AxiosErrDataBody;
-  //         setLoading(false);
-  //         setAlert({
-  //           severity: 'error',
-  //           message: `Error creating delivery order: ${resData.message}`
-  //         });
-  //       }
-  //     );
-  //   }
-  // };
-
-  const handleDeliveryCreation = async () => {
-    if (newDeliveryOrder?.currentLocation === undefined) {
-      setAlert({
-        severity: 'warning',
-        message: 'Please Select Delivery Location!'
-      });
-      return;
-    }
-
-    if (newDeliveryOrder?.shippingType === undefined) {
-      setAlert({
-        severity: 'warning',
-        message: 'Please Select Shipping Type!'
-      });
-      return;
-    }
-
-    if (newDeliveryOrder?.deliveryDate === undefined) {
-      setAlert({
-        severity: 'warning',
-        message: 'Please Select Delivery Date!'
-      });
-      return;
-    }
-
+  React.useEffect(() => {
     setLoading(true);
+    if (id) {
+      asyncFetchCallback(
+        getSalesOrderDetailsSvc(id),
+        (res) => {
+          console.log(res);
+          setSalesOrder(res);
+          setLoading(false);
+        },
+        () => setLoading(false)
+      );
+    }
+  }, [id]);
 
-    let reqBody = {
-      ShippingType: newDeliveryOrder.shippingType,
-      courierType: newDeliveryOrder.courierType,
-      deliveryDate: newDeliveryOrder.deliveryDate,
-      deliveryPersonnel: '',
-      method: newDeliveryOrder.method,
-      // status: salesOrder.orderStatus,
-      parcelQty: newDeliveryOrder.parcelQty,
-      parcelWeight: newDeliveryOrder.parcelWeight,
-      salesOrderId: newDeliveryOrder.salesOrderId
-    };
-
-    await asyncFetchCallback(
-      createDeliveryOrder(reqBody),
-      (res) => {
-        setLoading(false);
-        setAlert({
-          severity: 'success',
-          message:
-            'Delivery Order successfully created! You will be redirected back to the All Manual Deliveries page now.'
+  React.useEffect(() => {
+    setLoading(true);
+    if (user) {
+      if (user.role === UserRole.ADMIN || user.role === UserRole.FULLTIME) {
+        asyncFetchCallback(getAllUserSvc(), (users: Array<User>) => {
+          let filteredUsers = users.filter(
+            (user) => user.role !== UserRole.CUSTOMER
+          );
+          filteredUsers.push(user);
+          setUsers(filteredUsers);
         });
-        setTimeout(() => navigate(''), 3000);
-      },
-      (err) => {
-        setLoading(false);
-        setAlert({
-          severity: 'error',
-          message: 'Error creating delivery order!'
-        });
+      } else {
+        let users: User[] = [];
+        users.push(user);
+        setUsers(users);
       }
-    );
-  };
+    }
+    setLoading(false);
+  }, [user]);
 
   return (
-    <div>
-      <Tooltip title='Return to Previous Page' enterDelay={300}>
-        <IconButton size='large' onClick={() => navigate(-1)}>
-          <ChevronLeft />
-        </IconButton>
-      </Tooltip>
-
-      <div className='create-product'>
-        <Box className='create-delivery-box'>
-          <div className='header-content'>
-            <h1>Create Delivery Order</h1>
+    <div className='create-delivery-order'>
+      <div className='create-delivery-order-top-section'>
+        <div className='create-delivery-order-section-header'>
+          <Tooltip title='Return to Previous Page' enterDelay={300}>
+            <IconButton size='large' onClick={() => navigate(-1)}>
+              <ChevronLeft />
+            </IconButton>
+          </Tooltip>
+          <h1>Create Delivery Order</h1>
+        </div>
+        <div className='delivery-option-dropdown-contatiner'>
+          <TextField
+            id='delivery-option-select-label'
+            label='Shipping Type'
+            name='shippingType'
+            value={deliveryOption}
+            onChange={() => {}}
+            select
+            fullWidth
+          >
+            {shippingType.map((option) => (
+              <MenuItem key={option.id} value={option.value}>
+                {option.value}
+              </MenuItem>
+            ))}
+          </TextField>
+        </div>
+      </div>
+      <div className='create-delivery-order-cards'>
+        <Paper elevation={2} className='create-delivery-order-card'>
+          <div className='delivery-address-grid'>
+            <h3 className='labelText'>Delivery Details</h3>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  label='Order ID'
+                  defaultValue='12938'
+                  variant='filled'
+                  disabled
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label='Name'
+                  defaultValue='John Tan'
+                  variant='filled'
+                  disabled
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label='Email'
+                  defaultValue='john@gmail.com'
+                  variant='filled'
+                  disabled
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label='Contact Number'
+                  defaultValue='92837191'
+                  variant='filled'
+                  disabled
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label='Address'
+                  defaultValue='123 Bedok Road, #01-08'
+                  variant='filled'
+                  disabled
+                  fullWidth
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label='Postal Code'
+                  defaultValue='482762'
+                  variant='filled'
+                  disabled
+                  fullWidth
+                />
+              </Grid>
+            </Grid>
           </div>
-          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
-          <Paper elevation={2}>
-            <Backdrop
-              sx={{
-                color: '#fff',
-                zIndex: (theme) => theme.zIndex.drawer + 1
-              }}
-              open={loading}
-            >
-              <CircularProgress color='inherit' />
-            </Backdrop>
-            <form onSubmit={handleDeliveryCreation}>
-              <FormGroup className='create-product-form'>
-                <div className='top-content'>
-                  <div className='product-text-fields'>
-                    <TextField
-                      required
-                      fullWidth
-                      id='outlined-required'
-                      label='Shipping Address'
-                      name='address'
-                      value={newDeliveryOrder?.currentLocation}
-                      onChange={handleEditDeliveryOrder}
-                      placeholder='eg.: 123 Clementi Road, #01-01, Singapore 12345'
-                    />
-                    <TextField
-                      required
-                      fullWidth
-                      id='outlined-required'
-                      label='Shipping Type'
-                      name='type'
-                      value={newDeliveryOrder?.shippingType}
-                      onChange={handleEditDeliveryOrder}
-                      placeholder='eg.: Manual'
-                      // {.map((option) => (
-                      //   <option key={option.value} value={option.value}>
-                      //     {option.label}
-                      //   </option>
-                      // ))}
-                    />
-                    <TextField
-                      required
-                      fullWidth
-                      id='outlined-required'
-                      label='Courier Type'
-                      name='status'
-                      value={newDeliveryOrder?.courierType}
-                      onChange={handleEditDeliveryOrder}
-                      placeholder='eg.: Standard'
-                    />
-                    <DesktopDatePicker
-                      label='Delivery Date'
-                      inputFormat='MM/DD/YYYY'
-                      value={date}
-                      onChange={handleDateChange}
-                      renderInput={(params) => <TextField {...params} />}
-                    />
-                    <TextField
-                      required
-                      fullWidth
-                      id='outlined-required'
-                      label='Delivery Personnel'
-                      value={''}
-                      onChange={handleEditDeliveryOrder}
-                      placeholder='eg.: Delivery Man'
-                    />
-                    <TextField
-                      required
-                      fullWidth
-                      id='outlined-required'
-                      label='Delivery Method'
-                      value={newDeliveryOrder?.method}
-                      onChange={handleEditDeliveryOrder}
-                      placeholder='eg.: Standard'
-                    />
-                    <TextField
-                      required
-                      fullWidth
-                      id='outlined-required'
-                      label='Carrier'
-                      value={newDeliveryOrder?.carrier}
-                      onChange={handleEditDeliveryOrder}
-                      placeholder='eg.: Ninjavan'
-                    />
-                    <TextField
-                      required
-                      fullWidth
-                      id='outlined-required'
-                      label='Status'
-                      value={newDeliveryOrder?.salesOrder.orderStatus}
-                      onChange={handleEditDeliveryOrder}
-                    />
-                    <TextField
-                      type='number'
-                      required
-                      fullWidth
-                      id='outlined-required'
-                      label='Parcel Quantity'
-                      value={newDeliveryOrder?.parcelQty}
-                      onChange={handleEditDeliveryOrder}
-                    />
-                    <TextField
-                      type='number'
-                      required
-                      fullWidth
-                      id='outlined-required'
-                      label='Parcel Weight'
-                      value={newDeliveryOrder?.parcelWeight}
-                      onChange={handleEditDeliveryOrder}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position='end'>kg</InputAdornment>
-                        )
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className='button-group'>
-                  <Button
-                    variant='text'
-                    className='cancel-btn'
-                    color='primary'
-                    onClick={() => navigate({ pathname: '' })}
+        </Paper>
+        <Paper className='create-delivery-order-card'>
+          <div className='delivery-input-form-grid'>
+            <h3 className='labelText'>Input Delivery Order Details</h3>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <h4 className='labelText'>Delivered By</h4>
+                <div>
+                  <TextField
+                    id='delivery-personnel-select-label'
+                    label='Delivered By'
+                    name='deliveredBy'
+                    value=''
+                    onChange={() => {}}
+                    select
+                    fullWidth
+                    required
                   >
-                    Cancel
-                  </Button>
-                  <Button
-                    type='submit'
-                    variant='contained'
-                    className='create-btn'
-                    color='primary'
-                  >
-                    Create Delivery Order
-                  </Button>
+                    {users.map((option) => (
+                      <MenuItem key={option.id} value={option.id}>
+                        {option.firstName} ({option.role})
+                      </MenuItem>
+                    ))}
+                  </TextField>
                 </div>
-              </FormGroup>
-            </form>
-          </Paper>
-        </Box>
+              </Grid>
+              <Grid item xs={12}>
+                <h4 className='labelText'>Select Delivery Date</h4>
+                <DesktopDatePicker
+                  label='Delivery Date'
+                  value=''
+                  minDate={moment('2000-01-01')}
+                  onChange={() => {}}
+                  renderInput={(params) => <TextField {...params} />}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <h4 className='labelText'>Comments</h4>
+                <div>
+                  <TextField
+                    id='comments'
+                    label='Comments'
+                    name='comments'
+                    value=''
+                    onChange={() => {}}
+                    fullWidth
+                    multiline
+                    required
+                  />
+                </div>
+              </Grid>
+            </Grid>
+          </div>
+        </Paper>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import DeliveryCellAction from 'src/components/delivery/DeliveryCellAction';
+import ManualDeliveryCellAction from 'src/components/delivery/ManualDeliveryCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
 import { TextField, Stack, Typography } from '@mui/material';
@@ -42,7 +42,7 @@ const columns: GridColDef[] = [
     headerAlign: 'right',
     align: 'right',
     flex: 1,
-    renderCell: DeliveryCellAction
+    renderCell: ManualDeliveryCellAction
   }
 ];
 

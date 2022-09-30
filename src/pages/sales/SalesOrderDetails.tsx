@@ -174,7 +174,7 @@ const SalesOrderDetails = () => {
       } else if (newStatus === OrderStatus.READY_FOR_DELIVERY) {
         id &&
           navigate({
-            pathname: '/delivery/allManualDeliveries/createDelivery',
+            pathname: '/delivery/createDelivery',
             search: createSearchParams({
               id: id.toString()
             }).toString()
