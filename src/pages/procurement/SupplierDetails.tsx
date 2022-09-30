@@ -363,7 +363,7 @@ const SupplierDetails = () => {
                 ) : (
                   <DataGrid
                     columns={columns}
-                    rows={emptyArray}
+                    rows={supplierProducts}
                     getRowId={(row) => row.product.id}
                     loading={tableLoading}
                     autoHeight

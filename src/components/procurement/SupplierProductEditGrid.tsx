@@ -29,6 +29,7 @@ import {
 } from './procurementHelper';
 import { toPairs } from 'lodash';
 import { randomId } from '@mui/x-data-grid-generator';
+import PositiveNonZeroNumberEditCellAction from '../inventory/PositiveNonZeroNumberEditCellAction';
 
 type SupplierProductEditGridProps = {
     supplierProductList: SupplierProduct[];
@@ -131,7 +132,7 @@ type SupplierProductEditGridProps = {
         editable: true,
         valueFormatter: (params) => params.value.toFixed(2),
         renderEditCell: (params) => (
-          <PositiveNumberEditCellAction params={params} />
+          <PositiveNonZeroNumberEditCellAction params={params} />
         )
       },
       {
