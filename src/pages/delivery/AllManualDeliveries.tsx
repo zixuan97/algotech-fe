@@ -15,14 +15,16 @@ import { Search } from '@mui/icons-material';
 import { DeliveryOrder } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
-  getAllDeliveriesPostalCode,
   getAllDeliveriesPostalCodeByDate,
-  getManualDeliveryOrdersByRangeSvc
+  getManualDeliveryOrdersByRangeSvc,
+  getAllDeliveries
 } from 'src/services/deliveryServices';
 import { useNavigate } from 'react-router';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
-import markerIconPng from 'leaflet/dist/images/marker-icon.png';
+import { arrayBuffer } from 'stream/consumers';
+import axios from 'axios';
+import markerIconPng from 'src/components/delivery/red_marker.png';
 import DateRangePicker from 'src/components/common/DateRangePicker';
 import { MomentRange } from 'src/utils/dateUtils';
 import moment from 'moment';
@@ -30,7 +32,7 @@ import DeliveryOrderStatusCell from 'src/components/delivery/DeliveryOrderStatus
 
 const myIcon = new Icon({
   iconUrl: markerIconPng,
-  iconSize: [25, 41]
+  iconSize: [23, 38],
 });
 
 // TODO: Check if delivery date is undefined
