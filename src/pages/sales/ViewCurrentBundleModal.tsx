@@ -17,8 +17,6 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 type ViewCurrentBundleModalProps = {
   open: boolean;
   onClose: () => void;
-  title: string;
-  body: string;
   focusPassthrough?: boolean;
   editSalesOrderBundleItems?: SalesOrderBundleItem[];
   availProducts: Product[];
@@ -28,23 +26,22 @@ type ViewCurrentBundleModalProps = {
   ) => void;
   addNewItemToBundleItems: () => void;
   removeItemFromBundleItems: (productName: String) => void;
+  onSave: () => void;
 };
 
 const ViewCurrentBundleModal = ({
   open,
   onClose,
-  title,
-  body,
   focusPassthrough = false,
   availProducts,
   editSalesOrderBundleItems,
   updateNewSalesOrderBundleItem,
   addNewItemToBundleItems,
-  removeItemFromBundleItems
+  removeItemFromBundleItems,
+  onSave
 }: ViewCurrentBundleModalProps) => {
   const [prodName, setProdName] = useState<String>('');
   const [quantity, setQuantity] = useState<number>(0);
-
   const columns: GridColDef[] = [
     { field: 'productName', headerName: 'Product Name', flex: 1 },
     {
@@ -91,10 +88,12 @@ const ViewCurrentBundleModal = ({
             aria-labelledby='alert-dialog-title'
             aria-describedby='alert-dialog-description'
           >
-            <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
+            <DialogTitle id='alert-dialog-title'>
+              Items in the bundle.
+            </DialogTitle>
             <DialogContent>
               <DialogContentText id='alert-dialog-description'>
-                {body}
+                These are the items in your bundle.
               </DialogContentText>
 
               <DataGrid
@@ -104,7 +103,10 @@ const ViewCurrentBundleModal = ({
                 autoHeight
               />
               <div style={{ margin: '1%' }}>
-                <DialogContentText id='alert-dialog-description' style={{margin: '.5%'}}>
+                <DialogContentText
+                  id='alert-dialog-description'
+                  style={{ margin: '.5%' }}
+                >
                   Add new products into the bundle here.
                 </DialogContentText>
                 <TextField
@@ -162,7 +164,11 @@ const ViewCurrentBundleModal = ({
               <Button autoFocus={!focusPassthrough} onClick={onClose}>
                 Cancel
               </Button>
-              <Button type='submit' autoFocus={focusPassthrough}>
+              <Button
+                type='submit'
+                autoFocus={focusPassthrough}
+                onClick={onSave}
+              >
                 Save Changes
               </Button>
             </DialogActions>

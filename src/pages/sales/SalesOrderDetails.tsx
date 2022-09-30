@@ -60,6 +60,9 @@ const SalesOrderDetails = () => {
   >([]);
   const [newSalesOrderBundleItem, setNewSalesOrderBundleItem] =
     useState<SalesOrderBundleItem>();
+  const [tempBundleItems, setTempBundleItems] = useState<
+    SalesOrderBundleItem[]
+  >([]);
 
   const columns: GridColDef[] = [
     {
@@ -107,7 +110,10 @@ const SalesOrderDetails = () => {
               </Button>
             </>
           );
-        } else if (params.row.salesOrderBundleItems.length > 0 && salesOrder?.orderStatus === OrderStatus.PREPARING) {
+        } else if (
+          params.row.salesOrderBundleItems.length > 0 &&
+          salesOrder?.orderStatus === OrderStatus.PREPARING
+        ) {
           return (
             <>
               <Button
@@ -115,6 +121,7 @@ const SalesOrderDetails = () => {
                   setEditSalesOrderBundleItems(
                     params.row.salesOrderBundleItems
                   );
+                  setTempBundleItems(params.row.salesOrderBundleItems);
                   setShowCurrentBundleModal(true);
                 }}
                 variant='contained'
@@ -176,6 +183,31 @@ const SalesOrderDetails = () => {
         updateSalesOrderStatus(newStatus);
       }
     }
+  };
+
+  const updateSalesOrderStatus = (newStatus: OrderStatus) => {
+    id &&
+      asyncFetchCallback(
+        updateSalesOrderStatusSvc(id, newStatus),
+        () => {
+          setAlert({
+            severity: 'success',
+            message: `The order status has been updated. You can now ${steps[
+              activeStep + 1
+            ].nextAction.toLowerCase()}.`
+          });
+          setSalesOrder(
+            (order) => order && { ...order, orderStatus: newStatus }
+          );
+          setActiveStep((prev) => prev + 1);
+        },
+        () => {
+          setAlert({
+            severity: 'error',
+            message: `The order cannot be updated at this moment. Contact the admin for assistance.`
+          });
+        }
+      );
   };
 
   const addNewItemToEditSalesOrderItems = () => {
@@ -247,27 +279,9 @@ const SalesOrderDetails = () => {
           );
           updateSalesOrderStatus(OrderStatus.PREPARED);
           setModalOpen(false);
-        }
-      );
-  };
-
-  const updateSalesOrderStatus = (newStatus: OrderStatus) => {
-    id &&
-      asyncFetchCallback(
-        updateSalesOrderStatusSvc(id, newStatus),
-        () => {
-          setAlert({
-            severity: 'success',
-            message: `The order status has been updated. You can now ${steps[
-              activeStep + 1
-            ].nextAction.toLowerCase()}.`
-          });
-          setSalesOrder(
-            (order) => order && { ...order, orderStatus: newStatus }
-          );
-          setActiveStep((prev) => prev + 1);
         },
         () => {
+          setModalOpen(false);
           setAlert({
             severity: 'error',
             message: `The order cannot be updated at this moment. Contact the admin for assistance.`
@@ -277,7 +291,7 @@ const SalesOrderDetails = () => {
   };
 
   const removeItemFromBundleItems = (productName: String) => {
-    const temp = [...editSalesOrderBundleItems];
+    const temp = [...tempBundleItems];
     temp.splice(
       temp.indexOf(
         temp.find((item) => {
@@ -295,12 +309,16 @@ const SalesOrderDetails = () => {
   };
 
   const addNewItemToBundleItems = () => {
-    setEditSalesOrderBundleItems((current) => [...current, newSalesOrderBundleItem!]);
+    setEditSalesOrderBundleItems((current) => [
+      ...current,
+      newSalesOrderBundleItem!
+    ]);
     setAvailBundleProducts((current) =>
       current.filter((product) => {
         return product.name !== newSalesOrderBundleItem?.productName;
       })
     );
+    setTempBundleItems((current) => [...current, newSalesOrderBundleItem!]);
   };
 
   const updateNewSalesOrderBundleItem = (
@@ -313,9 +331,35 @@ const SalesOrderDetails = () => {
         [key]:
           key === 'quantity' ? event.target.valueAsNumber : event.target.value,
         isNewAdded: true,
-        salesOrderId: salesOrder?.id!,
+        salesOrderId: salesOrder?.id!
       };
     });
+  };
+
+  const saveChangesToBundle = () => {
+    const temp = [...editSalesOrderItems];
+    const oldSaleOrderItem = temp.find((item) => {
+      return item.id === editSalesOrderBundleItems[0]?.salesOrderItemId;
+    });
+    oldSaleOrderItem &&
+      editSalesOrderBundleItems.forEach((item) => {
+        item.isNewAdded &&
+          (oldSaleOrderItem.salesOrderBundleItems = [
+            ...oldSaleOrderItem.salesOrderBundleItems,
+            item
+          ]);
+      });
+    temp.splice(
+      temp.indexOf(
+        temp.find((item) => {
+          return item.id === editSalesOrderBundleItems[0]?.salesOrderItemId;
+        })!
+      ),
+      1,
+      oldSaleOrderItem!
+    );
+    setEditSalesOrderItems(temp);
+    setShowCurrentBundleModal(false);
   };
 
   return (
@@ -343,13 +387,12 @@ const SalesOrderDetails = () => {
       <ViewCurrentBundleModal
         open={showCurrentBundleModal}
         onClose={() => setShowCurrentBundleModal(false)}
-        title='Items in the bundle.'
-        body='These are the items in your bundle.'
         availProducts={availBundleProducts}
         editSalesOrderBundleItems={editSalesOrderBundleItems}
         updateNewSalesOrderBundleItem={updateNewSalesOrderBundleItem}
         addNewItemToBundleItems={addNewItemToBundleItems}
         removeItemFromBundleItems={removeItemFromBundleItems}
+        onSave={saveChangesToBundle}
       />
 
       <div className='top-carrot'>
