@@ -25,7 +25,7 @@ type ViewCurrentBundleModalProps = {
     key: string
   ) => void;
   addNewItemToBundleItems: () => void;
-  removeItemFromBundleItems: (productName: String) => void;
+  removeItemFromBundleItems: (productName: String, salesOrderItemId: number) => void;
   onSave: () => void;
 };
 
@@ -64,7 +64,7 @@ const ViewCurrentBundleModal = ({
                 variant='contained'
                 size='medium'
                 onClick={() =>
-                  removeItemFromBundleItems(params.row.productName)
+                  removeItemFromBundleItems(params.row.productName, params.row.salesOrderItemId)
                 }
               >
                 Remove Item

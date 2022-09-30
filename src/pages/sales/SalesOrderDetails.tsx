@@ -12,6 +12,7 @@ import {
 import { ChevronLeft } from '@mui/icons-material';
 import {
   OrderStatus,
+  PlatformType,
   Product,
   SalesOrder,
   SalesOrderBundleItem,
@@ -171,7 +172,11 @@ const SalesOrderDetails = () => {
       const newStatus = steps[activeStep + 1].currentState;
       if (newStatus === OrderStatus.PREPARED) {
         setModalOpen(true);
-      } else if (newStatus === OrderStatus.READY_FOR_DELIVERY) {
+      } else if (
+        newStatus === OrderStatus.READY_FOR_DELIVERY &&
+        (salesOrder?.platformType === PlatformType.SHOPIFY ||
+          salesOrder?.platformType === PlatformType.OTHERS)
+      ) {
         id &&
           navigate({
             pathname: '/delivery/createDelivery',
@@ -179,6 +184,12 @@ const SalesOrderDetails = () => {
               id: id.toString()
             }).toString()
           });
+      } else if (
+        activeStep > 3 &&
+        (salesOrder?.platformType === PlatformType.SHOPIFY ||
+          salesOrder?.platformType === PlatformType.OTHERS)
+      ) {
+        
       } else {
         updateSalesOrderStatus(newStatus);
       }
@@ -290,7 +301,10 @@ const SalesOrderDetails = () => {
       );
   };
 
-  const removeItemFromBundleItems = (productName: String) => {
+  const removeItemFromBundleItems = (
+    productName: String,
+    salesOrderItemId: number
+  ) => {
     const temp = [...tempBundleItems];
     temp.splice(
       temp.indexOf(
@@ -300,6 +314,15 @@ const SalesOrderDetails = () => {
       )
     );
     setEditSalesOrderBundleItems(temp);
+    const saleOrderItemsToUpdate = editSalesOrderItems.find((item) => {
+      return item.id === salesOrderItemId;
+    });
+    const items = saleOrderItemsToUpdate?.salesOrderBundleItems.filter(
+      (item) => {
+        return !(item.productName === productName && item.isNewAdded);
+      }
+    );
+    saleOrderItemsToUpdate!.salesOrderBundleItems = items!;
     setAvailBundleProducts((prev) => [
       ...prev,
       products.find((prod) => {
@@ -331,7 +354,7 @@ const SalesOrderDetails = () => {
         [key]:
           key === 'quantity' ? event.target.valueAsNumber : event.target.value,
         isNewAdded: true,
-        salesOrderId: salesOrder?.id!
+        salesOrderItemId: editSalesOrderBundleItems[0].salesOrderItemId
       };
     });
   };
@@ -414,7 +437,15 @@ const SalesOrderDetails = () => {
                 <Typography sx={{ fontSize: 'inherit' }}>
                   Next Action:
                 </Typography>
-                <Button variant='contained' size='medium' onClick={nextStep}>
+                <Button
+                  variant='contained'
+                  size='medium'
+                  onClick={nextStep}
+                  disabled={
+                    salesOrder?.platformType === PlatformType.SHOPEE &&
+                    activeStep > 2
+                  }
+                >
                   {steps[activeStep].nextAction}
                 </Button>
               </div>

@@ -39,18 +39,18 @@ export const steps = [
     currentState: OrderStatus.READY_FOR_DELIVERY,
     label: 'Delivery Scheduled',
     icon: <DepartureBoardRounded sx={{ fontSize: 35 }} />,
-    nextAction: 'Confirm Pickup'
+    nextAction: 'View Delivery Details'
   },
   {
     currentState: OrderStatus.SHIPPED,
     label: 'Order Shipped',
     icon: <LocalShippingRounded sx={{ fontSize: 35 }} />,
-    nextAction: 'View Delivery'
+    nextAction: 'View Delivery Details'
   },
   {
     currentState: OrderStatus.COMPLETED,
     label: 'Order Received',
     icon: <TaskAltRounded sx={{ fontSize: 35 }} />,
-    nextAction: 'View Delivery'
+    nextAction: 'View Delivery Details'
   }
 ];
