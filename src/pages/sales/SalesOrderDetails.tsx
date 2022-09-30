@@ -189,7 +189,13 @@ const SalesOrderDetails = () => {
         (salesOrder?.platformType === PlatformType.SHOPIFY ||
           salesOrder?.platformType === PlatformType.OTHERS)
       ) {
-        
+        id &&
+          navigate({
+            pathname: '/delivery/createDelivery',
+            search: createSearchParams({
+              id: id.toString()
+            }).toString()
+          });
       } else {
         updateSalesOrderStatus(newStatus);
       }
