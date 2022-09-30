@@ -42,7 +42,11 @@ import {
   MomentRange,
   READABLE_DDMMYY
 } from 'src/utils/dateUtils';
-import { createPdfFromComponent, downloadFile } from 'src/utils/fileUtils';
+import {
+  createPdfFromComponent,
+  downloadFile,
+  getExcelFromApiWithDate
+} from 'src/utils/fileUtils';
 import '../../styles/common/common.scss';
 import '../../styles/pages/sales/orders.scss';
 
@@ -238,6 +242,22 @@ const SalesDashboard = () => {
               }}
             >
               Reset
+            </Button>
+            <Button
+              startIcon={<Download />}
+              variant='contained'
+              size='large'
+              sx={{ height: 'fit-content' }}
+              onClick={() =>
+                getExcelFromApiWithDate(
+                  'POST',
+                  '/sales/excel',
+                  `SalesData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`,
+                  dateRange
+                )
+              }
+            >
+              Export
             </Button>
           </div>
         </div>
