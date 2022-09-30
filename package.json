@@ -27,6 +27,7 @@
     "chartjs-plugin-datalabels": "^2.1.0",
     "d3-scale-chromatic": "^3.0.0",
     "event-source-polyfill": "^1.0.31",
+    "html-react-parser": "^3.0.4",
     "html2canvas": "^1.4.1",
     "immutable": "^4.1.0",
     "js-file-download": "^0.4.12",

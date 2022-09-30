@@ -98,7 +98,6 @@ export interface Location {
 export interface StockQuantity {
   productId?: number;
   location: Location;
-  price: number;
   quantity: number;
 }
 

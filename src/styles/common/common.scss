@@ -6,6 +6,11 @@
   justify-content: center;
 }
 
+.container-center-col {
+	@extend .container-center;
+	flex-direction: column;
+}
+
 .container-left {
 	display: flex;
 	flex-direction: column;
@@ -13,14 +18,30 @@
 	align-items: flex-start;
 }
 
+.container-spread {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-evenly
+}
+
 .container-center-padding {
 	@extend .container-center;
+	padding: 2em;
+}
+
+.container-center-col-padding {
+	@extend .container-center-col;
 	padding: 2em;
 }
 
 .container-left-padding {
 	@extend .container-left;
 	padding: 2em;
+}
+
+.container-spread-padding {
+	@extend .container-spread;
+	padding: 2em
 }
 
 .horizontal-inline-bar {
@@ -40,6 +61,12 @@
 
 .full-divider {
 	width: 100%;
+}
+
+.card {
+	padding: 0 2em 2em;
+	display: flex;
+	flex-direction: column;
 }
 
 .number-card {

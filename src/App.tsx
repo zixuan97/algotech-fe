@@ -65,6 +65,7 @@ import NotFound from './pages/NotFound';
 import { subscribeToShopify } from './services/webhook/pusher';
 import { SalesOrder } from './models/types';
 import { startCase } from 'lodash';
+import ShopPerformance from './pages/sales/ShopPerformance';
 
 const theme = createTheme({
   palette: {
@@ -90,7 +91,7 @@ const App = () => {
     setAuthToken(localStorage.token);
   }, [token]);
 
-  subscribeToShopify((salesOrder: SalesOrder) => {
+  const shopifyCallback = React.useCallback((salesOrder: SalesOrder) => {
     console.log(salesOrder);
     toast(
       `New order has come in from ${startCase(
@@ -100,7 +101,9 @@ const App = () => {
         toastId: salesOrder.orderId
       }
     );
-  });
+  }, []);
+
+  subscribeToShopify(shopifyCallback);
 
   return (
     <ThemeProvider theme={theme}>
@@ -204,7 +207,6 @@ const App = () => {
                   />
 
                   {/* --- Delivery Routes --- */}
-                  <Route path='sales/dashboard' element={<SalesDashboard />} />
                   <Route
                     path='delivery/allManualDeliveries'
                     element={<AllManualDeliveries />}
@@ -252,6 +254,10 @@ const App = () => {
                   <Route
                     path='sales/salesOrderDetails'
                     element={<SalesOrderDetails />}
+                  />
+                  <Route
+                    path='sales/shopPerformance'
+                    element={<ShopPerformance />}
                   />
 
                   {/* --- Procurement Routes --- */}
