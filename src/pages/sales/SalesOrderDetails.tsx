@@ -14,6 +14,7 @@ import {
   OrderStatus,
   Product,
   SalesOrder,
+  SalesOrderBundleItem,
   SalesOrderItem
 } from 'src/models/types';
 import { useNavigate, createSearchParams } from 'react-router-dom';
@@ -33,6 +34,7 @@ import OrderSummaryCard from '../../components/sales/order/OrderSummaryCard';
 import StatusStepper from '../../components/sales/order/StatusStepper';
 import PlatformChip from '../../components/sales/order/PlatformChip';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import ViewCurrentBundleModal from './ViewCurrentBundleModal';
 
 const SalesOrderDetails = () => {
   let params = new URLSearchParams(window.location.search);
@@ -49,7 +51,18 @@ const SalesOrderDetails = () => {
   const [activeStep, setActiveStep] = useState<number>(0);
   const [showDialog, setShowDialog] = useState<boolean>(false);
   const [availProducts, setAvailProducts] = useState<Product[]>([]);
+  const [availBundleProducts, setAvailBundleProducts] = useState<Product[]>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [showCurrentBundleModal, setShowCurrentBundleModal] =
+    useState<boolean>(false);
+  const [editSalesOrderBundleItems, setEditSalesOrderBundleItems] = useState<
+    SalesOrderBundleItem[]
+  >([]);
+  const [newSalesOrderBundleItem, setNewSalesOrderBundleItem] =
+    useState<SalesOrderBundleItem>();
+  const [tempBundleItems, setTempBundleItems] = useState<
+    SalesOrderBundleItem[]
+  >([]);
 
   const columns: GridColDef[] = [
     {
@@ -97,6 +110,27 @@ const SalesOrderDetails = () => {
               </Button>
             </>
           );
+        } else if (
+          params.row.salesOrderBundleItems.length > 0 &&
+          salesOrder?.orderStatus === OrderStatus.PREPARING
+        ) {
+          return (
+            <>
+              <Button
+                onClick={() => {
+                  setEditSalesOrderBundleItems(
+                    params.row.salesOrderBundleItems
+                  );
+                  setTempBundleItems(params.row.salesOrderBundleItems);
+                  setShowCurrentBundleModal(true);
+                }}
+                variant='contained'
+                size='medium'
+              >
+                View Bundle
+              </Button>
+            </>
+          );
         }
       }
     }
@@ -112,6 +146,7 @@ const SalesOrderDetails = () => {
             setSalesOrder(salesOrder);
             setEditSalesOrderItems([...salesOrder.salesOrderItems]);
             setAvailProducts(products);
+            setAvailBundleProducts(products);
             setActiveStep(
               steps.findIndex(
                 (step) => step.currentState === salesOrder.orderStatus
@@ -137,16 +172,42 @@ const SalesOrderDetails = () => {
       if (newStatus === OrderStatus.PREPARED) {
         setModalOpen(true);
       } else if (newStatus === OrderStatus.READY_FOR_DELIVERY) {
-        id && navigate({
-          pathname: '/delivery/allManualDeliveries/createDelivery',
-          search: createSearchParams({
-            id: id.toString()
-          }).toString()
-        });
+        id &&
+          navigate({
+            pathname: '/delivery/allManualDeliveries/createDelivery',
+            search: createSearchParams({
+              id: id.toString()
+            }).toString()
+          });
       } else {
         updateSalesOrderStatus(newStatus);
       }
     }
+  };
+
+  const updateSalesOrderStatus = (newStatus: OrderStatus) => {
+    id &&
+      asyncFetchCallback(
+        updateSalesOrderStatusSvc(id, newStatus),
+        () => {
+          setAlert({
+            severity: 'success',
+            message: `The order status has been updated. You can now ${steps[
+              activeStep + 1
+            ].nextAction.toLowerCase()}.`
+          });
+          setSalesOrder(
+            (order) => order && { ...order, orderStatus: newStatus }
+          );
+          setActiveStep((prev) => prev + 1);
+        },
+        () => {
+          setAlert({
+            severity: 'error',
+            message: `The order cannot be updated at this moment. Contact the admin for assistance.`
+          });
+        }
+      );
   };
 
   const addNewItemToEditSalesOrderItems = () => {
@@ -218,31 +279,87 @@ const SalesOrderDetails = () => {
           );
           updateSalesOrderStatus(OrderStatus.PREPARED);
           setModalOpen(false);
-        }
-      );
-  };
-
-  const updateSalesOrderStatus = (newStatus: OrderStatus) => {
-    id &&
-      asyncFetchCallback(
-        updateSalesOrderStatusSvc(id, newStatus),
-        () => {
-          setAlert({
-            severity: 'success',
-            message: `The order status has been updated. You can now ${steps[
-              activeStep + 1
-            ].nextAction.toLowerCase()}.`
-          });
-          setSalesOrder((order) => order && { ...order, orderStatus: newStatus });
-          setActiveStep((prev) => prev + 1);
         },
         () => {
+          setModalOpen(false);
           setAlert({
             severity: 'error',
             message: `The order cannot be updated at this moment. Contact the admin for assistance.`
           });
         }
       );
+  };
+
+  const removeItemFromBundleItems = (productName: String) => {
+    const temp = [...tempBundleItems];
+    temp.splice(
+      temp.indexOf(
+        temp.find((item) => {
+          return item.productName === productName && item.isNewAdded;
+        })!
+      )
+    );
+    setEditSalesOrderBundleItems(temp);
+    setAvailBundleProducts((prev) => [
+      ...prev,
+      products.find((prod) => {
+        return prod.name === productName;
+      })!
+    ]);
+  };
+
+  const addNewItemToBundleItems = () => {
+    setEditSalesOrderBundleItems((current) => [
+      ...current,
+      newSalesOrderBundleItem!
+    ]);
+    setAvailBundleProducts((current) =>
+      current.filter((product) => {
+        return product.name !== newSalesOrderBundleItem?.productName;
+      })
+    );
+    setTempBundleItems((current) => [...current, newSalesOrderBundleItem!]);
+  };
+
+  const updateNewSalesOrderBundleItem = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    key: string
+  ) => {
+    setNewSalesOrderBundleItem((bundleItem) => {
+      return {
+        ...bundleItem!,
+        [key]:
+          key === 'quantity' ? event.target.valueAsNumber : event.target.value,
+        isNewAdded: true,
+        salesOrderId: salesOrder?.id!
+      };
+    });
+  };
+
+  const saveChangesToBundle = () => {
+    const temp = [...editSalesOrderItems];
+    const oldSaleOrderItem = temp.find((item) => {
+      return item.id === editSalesOrderBundleItems[0]?.salesOrderItemId;
+    });
+    oldSaleOrderItem &&
+      editSalesOrderBundleItems.forEach((item) => {
+        item.isNewAdded &&
+          (oldSaleOrderItem.salesOrderBundleItems = [
+            ...oldSaleOrderItem.salesOrderBundleItems,
+            item
+          ]);
+      });
+    temp.splice(
+      temp.indexOf(
+        temp.find((item) => {
+          return item.id === editSalesOrderBundleItems[0]?.salesOrderItemId;
+        })!
+      ),
+      1,
+      oldSaleOrderItem!
+    );
+    setEditSalesOrderItems(temp);
+    setShowCurrentBundleModal(false);
   };
 
   return (
@@ -265,6 +382,17 @@ const SalesOrderDetails = () => {
         onClose={() => {
           setModalOpen(false);
         }}
+      />
+
+      <ViewCurrentBundleModal
+        open={showCurrentBundleModal}
+        onClose={() => setShowCurrentBundleModal(false)}
+        availProducts={availBundleProducts}
+        editSalesOrderBundleItems={editSalesOrderBundleItems}
+        updateNewSalesOrderBundleItem={updateNewSalesOrderBundleItem}
+        addNewItemToBundleItems={addNewItemToBundleItems}
+        removeItemFromBundleItems={removeItemFromBundleItems}
+        onSave={saveChangesToBundle}
       />
 
       <div className='top-carrot'>
