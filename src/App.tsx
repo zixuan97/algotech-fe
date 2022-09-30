@@ -41,9 +41,8 @@ import AllManualDeliveries from './pages/delivery/AllManualDeliveries';
 import AllShippitDeliveries from './pages/delivery/AllShippitDeliveries';
 import CreateDeliveryOrder from './pages/delivery/CreateDelivery';
 import ManualDeliveryDetails from './pages/delivery/ManualDeliveryDetails';
+import MyDeliveryAssignment from './pages/delivery/MyDeliveryAssignment';
 import ShippitDeliveryDetails from './pages/delivery/ShippitDeliveryDetails';
-import DeliveryAssignment from './pages/delivery/DeliveryAssignment';
-
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
@@ -226,8 +225,8 @@ const App = () => {
                     element={<ShippitDeliveryDetails />}
                   />
                   <Route
-                    path='delivery/deliveryAssignment'
-                    element={<DeliveryAssignment />}
+                    path='delivery/myDeliveryAssignment'
+                    element={<MyDeliveryAssignment />}
                   />
 
                   {/* --- Sales Routes --- */}

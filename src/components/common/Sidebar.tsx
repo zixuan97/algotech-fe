@@ -147,7 +147,7 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
           >
             <ListItemLink
               primary='Delivery Assignment'
-              to='/delivery/deliveryAssignment'
+              to='/delivery/myDeliveryAssignment'
             />
             <ListItemLink
               primary='Manual Deliveries'

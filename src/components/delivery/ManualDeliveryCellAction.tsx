@@ -14,9 +14,9 @@ const ManualDeliveryCellAction = ({ id }: GridRenderCellParams) => {
         onClick={() =>
           navigate({
             pathname: '/delivery/manualDeliveryDetails',
-            // search: createSearchParams({
-            //   id: id.toString()
-            // }).toString()
+            search: createSearchParams({
+              id: id.toString()
+            }).toString()
           })
         }
       >

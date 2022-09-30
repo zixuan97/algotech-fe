@@ -90,9 +90,7 @@ export const getAllDeliveriesPostalCodeByDate = (
 export const getAllAssignedManualDeliveries = async (
   id: any
 ): Promise<DeliveryOrder[]> => {
-  return axios
-    .get(`${apiRoot}/delivery/deliveryAssignment/${id}`)
-    .then((res) => res.data);
+  return axios.post(`${apiRoot}/delivery/deliveryAssignment/${id}`).then((res) => res.data);
 };
 
 export const getCurrentLocationLatLng = async (
@@ -119,6 +117,20 @@ export const getAllUnassignedDeliveriesPostalCodeByDate = (
     time_to: dateRange[1].format()
   };
   return axios
-    .post(`${apiRoot}/delivery/unassigned/latlong`, timeFilter)
+    .post(`${apiRoot}/delivery/latlong/unassigned`, timeFilter)
+    .then((res) => res.data);
+};
+
+export const getAllAssignedDeliveriesPostalCodeByDate = (
+  dateRange: MomentRange,
+  id : number | any
+): Promise<DeliveryOrder[]> => {
+  const timeFilter = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format(),
+    id: id
+  };
+  return axios
+    .post(`${apiRoot}/delivery/latlong/assigned`, timeFilter)
     .then((res) => res.data);
 };

@@ -137,8 +137,9 @@ const AllManualDeliveries = () => {
         />
         {deliveryPostalCode.map((data) => {
           return (
-            <Marker position={[data.LATITUDE, data.LONGTITUDE]} icon={myIcon}>
-              <Popup>{data.ADDRESS}</Popup>
+            <Marker key={data.orders.orderId} position={[data.LATITUDE, data.LONGTITUDE]} icon={myIcon}>
+              <Popup>{data.ADDRESS} 
+               {data.orders.orderId}</Popup>
             </Marker>
           );
         })}
