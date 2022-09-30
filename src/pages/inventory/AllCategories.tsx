@@ -27,7 +27,7 @@ const AllCategories = () => {
 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
-  
+
   React.useEffect(() => {
     setLoading(true);
     refreshCategories(() => setLoading(false));
@@ -36,12 +36,12 @@ const AllCategories = () => {
   const filteredData = React.useMemo(
     () =>
       searchField
-        ? categories.filter((category) => 
-          Object.values(category).some((value) =>
-            String(value).toLowerCase().match(searchField.toLowerCase())
+        ? categories.filter((category) =>
+            Object.values(category).some((value) =>
+              String(value).toLowerCase().includes(searchField.toLowerCase())
+            )
           )
-        )
-      : categories,
+        : categories,
     [searchField, categories]
   );
 

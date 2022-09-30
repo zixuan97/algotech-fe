@@ -35,23 +35,20 @@ const Accounts = () => {
 
   useEffect(() => {
     setLoading(true);
-    asyncFetchCallback(
-      getAllUserSvc(),
-      (users: Array<User>) => {
-        setUsers(users);
-        setLoading(false);
-      }
-    );
+    asyncFetchCallback(getAllUserSvc(), (users: Array<User>) => {
+      setUsers(users);
+      setLoading(false);
+    });
   }, []);
 
   useEffect(() => {
     setFilteredData(
       searchField
         ? users.filter((user) =>
-          Object.values(user).some((value) =>
-            String(value).toLowerCase().match(searchField.toLowerCase())
+            Object.values(user).some((value) =>
+              String(value).toLowerCase().includes(searchField.toLowerCase())
+            )
           )
-        )
         : users
     );
   }, [searchField, users]);
@@ -65,7 +62,7 @@ const Accounts = () => {
   return (
     <div className='accounts'>
       <h1>User Accounts</h1>
-      <div className='grid-toolbar' >
+      <div className='grid-toolbar'>
         <div className='search-bar'>
           <Search />
           <TextField
@@ -76,17 +73,17 @@ const Accounts = () => {
             onChange={handleSearchFieldChange}
           />
           {loading && <CircularProgress color='secondary' />}
-        </div>          
-          <Button
-            variant='contained'
-            size='large'
-            sx={{ height: 'fit-content' }}
-            onClick={() => {
-              navigate('/accounts/createNewUser');
-            }}
-          >
-            Create New User
-          </Button>
+        </div>
+        <Button
+          variant='contained'
+          size='large'
+          sx={{ height: 'fit-content' }}
+          onClick={() => {
+            navigate('/accounts/createNewUser');
+          }}
+        >
+          Create New User
+        </Button>
       </div>
       <DataGrid columns={columns} rows={filteredData} autoHeight />
     </div>

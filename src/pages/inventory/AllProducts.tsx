@@ -64,7 +64,7 @@ const AllProducts = () => {
       searchField
         ? products.filter((product) =>
             Object.values(product).some((value) =>
-              String(value).toLowerCase().match(searchField.toLowerCase())
+              String(value).toLowerCase().includes(searchField.toLowerCase())
             )
           )
         : products,

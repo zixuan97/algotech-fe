@@ -45,16 +45,27 @@ const AllSalesOrders = () => {
     () =>
       filterPlatform || searchField
         ? salesOrders.filter((saleOrder) => {
+            const searchFieldLower = searchField.toLowerCase().trim();
             if (filterPlatform === 'ALL') {
-              return Object.values(saleOrder).some((value) =>
-                String(value).toLowerCase().match(searchField.toLowerCase())
+              return (
+                saleOrder.customerAddress
+                  .toLowerCase()
+                  .includes(searchFieldLower) ||
+                saleOrder.orderId.toLowerCase().includes(searchFieldLower) ||
+                saleOrder.salesOrderItems.some((item) =>
+                  item.productName?.toLowerCase().includes(searchFieldLower)
+                )
               );
             } else {
               return (
                 saleOrder.platformType === filterPlatform &&
-                Object.values(saleOrder).some((value) =>
-                  String(value).toLowerCase().match(searchField.toLowerCase())
-                )
+                (saleOrder.customerAddress
+                  .toLowerCase()
+                  .includes(searchFieldLower) ||
+                  saleOrder.orderId.toLowerCase().includes(searchFieldLower) ||
+                  saleOrder.salesOrderItems.some((item) =>
+                    item.productName?.toLowerCase().includes(searchFieldLower)
+                  ))
               );
             }
           })
@@ -113,7 +124,7 @@ const AllSalesOrders = () => {
             label='Search'
             fullWidth
             value={searchField}
-            placeholder='Input Search Field ...'
+            placeholder='Address, OrderId, Product Name'
             onChange={handleSearchFieldChange}
           />
           <Button

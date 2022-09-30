@@ -36,12 +36,12 @@ const AllBrands = () => {
   const filteredData = React.useMemo(
     () =>
       searchField
-        ? brands.filter((brand) => 
-          Object.values(brand).some((value) =>
-            String(value).toLowerCase().match(searchField.toLowerCase())
+        ? brands.filter((brand) =>
+            Object.values(brand).some((value) =>
+              String(value).toLowerCase().includes(searchField.toLowerCase())
+            )
           )
-        )
-      : brands,
+        : brands,
     [searchField, brands]
   );
 

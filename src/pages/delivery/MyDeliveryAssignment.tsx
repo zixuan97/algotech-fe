@@ -9,7 +9,13 @@ import {
 import ManualDeliveryCellAction from 'src/components/delivery/ManualDeliveryCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
-import { TextField, Stack, Typography, Button, CircularProgress } from '@mui/material';
+import {
+  TextField,
+  Stack,
+  Typography,
+  Button,
+  CircularProgress
+} from '@mui/material';
 import { Search } from '@mui/icons-material';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import { DeliveryOrder } from '../../models/types';
@@ -23,12 +29,7 @@ import {
   getCurrentLocationLatLng
 } from 'src/services/deliveryServices';
 import { useNavigate } from 'react-router';
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup
-} from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import redMarker from 'src/components/delivery/red_marker.png';
 import greenMarker from 'src/components/delivery/green_marker.png';
@@ -44,7 +45,8 @@ const columns: GridColDef[] = [
     field: 'salesOrderId',
     headerName: 'Order ID',
     flex: 1,
-    valueGetter: (params: GridValueGetterParams) => params.row.salesOrder.orderId
+    valueGetter: (params: GridValueGetterParams) =>
+      params.row.salesOrder.orderId
   },
   {
     field: 'orderStatus',
@@ -133,13 +135,13 @@ const columns: GridColDef[] = [
 // ];
 
 const MyDeliveryAssignment = () => {
-
   const columnsBottom: GridColDef[] = [
     {
       field: 'salesOrderId',
       headerName: 'Order ID',
       flex: 1,
-      valueGetter: (params: GridValueGetterParams) => params.row.salesOrder.orderId
+      valueGetter: (params: GridValueGetterParams) =>
+        params.row.salesOrder.orderId
     },
     {
       field: 'orderStatus',
@@ -174,8 +176,8 @@ const MyDeliveryAssignment = () => {
         <strong>
           {/* {params.row.salesOrder.orderId} */}
           <Button
-            variant="contained"
-            size="medium"
+            variant='contained'
+            size='medium'
             style={{ marginLeft: 16 }}
             tabIndex={params.hasFocus ? 0 : -1}
             onClick={() => editDelivery(params.row)}
@@ -216,12 +218,12 @@ const MyDeliveryAssignment = () => {
   const greenIcon = new Icon({
     iconUrl: greenMarker,
     iconSize: [23, 38]
-  })
+  });
 
   const blueIcon = new Icon({
     iconUrl: blueMarker,
     iconSize: [23, 38]
-  })
+  });
 
   React.useEffect(() => {
     // TODO: implement error callback
@@ -255,27 +257,24 @@ const MyDeliveryAssignment = () => {
     setFilteredData(
       searchField
         ? assignedDeliveries.filter((category) =>
-          Object.values(category).some((value) =>
-            String(value).toLowerCase().match(searchField.toLowerCase())
+            Object.values(category).some((value) =>
+              String(value).toLowerCase().includes(searchField.toLowerCase())
+            )
           )
-        )
         : assignedDeliveries
     );
   }, [searchField, assignedDeliveries]);
 
   const editDelivery = (deliveryOrder: DeliveryOrder) => {
-    console.log('enter method')
-    deliveryOrder.assignedUserId = user?.id
-    asyncFetchCallback(
-      editDeliveryOrder(deliveryOrder),
-      () => {
-        setUnassignedDeliveries(unassignedDeliveries.filter(
-          (x) => x.id !== deliveryOrder.id
-        ))
-        setAssignedDeliveries([...assignedDeliveries, deliveryOrder])
-      }
-    )
-  }
+    console.log('enter method');
+    deliveryOrder.assignedUserId = user?.id;
+    asyncFetchCallback(editDeliveryOrder(deliveryOrder), () => {
+      setUnassignedDeliveries(
+        unassignedDeliveries.filter((x) => x.id !== deliveryOrder.id)
+      );
+      setAssignedDeliveries([...assignedDeliveries, deliveryOrder]);
+    });
+  };
 
   const findCurrentLocation = (event: React.MouseEvent<HTMLElement>) => {
     setLoading(true);
@@ -284,11 +283,13 @@ const MyDeliveryAssignment = () => {
       (res) => {
         setLoading(false);
         setLatLng(res);
-        console.log("Current location is [" + res.LATITUDE + "," + res.LONGTITUDE + "]");
+        console.log(
+          'Current location is [' + res.LATITUDE + ',' + res.LONGTITUDE + ']'
+        );
       },
       () => setLoading(false)
     );
-  }
+  };
 
   React.useEffect(() => {
     asyncFetchCallback(
@@ -312,8 +313,6 @@ const MyDeliveryAssignment = () => {
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchField(e.target.value);
   };
-
-
 
   return (
     <div className='delivery-orders'>
@@ -351,13 +350,20 @@ const MyDeliveryAssignment = () => {
           attribution='&copy; <img src="https://www.onemap.gov.sg/docs/maps/images/oneMap64-01.png" style="height:20px;width:20px;"/> OneMap | Map data &copy; contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>'
           url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
-        {latlng &&
-          <Marker position={[latlng.LATITUDE, latlng.LONGTITUDE]} icon={blueIcon}>
+        {latlng && (
+          <Marker
+            position={[latlng.LATITUDE, latlng.LONGTITUDE]}
+            icon={blueIcon}
+          >
             <Popup>Your current location is {latlng.ADDRESS}</Popup>
-          </Marker>}
+          </Marker>
+        )}
         {unassignedDeliveryPostalCode.map((data) => {
           return (
-            <Marker position={[data.LATITUDE, data.LONGTITUDE]} icon={greenIcon}>
+            <Marker
+              position={[data.LATITUDE, data.LONGTITUDE]}
+              icon={greenIcon}
+            >
               <Popup>{data.ADDRESS}</Popup>
             </Marker>
           );

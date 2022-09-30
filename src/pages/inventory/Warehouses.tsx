@@ -47,12 +47,12 @@ const Warehouses = () => {
   const filteredData = React.useMemo(
     () =>
       searchField
-        ? locations.filter((location) => 
-          Object.values(location).some((value) =>
-            String(value).toLowerCase().match(searchField.toLowerCase())
+        ? locations.filter((location) =>
+            Object.values(location).some((value) =>
+              String(value).toLowerCase().includes(searchField.toLowerCase())
+            )
           )
-        )
-      : locations,
+        : locations,
     [searchField, locations]
   );
 
