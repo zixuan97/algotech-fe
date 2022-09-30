@@ -41,7 +41,6 @@ import validator from 'validator';
 import { getBase64 } from 'src/utils/fileUtils';
 import inventoryContext from 'src/context/inventory/inventoryContext';
 import { isValidProduct } from 'src/components/inventory/inventoryHelper';
-import WarehouseCellAction from 'src/components/inventory/WarehouseCellAction';
 
 const columns: GridColDef[] = [
   {
@@ -55,14 +54,6 @@ const columns: GridColDef[] = [
     type: 'number',
     headerName: 'Quantity',
     flex: 1
-  },
-  {
-    field: 'action',
-    headerName: 'Action',
-    headerAlign: 'right',
-    align: 'right',
-    flex: 1,
-    renderCell: WarehouseCellAction
   }
   // {
   //   field: 'price',

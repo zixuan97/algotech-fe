@@ -118,6 +118,10 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
                 primary='Order Fulfillments'
                 to='sales/allSalesOrders'
               />
+              <ListItemLink
+                primary='Shop Performance'
+                to='sales/shopPerformance'
+              />
             </List>
           </NestedList>
 
