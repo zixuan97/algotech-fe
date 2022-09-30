@@ -82,6 +82,7 @@ export const isValidBundle = (
     bundleToValidate.name &&
     bundleToValidate.description &&
     bundleToValidate.bundleProduct?.length
+    // bundleToValidate.bundleProduct?.forEach((bundlePdt) => bundlePdt.quantity > 0)
   );
 };
 

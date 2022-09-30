@@ -17,20 +17,13 @@ import { useNavigate } from 'react-router';
 import { Bundle, Product, BundleProduct } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { createBundle } from 'src/services/bundleService';
-import { intersectionWith, omit } from 'lodash';
-import { getBase64 } from 'src/utils/fileUtils';
 import BundleProductEditGrid from 'src/components/inventory/BundleProductEditGrid';
 import {
   AlertType,
   AxiosErrDataBody
 } from '../../components/common/TimeoutAlert';
-import inventoryContext from '../../context/inventory/inventoryContext';
 import { isValidBundle } from 'src/components/inventory/inventoryHelper';
-import BundleProductModal from 'src/components/inventory/BundleProductModal';
 import { useSearchParams } from 'react-router-dom';
-import { idID } from '@mui/material/locale';
-import { isConstructorDeclaration } from 'typescript';
-import PositiveNumberEditCellAction from 'src/components/inventory/PositiveNumberEditCellAction';
 
 export type NewBundle = Partial<Bundle> & {};
 type NewBundleProduct = Partial<BundleProduct>;
@@ -38,13 +31,11 @@ type NewBundleProduct = Partial<BundleProduct>;
 const CreateBundle = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  // const id = searchParams.get('id');
 
   const [disableCreate, setDisableCreate] = React.useState<boolean>(true);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
 
-  // const [newBundleProducts, setNewBundleProducts] = React.useState<NewBundleProduct[]>([]);
   const [newBundle, setNewBundle] = React.useState<NewBundle>({
     bundleProduct: []
   });
@@ -57,6 +48,15 @@ const CreateBundle = () => {
 
   React.useEffect(() => {
     setDisableCreate(!isValidBundle(newBundle));
+
+    if (newBundle.bundleProduct) {
+      newBundle.bundleProduct?.forEach((bundlePdt) => {
+        if (bundlePdt.quantity.toString() === "0") {
+          setDisableCreate(true);
+        }
+      });
+    }
+
   }, [newBundle]);
 
   const handleEditBundle = (
@@ -69,7 +69,7 @@ const CreateBundle = () => {
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
-
+    console.log(newBundle);
     if (newBundle) {
       setLoading(true);
       await asyncFetchCallback(
