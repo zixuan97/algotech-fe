@@ -10,7 +10,6 @@ const pusher = new Pusher('33f7d7f44d38ff91c104', {
 });
 
 const subscribeToPusher = <T>(event: string, callback: (value: T) => void) => {
-  Pusher.logToConsole = true;
   const pusherChannel = pusher.subscribe('algotech-pusher');
   pusherChannel.bind(event, (pusherData: PusherData) =>
     callback(JSON.parse(pusherData.data) as T)

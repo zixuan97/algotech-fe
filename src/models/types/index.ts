@@ -174,7 +174,7 @@ export interface DeliveryOrder {
   parcelQty?: number;
   parcelWeight?: number;
   deliveryMode?: DeliveryMode;
-  assignedUserId? : number
+  assignedUserId?: number;
   shippitTrackingNum: string;
   deliveryStatus?: DeliveryStatus;
 }

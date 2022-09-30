@@ -5,7 +5,6 @@ import {
   GridRowModesModel,
   GridToolbarContainer
 } from '@mui/x-data-grid';
-import { ProductLocationRow } from 'src/pages/inventory/CreateProduct';
 import { Location } from 'src/models/types';
 import { randomId } from '@mui/x-data-grid-generator';
 import { StockQuantityGridRow } from './inventoryHelper';
@@ -34,7 +33,6 @@ const EditToolbarCellAction = ({
       {
         gridId,
         location: availableLocations[0],
-        price: 0,
         quantity: 0,
         isNew: true
       }
