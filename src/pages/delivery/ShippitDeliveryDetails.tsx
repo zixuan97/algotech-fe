@@ -88,6 +88,10 @@ const ShippitDeliveryDetails = () => {
     }
   }, [id]);
 
+  const openTracking = async () => {
+    window.open(trackingUrl, '_blank');
+  };
+
   const handleConfirmOrder = async () => {
     setConfirmDeliveryModalOpen(false);
     setLoading(true);
@@ -160,7 +164,7 @@ const ShippitDeliveryDetails = () => {
           <Button
             variant='contained'
             startIcon={<LocalShippingIcon />}
-            href={trackingUrl}
+            onClick={openTracking}
           >
             Track Order
           </Button>
