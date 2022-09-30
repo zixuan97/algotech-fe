@@ -3,7 +3,7 @@ import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import DeliveryCellAction from 'src/components/delivery/DeliveryCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
-import { TextField, Stack, Typography } from '@mui/material';
+import { TextField, Stack, Typography, Button, CircularProgress } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import { DeliveryOrder } from '../../models/types';
@@ -30,22 +30,6 @@ import DateRangePicker from 'src/components/common/DateRangePicker';
 import { MomentRange } from 'src/utils/dateUtils';
 import moment from 'moment';
 
-const columns: GridColDef[] = [
-  { field: 'id', headerName: 'Delivery ID', flex: 1 },
-  { field: 'deliveryStatus', headerName: 'Delivery Status', flex: 1 },
-  { field: 'shippingAddress', headerName: 'Address', flex: 1 },
-  { field: 'shippingDate', headerName: 'Order Date', flex: 1 },
-  { field: 'eta', headerName: 'Delivery Date', flex: 1 },
-  {
-    field: 'action',
-    headerName: 'Action',
-    headerAlign: 'right',
-    align: 'right',
-    flex: 1,
-    renderCell: DeliveryCellAction
-  }
-];
-
 const columnsBottom: GridColDef[] = [
   { field: 'id', headerName: 'Delivery ID', flex: 1 },
   { field: 'deliveryStatus', headerName: 'Delivery Status', flex: 1 },
@@ -62,7 +46,7 @@ const columnsBottom: GridColDef[] = [
   }
 ];
 
-const DeliveryAssignment = () => {
+const AssignDeliveries = () => {
   const [searchField, setSearchField] = React.useState<string>('');
   const [assignedDeliveries, setAssignedDeliveries] = React.useState<
     DeliveryOrder[]
@@ -88,6 +72,8 @@ const DeliveryAssignment = () => {
     iconSize: [23, 38]
   });
 
+
+
   // //get polyline
   // const limeOptions = { color: 'lime' };
   // const route_geometry =
@@ -110,24 +96,11 @@ const DeliveryAssignment = () => {
     // TODO: implement error callback
     setLoading(true);
     asyncFetchCallback(
-      getAllAssignedManualDeliveries(user?.id),
-      (res) => {
-        setLoading(false);
-        setAssignedDeliveries(res);
-        console.log(user?.id);
-      },
-      () => setLoading(false)
-    );
-  }, [user]);
-
-  React.useEffect(() => {
-    // TODO: implement error callback
-    setLoading(true);
-    asyncFetchCallback(
       getAllUnassignedDeliveries(),
       (res) => {
         setLoading(false);
         setUnassignedDeliveries(res);
+        console.log(res);
       },
       () => setLoading(false)
     );
@@ -145,19 +118,7 @@ const DeliveryAssignment = () => {
     );
   }, [searchField, assignedDeliveries]);
 
-  React.useEffect(() => {
-    // TODO: implement error callback
-    setLoading(true);
-    asyncFetchCallback(
-      getCurrentLocationLatLng(currentLocation),
-      (res) => {
-        setLoading(false);
-        setLatLng(res);
-        console.log(res);
-      },
-      () => setLoading(false)
-    );
-  }, [currentLocation]);
+ 
 
   React.useEffect(() => {
     asyncFetchCallback(
@@ -171,40 +132,32 @@ const DeliveryAssignment = () => {
     console.log(currentLocation);
   };
 
+  const findCurrentLocation = (event: React.MouseEvent<HTMLElement>) => {
+    setLoading(true);
+    asyncFetchCallback(
+      getCurrentLocationLatLng({address:currentLocation}),
+      (res) => {
+        setLoading(false);
+        setLatLng(res);
+        console.log("Current location is [" + res.LATITUDE + "," + res.LONGTITUDE + "]");
+      },
+      () => setLoading(false)
+    );
+  }
+
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchField(e.target.value);
   };
 
   return (
     <div className='delivery-orders'>
-      <h1>My Assigned Deliveries</h1>
-      <div className='grid-toolbar'>
-        <div className='search-bar'>
-          <Search />
-          <TextField
-            id='search'
-            label='Search'
-            margin='normal'
-            fullWidth
-            onChange={handleSearchFieldChange}
-          />
-        </div>
-      </div>
-      <DataGrid
-        columns={columns}
-        rows={filteredData}
-        autoHeight
-        loading={loading}
-      />
-      <br></br>
-      <br></br>
+      <h1>Assign Delivery</h1>
       <Stack
         direction='row'
         width='100%'
         alignItems='center'
         justifyContent='space-between'
       >
-        <h1>Assign Deliveries</h1>
         <Stack direction='row' spacing={2}>
           <Typography className='date-picker-text'>
             View unassigned deliveries from
@@ -227,16 +180,17 @@ const DeliveryAssignment = () => {
           attribution='&copy; <img src="https://www.onemap.gov.sg/docs/maps/images/oneMap64-01.png" style="height:20px;width:20px;"/> OneMap | Map data &copy; contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>'
           url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
-        {/* <Marker position={[latlng.LATITUDE, latlng.LONGTITUDE]} icon={myIcon}>
+        {latlng &&
+          <Marker position={[latlng.LATITUDE, latlng.LONGTITUDE]} icon={myIcon}>
             <Popup>Your current location is {latlng.ADDRESS}</Popup>
-        </Marker> */}
-        {unassignedDeliveryPostalCode.map((data) => {
+        </Marker> }
+        {/* {unassignedDeliveryPostalCode.map((data) => {
           return (
             <Marker position={[data.LATITUDE, data.LONGTITUDE]} icon={myIcon}>
               <Popup>{data.ADDRESS}</Popup>
             </Marker>
           );
-        })}
+        })} */}
       </MapContainer>
       <br></br>
       <div className='grid-toolbar'>
@@ -244,11 +198,22 @@ const DeliveryAssignment = () => {
           <MyLocationIcon />
           <TextField
             id='search'
-            label='Enter your starting location'
+            type='number'
+            label='Enter your starting postal code'
             margin='normal'
             fullWidth
             onChange={handleLocationChange}
           />
+          <Button 
+            variant='contained'
+            size='small'
+            sx={{ height: 'fit-content' }}
+            color='primary'
+            onClick={findCurrentLocation}
+            >
+            Find my current location
+          </Button>
+          {loading && <CircularProgress color='secondary' />}
         </div>
       </div>
       <DataGrid
@@ -261,4 +226,4 @@ const DeliveryAssignment = () => {
   );
 };
 
-export default DeliveryAssignment;
+export default AssignDeliveries;

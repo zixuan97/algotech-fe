@@ -166,6 +166,7 @@ export interface DeliveryOrder {
   parcelQty?: number;
   parcelWeight?: number;
   deliveryMode?: DeliveryMode;
+  assignedUserId? : number
 }
 
 export interface SalesOrder {

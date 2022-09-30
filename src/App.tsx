@@ -41,7 +41,8 @@ import AllManualDeliveries from './pages/delivery/AllManualDeliveries';
 import AllShippitDeliveries from './pages/delivery/AllShippitDeliveries';
 import CreateDeliveryOrder from './pages/delivery/CreateDelivery';
 import ManualDeliveryDetails from './pages/delivery/ManualDeliveryDetails';
-import DeliveryAssignment from './pages/delivery/DeliveryAssignment';
+import MyDeliveryAssignment from './pages/delivery/MyDeliveryAssignment';
+import AssignDeliveries from './pages/delivery/AssignDeliveries';
 
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
@@ -222,8 +223,8 @@ const App = () => {
                   />
 
                   <Route
-                    path='delivery/deliveryAssignment'
-                    element={<DeliveryAssignment />}
+                    path='delivery/myDeliveryAssignment'
+                    element={<MyDeliveryAssignment />}
                   />
 
                   {/* --- Sales Routes --- */}
