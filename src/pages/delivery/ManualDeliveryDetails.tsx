@@ -80,6 +80,7 @@ const ManualDeliveryDetails = () => {
 
   React.useEffect(() => {
     setLoading(true);
+
     if (id) {
       asyncFetchCallback(
         getDeliveryOrderById(id),

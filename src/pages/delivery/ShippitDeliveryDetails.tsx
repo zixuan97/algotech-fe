@@ -10,40 +10,44 @@ import {
   StepContent,
   Typography,
   Grid,
-  Paper
+  Paper,
+  Backdrop,
+  CircularProgress
 } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import { useSearchParams } from 'react-router-dom';
-import { getDeliveryOrderByTracking } from 'src/services/deliveryServices';
+import {
+  bookShippitDelivery,
+  confirmShippitOrder,
+  getDeliveryOrderByTracking,
+  getShippitLabel
+} from 'src/services/deliveryServices';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { DeliveryOrder } from 'src/models/types';
 import moment from 'moment';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import ConfirmationModal from 'src/components/common/ConfirmationModal';
 
 const steps = [
   {
     label: 'Order placed',
-    status: 'order_placed',
-    description: 'Thursday 29 September, 3:07PM GMT+8'
+    status: 'order_placed'
   },
   {
     label: 'Packing order',
-    status: 'despatch_in_progress',
-    description: 'Thursday 29 September, 5:27PM GMT+8'
+    status: 'despatch_in_progress'
   },
   {
     label: 'Booked for delivery',
-    status: 'ready_for_pickup',
-    description: 'Thursday 29 September, 5:29PM GMT+8'
+    status: 'ready_for_pickup'
   },
   {
     label: 'Out for delivery',
-    status: 'untrackable',
-    description: 'Thursday 29 September, 5:29PM GMT+8'
+    status: 'untrackable'
   },
   {
-    label: 'Delivered',
-    description: 'Thursday 29 September, 5:29PM GMT+8'
+    label: 'Delivered'
   }
 ];
 
@@ -54,25 +58,92 @@ const ShippitDeliveryDetails = () => {
   const id = searchParams.get('id');
 
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [activeStep, setActiveStep] = React.useState(2);
+  const [activeStep, setActiveStep] = React.useState(0);
   const [deliveryOrder, setDeliveryOrder] = React.useState<DeliveryOrder>();
   const [trackingUrl, setTrackingUrl] = React.useState<string>('');
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
+  const [confirmDeliveryModalOpen, setConfirmDeliveryModalOpen] =
+    React.useState<boolean>(false);
+  const [bookDeliveryModalOpen, setBookDeliveryModalOpen] =
+    React.useState<boolean>(false);
 
   React.useEffect(() => {
     setLoading(true);
-    console.log(id);
+
     if (id) {
       asyncFetchCallback(
         getDeliveryOrderByTracking(id),
         (res) => {
           setDeliveryOrder(res);
           setTrackingUrl('https://app.staging.shippit.com/tracking/' + id);
+          setActiveStep(
+            steps.findIndex(
+              (step) => step.status === res.deliveryStatus?.status
+            )
+          );
           setLoading(false);
         },
         () => setLoading(false)
       );
     }
   }, [id]);
+
+  const handleConfirmOrder = async () => {
+    setConfirmDeliveryModalOpen(false);
+    setLoading(true);
+
+    await asyncFetchCallback(
+      confirmShippitOrder(id!),
+      (res) => {
+        setAlert({
+          severity: 'success',
+          message: 'Shippit Order confirmed successfully.'
+        });
+        setLoading(false);
+      },
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message: 'Shippit Order could not be confirmed successfully.'
+        });
+      }
+    );
+  };
+
+  const handleDownloadShippitLabel = async () => {
+    setLoading(true);
+
+    await asyncFetchCallback(getShippitLabel(id!), (res) => {
+      if (res) {
+        window.open(res, '_blank');
+      }
+      setLoading(false);
+    });
+  };
+
+  const handleBookShippitDelivery = async () => {
+    setBookDeliveryModalOpen(false);
+    setLoading(true);
+
+    await asyncFetchCallback(
+      bookShippitDelivery(id!),
+      (res) => {
+        setAlert({
+          severity: 'success',
+          message: 'Shippit Order booked successfully.'
+        });
+        setLoading(false);
+      },
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message: 'Shippit Order could not be booked successfully.'
+        });
+      }
+    );
+  };
 
   return (
     <div className='view-delivery-details'>
@@ -95,13 +166,36 @@ const ShippitDeliveryDetails = () => {
           </Button>
         </div>
       </div>
+      <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={loading}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop>
+      {alert && (
+        <div className='delivery-details-alert'>
+          <TimeoutAlert
+            alert={alert}
+            timeout={6000}
+            clearAlert={() => setAlert(null)}
+          />
+        </div>
+      )}
       <div className='shippit-delivery-details-stepper'>
         <Stepper activeStep={activeStep} orientation='vertical'>
           {steps.map((step) => (
             <Step key={step.label}>
               <StepLabel>{step.label}</StepLabel>
               <StepContent>
-                <Typography>{step.description}</Typography>
+                <Typography>
+                  Date: {deliveryOrder?.deliveryStatus?.date}
+                </Typography>
+                <Typography>
+                  Time: {deliveryOrder?.deliveryStatus?.timestamp}
+                </Typography>
               </StepContent>
             </Step>
           ))}
@@ -159,14 +253,52 @@ const ShippitDeliveryDetails = () => {
               </Grid>
             </Grid>
             <div className='delivery-actions-button-container'>
-              <Button
-                variant='contained'
-                size='medium'
-                sx={{ height: 'fit-content' }}
-                onClick={() => {}}
-              >
-                Confirm Order
-              </Button>
+              {deliveryOrder?.deliveryStatus?.status === 'order_placed' && (
+                <Button
+                  variant='contained'
+                  size='medium'
+                  sx={{ height: 'fit-content' }}
+                  onClick={() => setConfirmDeliveryModalOpen(true)}
+                >
+                  Confirm Shippit Order
+                </Button>
+              )}
+              {deliveryOrder?.deliveryStatus?.status ===
+                'despatch_in_progress' && (
+                <Button
+                  variant='contained'
+                  size='medium'
+                  sx={{ height: 'fit-content' }}
+                  onClick={handleDownloadShippitLabel}
+                >
+                  Get Shippit Label
+                </Button>
+              )}
+              {deliveryOrder?.deliveryStatus?.status ===
+                'despatch_in_progress' && (
+                <Button
+                  variant='contained'
+                  size='medium'
+                  sx={{ height: 'fit-content' }}
+                  onClick={() => setBookDeliveryModalOpen(true)}
+                >
+                  Book Shippit Delivery
+                </Button>
+              )}
+              <ConfirmationModal
+                open={confirmDeliveryModalOpen}
+                onClose={() => setConfirmDeliveryModalOpen(false)}
+                onConfirm={handleConfirmOrder}
+                title='Confirm Shippit Delivery'
+                body='Are you sure you want to confirm the delivery order? This action cannot be reversed.'
+              />
+              <ConfirmationModal
+                open={bookDeliveryModalOpen}
+                onClose={() => setBookDeliveryModalOpen(false)}
+                onConfirm={handleBookShippitDelivery}
+                title='Book Shippit Order'
+                body='Are you sure you want to book the Shippit order? This action cannot be reversed.'
+              />
             </div>
           </div>
         </Paper>
