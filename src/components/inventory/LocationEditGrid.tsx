@@ -94,7 +94,6 @@ export default function LocationEditGrid({
     const updatedRow = {
       ...newRow,
       quantity: isNaN(newRow.quantity) ? 0 : newRow.quantity,
-      // price: isNaN(newRow.price) ? 0 : newRow.price,
       isNew: false
     };
     const updatedStockQtyGridRows = stockQtyGridRows.map((row) =>
@@ -130,17 +129,6 @@ export default function LocationEditGrid({
         <PositiveNumberEditCellAction params={params} allowDecimals={false} />
       )
     },
-    // {
-    //   field: 'price',
-    //   headerName: 'Price',
-    //   type: 'number',
-    //   flex: 1,
-    //   editable: true,
-    //   valueFormatter: (params) => params.value.toFixed(2),
-    //   renderEditCell: (params) => (
-    //     <PositiveNumberEditCellAction params={params} />
-    //   )
-    // },
     {
       field: 'actions',
       type: 'actions',
