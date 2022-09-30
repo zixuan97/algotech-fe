@@ -113,7 +113,8 @@ type SupplierProductEditGridProps = {
         headerName: 'Product Name',
         flex: 2,
         editable: true,
-        valueGetter: (params: GridValueGetterParams) => params.row.product.name,
+        // valueGetter: (params: GridValueGetterParams) => params.row.product.name,
+        valueFormatter: (params) => params.value.name,
         renderEditCell: (params: GridRenderEditCellParams<Product>) => (
           <ProductSelectCellAction
             params={params}

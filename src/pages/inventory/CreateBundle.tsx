@@ -69,7 +69,7 @@ const CreateBundle = () => {
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
-    console.log(newBundle);
+
     if (newBundle) {
       setLoading(true);
       await asyncFetchCallback(
@@ -78,7 +78,7 @@ const CreateBundle = () => {
           setLoading(false);
           setAlert({
             severity: 'success',
-            message: 'Bundle successfully created!'
+            message: 'Bundle successfully created! You will be redirected back to the All Bundles page now.'
           });
           setTimeout(() => navigate('/inventory/allBundles'), 3000);
         },

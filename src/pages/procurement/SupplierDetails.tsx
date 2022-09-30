@@ -83,6 +83,10 @@ const SupplierDetails = () => {
     []
   );
 
+  const [emptyArray, setEmptyArray] = React.useState<SupplierProduct[]>(
+    []
+  );
+
   const [edit, setEdit] = React.useState<boolean>(false);
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
 
@@ -116,7 +120,7 @@ const SupplierDetails = () => {
         setOriginalSupplier(res);
         setEditSupplier(res);
 
-        setSupplierProducts(res.supplierProduct);
+        setSupplierProducts(res.supplierProducts);
         setTableLoading(false);
 
         setLoading(false);
@@ -128,7 +132,7 @@ const SupplierDetails = () => {
     setTableLoading(true);
     if (id) {
       asyncFetchCallback(getSupplierById(id), (res) => {
-        setSupplierProducts(res.supplierProduct);
+        setSupplierProducts(res.supplierProducts);
         setTableLoading(false);
       });
     }
@@ -345,26 +349,26 @@ const SupplierDetails = () => {
                   </div>
                 </div>
                 {/* product table */}
-                {/* {edit ? (
+                {edit ? (
                   <SupplierProductEditGrid
                     supplierProductList={supplierProducts}
                     updateSupplierProductList={(pdts) =>
                       setEditSupplier((prev) => ({
                         ...prev,
-                        supplierProduct: pdts
+                        supplierProducts: pdts
                       }))
                     }
                   />
                 ) : (
                   <DataGrid
                     columns={columns}
-                    rows={supplierProducts}
+                    rows={emptyArray}
                     getRowId={(row) => row.product.id}
                     loading={tableLoading}
                     autoHeight
                     pageSize={5}
                   />
-                )} */}
+                )}
               </FormGroup>
             </form>
           </Paper>

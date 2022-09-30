@@ -37,7 +37,7 @@ const CreateSupplier = () => {
   
   const [newSupplier, setNewSupplier] = React.useState<NewSupplier>({
     email: '',
-    supplierProduct: []
+    supplierProducts: []
   });
 
   // const [edit, setEdit] = React.useState<boolean>(false);
@@ -58,8 +58,6 @@ const CreateSupplier = () => {
     e.preventDefault();
 
     if (newSupplier) {
-      console.log('newSupplier', newSupplier);
-
       setLoading(true);
       await asyncFetchCallback(
         createSupplier(newSupplier as Supplier),
@@ -159,11 +157,11 @@ const CreateSupplier = () => {
                   </div>
                 </div>
                 <SupplierProductEditGrid
-                  supplierProductList={newSupplier.supplierProduct ?? []}
+                  supplierProductList={newSupplier.supplierProducts ?? []}
                   updateSupplierProductList={(pdts) =>
                     setNewSupplier((prev) => ({
                       ...prev,
-                      supplierProduct: pdts
+                      supplierProducts: pdts
                     }))
                   }
                 />
