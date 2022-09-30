@@ -58,3 +58,9 @@ export const getAllProductsByLocation = async (
 ): Promise<Product[]> => {
   return axios.get(`${apiRoot}/product/location/${locationId}`).then((res) => res.data);
 };
+
+export const getAllProductsByBundle = async (
+  bundleId: string | number
+): Promise<Product[]> => {
+  return axios.get(`${apiRoot}/product/bundle/${bundleId}`).then((res) => res.data);
+};

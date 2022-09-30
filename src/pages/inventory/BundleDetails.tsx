@@ -15,15 +15,14 @@ import {
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { Bundle, Product } from '../../models/types';
+import { Bundle, BundleProduct } from '../../models/types';
 import ProductCellAction from '../../components/inventory/ProductCellAction';
 import {
   getBundleById,
   updateBundle,
   deleteBundle
 } from '../../services/bundleService';
-import { getProductById } from '../../services/productService';
-import ProductEditGrid from 'src/components/inventory/ProductEditGrid';
+import BundleProductEditGrid from 'src/components/inventory/BundleProductEditGrid';
 import { 
   DataGrid, 
   GridColDef, 
@@ -34,6 +33,7 @@ import TimeoutAlert, {
   AlertType,
   AxiosErrDataBody
  } from 'src/components/common/TimeoutAlert';
+import { isValidBundle } from 'src/components/inventory/inventoryHelper';
 
 const columns: GridColDef[] = [
   {
@@ -41,6 +41,11 @@ const columns: GridColDef[] = [
     headerName: 'Product Name',
     flex: 2,
     valueGetter: (params: GridValueGetterParams) => params.row.product.name
+  },
+  {
+    field: 'quantity',
+    headerName: 'Quantity',
+    flex: 1,
   },
   {
     field: 'action',
@@ -70,7 +75,7 @@ const BundleDetails = () => {
   const [originalBundle, setOriginalBundle] =
     React.useState<Bundle>(bundle);
   const [editBundle, setEditBundle] = React.useState<Bundle>(bundle);
-  const [productDetails, setProductDetails] = React.useState<Product[]>(
+  const [productDetails, setProductDetails] = React.useState<BundleProduct[]>(
     []
   );
 
@@ -97,29 +102,42 @@ const BundleDetails = () => {
   }, [id, navigate]);
 
   React.useEffect(() => {
-    const shouldDisable = !(
-      editBundle?.name && productDetails //editCategory?.productCategory
-    );
-    setDisableSave(shouldDisable);
-  }, [editBundle?.name, productDetails]);
+    setDisableSave(!isValidBundle(editBundle));
+
+    if (editBundle && editBundle.bundleProduct) {
+      editBundle.bundleProduct?.forEach((bundlePdt) => {
+        if (bundlePdt.quantity.toString() === "0") {
+          setDisableSave(true);
+        }
+      });
+    }
+    
+  }, [editBundle]);
 
   React.useEffect(() => {
+    setTableLoading(true);
     if (id) {
       asyncFetchCallback(getBundleById(id), (res) => {
         setOriginalBundle(res);
         setEditBundle(res);
+
+        setProductDetails(res.bundleProduct);
+        setTableLoading(false);
+
         setLoading(false);
       });
     }
   }, [id]);
 
-  React.useEffect(() => { 
+  React.useEffect(() => {
     setTableLoading(true);
-    if (originalBundle) {
-      setProductDetails(originalBundle?.bundleProduct ?? []);
+    if (id) {
+      asyncFetchCallback(getBundleById(id), (res) => {
+        setProductDetails(res.bundleProduct);
+        setTableLoading(false);
+      });
     }
-    setTableLoading(false);
-  }, [originalBundle]);
+  }, [id, editBundle, originalBundle]);
 
   const handleDeleteButtonClick = () => {
     setModalOpen(false);
@@ -173,6 +191,7 @@ const BundleDetails = () => {
           setBackdropLoading(false);
           setEditBundle(editBundle);
           setOriginalBundle(editBundle);
+
         },
         (err) => {
           const resData = err.response?.data as AxiosErrDataBody;
@@ -305,25 +324,18 @@ const BundleDetails = () => {
                 </div>
                 {/* product table */}
                 {edit ? (
-                  <ProductEditGrid
-                  productList={originalBundle?.bundleProduct ?? []}
-                  updateProductList={(bundleProduct) =>
-                    setEditBundle(
-                      (prev) =>
-                        prev && {
-                          ...prev,
-                          bundleProduct: bundleProduct.map((pdts) => ({
-                            ...pdts,
-                            bundleId: prev.id
-                          }))
-                        }
-                      )
-                  }
+                  <BundleProductEditGrid
+                    bundleProductList={productDetails}
+                    updateBundleProductList={(pdts) =>
+                      setEditBundle((prev) => ({
+                        ...prev,
+                        bundleProduct: pdts
+                      }))
+                    }
                   />
                 ) : (
                   <DataGrid
                     columns={columns}
-                    // rows={originalBundle?.bundleProduct ?? []}
                     rows={productDetails}
                     getRowId={(row) => row.productId}
                     loading={tableLoading}

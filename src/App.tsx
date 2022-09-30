@@ -37,13 +37,12 @@ import AllSuppliers from './pages/procurement/AllSuppliers';
 import SupplierDetails from './pages/procurement/SupplierDetails';
 import CreateSupplier from './pages/procurement/CreateSupplier';
 
-import AllGrabDeliveries from './pages/delivery/AllGrabDeliveries';
 import AllManualDeliveries from './pages/delivery/AllManualDeliveries';
 import AllShippitDeliveries from './pages/delivery/AllShippitDeliveries';
 import CreateDeliveryOrder from './pages/delivery/CreateDelivery';
 import ManualDeliveryDetails from './pages/delivery/ManualDeliveryDetails';
-import DeliveryAssignment from './pages/delivery/DeliveryAssignment';
-
+import MyDeliveryAssignment from './pages/delivery/MyDeliveryAssignment';
+import ShippitDeliveryDetails from './pages/delivery/ShippitDeliveryDetails';
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
@@ -212,12 +211,8 @@ const App = () => {
                     element={<AllManualDeliveries />}
                   />
                   <Route
-                    path='delivery/allManualDeliveries/createDelivery'
+                    path='delivery/createDelivery'
                     element={<CreateDeliveryOrder />}
-                  />
-                  <Route
-                    path='delivery/allGrabDeliveries'
-                    element={<AllGrabDeliveries />}
                   />
                   <Route
                     path='delivery/allShippitDeliveries'
@@ -227,10 +222,13 @@ const App = () => {
                     path='delivery/manualDeliveryDetails'
                     element={<ManualDeliveryDetails />}
                   />
-
                   <Route
-                    path='delivery/deliveryAssignment'
-                    element={<DeliveryAssignment />}
+                    path='delivery/shippitDeliveryDetails'
+                    element={<ShippitDeliveryDetails />}
+                  />
+                  <Route
+                    path='delivery/myDeliveryAssignment'
+                    element={<MyDeliveryAssignment />}
                   />
 
                   {/* --- Sales Routes --- */}

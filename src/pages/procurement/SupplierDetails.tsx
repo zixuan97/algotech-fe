@@ -10,24 +10,54 @@ import {
   IconButton,
   Tooltip,
   Typography,
-  CircularProgress
+  CircularProgress,
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { Supplier } from '../../models/types';
+import { Supplier, SupplierProduct } from '../../models/types';
 import {
   deleteSupplier,
   getSupplierById,
   updateSupplier
 } from '../../services/supplierService';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import { getAllSuppliers } from 'src/services/procurementService';
 import validator from 'validator';
 import TimeoutAlert, {
   AlertType,
   AxiosErrDataBody
  } from 'src/components/common/TimeoutAlert';
+import { isValidSupplier } from 'src/components/procurement/procurementHelper';
+import SupplierProductEditGrid from 'src/components/procurement/SupplierProductEditGrid';
+import { 
+  DataGrid, 
+  GridColDef, 
+  GridValueGetterParams 
+} from '@mui/x-data-grid';
+import ProductCellAction from 'src/components/inventory/ProductCellAction';
+
+const columns: GridColDef[] = [
+  {
+    field: 'name',
+    headerName: 'Product Name',
+    flex: 2,
+    valueGetter: (params: GridValueGetterParams) => params.row.product.name
+  },
+  {
+    field: 'rate',
+    headerName: 'Rate',
+    flex: 1,
+  },
+  {
+    field: 'action',
+    headerName: 'Action',
+    headerAlign: 'right',
+    align: 'right',
+    flex: 1,
+    renderCell: ProductCellAction
+  }
+];
+
 
 const SupplierDetails = () => {
   const navigate = useNavigate();
@@ -38,6 +68,7 @@ const SupplierDetails = () => {
   const supplier = current.state as Supplier;
 
   const [loading, setLoading] = React.useState<boolean>(true);
+  const [tableLoading, setTableLoading] = React.useState<boolean>(false);
   const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
 
   const [modalOpen, setModalOpen] = React.useState<boolean>(false);
@@ -46,7 +77,9 @@ const SupplierDetails = () => {
   const [originalSupplier, setOriginalSupplier] =
     React.useState<Supplier>(supplier);
   const [editSupplier, setEditSupplier] = React.useState<Supplier>(supplier);
-  const [suppliers, setSuppliers] = React.useState<Supplier[]>([]);
+  const [supplierProducts, setSupplierProducts] = React.useState<SupplierProduct[]>(
+    []
+  );
 
   const [edit, setEdit] = React.useState<boolean>(false);
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
@@ -56,6 +89,8 @@ const SupplierDetails = () => {
       asyncFetchCallback(getSupplierById(id), (supplier: Supplier) => {
         if (supplier) {
           setOriginalSupplier(supplier);
+          console.log(originalSupplier);
+          setEditSupplier(supplier);
           setLoading(false);
         } else {
           setAlert({
@@ -70,30 +105,33 @@ const SupplierDetails = () => {
   }, [id, navigate]);
 
   React.useEffect(() => {
-    const shouldDisable = !(
-      editSupplier?.name &&
-      editSupplier?.email &&
-      editSupplier?.address
-    );
-    setDisableSave(
-      shouldDisable ||
-        (!validator.isEmail(editSupplier?.email) && !!editSupplier?.email)
-    );
-  }, [editSupplier?.name, editSupplier?.email, editSupplier?.address]);
+    setDisableSave(!isValidSupplier(editSupplier));
+  }, [editSupplier]);
 
   React.useEffect(() => {
+    setTableLoading(true);
     if (id) {
       asyncFetchCallback(getSupplierById(id), (res) => {
         setOriginalSupplier(res);
         setEditSupplier(res);
+
+        setSupplierProducts(res.supplierProduct);
+        setTableLoading(false);
+
         setLoading(false);
       });
     }
   }, [id]);
 
   React.useEffect(() => {
-    asyncFetchCallback(getAllSuppliers(), setSuppliers);
-  }, []);
+    setTableLoading(true);
+    if (id) {
+      asyncFetchCallback(getSupplierById(id), (res) => {
+        setSupplierProducts(res.supplierProduct);
+        setTableLoading(false);
+      });
+    }
+  }, [id, editSupplier, originalSupplier]);
 
   const handleDeleteButtonClick = () => {
     setModalOpen(false);
@@ -110,11 +148,12 @@ const SupplierDetails = () => {
           });
           setTimeout(() => navigate('/procurementOrders/allSuppliers'), 3500);
         },
-        () => {
+        (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
           setBackdropLoading(false);
           setAlert({
             severity: 'success',
-            message: 'Error deleting supplier! Try again later.'
+            message: `Error deleting supplier: ${resData.message}`
           });
         }
       );
@@ -147,12 +186,13 @@ const SupplierDetails = () => {
           setEditSupplier(editSupplier);
           setOriginalSupplier(editSupplier);
         },
-        () => {
+        (err) => {
+          const resData = err.response?.data as AxiosErrDataBody;
+          setBackdropLoading(false);
           setAlert({
             severity: 'error',
-            message: 'Error editing supplier! Try again later.'
+            message: `Error editing supplier: ${resData.message}`
           });
-          setBackdropLoading(false);
         }
       );
     }
@@ -162,6 +202,16 @@ const SupplierDetails = () => {
 
   return (
     <div>
+      <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={backdropLoading}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop>
+
       <Tooltip title='Return to Previous Page' enterDelay={300}>
         <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
@@ -293,6 +343,27 @@ const SupplierDetails = () => {
                     )}
                   </div>
                 </div>
+                {/* product table */}
+                {edit ? (
+                  <SupplierProductEditGrid
+                    supplierProductList={supplierProducts}
+                    updateSupplierProductList={(pdts) =>
+                      setEditSupplier((prev) => ({
+                        ...prev,
+                        supplierProduct: pdts
+                      }))
+                    }
+                  />
+                ) : (
+                  <DataGrid
+                    columns={columns}
+                    rows={supplierProducts}
+                    getRowId={(row) => row.product.id}
+                    loading={tableLoading}
+                    autoHeight
+                    pageSize={5}
+                  />
+                )}
               </FormGroup>
             </form>
           </Paper>

@@ -20,7 +20,7 @@ const WarehouseCellAction = ({ id }: GridRenderCellParams) => {
             })
           }
           >
-            View Warehouse
+            View Details
           </Button>
       </div>
   );

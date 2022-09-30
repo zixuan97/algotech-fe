@@ -8,7 +8,8 @@ import {
   Tooltip,
   IconButton,
   Backdrop,
-  CircularProgress
+  CircularProgress,
+  Alert
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -16,56 +17,47 @@ import { useNavigate } from 'react-router';
 import { Supplier } from '../../models/types';
 import { createSupplier } from '../../services/supplierService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import TimeoutAlert, {
+import {
   AlertType,
   AxiosErrDataBody
 } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
+import { isValidSupplier } from 'src/components/procurement/procurementHelper';
+import SupplierProductEditGrid from 'src/components/procurement/SupplierProductEditGrid';
+
+export type NewSupplier = Partial<Supplier> & {};
 
 const CreateSupplier = () => {
-  const placeholderSupplier: Supplier = {
-    id: 0,
-    email: '',
-    name: '',
-    address: ''
-  };
-
   const navigate = useNavigate();
 
+  const [disableSave, setDisableSave] = React.useState<boolean>(true);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [newSupplier, setNewSupplier] =
-    React.useState<Supplier>(placeholderSupplier);
-
-  const [edit, setEdit] = React.useState<boolean>(false);
-  const [disableSave, setDisableSave] = React.useState<boolean>(true);
+  
+  const [newSupplier, setNewSupplier] = React.useState<NewSupplier>({
+    email: '',
+    supplierProduct: []
+  });
 
   React.useEffect(() => {
-    const shouldDisable = !(
-      newSupplier?.name &&
-      newSupplier?.email &&
-      newSupplier?.address
-    );
-    setDisableSave(shouldDisable);
-  }, [newSupplier?.name, newSupplier?.email, newSupplier?.address]);
+    setDisableSave(!isValidSupplier(newSupplier));
+  }, [newSupplier]);
 
-  const handleEditSupplier = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewSupplier((prev) => {
-      if (prev) {
-        return { ...prev, [e.target.name]: e.target.value };
-      } else {
-        return prev;
-      }
-    });
+  const handleEditSupplier = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    isNumber: boolean = false
+  ) => {
+    const value = isNumber ? parseInt(e.target.value) : e.target.value;
+    setNewSupplier((prev) => ({ ...prev, [e.target.name]: value }));
   };
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (newSupplier?.name && newSupplier?.email && newSupplier?.address) {
+    if (newSupplier) {
       setLoading(true);
       await asyncFetchCallback(
-        createSupplier(newSupplier),
+        createSupplier(newSupplier as Supplier),
         () => {
           setLoading(false);
           setAlert({
@@ -100,7 +92,11 @@ const CreateSupplier = () => {
           <div className='header-content'>
             <h1>Create Supplier</h1>
           </div>
-          <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
+          {alert && (
+            <Alert severity={alert.severity} onClose={() => setAlert(null)}>
+              {alert.message}
+            </Alert>
+          )}
           <Paper elevation={2}>
             <Backdrop
               sx={{
@@ -133,11 +129,11 @@ const CreateSupplier = () => {
                       name='email'
                       value={newSupplier?.email}
                       error={
-                        !validator.isEmail(newSupplier?.email) &&
+                        !validator.isEmail(newSupplier?.email!) &&
                         !!newSupplier?.email
                       }
                       helperText={
-                        !validator.isEmail(newSupplier?.email) &&
+                        !validator.isEmail(newSupplier?.email!) &&
                         !!newSupplier?.email
                           ? 'Enter a valid email: example@email.com'
                           : ''
@@ -157,6 +153,15 @@ const CreateSupplier = () => {
                     />
                   </div>
                 </div>
+                <SupplierProductEditGrid
+                  supplierProductList={newSupplier.supplierProduct ?? []}
+                  updateSupplierProductList={(pdts) =>
+                    setNewSupplier((prev) => ({
+                      ...prev,
+                      supplierProduct: pdts
+                    }))
+                  }
+                />
                 <div className='button-group'>
                   <Button
                     variant='text'
@@ -175,7 +180,7 @@ const CreateSupplier = () => {
                     color='primary'
                     disabled={
                       disableSave ||
-                      (!validator.isEmail(newSupplier?.email) &&
+                      (!validator.isEmail(newSupplier?.email!) &&
                         !!newSupplier?.email)
                     }
                   >

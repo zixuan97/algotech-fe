@@ -21,7 +21,7 @@ import TimeoutAlert, {
   AxiosErrDataBody
  } from 'src/components/common/TimeoutAlert';
 
-export type NewLocation = Partial<Location>;
+export type NewLocation = Partial<Location> & {};
 
 const CreateWarehouse = () => {
   const navigate = useNavigate();
@@ -41,13 +41,36 @@ const CreateWarehouse = () => {
   };
 
   const handleSave = async (e: FormEvent) => {
+    
     e.preventDefault();
 
+    if (newLocation.name === undefined) {
+      setAlert({
+        severity: 'warning',
+        message: 'Please enter a Warehouse name!'
+      });
+      return;
+    }
+
+    if (newLocation.address === undefined) {
+      setAlert({
+        severity: 'warning',
+        message: 'Please enter a Warehouse address!'
+      });
+      return;
+    }
+    
     if (newLocation) {
       setLoading(true);
+
+      let reqBody = {
+        name: newLocation.name,
+        address: newLocation.address,
+      }
+
       await asyncFetchCallback(
-        createLocation(newLocation),
-        () => {
+        createLocation(reqBody),
+        (res) => {
           setLoading(false);
           setAlert({
             severity: 'success',

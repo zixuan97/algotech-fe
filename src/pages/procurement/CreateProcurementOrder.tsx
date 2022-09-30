@@ -101,6 +101,10 @@ const CreateProcurementOrder = () => {
       (item) => item.product?.id.toString() !== id
     );
     setOrderItems(updatedOrderItems);
+
+    setAddedProductsId(
+      addedProductsId.filter((addedId) => addedId.toString() !== id)
+    );
   };
 
   const handleAddOrderItem = async (

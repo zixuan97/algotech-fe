@@ -1,7 +1,9 @@
 import { randomId } from '@mui/x-data-grid-generator';
 import { omit } from 'lodash';
-import { Product, StockQuantity, Location, Bundle } from 'src/models/types';
-import { BundleProduct } from 'src/pages/inventory/CreateBundle';
+import React from 'react';
+import { Product, StockQuantity, Location, Bundle, BundleProduct } from 'src/models/types';
+import { getProductById } from 'src/services/productService';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 
 export interface StockQuantityGridRow extends StockQuantity {
   gridId: string;
@@ -41,7 +43,7 @@ export const getAvailableLocations = (
   return allLocations.filter(
     (loc) =>
       !selectedLocations.find(
-        (selected) => selected.location.id === loc.id && !selected.isNew
+        (selected) => selected.location!.id === loc.id && !selected.isNew
       )
   );
 };
@@ -58,6 +60,17 @@ export const isValidWarehouse = (
   )
 }
 
+export const getAvailableStockQtyProducts = (
+  selectedProducts: StockQuantityGridRow[],
+  allProducts: Product[]
+): Product[] => {
+  return allProducts.filter(
+    (pdt) =>
+      !selectedProducts.find(
+        (selected) => selected.productId === pdt.id && !selected.isNew
+      )
+  );
+};
 
 // bundle related
 
@@ -68,37 +81,40 @@ export const isValidBundle = (
   return !!(
     bundleToValidate.name &&
     bundleToValidate.description &&
-    bundleToValidate.bundleProduct
+    bundleToValidate.bundleProduct?.length
+    // bundleToValidate.bundleProduct?.forEach((bundlePdt) => bundlePdt.quantity > 0)
   );
 };
 
-export interface ProductGridRow extends Product {
+export interface BundleProductGridRow extends BundleProduct {
   gridId: string;
   isNew?: boolean;
 }
 
-export const convertProductToGridRow = (
-  product: Product[]
-): ProductGridRow[] => {
-  return product.map((pdt) => ({ ...pdt, gridId: randomId() }));
+export const convertBundleProductToGridRow = (
+  bundleProduct: BundleProduct[]
+): BundleProductGridRow[] => {
+  // console.log("converted pdt to grid row");
+  return bundleProduct.map((pdt) => ({ ...pdt, gridId: randomId()}));
 };
 
-export const convertGridRowToProduct = (
-  productGridRows: ProductGridRow[]
-): Product[] => {
+export const convertGridRowToBundleProduct = (
+  productGridRows: BundleProductGridRow[]
+): BundleProduct[] => {
+  // console.log("converted grid row to BP");
   return productGridRows.map((pdt) =>
     omit(pdt, ['gridId', 'isNew'])
   );
 };
 
 export const getAvailableProducts = (
-  selectedProducts: ProductGridRow[],
+  selectedProducts: BundleProductGridRow[],
   allProducts: Product[]
 ): Product[] => {
   return allProducts.filter(
     (pdt) =>
       !selectedProducts.find(
-        (selected) => selected.id === pdt.id && !selected.isNew
+        (selected) => selected.productId === pdt.id && !selected.isNew
       )
   );
 };

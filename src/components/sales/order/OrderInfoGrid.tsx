@@ -1,28 +1,27 @@
 import { Grid } from "@mui/material";
 import React from "react";
+import { SalesOrder } from "src/models/types";
 
 interface props {
-    custName: string,
-    contactNo: string,
-    email: string,
-    address: string
+    salesOrder: SalesOrder
 }
 
-const OrderInfoGrid = ({ custName, contactNo, email, address }: props) => {
+const OrderInfoGrid = ({ salesOrder }: props) => {
+
   return (
     <div className='order-info-grid'>
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          Customer Name: {custName}
+          Customer Name: {salesOrder?.customerName!}
         </Grid>
         <Grid item xs={6}>
-          Contact No.: {contactNo}
+          Contact No.: {salesOrder?.customerContactNo!}
         </Grid>
         <Grid item xs={12}>
-          Email: {email ?? 'NA'}
+          Email: {salesOrder?.customerEmail ?? 'NA'}
         </Grid>
         <Grid item xs={12}>
-          Shipping Address: {address}
+          Shipping Address: {salesOrder?.customerAddress!}
         </Grid>
       </Grid>
     </div>

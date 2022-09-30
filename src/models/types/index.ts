@@ -97,7 +97,9 @@ export interface Location {
 
 export interface StockQuantity {
   productId?: number;
-  location: Location;
+  product?: Product;
+  locationId?: number;
+  location?: Location;
   quantity: number;
 }
 
@@ -105,8 +107,13 @@ export interface Bundle {
   id: number;
   name: string;
   description: string;
-  // price: number;
-  bundleProduct: Product[];
+  bundleProduct: BundleProduct[];
+}
+
+export interface BundleProduct {
+  product: Product;
+  productId: number;
+  quantity: number;
 }
 
 export interface ProcurementOrder {
@@ -134,6 +141,20 @@ export interface Supplier {
   email: string;
   name: string;
   address: string;
+  supplierProduct: SupplierProduct[];
+}
+
+export interface SupplierProduct {
+  product: Product;
+  rate: number;
+}
+
+export interface DeliveryStatus {
+  status: string;
+  statusOwner: string;
+  date: string;
+  timestamp: string;
+  deliveryOrderId: number;
 }
 
 export interface DeliveryOrder {
@@ -146,12 +167,16 @@ export interface DeliveryOrder {
   salesOrder: SalesOrder;
   salesOrderId: number;
   courierType?: string;
-  deliveryPersonnel?: string;
+  comments?: string;
+  assignedUser?: User;
   method?: string;
   carrier?: string;
   parcelQty?: number;
   parcelWeight?: number;
   deliveryMode?: DeliveryMode;
+  assignedUserId?: number;
+  shippitTrackingNum: string;
+  deliveryStatus?: DeliveryStatus;
 }
 
 export interface SalesOrder {
@@ -177,6 +202,15 @@ export interface SalesOrderItem {
   quantity: number;
   productName?: string;
   createdTime?: Date;
+  isNewAdded?: boolean;
+  salesOrderBundleItems: SalesOrderBundleItem[];
+}
+
+export interface SalesOrderBundleItem {
+  id?: number;
+  salesOrderItemId?: number;
+  productName: string;
+  quantity: number;
   isNewAdded?: boolean;
 }
 
