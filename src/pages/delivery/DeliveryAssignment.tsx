@@ -58,7 +58,7 @@ const columnsBottom: GridColDef[] = [
     headerAlign: 'right',
     align: 'right',
     flex: 1,
-    renderCell: DeliveryCellAction
+    renderCell: ManualDeliveryCellAction
   }
 ];
 

@@ -35,6 +35,12 @@ export const trackShippitDeliveryOrder = async (
     .then((res) => res.data);
 };
 
+export const confirmShippitOrder = async (
+  trackingNum: string
+): Promise<void> => {
+  return axios.post(`${apiRoot}/delivery/shippit/confirm/${trackingNum}`);
+};
+
 export const getDeliveryOrderById = async (
   id: string | number
 ): Promise<DeliveryOrder> => {
@@ -72,9 +78,10 @@ export const getAllDeliveriesPostalCodeByDate = (
 export const getAllAssignedManualDeliveries = async (
   id: any
 ): Promise<DeliveryOrder[]> => {
-  return axios.get(`${apiRoot}/delivery/deliveryAssignment/${id}`).then((res) => res.data);
+  return axios
+    .get(`${apiRoot}/delivery/deliveryAssignment/${id}`)
+    .then((res) => res.data);
 };
-
 
 export const getCurrentLocationLatLng = async (
   address: string | any
@@ -84,8 +91,12 @@ export const getCurrentLocationLatLng = async (
     .then((res) => res.data);
 };
 
-export const getAllUnassignedDeliveries = async (): Promise<DeliveryOrder[]> => {
-  return axios.get(`${apiRoot}/delivery/unassigned/user`).then((res) => res.data);
+export const getAllUnassignedDeliveries = async (): Promise<
+  DeliveryOrder[]
+> => {
+  return axios
+    .get(`${apiRoot}/delivery/unassigned/user`)
+    .then((res) => res.data);
 };
 
 export const getAllUnassignedDeliveriesPostalCodeByDate = (
