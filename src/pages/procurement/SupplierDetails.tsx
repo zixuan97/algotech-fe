@@ -95,6 +95,7 @@ const SupplierDetails = () => {
       asyncFetchCallback(getSupplierById(id), (supplier: Supplier) => {
         if (supplier) {
           setOriginalSupplier(supplier);
+          console.log(originalSupplier);
           setEditSupplier(supplier);
           setLoading(false);
         } else {
@@ -120,7 +121,7 @@ const SupplierDetails = () => {
         setOriginalSupplier(res);
         setEditSupplier(res);
 
-        setSupplierProducts(res.supplierProducts);
+        setSupplierProducts(res.supplierProduct);
         setTableLoading(false);
 
         setLoading(false);
@@ -132,7 +133,7 @@ const SupplierDetails = () => {
     setTableLoading(true);
     if (id) {
       asyncFetchCallback(getSupplierById(id), (res) => {
-        setSupplierProducts(res.supplierProducts);
+        setSupplierProducts(res.supplierProduct);
         setTableLoading(false);
       });
     }
@@ -355,7 +356,7 @@ const SupplierDetails = () => {
                     updateSupplierProductList={(pdts) =>
                       setEditSupplier((prev) => ({
                         ...prev,
-                        supplierProducts: pdts
+                        supplierProduct: pdts
                       }))
                     }
                   />

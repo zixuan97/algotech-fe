@@ -37,7 +37,7 @@ const CreateSupplier = () => {
   
   const [newSupplier, setNewSupplier] = React.useState<NewSupplier>({
     email: '',
-    supplierProducts: []
+    supplierProduct: []
   });
 
   // const [edit, setEdit] = React.useState<boolean>(false);
@@ -157,11 +157,11 @@ const CreateSupplier = () => {
                   </div>
                 </div>
                 <SupplierProductEditGrid
-                  supplierProductList={newSupplier.supplierProducts ?? []}
+                  supplierProductList={newSupplier.supplierProduct ?? []}
                   updateSupplierProductList={(pdts) =>
                     setNewSupplier((prev) => ({
                       ...prev,
-                      supplierProducts: pdts
+                      supplierProduct: pdts
                     }))
                   }
                 />
