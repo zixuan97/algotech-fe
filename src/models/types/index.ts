@@ -149,6 +149,14 @@ export interface SupplierProduct {
   rate: number;
 }
 
+export interface DeliveryStatus {
+  status: string;
+  statusOwner: string;
+  date: string;
+  timestamp: string;
+  deliveryOrderId: number;
+}
+
 export interface DeliveryOrder {
   id: number;
   shippingDate: Date;
@@ -167,6 +175,8 @@ export interface DeliveryOrder {
   parcelWeight?: number;
   deliveryMode?: DeliveryMode;
   assignedUserId? : number
+  shippitTrackingNum: string;
+  deliveryStatus?: DeliveryStatus[];
 }
 
 export interface SalesOrder {
@@ -192,6 +202,15 @@ export interface SalesOrderItem {
   quantity: number;
   productName?: string;
   createdTime?: Date;
+  isNewAdded?: boolean;
+  salesOrderBundleItems: SalesOrderBundleItem[];
+}
+
+export interface SalesOrderBundleItem {
+  id?: number;
+  salesOrderItemId?: number;
+  productName: string;
+  quantity: number;
   isNewAdded?: boolean;
 }
 

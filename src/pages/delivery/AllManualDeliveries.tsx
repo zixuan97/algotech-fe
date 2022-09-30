@@ -5,7 +5,7 @@ import {
   GridValueFormatterParams,
   GridValueGetterParams
 } from '@mui/x-data-grid';
-import DeliveryCellAction from 'src/components/delivery/DeliveryCellAction';
+import ManualDeliveryCellAction from 'src/components/delivery/ManualDeliveryCellAction';
 import '../../styles/common/common.scss';
 import '../../styles/pages/delivery/map.scss';
 import '../../styles/pages/delivery/delivery.scss';
@@ -39,7 +39,7 @@ const myIcon = new Icon({
 const columns: GridColDef[] = [
   {
     field: 'salesOrderId',
-    headerName: 'Order ID',
+    headerName: 'Sales Order ID',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) => params.row.salesOrder.id
   },
@@ -72,7 +72,7 @@ const columns: GridColDef[] = [
     headerAlign: 'right',
     align: 'right',
     flex: 1,
-    renderCell: DeliveryCellAction
+    renderCell: ManualDeliveryCellAction
   }
 ];
 

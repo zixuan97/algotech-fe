@@ -5,7 +5,7 @@ import '../../styles/common/actionCells.scss';
 import { useNavigate } from 'react-router';
 import { createSearchParams } from 'react-router-dom';
 
-const DeliveryCellAction = ({ id }: GridRenderCellParams) => {
+const ManualDeliveryCellAction = ({ id }: GridRenderCellParams) => {
   const navigate = useNavigate();
   return (
     <div className='action-cell-fit-content'>
@@ -26,4 +26,4 @@ const DeliveryCellAction = ({ id }: GridRenderCellParams) => {
   );
 };
 
-export default DeliveryCellAction;
+export default ManualDeliveryCellAction;
