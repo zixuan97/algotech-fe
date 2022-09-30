@@ -41,6 +41,14 @@ export const getDeliveryOrderById = async (
   return axios.get(`${apiRoot}/delivery/${id}`).then((res) => res.data);
 };
 
+export const getDeliveryOrderByTracking = async (
+  trackingNum: string
+): Promise<DeliveryOrder> => {
+  return axios
+    .get(`${apiRoot}/delivery/track/${trackingNum}`)
+    .then((res) => res.data);
+};
+
 export const editDeliveryOrder = async (body: object): Promise<void> => {
   return axios.put(`${apiRoot}/delivery`, body);
 };

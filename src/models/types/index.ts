@@ -149,6 +149,14 @@ export interface SupplierProduct {
   rate: number;
 }
 
+export interface DeliveryStatus {
+  status: string;
+  statusOwner: string;
+  date: string;
+  timestamp: string;
+  deliveryOrderId: number;
+}
+
 export interface DeliveryOrder {
   id: number;
   shippingDate: Date;
@@ -166,6 +174,8 @@ export interface DeliveryOrder {
   parcelQty?: number;
   parcelWeight?: number;
   deliveryMode?: DeliveryMode;
+  shippitTrackingNum: string;
+  deliveryStatus?: DeliveryStatus[];
 }
 
 export interface SalesOrder {

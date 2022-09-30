@@ -210,7 +210,7 @@ const App = () => {
                     element={<AllManualDeliveries />}
                   />
                   <Route
-                    path='delivery/allManualDeliveries/createDelivery'
+                    path='delivery/createDelivery'
                     element={<CreateDeliveryOrder />}
                   />
                   <Route

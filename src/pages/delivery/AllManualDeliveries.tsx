@@ -39,7 +39,7 @@ const myIcon = new Icon({
 const columns: GridColDef[] = [
   {
     field: 'salesOrderId',
-    headerName: 'Order ID',
+    headerName: 'Sales Order ID',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) => params.row.salesOrder.id
   },

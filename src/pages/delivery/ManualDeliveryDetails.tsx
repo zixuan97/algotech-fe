@@ -14,7 +14,7 @@ import {
   MenuItem,
   Backdrop,
   CircularProgress,
-  StepContent
+  Chip
 } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import {
@@ -52,7 +52,7 @@ const steps = [
   },
   {
     currentState: OrderStatus.COMPLETED,
-    label: 'Order Received',
+    label: 'Order Delivered',
     icon: <TaskAltRounded sx={{ fontSize: 35 }} />
   }
 ];
@@ -334,47 +334,59 @@ const ManualDeliveryDetails = () => {
             </IconButton>
           </Tooltip>
           <h1>View Manual Delivery Order ID: #{originalDeliveryOrder?.id}</h1>
-        </div>
-        <div className='delivery-edit-button-container'>
-          <Button
-            variant='contained'
-            onClick={() => {
-              if (!edit) {
-                setEdit(true);
-              } else {
-                handleDeliveryOrderUpdate();
-                setEdit(false);
-              }
-            }}
-          >
-            {edit ? 'Save Changes' : 'Edit'}
-          </Button>
-          {!edit && activeStep === 0 && (
-            <Button
-              variant='contained'
-              onClick={() => setCancelDeliveryModalOpen(true)}
-            >
-              Cancel Delivery
-            </Button>
-          )}
-          <ConfirmationModal
-            open={cancelDeliveryModalOpen}
-            onClose={() => setCancelDeliveryModalOpen(false)}
-            onConfirm={handleCancelDeliveryOrder}
-            title='Cancel Delivery Over'
-            body='Are you sure you want to cancel the delivery order? This action cannot be reversed.'
-          />
-          {edit && (
-            <Button
-              variant='contained'
-              size='medium'
-              sx={{ width: 'fit-content' }}
-              onClick={handleCancelUpdate}
-            >
-              Cancel
-            </Button>
+          {originalDeliveryOrder?.salesOrder.orderStatus ===
+            OrderStatus.CANCELLED && (
+            <div className='order-cancelled-chip-container'>
+              <Chip
+                label='Order Cancelled'
+                style={{ backgroundColor: '#F12B2C', fontFamily: 'Poppins' }}
+              />
+            </div>
           )}
         </div>
+        {originalDeliveryOrder?.salesOrder.orderStatus !==
+          OrderStatus.CANCELLED && (
+          <div className='delivery-edit-button-container'>
+            <Button
+              variant='contained'
+              onClick={() => {
+                if (!edit) {
+                  setEdit(true);
+                } else {
+                  handleDeliveryOrderUpdate();
+                  setEdit(false);
+                }
+              }}
+            >
+              {edit ? 'Save Changes' : 'Edit'}
+            </Button>
+            {!edit && activeStep === 0 && (
+              <Button
+                variant='contained'
+                onClick={() => setCancelDeliveryModalOpen(true)}
+              >
+                Cancel Delivery
+              </Button>
+            )}
+            <ConfirmationModal
+              open={cancelDeliveryModalOpen}
+              onClose={() => setCancelDeliveryModalOpen(false)}
+              onConfirm={handleCancelDeliveryOrder}
+              title='Cancel Delivery Over'
+              body='Are you sure you want to cancel the delivery order? This action cannot be reversed.'
+            />
+            {edit && (
+              <Button
+                variant='contained'
+                size='medium'
+                sx={{ width: 'fit-content' }}
+                onClick={handleCancelUpdate}
+              >
+                Cancel
+              </Button>
+            )}
+          </div>
+        )}
       </div>
       <Backdrop
         sx={{
@@ -394,39 +406,41 @@ const ManualDeliveryDetails = () => {
           />
         </div>
       )}
-      <div className='delivery-details-stepper'>
-        <Stepper activeStep={activeStep} alternativeLabel>
-          {steps.map((step) => (
-            <Step key={step.label}>
-              <StepLabel icon={step.icon}>
-                {step.label}
-                20/09/2022
-              </StepLabel>
-            </Step>
-          ))}
-        </Stepper>
-      </div>
-      {activeStep !== 2 && (
-        <div className='delivery-details-action-section'>
-          <Paper elevation={2} className='delivery-details-action-card'>
-            <Typography sx={{ fontSize: 'inherit' }}>Next Action:</Typography>
-            <Button
-              variant='contained'
-              size='medium'
-              onClick={() => setModalOpen(true)}
-            >
-              {steps[activeStep].nextAction}
-            </Button>
-            <ConfirmationModal
-              open={modalOpen}
-              onClose={() => setModalOpen(false)}
-              onConfirm={handleDeliveryOrderStatusUpdate}
-              title='Update Delivery Status'
-              body='Are you sure you want to update the delivery status? This action cannot be reversed.'
-            />
-          </Paper>
+      {originalDeliveryOrder?.salesOrder.orderStatus !==
+        OrderStatus.CANCELLED && (
+        <div className='delivery-details-stepper'>
+          <Stepper activeStep={activeStep} alternativeLabel>
+            {steps.map((step) => (
+              <Step key={step.label}>
+                <StepLabel icon={step.icon}>{step.label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
         </div>
       )}
+      {activeStep !== 2 &&
+        originalDeliveryOrder?.salesOrder.orderStatus !==
+          OrderStatus.CANCELLED && (
+          <div className='delivery-details-action-section'>
+            <Paper elevation={2} className='delivery-details-action-card'>
+              <Typography sx={{ fontSize: 'inherit' }}>Next Action:</Typography>
+              <Button
+                variant='contained'
+                size='medium'
+                onClick={() => setModalOpen(true)}
+              >
+                {steps[activeStep].nextAction}
+              </Button>
+              <ConfirmationModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                onConfirm={handleDeliveryOrderStatusUpdate}
+                title='Update Delivery Status'
+                body='Are you sure you want to update the delivery status? This action cannot be reversed.'
+              />
+            </Paper>
+          </div>
+        )}
       <div className='delivery-detail-cards'>
         <Paper elevation={2} className='delivery-address-card'>
           <div className='delivery-address-grid'>
