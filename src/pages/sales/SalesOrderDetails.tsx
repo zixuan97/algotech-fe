@@ -38,6 +38,7 @@ import OrderSummaryCard from '../../components/sales/order/OrderSummaryCard';
 import StatusStepper from '../../components/sales/order/StatusStepper';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import ViewCurrentBundleModal from './ViewCurrentBundleModal';
+import PlatformChip from 'src/components/sales/order/PlatformChip';
 
 const SalesOrderDetails = () => {
   let params = new URLSearchParams(window.location.search);
@@ -368,9 +369,6 @@ const SalesOrderDetails = () => {
       bundleItemsToUpdate.splice(0, 1);
     } else {
       if (idx) {
-        console.log('idx', idx);
-        console.log('bundleItemsToUpdate', bundleItemsToUpdate);
-        console.log();
         bundleItemsToUpdate.splice(
           bundleItemsToUpdate.findIndex((item) => {
             return item.id === idx;
@@ -506,30 +504,54 @@ const SalesOrderDetails = () => {
           <div className='sales-header-content'>
             <StatusStepper orderStatus={salesOrder?.orderStatus!} />
             <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
-            <Paper elevation={2} className='action-card'>
+            <Paper elevation={3} className='sales-action-card '>
               <OrderInfoGrid salesOrder={salesOrder!} />
               <div className='action-box'>
                 <Typography sx={{ fontSize: 'inherit' }}>
                   Next Action:
                 </Typography>
-                <Button
-                  variant='contained'
-                  size='medium'
-                  onClick={nextStep}
-                  disabled={
-                    (salesOrder?.platformType === PlatformType.SHOPEE ||
-                      salesOrder?.platformType === PlatformType.LAZADA) &&
-                    activeStep > 2
-                  }
-                >
-                  {steps[activeStep].nextAction}
-                </Button>
+                {(salesOrder?.platformType === PlatformType.SHOPEE ||
+                  salesOrder?.platformType === PlatformType.LAZADA) &&
+                activeStep > 2 ? (
+                  <Tooltip
+                    title='Delivery details not available at this moment.'
+                    enterDelay={500}
+                  >
+                    <span>
+                      <Button
+                        variant='contained'
+                        size='medium'
+                        onClick={nextStep}
+                        disabled={
+                          (salesOrder?.platformType === PlatformType.SHOPEE ||
+                            salesOrder?.platformType === PlatformType.LAZADA) &&
+                          activeStep > 2
+                        }
+                      >
+                        {steps[activeStep].nextAction}
+                      </Button>
+                    </span>
+                  </Tooltip>
+                ) : (
+                  <Button
+                    variant='contained'
+                    size='medium'
+                    onClick={nextStep}
+                    disabled={
+                      (salesOrder?.platformType === PlatformType.SHOPEE ||
+                        salesOrder?.platformType === PlatformType.LAZADA) &&
+                      activeStep > 2
+                    }
+                  >
+                    {steps[activeStep].nextAction}
+                  </Button>
+                )}
               </div>
             </Paper>
           </div>
 
           <Paper elevation={3}>
-            <div className='content-body'>
+            <div className='sales-content-body'>
               <div className='grid-toolbar'>
                 <h4>Order ID: #{salesOrder?.orderId}</h4>
                 {salesOrder?.orderStatus === OrderStatus.PREPARING && (
