@@ -185,14 +185,6 @@ const CreateDeliveryOrder = () => {
       return;
     }
 
-    if (newDeliveryOrder.carrier === undefined) {
-      setAlert({
-        severity: 'warning',
-        message: 'Please select a carrier!'
-      });
-      return;
-    }
-
     if (newDeliveryOrder.carrier) {
       let selectedCarrier = shippitCarriers.find(
         (carrier) => carrier.value === newDeliveryOrder.carrier
@@ -226,16 +218,29 @@ const CreateDeliveryOrder = () => {
 
     setLoading(true);
 
-    let reqBody = {
-      shippingType: ShippingType.SHIPPIT,
-      deliveryDate: selectedDeliveryDate,
-      courierType: 'click_and_collect',
-      carrier: newDeliveryOrder.carrier,
-      deliveryMode: newDeliveryOrder.deliveryMode,
-      salesOrderId: Number(id),
-      parcelQuantity: newDeliveryOrder.parcelQty,
-      parcelWeight: newDeliveryOrder.parcelWeight
-    };
+    let reqBody;
+    if (newDeliveryOrder.carrier) {
+      reqBody = {
+        shippingType: ShippingType.SHIPPIT,
+        deliveryDate: selectedDeliveryDate,
+        // courierType: 'click_and_collect',
+        carrier: newDeliveryOrder.carrier,
+        deliveryMode: newDeliveryOrder.deliveryMode,
+        salesOrderId: Number(id),
+        parcelQuantity: newDeliveryOrder.parcelQty,
+        parcelWeight: newDeliveryOrder.parcelWeight
+      };
+    } else {
+      reqBody = {
+        shippingType: ShippingType.SHIPPIT,
+        deliveryDate: selectedDeliveryDate,
+        // courierType: 'click_and_collect',
+        deliveryMode: newDeliveryOrder.deliveryMode,
+        salesOrderId: Number(id),
+        parcelQuantity: newDeliveryOrder.parcelQty,
+        parcelWeight: newDeliveryOrder.parcelWeight
+      };
+    }
 
     await asyncFetchCallback(
       createShippitDeliveryOrder(reqBody),
@@ -452,7 +457,7 @@ const CreateDeliveryOrder = () => {
                     ))}
                   </TextField>
                 </Grid>
-                <Grid item xs={6}>
+                {/* <Grid item xs={6}>
                   <h4 className='labelText'>Carrier</h4>
                   <TextField
                     id='carrier'
@@ -462,7 +467,6 @@ const CreateDeliveryOrder = () => {
                     onChange={handleEditDeliveryOrder}
                     fullWidth
                     select
-                    required
                   >
                     {shippitCarriers.map((option) => (
                       <MenuItem key={option.id} value={option.value}>
@@ -477,7 +481,7 @@ const CreateDeliveryOrder = () => {
                       </MenuItem>
                     ))}
                   </TextField>
-                </Grid>
+                </Grid> */}
                 <Grid item xs={6}>
                   <h4 className='labelText'>Parcel Weight</h4>
                   <TextField

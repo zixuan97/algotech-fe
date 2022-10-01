@@ -57,7 +57,7 @@ export const getShippitBookingLabel = async (
   trackingNum: string
 ): Promise<string> => {
   return axios
-    .get(`${apiRoot}/delivery/bookinglabel/${trackingNum}`)
+    .post(`${apiRoot}/delivery/bookinglabel/${trackingNum}`)
     .then((res) => res.data);
 };
 
@@ -77,6 +77,12 @@ export const getDeliveryOrderByTracking = async (
 
 export const editDeliveryOrder = async (body: object): Promise<void> => {
   return axios.put(`${apiRoot}/delivery`, body);
+};
+
+export const cancelShippitDelivery = async (
+  trackingNum: string
+): Promise<void> => {
+  return axios.post(`${apiRoot}/delivery/cancel/${trackingNum}`);
 };
 
 export const createManualDeliveryOrder = async (
