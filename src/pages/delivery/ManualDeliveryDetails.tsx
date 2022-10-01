@@ -503,10 +503,14 @@ const ManualDeliveryDetails = () => {
                   </div>
                 ) : (
                   <div>
-                    <Typography>
-                      {originalDeliveryOrder?.assignedUser?.firstName} (
-                      {originalDeliveryOrder?.assignedUser?.role})
-                    </Typography>
+                    {originalDeliveryOrder?.assignedUser ? (
+                      <Typography>
+                        {originalDeliveryOrder?.assignedUser?.firstName} (
+                        {originalDeliveryOrder?.assignedUser?.role})
+                      </Typography>
+                    ) : (
+                      <Typography>No Assigned User</Typography>
+                    )}
                   </div>
                 )}
               </Grid>

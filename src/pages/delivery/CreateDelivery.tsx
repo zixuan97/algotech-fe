@@ -135,23 +135,25 @@ const CreateDeliveryOrder = () => {
   };
 
   const handleManualDeliveryOrderCreation = async () => {
-    if (newDeliveryOrder.assignedUser === undefined) {
-      setAlert({
-        severity: 'warning',
-        message: 'Please assign a user!'
-      });
-      return;
-    }
-
     setLoading(true);
 
-    let reqBody = {
-      shippingType: ShippingType.MANUAL,
-      deliveryDate: selectedDeliveryDate,
-      comments: newDeliveryOrder.comments,
-      salesOrderId: Number(id),
-      assignedUserId: newDeliveryOrder.assignedUser?.id
-    };
+    let reqBody;
+    if (newDeliveryOrder.assignedUser?.id) {
+      reqBody = {
+        shippingType: ShippingType.MANUAL,
+        deliveryDate: selectedDeliveryDate,
+        comments: newDeliveryOrder.comments,
+        salesOrderId: Number(id),
+        assignedUserId: newDeliveryOrder.assignedUser?.id
+      };
+    } else {
+      reqBody = {
+        shippingType: ShippingType.MANUAL,
+        deliveryDate: selectedDeliveryDate,
+        comments: newDeliveryOrder.comments,
+        salesOrderId: Number(id)
+      };
+    }
 
     await asyncFetchCallback(
       createManualDeliveryOrder(reqBody),
@@ -385,7 +387,6 @@ const CreateDeliveryOrder = () => {
                       onChange={handleEditAssignedUser}
                       select
                       fullWidth
-                      required
                     >
                       {users.map((option) => (
                         <MenuItem key={option.id} value={option.id}>
