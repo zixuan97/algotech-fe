@@ -49,7 +49,7 @@ const AllSuppliers = () => {
       searchField
         ? supplierData.filter((category) =>
             Object.values(category).some((value) =>
-              String(value).toLowerCase().match(searchField.toLowerCase())
+              String(value).toLowerCase().includes(searchField.toLowerCase())
             )
           )
         : supplierData
@@ -81,7 +81,9 @@ const AllSuppliers = () => {
           variant='contained'
           size='large'
           sx={{ height: 'fit-content' }}
-          onClick={() => navigate({ pathname: '/procurementOrders/createSupplier' })}
+          onClick={() =>
+            navigate({ pathname: '/procurementOrders/createSupplier' })
+          }
         >
           Create Supplier
         </Button>

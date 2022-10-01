@@ -1,6 +1,11 @@
 import React from 'react';
-import { Outlet } from 'react-router';
+import { Outlet, useNavigate } from 'react-router';
+import { createSearchParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import OrderToast from 'src/components/common/OrderToast';
 import authContext from 'src/context/auth/authContext';
+import { SalesOrder } from 'src/models/types';
+import { subscribeToShopify } from 'src/services/webhook/pusher';
 import Appbar from '../components/common/Appbar';
 import Sidebar from '../components/common/Sidebar';
 
@@ -13,8 +18,33 @@ type HomeProps = {
 
 const Home = ({ children }: HomeProps) => {
   const { user } = React.useContext(authContext);
-
   const disabled = !user?.isVerified;
+  const navigate = useNavigate();
+
+  const shopifyCallback = React.useCallback((salesOrder: SalesOrder) => {
+    console.log(salesOrder);
+    toast(
+      <OrderToast
+        salesOrder={salesOrder}
+        navigate={(orderId: string) =>
+          navigate({
+            pathname: 'sales/salesOrderDetails',
+            search: createSearchParams({
+              orderId: orderId
+            }).toString()
+          })
+        }
+      />,
+      {
+        toastId: salesOrder.orderId
+      }
+    );
+  }, []);
+
+  React.useEffect(() => {
+    subscribeToShopify(shopifyCallback);
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <div style={{ width: '100%' }}>

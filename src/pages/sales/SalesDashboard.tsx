@@ -87,7 +87,7 @@ const SalesDashboard = () => {
               (searchPlatform === ALL_PLATFORMS ||
                 salesOrder.platformType === searchPlatform) &&
               Object.values(salesOrder).some((value) =>
-                String(value).toLowerCase().match(searchField.toLowerCase())
+                String(value).toLowerCase().includes(searchField.toLowerCase())
               )
           )
         : salesOrders,

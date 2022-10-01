@@ -33,7 +33,7 @@ const AllBundles = () => {
   React.useEffect(() => {
     setLoading(true);
     asyncFetchCallback(
-        getAllBundles(),
+      getAllBundles(),
       (res) => {
         setLoading(false);
         setBundleData(res);
@@ -47,7 +47,7 @@ const AllBundles = () => {
       searchField
         ? bundleData.filter((bundle) =>
             Object.values(bundle).some((value) =>
-              String(value).toLowerCase().match(searchField.toLowerCase())
+              String(value).toLowerCase().includes(searchField.toLowerCase())
             )
           )
         : bundleData

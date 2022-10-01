@@ -46,7 +46,7 @@ import ShippitDeliveryDetails from './pages/delivery/ShippitDeliveryDetails';
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
 import CreateNewUser from './pages/account/CreateNewUser';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ViewMyAccount from './pages/account/ViewMyAccount';
 import AllCategories from './pages/inventory/AllCategories';
@@ -61,9 +61,6 @@ import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import AllSalesOrder from './pages/sales/AllSalesOrders';
 import SalesOrderDetails from './pages/sales/SalesOrderDetails';
 import NotFound from './pages/NotFound';
-import { subscribeToShopify } from './services/webhook/pusher';
-import { SalesOrder } from './models/types';
-import { startCase } from 'lodash';
 import ShopPerformance from './pages/sales/ShopPerformance';
 
 const theme = createTheme({
@@ -89,20 +86,6 @@ const App = () => {
   React.useEffect(() => {
     setAuthToken(localStorage.token);
   }, [token]);
-
-  const shopifyCallback = React.useCallback((salesOrder: SalesOrder) => {
-    console.log(salesOrder);
-    toast(
-      `New order has come in from ${startCase(
-        salesOrder.platformType.toLowerCase()
-      )}\nOrder number: ${salesOrder.orderId}`,
-      {
-        toastId: salesOrder.orderId
-      }
-    );
-  }, []);
-
-  subscribeToShopify(shopifyCallback);
 
   return (
     <ThemeProvider theme={theme}>
