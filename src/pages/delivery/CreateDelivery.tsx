@@ -423,7 +423,7 @@ const CreateDeliveryOrder = () => {
                   <DesktopDatePicker
                     label='Delivery Date'
                     value={selectedDeliveryDate}
-                    minDate={moment('2000-01-01')}
+                    minDate={moment().startOf('day')}
                     onChange={(date) => setSelectedDeliveryDate(moment(date))}
                     renderInput={(params) => <TextField {...params} />}
                   />
@@ -531,7 +531,7 @@ const CreateDeliveryOrder = () => {
                   <DesktopDatePicker
                     label='Delivery Date'
                     value={selectedDeliveryDate}
-                    minDate={moment('2000-01-01')}
+                    minDate={moment().startOf('day')}
                     onChange={(date) => setSelectedDeliveryDate(moment(date))}
                     renderInput={(params) => <TextField {...params} />}
                   />
