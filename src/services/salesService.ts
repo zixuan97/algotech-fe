@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {
   DailySales,
+  DeliveryOrder,
   OrderStatus,
   SalesBestseller,
   SalesOrder,
@@ -85,3 +86,9 @@ export const updateSalesOrderStatusSvc = (
     .put(`${apiRoot}/sales/status`, { id, orderStatus })
     .then((res) => res.data);
 };
+
+export const getDeliveryTypeSvc = (id: number): Promise<DeliveryOrder> => {
+  return axios
+  .get(`${apiRoot}/delivery/sales/${id}`)
+  .then((res) => res.data);
+}

@@ -16,7 +16,8 @@ import {
   Product,
   SalesOrder,
   SalesOrderBundleItem,
-  SalesOrderItem
+  SalesOrderItem,
+  ShippingType
 } from 'src/models/types';
 import { useNavigate, createSearchParams } from 'react-router-dom';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
@@ -25,6 +26,7 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AddSalesOrderItemModal from './AddSalesOrderItemModal';
 import {
   completeOrderPrepSvc,
+  getDeliveryTypeSvc,
   getSalesOrderDetailsByOrderIdSvc,
   getSalesOrderDetailsSvc,
   updateSalesOrderStatusSvc
@@ -158,7 +160,6 @@ const SalesOrderDetails = () => {
     if (id) {
       asyncFetchCallback(
         getSalesOrderDetailsSvc(id),
-<<<<<<< HEAD
         (salesOrder: SalesOrder) => {
           if (salesOrder) {
             setSalesOrder(salesOrder);
@@ -181,10 +182,6 @@ const SalesOrderDetails = () => {
             setTimeout(() => navigate('/sales/allSalesOrders'), 3500);
           }
         }
-=======
-        successCallback,
-        errorCallback
->>>>>>> main
       );
     } else if (orderId) {
       asyncFetchCallback(
@@ -196,7 +193,7 @@ const SalesOrderDetails = () => {
   }, [id, orderId, navigate, products]);
 
   const nextStep = () => {
-    if (activeStep < steps.length - 1 && activeStep <= 3) {
+    if (activeStep < steps.length - 1) {
       const newStatus = steps[activeStep + 1].currentState;
       if (newStatus === OrderStatus.PREPARED) {
         setModalOpen(true);
@@ -215,15 +212,29 @@ const SalesOrderDetails = () => {
       } else if (
         activeStep > 3 &&
         (salesOrder?.platformType === PlatformType.SHOPIFY ||
-          salesOrder?.platformType === PlatformType.OTHERS)
+          salesOrder?.platformType === PlatformType.OTHERS ||
+          salesOrder?.platformType === PlatformType.SHOPEE)
       ) {
         salesOrder.id &&
-          navigate({
-            pathname: '/delivery/createDelivery',
-            search: createSearchParams({
-              id: salesOrder.id.toString()
-            }).toString()
-          });
+        asyncFetchCallback(
+          getDeliveryTypeSvc(salesOrder.id), (res) => {
+            if(res.shippingType === ShippingType.SHIPPIT) {
+              navigate({
+                pathname: '/delivery/shippitDeliveryDetails?id=',
+                search: createSearchParams({
+                  id: salesOrder.orderId.toString()
+                }).toString()
+              });
+            } else if ( res.shippingType === ShippingType.MANUAL) {
+              navigate({
+                pathname: '/delivery/shippitDeliveryDetails?id=',
+                search: createSearchParams({
+                  id: salesOrder.orderId.toString()
+                }).toString()
+              });
+            }
+          }
+        );
       } else {
         updateSalesOrderStatus(newStatus);
       }
@@ -340,51 +351,28 @@ const SalesOrderDetails = () => {
     salesOrderItemId: number,
     idx?: number
   ) => {
-    const tempSalesOrderItems = [...editSalesOrderItems];
-    const saleOrderItemsToUpdate = JSON.parse(
-      JSON.stringify(
-        tempSalesOrderItems.find((item) => {
-          return item.id === salesOrderItemId;
-        })
-      )
-    );
-    const temp = [...editSalesOrderBundleItems];
-    
-    if (idx) {
-      if (temp[0].id === idx) {
-        temp.splice(0, 1);
-      } else {
-        temp.splice(
-          temp.findIndex((item) => {
+    const bundleItemsToUpdate = [...editSalesOrderBundleItems];
+    if (idx && bundleItemsToUpdate[0].id === idx) {
+      bundleItemsToUpdate.splice(0, 1);
+    } else {
+      if (idx) {
+        bundleItemsToUpdate.splice(
+          bundleItemsToUpdate.findIndex((item) => {
             return item.id === idx;
           })!
         );
+      } else {
+        bundleItemsToUpdate.splice(
+          bundleItemsToUpdate.findIndex((item) => {
+            return item.productName === productName && item.isNewAdded;
+          })!
+        );
       }
-      saleOrderItemsToUpdate!.salesOrderBundleItems.splice(
-        0,
-        saleOrderItemsToUpdate!.salesOrderBundleItems.length,
-        ...temp
-      );
-      tempSalesOrderItems.splice(
-        tempSalesOrderItems.findIndex((item) => {
-          return item.id === saleOrderItemsToUpdate?.id;
-        })!,
-        1,
-        saleOrderItemsToUpdate!
-      );
-      setEditSalesOrderItems(tempSalesOrderItems);
-    } else {
-      temp.splice(
-        temp.findIndex((item) => {
-          return item.productName === productName && item.isNewAdded;
-        })
-      );
     }
-    setEditSalesOrderBundleItems(temp);
-    
+    setEditSalesOrderBundleItems(bundleItemsToUpdate);
     if (
-      !availBundleProducts.filter((item) => {
-        return item.name === productName;
+      !availBundleProducts.find((product) => {
+        return product.name === productName;
       })
     ) {
       setAvailBundleProducts((prev) => [
@@ -425,17 +413,18 @@ const SalesOrderDetails = () => {
 
   const saveChangesToBundle = () => {
     const temp = [...editSalesOrderItems];
-    const oldSaleOrderItem = temp.find((item) => {
-      return item.id === editSalesOrderBundleItems[0]?.salesOrderItemId;
-    });
-    oldSaleOrderItem &&
-      editSalesOrderBundleItems.forEach((item) => {
-        item.isNewAdded &&
-          (oldSaleOrderItem.salesOrderBundleItems = [
-            ...oldSaleOrderItem.salesOrderBundleItems,
-            item
-          ]);
-      });
+    const oldSaleOrderItem = JSON.parse(
+      JSON.stringify(
+        temp.find((item) => {
+          return item.id === editSalesOrderBundleItems[0]?.salesOrderItemId;
+        })
+      )
+    );
+    oldSaleOrderItem!.salesOrderBundleItems.splice(
+      0,
+      oldSaleOrderItem!.salesOrderBundleItems.length,
+      ...editSalesOrderBundleItems
+    );
     temp.splice(
       temp.indexOf(
         temp.find((item) => {
@@ -509,10 +498,10 @@ const SalesOrderDetails = () => {
                   variant='contained'
                   size='medium'
                   onClick={nextStep}
-                  disabled={
-                    salesOrder?.platformType === PlatformType.SHOPEE &&
-                    activeStep > 2
-                  }
+                  // disabled={
+                  //   salesOrder?.platformType === PlatformType.SHOPEE &&
+                  //   activeStep > 2
+                  // }
                 >
                   {steps[activeStep].nextAction}
                 </Button>
