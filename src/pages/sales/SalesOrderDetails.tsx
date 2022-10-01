@@ -212,8 +212,7 @@ const SalesOrderDetails = () => {
       } else if (
         activeStep > 3 &&
         (salesOrder?.platformType === PlatformType.SHOPIFY ||
-          salesOrder?.platformType === PlatformType.OTHERS ||
-          salesOrder?.platformType === PlatformType.SHOPEE)
+          salesOrder?.platformType === PlatformType.OTHERS)
       ) {
         salesOrder.id &&
         asyncFetchCallback(
@@ -498,10 +497,10 @@ const SalesOrderDetails = () => {
                   variant='contained'
                   size='medium'
                   onClick={nextStep}
-                  // disabled={
-                  //   salesOrder?.platformType === PlatformType.SHOPEE &&
-                  //   activeStep > 2
-                  // }
+                  disabled={
+                    salesOrder?.platformType === PlatformType.SHOPEE &&
+                    activeStep > 2
+                  }
                 >
                   {steps[activeStep].nextAction}
                 </Button>
