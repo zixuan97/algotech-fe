@@ -1,23 +1,16 @@
 import React from 'react';
-import {
-  DataGrid,
-  GridColDef,
-  GridValueFormatterParams,
-  GridValueGetterParams
-} from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import ManualDeliveryCellAction from 'src/components/delivery/ManualDeliveryCellAction';
 import '../../styles/common/common.scss';
 import '../../styles/pages/delivery/map.scss';
 import '../../styles/pages/delivery/delivery.scss';
 import 'leaflet/dist/leaflet.css';
 import { Stack, Typography } from '@mui/material';
-import { Search } from '@mui/icons-material';
-import { DeliveryOrder } from '../../models/types';
+import { DeliveryOrder, OrderStatus } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   getAllDeliveriesPostalCodeByDate,
-  getManualDeliveryOrdersByRangeSvc,
-  getAllDeliveries
+  getManualDeliveryOrdersByRangeSvc
 } from 'src/services/deliveryServices';
 import { useNavigate } from 'react-router';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
@@ -46,7 +39,22 @@ const columns: GridColDef[] = [
     field: 'orderStatus',
     headerName: 'Delivery Status',
     flex: 1,
-    renderCell: DeliveryOrderStatusCell
+    renderCell: DeliveryOrderStatusCell,
+    valueGetter: (params) => {
+      let orderStatus = params.row.salesOrder.orderStatus;
+      let cell;
+
+      if (orderStatus === OrderStatus.READY_FOR_DELIVERY) {
+        cell = 'Delivery Scheduled';
+      } else if (orderStatus === OrderStatus.SHIPPED) {
+        cell = 'Shipped';
+      } else if (orderStatus === OrderStatus.COMPLETED) {
+        cell = 'Completed';
+      } else {
+        cell = 'Cancelled';
+      }
+      return cell;
+    }
   },
   {
     field: 'salesOrder',
@@ -59,8 +67,7 @@ const columns: GridColDef[] = [
     field: 'deliveryDate',
     headerName: 'Delivery Date',
     flex: 1,
-    valueFormatter: (params: GridValueFormatterParams<Date>) => {
-      console.log(params.value);
+    valueGetter: (params: GridValueGetterParams) => {
       let date = params.value;
       let valueFormatted = moment(date).format('DD/MM/YYYY');
       return valueFormatted;
@@ -138,9 +145,15 @@ const AllManualDeliveries = () => {
         />
         {deliveryPostalCode.map((data) => {
           return (
-            <Marker key={data.orders.orderId} position={[data.LATITUDE, data.LONGTITUDE]} icon={blueIcon}>
-              <Popup>{data.ADDRESS} 
-               {data.orders.orderId}</Popup>
+            <Marker
+              key={data.orders.orderId}
+              position={[data.LATITUDE, data.LONGTITUDE]}
+              icon={blueIcon}
+            >
+              <Popup>
+                {data.ADDRESS}
+                {data.orders.orderId}
+              </Popup>
             </Marker>
           );
         })}
