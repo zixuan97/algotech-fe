@@ -134,6 +134,23 @@ const CreateDeliveryOrder = () => {
     });
   };
 
+  const handleEditParcelQty = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    await setNewDeliveryOrder((prev) => {
+      if ((prev && e.target.value === null) || e.target.value === '') {
+        return { ...prev, [e.target.name]: e.target.value };
+      }
+
+      console.log(e.target.value);
+      if (prev) {
+        return { ...prev, [e.target.name]: Math.floor(Number(e.target.value)) };
+      } else {
+        return prev;
+      }
+    });
+  };
+
   const handleManualDeliveryOrderCreation = async () => {
     setLoading(true);
 
@@ -208,10 +225,26 @@ const CreateDeliveryOrder = () => {
       return;
     }
 
+    if (newDeliveryOrder.parcelWeight <= 0) {
+      setAlert({
+        severity: 'warning',
+        message: 'Please input a valid parcel weight!'
+      });
+      return;
+    }
+
     if (newDeliveryOrder.parcelQty === undefined) {
       setAlert({
         severity: 'warning',
         message: 'Please input parcel quantity!'
+      });
+      return;
+    }
+
+    if (newDeliveryOrder.parcelQty <= 0) {
+      setAlert({
+        severity: 'warning',
+        message: 'Please input a valid parcel quantity!'
       });
       return;
     }
@@ -406,7 +439,7 @@ const CreateDeliveryOrder = () => {
                   <DesktopDatePicker
                     label='Delivery Date'
                     value={selectedDeliveryDate}
-                    minDate={moment('2000-01-01')}
+                    minDate={moment().startOf('day')}
                     onChange={(date) => setSelectedDeliveryDate(moment(date))}
                     renderInput={(params) => <TextField {...params} />}
                   />
@@ -504,7 +537,7 @@ const CreateDeliveryOrder = () => {
                     name='parcelQty'
                     type='number'
                     value={newDeliveryOrder?.parcelQty}
-                    onChange={handleEditDeliveryOrder}
+                    onChange={handleEditParcelQty}
                     required
                     fullWidth
                   />
@@ -514,7 +547,7 @@ const CreateDeliveryOrder = () => {
                   <DesktopDatePicker
                     label='Delivery Date'
                     value={selectedDeliveryDate}
-                    minDate={moment('2000-01-01')}
+                    minDate={moment().startOf('day')}
                     onChange={(date) => setSelectedDeliveryDate(moment(date))}
                     renderInput={(params) => <TextField {...params} />}
                   />

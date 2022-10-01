@@ -9,7 +9,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { ChevronLeft } from '@mui/icons-material';
+import { ChevronLeft, Info } from '@mui/icons-material';
 import {
   OrderStatus,
   PlatformType,
@@ -142,7 +142,7 @@ const SalesOrderDetails = () => {
     if (editSalesOrderBundleItems) {
       setAvailBundleProducts(
         products.filter((product) => {
-          return !editSalesOrderBundleItems.some(bundleItem => {
+          return !editSalesOrderBundleItems.some((bundleItem) => {
             return product.name === bundleItem.productName;
           });
         })
@@ -232,16 +232,16 @@ const SalesOrderDetails = () => {
           asyncFetchCallback(getDeliveryTypeSvc(salesOrder.id), (res) => {
             if (res.shippingType === ShippingType.SHIPPIT) {
               navigate({
-                pathname: '/delivery/shippitDeliveryDetails?id=',
+                pathname: '/delivery/shippitDeliveryDetails',
                 search: createSearchParams({
-                  id: salesOrder.orderId.toString()
+                  id: res.shippitTrackingNum.toString()
                 }).toString()
               });
             } else if (res.shippingType === ShippingType.MANUAL) {
               navigate({
-                pathname: '/delivery/shippitDeliveryDetails?id=',
+                pathname: '/delivery/manualDeliveryDetails',
                 search: createSearchParams({
-                  id: salesOrder.orderId.toString()
+                  id: res.id.toString()
                 }).toString()
               });
             }
@@ -368,16 +368,21 @@ const SalesOrderDetails = () => {
       bundleItemsToUpdate.splice(0, 1);
     } else {
       if (idx) {
+        console.log('idx', idx);
+        console.log('bundleItemsToUpdate', bundleItemsToUpdate);
+        console.log();
         bundleItemsToUpdate.splice(
           bundleItemsToUpdate.findIndex((item) => {
             return item.id === idx;
-          })!
+          })!,
+          1
         );
       } else {
         bundleItemsToUpdate.splice(
           bundleItemsToUpdate.findIndex((item) => {
             return item.productName === productName && item.isNewAdded;
-          })!
+          })!,
+          1
         );
       }
     }
@@ -512,7 +517,8 @@ const SalesOrderDetails = () => {
                   size='medium'
                   onClick={nextStep}
                   disabled={
-                    salesOrder?.platformType === PlatformType.SHOPEE &&
+                    (salesOrder?.platformType === PlatformType.SHOPEE ||
+                      salesOrder?.platformType === PlatformType.LAZADA) &&
                     activeStep > 2
                   }
                 >

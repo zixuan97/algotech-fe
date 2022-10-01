@@ -115,7 +115,7 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
                 disabled
               />
               <ListItemLink
-                primary='Order Fulfillments'
+                primary='Order Fulfillment'
                 to='sales/allSalesOrders'
               />
               <ListItemLink
