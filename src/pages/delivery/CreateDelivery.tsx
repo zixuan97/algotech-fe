@@ -134,6 +134,23 @@ const CreateDeliveryOrder = () => {
     });
   };
 
+  const handleEditParcelQty = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    await setNewDeliveryOrder((prev) => {
+      if ((prev && e.target.value === null) || e.target.value === '') {
+        return { ...prev, [e.target.name]: e.target.value };
+      }
+
+      console.log(e.target.value);
+      if (prev) {
+        return { ...prev, [e.target.name]: Math.floor(Number(e.target.value)) };
+      } else {
+        return prev;
+      }
+    });
+  };
+
   const handleManualDeliveryOrderCreation = async () => {
     setLoading(true);
 
@@ -504,7 +521,7 @@ const CreateDeliveryOrder = () => {
                     name='parcelQty'
                     type='number'
                     value={newDeliveryOrder?.parcelQty}
-                    onChange={handleEditDeliveryOrder}
+                    onChange={handleEditParcelQty}
                     required
                     fullWidth
                   />
