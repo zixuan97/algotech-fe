@@ -21,6 +21,7 @@ import {
   bookShippitDelivery,
   confirmShippitOrder,
   getDeliveryOrderByTracking,
+  getShippitBookingLabel,
   getShippitLabel
 } from 'src/services/deliveryServices';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
@@ -47,7 +48,8 @@ const steps = [
     status: 'untrackable'
   },
   {
-    label: 'Delivered'
+    label: 'Delivered',
+    status: ''
   }
 ];
 
@@ -103,6 +105,19 @@ const ShippitDeliveryDetails = () => {
           severity: 'success',
           message: 'Shippit Order confirmed successfully.'
         });
+        asyncFetchCallback(
+          getDeliveryOrderByTracking(id!),
+          (res) => {
+            setDeliveryOrder(res);
+            setActiveStep(
+              steps.findIndex(
+                (step) => step.status === res.deliveryStatus?.status
+              )
+            );
+            //   setLoading(false);
+          }
+          // () => setLoading(false)
+        );
         setLoading(false);
       },
       (err) => {
@@ -126,6 +141,17 @@ const ShippitDeliveryDetails = () => {
     });
   };
 
+  const handleDownloadShippitBookingLabel = async () => {
+    setLoading(true);
+
+    await asyncFetchCallback(getShippitBookingLabel(id!), (res) => {
+      if (res) {
+        window.open(res, '_blank');
+      }
+      setLoading(false);
+    });
+  };
+
   const handleBookShippitDelivery = async () => {
     setBookDeliveryModalOpen(false);
     setLoading(true);
@@ -137,6 +163,19 @@ const ShippitDeliveryDetails = () => {
           severity: 'success',
           message: 'Shippit Order booked successfully.'
         });
+        asyncFetchCallback(
+          getDeliveryOrderByTracking(id!),
+          (res) => {
+            setDeliveryOrder(res);
+            setActiveStep(
+              steps.findIndex(
+                (step) => step.status === res.deliveryStatus?.status
+              )
+            );
+            // setLoading(false);
+          }
+          // () => setLoading(false)
+        );
         setLoading(false);
       },
       (err) => {
@@ -287,6 +326,16 @@ const ShippitDeliveryDetails = () => {
                   onClick={() => setBookDeliveryModalOpen(true)}
                 >
                   Book Shippit Delivery
+                </Button>
+              )}
+              {deliveryOrder?.deliveryStatus?.status === 'ready_for_pickup' && (
+                <Button
+                  variant='contained'
+                  size='medium'
+                  sx={{ height: 'fit-content' }}
+                  onClick={handleDownloadShippitBookingLabel}
+                >
+                  Get Booking Label
                 </Button>
               )}
               <ConfirmationModal
