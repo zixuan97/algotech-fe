@@ -12,15 +12,18 @@ import {
   Grid,
   Paper,
   Backdrop,
-  CircularProgress
+  CircularProgress,
+  Chip
 } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import { useSearchParams } from 'react-router-dom';
 import {
   bookShippitDelivery,
+  cancelShippitDelivery,
   confirmShippitOrder,
   getDeliveryOrderByTracking,
+  getShippitBookingLabel,
   getShippitLabel
 } from 'src/services/deliveryServices';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
@@ -45,9 +48,6 @@ const steps = [
   {
     label: 'Out for delivery',
     status: 'untrackable'
-  },
-  {
-    label: 'Delivered'
   }
 ];
 
@@ -65,6 +65,8 @@ const ShippitDeliveryDetails = () => {
   const [confirmDeliveryModalOpen, setConfirmDeliveryModalOpen] =
     React.useState<boolean>(false);
   const [bookDeliveryModalOpen, setBookDeliveryModalOpen] =
+    React.useState<boolean>(false);
+  const [cancelDeliveryModalOpen, setCancelDeliveryModalOpen] =
     React.useState<boolean>(false);
 
   React.useEffect(() => {
@@ -103,6 +105,14 @@ const ShippitDeliveryDetails = () => {
           severity: 'success',
           message: 'Shippit Order confirmed successfully.'
         });
+        asyncFetchCallback(getDeliveryOrderByTracking(id!), (res) => {
+          setDeliveryOrder(res);
+          setActiveStep(
+            steps.findIndex(
+              (step) => step.status === res.deliveryStatus?.status
+            )
+          );
+        });
         setLoading(false);
       },
       (err) => {
@@ -126,6 +136,43 @@ const ShippitDeliveryDetails = () => {
     });
   };
 
+  const handleDownloadShippitBookingLabel = async () => {
+    setLoading(true);
+
+    await asyncFetchCallback(getShippitBookingLabel(id!), (res) => {
+      if (res) {
+        window.open(res, '_blank');
+      }
+      setLoading(false);
+    });
+  };
+
+  const handleCancelShippitDelivery = async () => {
+    setCancelDeliveryModalOpen(false);
+    setLoading(true);
+
+    await asyncFetchCallback(
+      cancelShippitDelivery(id!),
+      (res) => {
+        setAlert({
+          severity: 'success',
+          message: 'Shippit Order cancelled successfully.'
+        });
+        asyncFetchCallback(getDeliveryOrderByTracking(id!), (res) => {
+          setDeliveryOrder(res);
+        });
+        setLoading(false);
+      },
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message: 'Shippit Order could not be cancelled successfully.'
+        });
+      }
+    );
+  };
+
   const handleBookShippitDelivery = async () => {
     setBookDeliveryModalOpen(false);
     setLoading(true);
@@ -136,6 +183,14 @@ const ShippitDeliveryDetails = () => {
         setAlert({
           severity: 'success',
           message: 'Shippit Order booked successfully.'
+        });
+        asyncFetchCallback(getDeliveryOrderByTracking(id!), (res) => {
+          setDeliveryOrder(res);
+          setActiveStep(
+            steps.findIndex(
+              (step) => step.status === res.deliveryStatus?.status
+            )
+          );
         });
         setLoading(false);
       },
@@ -159,6 +214,14 @@ const ShippitDeliveryDetails = () => {
             </IconButton>
           </Tooltip>
           <h1>View Shippit Delivery</h1>
+          {deliveryOrder?.deliveryStatus?.status === 'cancelled' && (
+            <div className='shippit-order-cancelled-chip-container'>
+              <Chip
+                label='Order Cancelled'
+                style={{ backgroundColor: '#F12B2C', fontFamily: 'Poppins' }}
+              />
+            </div>
+          )}
         </div>
         <div className='track-order-button-container'>
           <Button
@@ -168,6 +231,21 @@ const ShippitDeliveryDetails = () => {
           >
             Track Order
           </Button>
+          {deliveryOrder?.deliveryStatus?.status === 'order_placed' && (
+            <Button
+              variant='contained'
+              onClick={() => setCancelDeliveryModalOpen(true)}
+            >
+              Cancel Order
+            </Button>
+          )}
+          <ConfirmationModal
+            open={cancelDeliveryModalOpen}
+            onClose={() => setCancelDeliveryModalOpen(false)}
+            onConfirm={handleCancelShippitDelivery}
+            title='Cancel Shippit Delivery'
+            body='Are you sure you want to cancel the delivery order? This action cannot be reversed.'
+          />
         </div>
       </div>
       <Backdrop
@@ -241,10 +319,10 @@ const ShippitDeliveryDetails = () => {
                 <h4 className='labelText'>Delivery Mode</h4>
                 <Typography>{deliveryOrder?.deliveryMode}</Typography>
               </Grid>
-              <Grid item xs={6}>
+              {/* <Grid item xs={6}>
                 <h4 className='labelText'>Carrier</h4>
                 <Typography>{deliveryOrder?.carrier}</Typography>
-              </Grid>
+              </Grid> */}
               <Grid item xs={6}>
                 <h4 className='labelText'>Delivery Date</h4>
                 <Typography>
@@ -287,6 +365,17 @@ const ShippitDeliveryDetails = () => {
                   onClick={() => setBookDeliveryModalOpen(true)}
                 >
                   Book Shippit Delivery
+                </Button>
+              )}
+              {(deliveryOrder?.deliveryStatus?.status === 'ready_for_pickup' ||
+                deliveryOrder?.deliveryStatus?.status === 'untrackable') && (
+                <Button
+                  variant='contained'
+                  size='medium'
+                  sx={{ height: 'fit-content' }}
+                  onClick={handleDownloadShippitBookingLabel}
+                >
+                  Get Booking Label
                 </Button>
               )}
               <ConfirmationModal

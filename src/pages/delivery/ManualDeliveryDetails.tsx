@@ -101,6 +101,7 @@ const ManualDeliveryDetails = () => {
 
   React.useEffect(() => {
     setLoading(true);
+
     if (user) {
       if (user.role === UserRole.ADMIN || user.role === UserRole.FULLTIME) {
         asyncFetchCallback(getAllUserSvc(), (users: Array<User>) => {
@@ -502,10 +503,14 @@ const ManualDeliveryDetails = () => {
                   </div>
                 ) : (
                   <div>
-                    <Typography>
-                      {originalDeliveryOrder?.assignedUser?.firstName} (
-                      {originalDeliveryOrder?.assignedUser?.role})
-                    </Typography>
+                    {originalDeliveryOrder?.assignedUser ? (
+                      <Typography>
+                        {originalDeliveryOrder?.assignedUser?.firstName} (
+                        {originalDeliveryOrder?.assignedUser?.role})
+                      </Typography>
+                    ) : (
+                      <Typography>No Assigned User</Typography>
+                    )}
                   </div>
                 )}
               </Grid>

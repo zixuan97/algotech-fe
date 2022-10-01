@@ -141,6 +141,17 @@
   width: 40%;
 }
 
+.shippit-order-cancelled-chip-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px 10px;
+  margin: 2% 2% 2% 2%;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  text-align: center;
+  flex-direction: row;
+}
+
 .delivery-edit-button-container {
   display: flex;
   justify-content: flex-end;
@@ -237,4 +248,18 @@
   width: 50%;
   margin: 1%;
   padding: 1%;
+}
+
+.alert {
+  display: flex;
+  flex-direction: row;
+  padding-left: 4rem;
+  padding-bottom: 2rem;
+}
+
+.create-delivery-button-container {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 2rem;
+  padding-top: 2rem;
 }
