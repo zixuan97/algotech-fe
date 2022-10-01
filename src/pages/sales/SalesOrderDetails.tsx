@@ -116,6 +116,7 @@ const SalesOrderDetails = () => {
           Array.from(params.row.salesOrderBundleItems).length > 0 &&
           salesOrder?.orderStatus === OrderStatus.PREPARING
         ) {
+          
           return (
             <>
               <Button
@@ -289,7 +290,8 @@ const SalesOrderDetails = () => {
         price: 0,
         isNewAdded: true,
         salesOrderId: salesOrder?.id!,
-        createdTime: salesOrder?.createdTime
+        createdTime: salesOrder?.createdTime,
+        salesOrderBundleItems: []
       };
     });
   };

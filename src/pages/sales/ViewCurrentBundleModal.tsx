@@ -19,7 +19,7 @@ type ViewCurrentBundleModalProps = {
   open: boolean;
   onClose: () => void;
   focusPassthrough?: boolean;
-  editSalesOrderBundleItems?: SalesOrderBundleItem[];
+  editSalesOrderBundleItems: SalesOrderBundleItem[];
   availProducts: Product[];
   updateNewSalesOrderBundleItem: (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -47,7 +47,7 @@ const ViewCurrentBundleModal = ({
 }: ViewCurrentBundleModalProps) => {
   const [prodName, setProdName] = useState<String>('');
   const [quantity, setQuantity] = useState<number>(0);
-  const [alert, setAlert] = useState<AlertType | null>(null);
+  const [bundleAlert, setBundleAlert] = useState<AlertType | null>(null);
   const columns: GridColDef[] = [
     { field: 'productName', headerName: 'Product Name', flex: 1 },
     {
@@ -85,10 +85,12 @@ const ViewCurrentBundleModal = ({
   ];
 
   useEffect(() => {
-    if (editSalesOrderBundleItems && editSalesOrderBundleItems.length < 1) {
-      setAlert({
-        severity: 'error',
-        message: 'Bundle cannot be empty. Please add an item to the bundle.'
+    if (
+     editSalesOrderBundleItems?.length! < 1
+    ) {
+      setBundleAlert({
+        severity: 'info',
+        message: `Note: Bundle cannot be empty. If so, please ensure that there are items in this bundle.`
       });
     }
   }, [editSalesOrderBundleItems]);
@@ -113,7 +115,10 @@ const ViewCurrentBundleModal = ({
                 These are the items in your bundle.
               </DialogContentText>
 
-              <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
+              <TimeoutAlert
+                alert={bundleAlert}
+                clearAlert={() => setBundleAlert(null)}
+              />
               <DataGrid
                 columns={columns}
                 rows={editSalesOrderBundleItems!}
