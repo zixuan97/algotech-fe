@@ -25,7 +25,7 @@ type ViewCurrentBundleModalProps = {
     key: string
   ) => void;
   addNewItemToBundleItems: () => void;
-  removeItemFromBundleItems: (productName: String, salesOrderItemId: number) => void;
+  removeItemFromBundleItems: (productName: String, salesOrderItemId: number, idx: number) => void;
   onSave: () => void;
 };
 
@@ -57,21 +57,19 @@ const ViewCurrentBundleModal = ({
       align: 'center',
       flex: 1,
       renderCell: (params) => {
-        if (params.row.isNewAdded) {
           return (
             <>
               <Button
                 variant='contained'
                 size='medium'
                 onClick={() =>
-                  removeItemFromBundleItems(params.row.productName, params.row.salesOrderItemId)
+                  removeItemFromBundleItems(params.row.productName, params.row.salesOrderItemId, params.row.id)
                 }
               >
                 Remove Item
               </Button>
             </>
           );
-        }
       }
     }
   ];
