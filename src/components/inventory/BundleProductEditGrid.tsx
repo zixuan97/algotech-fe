@@ -27,6 +27,7 @@ import {
   BundleProductGridRow,
 } from './inventoryHelper';
 import { toPairs } from 'lodash';
+import PositiveNonZeroNumberEditCellAction from './PositiveNonZeroNumberEditCellAction';
 
 type BundleProductEditGridProps = {
   bundleProductList: BundleProduct[];
@@ -128,7 +129,7 @@ export default function BundleProductEditGrid({
       flex: 1,
       editable: true,
       renderEditCell: (params) => (
-        <PositiveNumberEditCellAction params={params} allowDecimals={false} />
+        <PositiveNonZeroNumberEditCellAction params={params} allowDecimals={false} />
       )
     },
     {
