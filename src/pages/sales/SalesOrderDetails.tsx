@@ -65,6 +65,7 @@ const SalesOrderDetails = () => {
   >([]);
   const [newSalesOrderBundleItem, setNewSalesOrderBundleItem] =
     useState<SalesOrderBundleItem>();
+  const [saleOrderLineItemId, setSaleOrderLineItemId] = useState<number>(0);
   const columns: GridColDef[] = [
     {
       field: 'productName',
@@ -121,6 +122,9 @@ const SalesOrderDetails = () => {
                 onClick={() => {
                   setEditSalesOrderBundleItems(
                     params.row.salesOrderBundleItems
+                  );
+                  setSaleOrderLineItemId(
+                    params.row.id
                   );
                   setShowCurrentBundleModal(true);
                 }}
@@ -215,16 +219,15 @@ const SalesOrderDetails = () => {
           salesOrder?.platformType === PlatformType.OTHERS)
       ) {
         salesOrder.id &&
-        asyncFetchCallback(
-          getDeliveryTypeSvc(salesOrder.id), (res) => {
-            if(res.shippingType === ShippingType.SHIPPIT) {
+          asyncFetchCallback(getDeliveryTypeSvc(salesOrder.id), (res) => {
+            if (res.shippingType === ShippingType.SHIPPIT) {
               navigate({
                 pathname: '/delivery/shippitDeliveryDetails?id=',
                 search: createSearchParams({
                   id: salesOrder.orderId.toString()
                 }).toString()
               });
-            } else if ( res.shippingType === ShippingType.MANUAL) {
+            } else if (res.shippingType === ShippingType.MANUAL) {
               navigate({
                 pathname: '/delivery/shippitDeliveryDetails?id=',
                 search: createSearchParams({
@@ -232,8 +235,7 @@ const SalesOrderDetails = () => {
                 }).toString()
               });
             }
-          }
-        );
+          });
       } else {
         updateSalesOrderStatus(newStatus);
       }
@@ -404,35 +406,36 @@ const SalesOrderDetails = () => {
         ...bundleItem!,
         [key]:
           key === 'quantity' ? event.target.valueAsNumber : event.target.value,
-        isNewAdded: true,
-        salesOrderItemId: editSalesOrderBundleItems[0].salesOrderItemId
+        isNewAdded: true
       };
     });
   };
 
   const saveChangesToBundle = () => {
     const temp = [...editSalesOrderItems];
-    const oldSaleOrderItem = JSON.parse(
-      JSON.stringify(
-        temp.find((item) => {
-          return item.id === editSalesOrderBundleItems[0]?.salesOrderItemId;
-        })
-      )
-    );
-    oldSaleOrderItem!.salesOrderBundleItems.splice(
-      0,
-      oldSaleOrderItem!.salesOrderBundleItems.length,
-      ...editSalesOrderBundleItems
-    );
-    temp.splice(
-      temp.indexOf(
-        temp.find((item) => {
-          return item.id === editSalesOrderBundleItems[0]?.salesOrderItemId;
-        })!
-      ),
-      1,
-      oldSaleOrderItem!
-    );
+    if(editSalesOrderBundleItems.length > 0) {
+      const oldSaleOrderItem = JSON.parse(
+        JSON.stringify(
+          temp.find((item) => {
+            return item.id === saleOrderLineItemId;
+          })
+        )
+      );
+      oldSaleOrderItem!.salesOrderBundleItems.splice(
+        0,
+        oldSaleOrderItem!.salesOrderBundleItems.length,
+        ...editSalesOrderBundleItems
+      );
+      temp.splice(
+        temp.indexOf(
+          temp.find((item) => {
+            return item.id === oldSaleOrderItem.id;
+          })!
+        ),
+        1,
+        oldSaleOrderItem!
+      );
+    }
     setEditSalesOrderItems(temp);
     setShowCurrentBundleModal(false);
   };
@@ -511,7 +514,7 @@ const SalesOrderDetails = () => {
           <Paper elevation={3}>
             <div className='content-body'>
               <div className='grid-toolbar'>
-                <h4>Order ID.: #{salesOrder?.orderId}</h4>
+                <h4>Order ID: #{salesOrder?.orderId}</h4>
                 {salesOrder?.orderStatus === OrderStatus.PREPARING && (
                   <div className='button-group'>
                     <Button
