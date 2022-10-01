@@ -117,6 +117,21 @@ export const getAllAssignedManualDeliveries = async (
     .then((res) => res.data);
 };
 
+export const getAllAssignedDeliveriesByDate = async (
+  dateRange: MomentRange,
+  id: number | any
+): Promise<DeliveryOrder[]> => {
+  const resBody = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format(),
+    assignedUserId: id
+  };
+  console.log(resBody)
+  return axios
+    .post(`${apiRoot}/delivery/byUser/assignedByDate`, resBody)
+    .then((res) => res.data );
+};
+
 export const getCurrentLocationLatLng = async (
   address: string | any
 ): Promise<any> => {
@@ -125,12 +140,17 @@ export const getCurrentLocationLatLng = async (
     .then((res) => res.data);
 };
 
-export const getAllUnassignedDeliveries = async (): Promise<
-  DeliveryOrder[]
-> => {
+export const getAllUnassignedDeliveries = async (
+  dateRange: MomentRange
+): Promise<DeliveryOrder[]> => {
+  const timeFilter = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format()
+  };
+  // console.log(timeFilter)
   return axios
-    .get(`${apiRoot}/delivery/unassigned/user`)
-    .then((res) => res.data);
+    .post(`${apiRoot}/delivery/unassignedByDate`, timeFilter)
+    .then((res) =>   res.data );
 };
 
 export const getAllUnassignedDeliveriesPostalCodeByDate = (

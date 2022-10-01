@@ -14,7 +14,8 @@ import {
   Stack,
   Typography,
   Button,
-  CircularProgress
+  CircularProgress,
+  Alert
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
@@ -23,7 +24,7 @@ import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   editDeliveryOrder,
   getAllAssignedDeliveriesPostalCodeByDate,
-  getAllAssignedManualDeliveries,
+  getAllAssignedDeliveriesByDate,
   getAllUnassignedDeliveries,
   getAllUnassignedDeliveriesPostalCodeByDate,
   getCurrentLocationLatLng
@@ -40,7 +41,7 @@ import { MomentRange } from 'src/utils/dateUtils';
 import moment from 'moment';
 import DeliveryOrderStatusCell from 'src/components/delivery/DeliveryOrderStatusCell';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
-import { AlertType } from 'src/components/common/TimeoutAlert';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 const columns: GridColDef[] = [
   {
@@ -82,7 +83,6 @@ const columns: GridColDef[] = [
     renderCell: ManualDeliveryCellAction
   }
 ];
-
 
 const MyDeliveryAssignment = () => {
   const columnsBottom: GridColDef[] = [
@@ -182,38 +182,54 @@ const MyDeliveryAssignment = () => {
     // TODO: implement error callback
     setLoading(true);
     asyncFetchCallback(
-      getAllAssignedManualDeliveries(user?.id),
+      getAllAssignedDeliveriesByDate(dateRange,user?.id),
       (res) => {
         setLoading(false);
         setAssignedDeliveries(res);
         console.log(user?.id);
+        console.log('Delivery orders are' + { res });
+        console.log(JSON.stringify(res));
       },
       () => setLoading(false)
     );
-  }, [user]);
+  }, [user,dateRange]);
+
+  // React.useEffect(() => {
+  //   // TODO: implement error callback
+  //   setLoading(true);
+  //   asyncFetchCallback(
+  //     getAllUnassignedDeliveries(),
+  //     (res) => {
+  //       setLoading(false);
+  //       setUnassignedDeliveries(res);
+  //       console.log(res);
+  //     },
+  //     () => setLoading(false)
+  //   );
+  // }, []);
 
   React.useEffect(() => {
     // TODO: implement error callback
     setLoading(true);
-    asyncFetchCallback(
-      getAllUnassignedDeliveries(),
-      (res) => {
-        setLoading(false);
-        setUnassignedDeliveries(res);
-        console.log(res);
-      },
-      () => setLoading(false)
-    );
-  }, []);
+    asyncFetchCallback(getAllUnassignedDeliveries(dateRange), (res) => {
+      const sortedDeliveryDate = res.sort((a, b) =>
+        moment(a.deliveryDate).diff(b.deliveryDate)
+      );
+      setUnassignedDeliveries(sortedDeliveryDate);
+      // console.log('Delivery orders are' + { sortedDeliveryDate });
+      // console.log(JSON.stringify(res));
+    });
+    setLoading(false);
+  }, [dateRange]);
 
   React.useEffect(() => {
     setFilteredData(
       searchField
         ? assignedDeliveries.filter((category) =>
-          Object.values(category).some((value) =>
-            String(value).toLowerCase().includes(searchField.toLowerCase())
+            Object.values(category).some((value) =>
+              String(value).toLowerCase().match(searchField.toLowerCase())
+            )
           )
-        )
         : assignedDeliveries
     );
   }, [searchField, assignedDeliveries]);
@@ -221,22 +237,23 @@ const MyDeliveryAssignment = () => {
   const editDelivery = (deliveryOrder: DeliveryOrder) => {
     console.log('enter method');
     deliveryOrder.assignedUserId = user?.id;
-    asyncFetchCallback(editDeliveryOrder(deliveryOrder), () => {
-      setModalOpen(false);
-      setUnassignedDeliveries(
-        unassignedDeliveries.filter((x) => x.id !== deliveryOrder.id)
-      );
-      setAssignedDeliveries([...assignedDeliveries, deliveryOrder]);
-      setAlert({
-        severity: 'success',
-        message: 'Delivery Order assigned successfully.'
-      });
-    },
+    asyncFetchCallback(
+      editDeliveryOrder(deliveryOrder),
+      () => {
+        setModalOpen(false);
+        setUnassignedDeliveries(
+          unassignedDeliveries.filter((x) => x.id !== deliveryOrder.id)
+        );
+        setAssignedDeliveries([...assignedDeliveries, deliveryOrder]);
+        setAlert({
+          severity: 'success',
+          message: 'Delivery Order assigned successfully.'
+        });
+      },
       (err) => {
         setAlert({
           severity: 'error',
-          message:
-            'Delivery Order not assigned successfully, please try again!'
+          message: 'Delivery Order not assigned successfully, please try again!'
         });
       }
     );
@@ -249,22 +266,20 @@ const MyDeliveryAssignment = () => {
       (res) => {
         setLoading(false);
         setLatLng(res);
-        console.log(
-          'Current location is [' + res.LATITUDE + ',' + res.LONGTITUDE + ']'
-        );
-        setAlert({
-          severity: 'success',
-          message: 'Current location marker plotted successfully.'
-        });
+        console.log(res.length);
+        if (res.length === 0) {
+          setAlert({
+            severity: 'error',
+            message:
+              'Location not found, please enter a valid location!'
+          });
+        } else {
+          setAlert({
+            severity: 'success',
+            message: 'Current location marker plotted successfully.'
+          });
+        }
       },
-      (err) => {
-        setLoading(false);
-        setAlert({
-          severity: 'error',
-          message:
-            'Current location marker not plotted successfuly, please try again!'
-        });
-      }
     );
   };
 
@@ -287,29 +302,28 @@ const MyDeliveryAssignment = () => {
     console.log(currentLocation);
   };
 
-  const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchField(e.target.value);
-  };
+  // const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setSearchField(e.target.value);
+  // };
 
   const handleConfirmAssignment = (deliveryOrder: DeliveryOrder) => {
     console.log(deliveryOrder);
     setModalOpen(true);
-    setTempDO(deliveryOrder)
+    setTempDO(deliveryOrder);
   };
 
   return (
-
     <div className='delivery-orders'>
       <ConfirmationModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onConfirm={() => editDelivery(tempDO!)}
         title='Assign Delivery'
-        body='Are you sure you want to take on this delivery?'
+        body='Are you sure you want to take on this delivery? For any changes in delivery assignment, please contact admin!'
       />
       <h1>My Assigned Deliveries</h1>
       <div className='grid-toolbar'>
-        <div className='search-bar'>
+        {/* <div className='search-bar'>
           <Search />
           <TextField
             id='search'
@@ -318,7 +332,7 @@ const MyDeliveryAssignment = () => {
             // fullWidth
             onChange={handleSearchFieldChange}
           />
-        </div>
+        </div> */}
         <Stack direction='row' spacing={2}>
           <Typography className='date-picker-text'>
             View deliveries from
@@ -346,29 +360,48 @@ const MyDeliveryAssignment = () => {
             position={[latlng.LATITUDE, latlng.LONGTITUDE]}
             icon={blueIcon}
           >
-            <Popup>Your current location is {latlng.ADDRESS}</Popup>
+            <Popup>Your current location is {latlng.ADDRESS} </Popup>
           </Marker>
         )}
         {unassignedDeliveryPostalCode.map((data) => {
           return (
             <Marker
+              key={data.orders.orderId}
               position={[data.LATITUDE, data.LONGTITUDE]}
               icon={greenIcon}
             >
-              <Popup>{data.ADDRESS}</Popup>
+              <Popup>
+                Delivery address: {data.ADDRESS}
+                <br></br>
+                Order Id: {data.orders.orderId}
+                <br></br>
+                Order Status: {data.orders.orderStatus}
+              </Popup>
             </Marker>
           );
         })}
         {assignedDeliveryPostalCode.map((data) => {
           return (
-            <Marker position={[data.LATITUDE, data.LONGTITUDE]} icon={redIcon}>
-              <Popup>{data.ADDRESS}</Popup>
+            <Marker
+              key={data.orders.orderId}
+              position={[data.LATITUDE, data.LONGTITUDE]}
+              icon={redIcon}
+            >
+              <Popup>
+                Delivery address: {data.ADDRESS}
+                <br></br>
+                Order Id: {data.orders.orderId}
+                <br></br>
+                Order Status: {data.orders.orderStatus}
+              </Popup>
             </Marker>
           );
         })}
       </MapContainer>
-      <body>Green: Unassigned deliveries</body>
-      <body>Red: Assigned deliveries</body>
+      <Typography variant='h3' align='left'>
+        Green: Unassigned Deliveries &nbsp; Red: Assigned Deliveries &nbsp;
+        Blue: Current Location
+      </Typography>
       <br></br>
       <DataGrid
         columns={columns}
@@ -378,6 +411,13 @@ const MyDeliveryAssignment = () => {
       />
       <br></br>
       <h1>Assign Delivery</h1>
+      {alert && (
+        <TimeoutAlert
+          alert={alert}
+          timeout={5000}
+          clearAlert={() => setAlert(null)}
+        />
+      )}
       <div className='search-bar'>
         <MyLocationIcon />
         <TextField
