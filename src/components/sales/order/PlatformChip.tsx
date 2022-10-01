@@ -8,19 +8,20 @@ interface props {
 }
 
 const PlatformChip = ({ salesOrder, pretext }: props) => {
-  
   return (
     <div style={{ margin: '1%' }}>
       {pretext && <Typography>{pretext}</Typography>}
       <Chip
         label={_.startCase(salesOrder?.platformType.toLowerCase())}
-        color={
-          salesOrder?.platformType === PlatformType.SHOPEE
-            ? 'warning'
-            : salesOrder?.platformType === PlatformType.SHOPIFY
-            ? 'primary'
-            : 'info'
-        }
+        sx={{
+          bgcolor:
+            salesOrder?.platformType === PlatformType.SHOPEE
+              ? '#FFB46F'
+              : salesOrder?.platformType === PlatformType.SHOPIFY
+              ? '#C6D68F'
+              : '#D9D9D9',
+          color: 'primary'
+        }}
       />
     </div>
   );
