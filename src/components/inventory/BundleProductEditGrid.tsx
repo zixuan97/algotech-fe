@@ -18,7 +18,6 @@ import {
 import { Product, BundleProduct } from 'src/models/types';
 import BundleProductEditToolbarCellAction from './BundleProductEditToolbarCellAction';
 import ProductSelectCellAction from './ProductSelectCellAction';
-import PositiveNumberEditCellAction from './PositiveNumberEditCellAction';
 import inventoryContext from 'src/context/inventory/inventoryContext';
 import {
   convertGridRowToBundleProduct,
