@@ -238,3 +238,17 @@
   margin: 1%;
   padding: 1%;
 }
+
+.alert {
+  display: flex;
+  flex-direction: row;
+  padding-left: 4rem;
+  padding-bottom: 2rem;
+}
+
+.create-delivery-button-container {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 2rem;
+  padding-top: 2rem;
+}

@@ -71,8 +71,16 @@ export const editDeliveryOrder = async (body: object): Promise<void> => {
   return axios.put(`${apiRoot}/delivery`, body);
 };
 
-export const createDeliveryOrder = async (body: object): Promise<void> => {
-  return axios.post(`${apiRoot}/delivery`, body);
+export const createManualDeliveryOrder = async (
+  body: object
+): Promise<void> => {
+  return axios.post(`${apiRoot}/delivery/manual`, body);
+};
+
+export const createShippitDeliveryOrder = async (
+  body: object
+): Promise<void> => {
+  return axios.post(`${apiRoot}/delivery/shippit`, body);
 };
 
 export const getAllDeliveriesPostalCodeByDate = (
