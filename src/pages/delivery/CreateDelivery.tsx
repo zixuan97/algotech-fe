@@ -225,10 +225,26 @@ const CreateDeliveryOrder = () => {
       return;
     }
 
+    if (newDeliveryOrder.parcelWeight <= 0) {
+      setAlert({
+        severity: 'warning',
+        message: 'Please input a valid parcel weight!'
+      });
+      return;
+    }
+
     if (newDeliveryOrder.parcelQty === undefined) {
       setAlert({
         severity: 'warning',
         message: 'Please input parcel quantity!'
+      });
+      return;
+    }
+
+    if (newDeliveryOrder.parcelQty <= 0) {
+      setAlert({
+        severity: 'warning',
+        message: 'Please input a valid parcel quantity!'
       });
       return;
     }
