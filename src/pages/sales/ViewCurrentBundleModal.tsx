@@ -8,7 +8,7 @@ import {
   MenuItem,
   TextField
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Product, SalesOrderBundleItem } from 'src/models/types';
 import '../../styles/pages/sales/orders.scss';
 import '../../styles/common/common.scss';
@@ -45,9 +45,11 @@ const ViewCurrentBundleModal = ({
   removeItemFromBundleItems,
   onSave
 }: ViewCurrentBundleModalProps) => {
-  const [prodName, setProdName] = useState<String>('');
-  const [quantity, setQuantity] = useState<number>(0);
+  const [prodName, setProdName] = useState<String | null>('');
+  const [quantity, setQuantity] = useState<number | null>(0);
   const [bundleAlert, setBundleAlert] = useState<AlertType | null>(null);
+  const qtyRef = useRef(null);
+  const nameRef = useRef(null);
   const columns: GridColDef[] = [
     { field: 'productName', headerName: 'Product Name', flex: 1 },
     {
@@ -85,9 +87,7 @@ const ViewCurrentBundleModal = ({
   ];
 
   useEffect(() => {
-    if (
-     editSalesOrderBundleItems?.length! < 1
-    ) {
+    if (editSalesOrderBundleItems?.length! < 1) {
       setBundleAlert({
         severity: 'info',
         message: `Note: Bundle cannot be empty. If so, please ensure that there are items in this bundle.`
@@ -95,10 +95,14 @@ const ViewCurrentBundleModal = ({
     }
   }, [editSalesOrderBundleItems]);
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+  };
+
   return (
     <>
       <div>
-        <form>
+        <form onSubmit={(e)=>handleSubmit(e)}>
           <Dialog
             open={open}
             onClose={onClose}
@@ -138,6 +142,7 @@ const ViewCurrentBundleModal = ({
                   id='outlined-field'
                   select
                   label='Product'
+                  ref={nameRef}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     if (e.target.value) {
                       updateNewSalesOrderBundleItem(e, 'productName');
@@ -160,6 +165,8 @@ const ViewCurrentBundleModal = ({
                   type='number'
                   fullWidth
                   variant='standard'
+                  value={quantity}
+                  ref={qtyRef}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     if (e.target.value) {
                       updateNewSalesOrderBundleItem(e, 'quantity');
@@ -171,7 +178,7 @@ const ViewCurrentBundleModal = ({
                   }}
                 />
                 <Button
-                  disabled={!prodName || quantity <= 0}
+                  disabled={!prodName || !quantity}
                   autoFocus={!focusPassthrough}
                   onClick={() => {
                     addNewItemToBundleItems();

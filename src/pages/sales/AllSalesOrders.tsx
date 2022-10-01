@@ -22,6 +22,7 @@ import moment from 'moment';
 import { SalesOrder } from '../../models/types/index';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { getSalesOrdersByRangeSvc } from 'src/services/salesService';
+import _ from 'lodash';
 
 let platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
 platforms.unshift('ALL');
@@ -54,7 +55,8 @@ const AllSalesOrders = () => {
                 saleOrder.orderId.toLowerCase().includes(searchFieldLower) ||
                 saleOrder.salesOrderItems.some((item) =>
                   item.productName?.toLowerCase().includes(searchFieldLower)
-                )
+                ) ||
+                _.startCase(saleOrder.orderStatus).toLowerCase().includes(searchFieldLower)
               );
             } else {
               return (
@@ -65,7 +67,9 @@ const AllSalesOrders = () => {
                   saleOrder.orderId.toLowerCase().includes(searchFieldLower) ||
                   saleOrder.salesOrderItems.some((item) =>
                     item.productName?.toLowerCase().includes(searchFieldLower)
-                  ))
+                  ) || 
+                  _.startCase(saleOrder.orderStatus).toLowerCase().includes(searchFieldLower)
+                  )
               );
             }
           })
@@ -88,7 +92,7 @@ const AllSalesOrders = () => {
         alignItems='center'
         justifyContent='space-between'
       >
-        <h1>Sales Orders</h1>
+        <h1>Sales Order Fulfilment</h1>
         <Stack direction='row' spacing={3}>
           <Typography className='container-center'>View sales from</Typography>
           <DateRangePicker
@@ -124,7 +128,7 @@ const AllSalesOrders = () => {
             label='Search'
             fullWidth
             value={searchField}
-            placeholder='Address, OrderId, Product Name'
+            placeholder='Address, OrderId, Product Name, Status'
             onChange={handleSearchFieldChange}
           />
           <Button
