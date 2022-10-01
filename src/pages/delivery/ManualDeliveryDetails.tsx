@@ -101,6 +101,7 @@ const ManualDeliveryDetails = () => {
 
   React.useEffect(() => {
     setLoading(true);
+
     if (user) {
       if (user.role === UserRole.ADMIN || user.role === UserRole.FULLTIME) {
         asyncFetchCallback(getAllUserSvc(), (users: Array<User>) => {

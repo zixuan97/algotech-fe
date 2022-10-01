@@ -32,7 +32,7 @@ import DeliveryOrderStatusCell from 'src/components/delivery/DeliveryOrderStatus
 
 const myIcon = new Icon({
   iconUrl: markerIconPng,
-  iconSize: [23, 38],
+  iconSize: [23, 38]
 });
 
 // TODO: Check if delivery date is undefined
@@ -61,6 +61,7 @@ const columns: GridColDef[] = [
     headerName: 'Delivery Date',
     flex: 1,
     valueFormatter: (params: GridValueFormatterParams<Date>) => {
+      console.log(params.value);
       let date = params.value;
       let valueFormatted = moment(date).format('DD/MM/YYYY');
       return valueFormatted;
@@ -102,6 +103,7 @@ const AllManualDeliveries = () => {
         moment(a.deliveryDate).diff(b.deliveryDate)
       );
       setDeliveryData(sortedDeliveryDate);
+      console.log(sortedDeliveryDate);
     });
     setLoading(false);
   }, [dateRange]);
