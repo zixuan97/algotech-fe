@@ -113,7 +113,7 @@ const SalesOrderDetails = () => {
             </>
           );
         } else if (
-          params.row.salesOrderBundleItems.length > 0 &&
+          Array.from(params.row.salesOrderBundleItems).length > 0 &&
           salesOrder?.orderStatus === OrderStatus.PREPARING
         ) {
           return (
