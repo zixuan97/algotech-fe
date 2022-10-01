@@ -8,24 +8,29 @@ import {
   MenuItem,
   TextField
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Product, SalesOrderBundleItem } from 'src/models/types';
 import '../../styles/pages/sales/orders.scss';
 import '../../styles/common/common.scss';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 type ViewCurrentBundleModalProps = {
   open: boolean;
   onClose: () => void;
   focusPassthrough?: boolean;
-  editSalesOrderBundleItems?: SalesOrderBundleItem[];
+  editSalesOrderBundleItems: SalesOrderBundleItem[];
   availProducts: Product[];
   updateNewSalesOrderBundleItem: (
     event: React.ChangeEvent<HTMLInputElement>,
     key: string
   ) => void;
   addNewItemToBundleItems: () => void;
-  removeItemFromBundleItems: (productName: String, salesOrderItemId: number) => void;
+  removeItemFromBundleItems: (
+    productName: String,
+    salesOrderItemId: number,
+    idx: number
+  ) => void;
   onSave: () => void;
 };
 
@@ -42,6 +47,7 @@ const ViewCurrentBundleModal = ({
 }: ViewCurrentBundleModalProps) => {
   const [prodName, setProdName] = useState<String>('');
   const [quantity, setQuantity] = useState<number>(0);
+  const [bundleAlert, setBundleAlert] = useState<AlertType | null>(null);
   const columns: GridColDef[] = [
     { field: 'productName', headerName: 'Product Name', flex: 1 },
     {
@@ -57,24 +63,37 @@ const ViewCurrentBundleModal = ({
       align: 'center',
       flex: 1,
       renderCell: (params) => {
-        if (params.row.isNewAdded) {
-          return (
-            <>
-              <Button
-                variant='contained'
-                size='medium'
-                onClick={() =>
-                  removeItemFromBundleItems(params.row.productName, params.row.salesOrderItemId)
-                }
-              >
-                Remove Item
-              </Button>
-            </>
-          );
-        }
+        return (
+          <>
+            <Button
+              variant='contained'
+              size='medium'
+              onClick={() => {
+                removeItemFromBundleItems(
+                  params.row.productName,
+                  params.row.salesOrderItemId,
+                  params.row.id
+                );
+              }}
+            >
+              Remove Item
+            </Button>
+          </>
+        );
       }
     }
   ];
+
+  useEffect(() => {
+    if (
+     editSalesOrderBundleItems?.length! < 1
+    ) {
+      setBundleAlert({
+        severity: 'info',
+        message: `Note: Bundle cannot be empty. If so, please ensure that there are items in this bundle.`
+      });
+    }
+  }, [editSalesOrderBundleItems]);
 
   return (
     <>
@@ -96,6 +115,10 @@ const ViewCurrentBundleModal = ({
                 These are the items in your bundle.
               </DialogContentText>
 
+              <TimeoutAlert
+                alert={bundleAlert}
+                clearAlert={() => setBundleAlert(null)}
+              />
               <DataGrid
                 columns={columns}
                 rows={editSalesOrderBundleItems!}
@@ -168,6 +191,7 @@ const ViewCurrentBundleModal = ({
                 type='submit'
                 autoFocus={focusPassthrough}
                 onClick={onSave}
+                disabled={editSalesOrderBundleItems?.length! < 1}
               >
                 Save Changes
               </Button>
