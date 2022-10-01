@@ -81,7 +81,7 @@ const Row = ({ row }: { row: SalesOrder }) => {
             <Box sx={{ margin: '2%' }}>
               <div className='grid-toolbar'>
                 <h3>Order Details</h3>
-                <h3>Order ID.: #{row.orderId}</h3>
+                <h3>Order ID: #{row.orderId}</h3>
               </div>
 
               {row.salesOrderItems?.map((item) => {
