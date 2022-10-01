@@ -9,11 +9,15 @@ import {
 import { MomentRange } from 'src/utils/dateUtils';
 import apiRoot from './util/apiRoot';
 
-export const getSalesOrderDetailsSvc = (
+export const getSalesOrderDetailsSvc = (id: string): Promise<SalesOrder> => {
+  return axios.get(`${apiRoot}/sales/id/${id}`).then((res) => res.data);
+};
+
+export const getSalesOrderDetailsByOrderIdSvc = (
   salesOrderId: string
 ): Promise<SalesOrder> => {
   return axios
-    .get(`${apiRoot}/sales/id/${salesOrderId}`)
+    .get(`${apiRoot}/sales/orderid/${salesOrderId}`)
     .then((res) => res.data);
 };
 
@@ -73,6 +77,11 @@ export const completeOrderPrepSvc = (salesOrder: SalesOrder): Promise<any> => {
   return axios.put(`${apiRoot}/sales`, salesOrder).then((res) => res.data);
 };
 
-export const updateSalesOrderStatusSvc = (id: string, orderStatus: OrderStatus): Promise<any> => {
-  return axios.put(`${apiRoot}/sales/status`, {id, orderStatus}).then((res) => res.data);
+export const updateSalesOrderStatusSvc = (
+  id: number,
+  orderStatus: OrderStatus
+): Promise<any> => {
+  return axios
+    .put(`${apiRoot}/sales/status`, { id, orderStatus })
+    .then((res) => res.data);
 };
