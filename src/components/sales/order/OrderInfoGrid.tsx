@@ -15,7 +15,7 @@ const OrderInfoGrid = ({ salesOrder }: props) => {
           Customer Name: {salesOrder?.customerName!}
         </Grid>
         <Grid item xs={6}>
-          Contact No.: {salesOrder?.customerContactNo!}
+          Contact No: {salesOrder?.customerContactNo!}
         </Grid>
         <Grid item xs={12}>
           Email: {salesOrder?.customerEmail ?? 'NA'}

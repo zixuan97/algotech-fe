@@ -45,11 +45,9 @@ const ViewCurrentBundleModal = ({
   removeItemFromBundleItems,
   onSave
 }: ViewCurrentBundleModalProps) => {
-  const [prodName, setProdName] = useState<String | null>('');
-  const [quantity, setQuantity] = useState<number | null>(0);
+  const [prodName, setProdName] = useState<String>('');
+  const [quantity, setQuantity] = useState<String>('');
   const [bundleAlert, setBundleAlert] = useState<AlertType | null>(null);
-  const qtyRef = useRef(null);
-  const nameRef = useRef(null);
   const columns: GridColDef[] = [
     { field: 'productName', headerName: 'Product Name', flex: 1 },
     {
@@ -95,14 +93,10 @@ const ViewCurrentBundleModal = ({
     }
   }, [editSalesOrderBundleItems]);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-  };
-
   return (
     <>
       <div>
-        <form onSubmit={(e)=>handleSubmit(e)}>
+        <form>
           <Dialog
             open={open}
             onClose={onClose}
@@ -142,7 +136,7 @@ const ViewCurrentBundleModal = ({
                   id='outlined-field'
                   select
                   label='Product'
-                  ref={nameRef}
+                  value={prodName}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     if (e.target.value) {
                       updateNewSalesOrderBundleItem(e, 'productName');
@@ -166,11 +160,10 @@ const ViewCurrentBundleModal = ({
                   fullWidth
                   variant='standard'
                   value={quantity}
-                  ref={qtyRef}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     if (e.target.value) {
                       updateNewSalesOrderBundleItem(e, 'quantity');
-                      setQuantity(e.target.valueAsNumber);
+                      setQuantity(e.target.value);
                     }
                   }}
                   InputLabelProps={{
@@ -183,7 +176,7 @@ const ViewCurrentBundleModal = ({
                   onClick={() => {
                     addNewItemToBundleItems();
                     setProdName('');
-                    setQuantity(0);
+                    setQuantity('');
                   }}
                 >
                   Add Product

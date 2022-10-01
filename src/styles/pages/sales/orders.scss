@@ -45,13 +45,6 @@
   margin: 1%;
 }
 
-.sales-header-content {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
 .content-body {
   flex-direction: column;
   margin: 1%;
@@ -71,15 +64,6 @@
   display: flex;
   width: 100%;
   padding: 0 0 1em;
-}
-
-.action-box {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-  align-items: center;
-  margin: 1%;
-  min-width: 80%;
 }
 
 .sales-stepper {
@@ -108,4 +92,34 @@
 .order-summary-card {
   display: flex;
   justify-content: flex-end;
+}
+
+.sales-action-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 1%;
+  margin-bottom: 1%;
+}
+
+.sales-header-content {
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.sales-content-body {
+  flex-direction: column;
+  margin: 1%;
+}
+
+.action-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  margin: 1%;
+  min-width: 30%;
 }
