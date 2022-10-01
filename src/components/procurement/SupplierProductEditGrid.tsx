@@ -26,7 +26,7 @@ import {
   SupplierProductGridRow,
 } from './procurementHelper';
 import { toPairs } from 'lodash';
-import PositiveNonZeroNumberEditCellAction from '../inventory/PositiveNonZeroNumberEditCellAction';
+import PositiveNumberEditCellAction from '../inventory/PositiveNumberEditCellAction';
 
 type SupplierProductEditGridProps = {
     supplierProductList: SupplierProduct[];
@@ -129,7 +129,7 @@ type SupplierProductEditGridProps = {
         editable: true,
         valueFormatter: (params) => params.value.toFixed(2),
         renderEditCell: (params) => (
-          <PositiveNonZeroNumberEditCellAction params={params} />
+          <PositiveNumberEditCellAction params={params} />
         )
       },
       {
