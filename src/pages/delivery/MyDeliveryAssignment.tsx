@@ -39,6 +39,8 @@ import DateRangePicker from 'src/components/common/DateRangePicker';
 import { MomentRange } from 'src/utils/dateUtils';
 import moment from 'moment';
 import DeliveryOrderStatusCell from 'src/components/delivery/DeliveryOrderStatusCell';
+import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import { AlertType } from 'src/components/common/TimeoutAlert';
 
 const columns: GridColDef[] = [
   {
@@ -81,58 +83,6 @@ const columns: GridColDef[] = [
   }
 ];
 
-// const columnsBottom: GridColDef[] = [
-//   {
-//     field: 'salesOrderId',
-//     headerName: 'Order ID',
-//     flex: 1,
-//     valueGetter: (params: GridValueGetterParams) => params.row.salesOrder.orderId
-//   },
-//   {
-//     field: 'orderStatus',
-//     headerName: 'Delivery Status',
-//     flex: 1,
-//     renderCell: DeliveryOrderStatusCell
-//   },
-//   {
-//     field: 'salesOrder',
-//     headerName: 'Address',
-//     flex: 1,
-//     valueGetter: (params: GridValueGetterParams) =>
-//       params.row.salesOrder.customerAddress
-//   },
-//   {
-//     field: 'deliveryDate',
-//     headerName: 'Delivery Date',
-//     flex: 1,
-//     valueFormatter: (params: GridValueFormatterParams<Date>) => {
-//       let date = params.value;
-//       let valueFormatted = moment(date).format('DD/MM/YYYY');
-//       return valueFormatted;
-//     }
-//   },
-//   {
-//     field: 'action',
-//     headerName: 'Action',
-//     headerAlign: 'right',
-//     align: 'right',
-//     flex: 1,
-//     renderCell: (params: GridRenderCellParams) => (
-//       <strong>
-//         {params.row.salesOrder.orderId}
-//         <Button
-//           variant="contained"
-//           size="small"
-//           style={{ marginLeft: 16 }}
-//           tabIndex={params.hasFocus ? 0 : -1}
-//           onClick={()=>editDelivery(params.row)}
-//         >
-//           Open
-//         </Button>
-//       </strong>
-//     )
-//   }
-// ];
 
 const MyDeliveryAssignment = () => {
   const columnsBottom: GridColDef[] = [
@@ -180,7 +130,7 @@ const MyDeliveryAssignment = () => {
             size='medium'
             style={{ marginLeft: 16 }}
             tabIndex={params.hasFocus ? 0 : -1}
-            onClick={() => editDelivery(params.row)}
+            onClick={() => handleConfirmAssignment(params.row)}
           >
             Assign to me
           </Button>
@@ -201,12 +151,15 @@ const MyDeliveryAssignment = () => {
     React.useState<any[]>([]);
   const [filteredData, setFilteredData] = React.useState<DeliveryOrder[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [tempDO, setTempDO] = React.useState<DeliveryOrder>();
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
   const [latlng, setLatLng] = React.useState<any>();
   const [currentLocation, setCurrentLocation] = React.useState<string>();
   const authContext = React.useContext(AuthContext);
   const { user } = authContext;
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [dateRange, setDateRange] = React.useState<MomentRange>([
-    moment().startOf('day'),
+    moment().startOf('month'),
     moment().endOf('day')
   ]);
 
@@ -257,10 +210,10 @@ const MyDeliveryAssignment = () => {
     setFilteredData(
       searchField
         ? assignedDeliveries.filter((category) =>
-            Object.values(category).some((value) =>
-              String(value).toLowerCase().includes(searchField.toLowerCase())
-            )
+          Object.values(category).some((value) =>
+            String(value).toLowerCase().includes(searchField.toLowerCase())
           )
+        )
         : assignedDeliveries
     );
   }, [searchField, assignedDeliveries]);
@@ -269,11 +222,24 @@ const MyDeliveryAssignment = () => {
     console.log('enter method');
     deliveryOrder.assignedUserId = user?.id;
     asyncFetchCallback(editDeliveryOrder(deliveryOrder), () => {
+      setModalOpen(false);
       setUnassignedDeliveries(
         unassignedDeliveries.filter((x) => x.id !== deliveryOrder.id)
       );
       setAssignedDeliveries([...assignedDeliveries, deliveryOrder]);
-    });
+      setAlert({
+        severity: 'success',
+        message: 'Delivery Order assigned successfully.'
+      });
+    },
+      (err) => {
+        setAlert({
+          severity: 'error',
+          message:
+            'Delivery Order not assigned successfully, please try again!'
+        });
+      }
+    );
   };
 
   const findCurrentLocation = (event: React.MouseEvent<HTMLElement>) => {
@@ -286,8 +252,19 @@ const MyDeliveryAssignment = () => {
         console.log(
           'Current location is [' + res.LATITUDE + ',' + res.LONGTITUDE + ']'
         );
+        setAlert({
+          severity: 'success',
+          message: 'Current location marker plotted successfully.'
+        });
       },
-      () => setLoading(false)
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message:
+            'Current location marker not plotted successfuly, please try again!'
+        });
+      }
     );
   };
 
@@ -314,8 +291,22 @@ const MyDeliveryAssignment = () => {
     setSearchField(e.target.value);
   };
 
+  const handleConfirmAssignment = (deliveryOrder: DeliveryOrder) => {
+    console.log(deliveryOrder);
+    setModalOpen(true);
+    setTempDO(deliveryOrder)
+  };
+
   return (
+
     <div className='delivery-orders'>
+      <ConfirmationModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onConfirm={() => editDelivery(tempDO!)}
+        title='Assign Delivery'
+        body='Are you sure you want to take on this delivery?'
+      />
       <h1>My Assigned Deliveries</h1>
       <div className='grid-toolbar'>
         <div className='search-bar'>

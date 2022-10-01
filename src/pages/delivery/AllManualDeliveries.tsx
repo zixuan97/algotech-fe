@@ -84,7 +84,7 @@ const AllManualDeliveries = () => {
   const [loading, setLoading] = React.useState<boolean>(false);
   const [deliveryPostalCode, setDeliveryPostalCode] = React.useState<any[]>([]);
   const [dateRange, setDateRange] = React.useState<MomentRange>([
-    moment().startOf('day'),
+    moment().startOf('month'),
     moment().endOf('day')
   ]);
 
@@ -135,7 +135,7 @@ const AllManualDeliveries = () => {
       >
         <TileLayer
           attribution='&copy; <img src="https://www.onemap.gov.sg/docs/maps/images/oneMap64-01.png" style="height:20px;width:20px;"/> OneMap | Map data &copy; contributors, <a href="http://SLA.gov.sg">Singapore Land Authority</a>'
-          url='https://maps-{s}.onemap.sg/v3/Default/{z}/{x}/{y}.png'
+          url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
         />
         {deliveryPostalCode.map((data) => {
           return (
