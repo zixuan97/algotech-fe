@@ -116,7 +116,6 @@ const SalesOrderDetails = () => {
           Array.from(params.row.salesOrderBundleItems).length > 0 &&
           salesOrder?.orderStatus === OrderStatus.PREPARING
         ) {
-          
           return (
             <>
               <Button
@@ -124,9 +123,7 @@ const SalesOrderDetails = () => {
                   setEditSalesOrderBundleItems(
                     params.row.salesOrderBundleItems
                   );
-                  setSaleOrderLineItemId(
-                    params.row.id
-                  );
+                  setSaleOrderLineItemId(params.row.id);
                   setShowCurrentBundleModal(true);
                 }}
                 variant='contained'
@@ -140,6 +137,18 @@ const SalesOrderDetails = () => {
       }
     }
   ];
+
+  useEffect(() => {
+    if (editSalesOrderBundleItems) {
+      setAvailBundleProducts(
+        products.filter((product) => {
+          return !editSalesOrderBundleItems.some(bundleItem => {
+            return product.name === bundleItem.productName;
+          });
+        })
+      );
+    }
+  }, [editSalesOrderBundleItems, products]);
 
   useEffect(() => {
     setLoading(true);
@@ -415,7 +424,7 @@ const SalesOrderDetails = () => {
 
   const saveChangesToBundle = () => {
     const temp = [...editSalesOrderItems];
-    if(editSalesOrderBundleItems.length > 0) {
+    if (editSalesOrderBundleItems.length > 0) {
       const oldSaleOrderItem = JSON.parse(
         JSON.stringify(
           temp.find((item) => {
