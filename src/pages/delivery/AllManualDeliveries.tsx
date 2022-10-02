@@ -17,7 +17,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import { arrayBuffer } from 'stream/consumers';
 import axios from 'axios';
-import manualMarker from 'src/components/delivery/manual.png';
+import manualMarker from 'src/resources/components/delivery/manual.png';
 import DateRangePicker from 'src/components/common/DateRangePicker';
 import { MomentRange } from 'src/utils/dateUtils';
 import moment from 'moment';

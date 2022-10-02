@@ -31,9 +31,9 @@ import {
 import { useNavigate } from 'react-router';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
-import assignedMarker from 'src/components/delivery/assigned.png';
-import unassignedMarker from 'src/components/delivery/unassigned.png';
-import currentMarker from 'src/components/delivery/current.png';
+import assignedMarker from 'src/resources/components/delivery/assigned.png';
+import unassignedMarker from 'src/resources/components/delivery/unassigned.png';
+import currentMarker from 'src/resources/components/delivery/current.png';
 import AuthContext from 'src/context/auth/authContext';
 import DateRangePicker from 'src/components/common/DateRangePicker';
 import { MomentRange } from 'src/utils/dateUtils';
