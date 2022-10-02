@@ -67,6 +67,7 @@ const SalesDashboard = () => {
 
   // component state
   const [pdfLoading, setPdfLoading] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const [dateRange, setDateRange] = React.useState<MomentRange>([
     moment().startOf('day'),
     moment().endOf('day')
@@ -94,7 +95,15 @@ const SalesDashboard = () => {
   );
 
   React.useEffect(() => {
-    asyncFetchCallback(getSalesOrdersByRangeSvc(dateRange), setSalesOrders);
+    setLoading(true);
+    asyncFetchCallback(
+      getSalesOrdersByRangeSvc(dateRange),
+      (res) => {
+        setSalesOrders(res);
+        setLoading(false);
+      },
+      () => setLoading(false)
+    );
     asyncFetchCallback(getSalesBestsellersByRangeSvc(dateRange), (res) => {
       const sortedBestsellers = res.sort((a, b) => b.quantity - a.quantity);
       setBestSellers(sortedBestsellers);
@@ -260,7 +269,7 @@ const SalesDashboard = () => {
             Export Sales Orders to Excel
           </Button>
         </div>
-        <SalesOrdersGrid salesOrders={filteredSalesOrders} />
+        <SalesOrdersGrid salesOrders={filteredSalesOrders} loading={loading} />
       </div>
     </div>
   );

@@ -52,15 +52,17 @@ const columns: GridColDef[] = [
 
 type SalesOrderGridProps = {
   salesOrders: SalesOrder[];
+  loading: boolean;
 };
 
-const SalesOrdersGrid = ({ salesOrders }: SalesOrderGridProps) => {
+const SalesOrdersGrid = ({ salesOrders, loading }: SalesOrderGridProps) => {
   return (
     <DataGrid
       sx={{ fontSize: '0.8em' }}
       columns={columns}
       rows={salesOrders}
       autoHeight
+      loading={loading}
       pageSize={10}
     />
   );
