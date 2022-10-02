@@ -25,7 +25,7 @@ import DeliveryOrderStatusCell from 'src/components/delivery/DeliveryOrderStatus
 
 const manualIcon = new Icon({
   iconUrl: manualMarker,
-  iconSize: [23, 35]
+  iconSize: [25, 38]
 });
 // TODO: Check if delivery date is undefined
 const columns: GridColDef[] = [
