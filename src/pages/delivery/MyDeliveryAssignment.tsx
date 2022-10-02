@@ -300,14 +300,14 @@ const MyDeliveryAssignment = () => {
       getAllUnassignedDeliveriesPostalCodeByDate(dateRange),
       setUnassignedDeliveryPostalCode
     );
-  }, [dateRange]);
+  }, [dateRange, unassignedDeliveries]);
 
   React.useEffect(() => {
     asyncFetchCallback(
       getAllAssignedDeliveriesPostalCodeByDate(dateRange, user?.id),
       setAssignedDeliveryPostalCode
     );
-  }, [dateRange, user?.id]);
+  }, [dateRange, user?.id, assignedDeliveries]);
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentLocation(e.target.value);
