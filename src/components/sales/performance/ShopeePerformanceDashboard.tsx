@@ -61,7 +61,7 @@ const ShopeePerformanceDashboard = ({
         />
       </Stack>
       <Divider variant='middle' sx={{ mb: 3 }} />
-      <Accordion defaultExpanded={true}>
+      <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls='panel1a-content'
@@ -81,7 +81,7 @@ const ShopeePerformanceDashboard = ({
           <ShopeePerformanceCard performanceCategory={fulfilment} />
         </AccordionDetails>
       </Accordion>
-      <Accordion defaultExpanded={true}>
+      <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls='panel2a-content'
@@ -101,7 +101,7 @@ const ShopeePerformanceDashboard = ({
           <ShopeePerformanceCard performanceCategory={customerSatisfaction} />
         </AccordionDetails>
       </Accordion>
-      <Accordion defaultExpanded={true}>
+      <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls='panel3a-content'
@@ -121,7 +121,7 @@ const ShopeePerformanceDashboard = ({
           <ShopeePerformanceCard performanceCategory={customerService} />
         </AccordionDetails>
       </Accordion>
-      <Accordion defaultExpanded={true}>
+      <Accordion>
         <AccordionSummary
           expandIcon={<ExpandMore />}
           aria-controls='panel4a-content'
