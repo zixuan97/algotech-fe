@@ -19,7 +19,7 @@ const columns: GridColDef[] = [
   { field: 'deliveryMode', headerName: 'Delivery Mode', flex: 1 },
   {
     field: 'deliveryDate',
-    headerName: 'Delivery Date',
+    headerName: 'Estimated Delivery Date',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) => {
       if (params.value !== null) {

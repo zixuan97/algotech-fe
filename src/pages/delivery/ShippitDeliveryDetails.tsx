@@ -324,7 +324,7 @@ const ShippitDeliveryDetails = () => {
                 <Typography>{deliveryOrder?.carrier}</Typography>
               </Grid> */}
               <Grid item xs={6}>
-                <h4 className='labelText'>Delivery Date</h4>
+                <h4 className='labelText'>Estimated Delivery Date</h4>
                 <Typography>
                   {moment(deliveryOrder?.deliveryDate).format('DD-MM-YYYY')}
                 </Typography>
