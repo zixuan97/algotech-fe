@@ -17,15 +17,15 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import { arrayBuffer } from 'stream/consumers';
 import axios from 'axios';
-import blueMarker from 'src/components/delivery/blue_marker.png';
+import manualMarker from 'src/resources/components/delivery/manual.png';
 import DateRangePicker from 'src/components/common/DateRangePicker';
 import { MomentRange } from 'src/utils/dateUtils';
 import moment from 'moment';
 import DeliveryOrderStatusCell from 'src/components/delivery/DeliveryOrderStatusCell';
 
-const blueIcon = new Icon({
-  iconUrl: blueMarker,
-  iconSize: [23, 38]
+const manualIcon = new Icon({
+  iconUrl: manualMarker,
+  iconSize: [23, 35]
 });
 // TODO: Check if delivery date is undefined
 const columns: GridColDef[] = [
@@ -148,7 +148,7 @@ const AllManualDeliveries = () => {
             <Marker
               key={data.orders.orderId}
               position={[data.LATITUDE, data.LONGTITUDE]}
-              icon={blueIcon}
+              icon={manualIcon}
             >
               <Popup>
                 Delivery address: {data.ADDRESS}
