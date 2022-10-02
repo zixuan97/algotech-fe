@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import '../../styles/pages/sales/orders.scss';
 import '../../styles/common/common.scss';
 import {
@@ -138,6 +138,17 @@ const SalesOrderDetails = () => {
     }
   ];
 
+  const statusStepper = useMemo(
+    () =>
+      salesOrder?.orderStatus === OrderStatus.CANCELLED
+        ? steps.filter((step) => {
+            return step.currentState !== OrderStatus.PAID;
+          })
+        : steps.filter((step) => {
+            return step.currentState !== OrderStatus.CANCELLED;
+          }),
+    [salesOrder?.orderStatus]
+  );
   useEffect(() => {
     if (editSalesOrderBundleItems) {
       setAvailBundleProducts(
@@ -158,7 +169,9 @@ const SalesOrderDetails = () => {
       setAvailProducts(products);
       setAvailBundleProducts(products);
       setActiveStep(
-        steps.findIndex((step) => step.currentState === salesOrder.orderStatus)
+        steps.findIndex(
+          (step) => step.currentState === salesOrder.orderStatus
+        )
       );
       setLoading(false);
     };
@@ -204,11 +217,13 @@ const SalesOrderDetails = () => {
         errorCallback
       );
     }
-  }, [id, orderId, navigate, products]);
+  }, [id, orderId, navigate, products, statusStepper]);
+
+  console.log(activeStep);
 
   const nextStep = () => {
-    if (activeStep < steps.length - 1) {
-      const newStatus = steps[activeStep + 1].currentState;
+    if (activeStep < statusStepper.length - 1) {
+      const newStatus = statusStepper[activeStep + 1].currentState;
       if (newStatus === OrderStatus.PREPARED) {
         setModalOpen(true);
       } else if (
@@ -259,7 +274,7 @@ const SalesOrderDetails = () => {
         () => {
           setAlert({
             severity: 'success',
-            message: `The order status has been updated. You can now ${steps[
+            message: `The order status has been updated. You can now ${statusStepper[
               activeStep + 1
             ].nextAction.toLowerCase()}.`
           });
@@ -452,7 +467,6 @@ const SalesOrderDetails = () => {
     setEditSalesOrderItems(temp);
     setShowCurrentBundleModal(false);
   };
-
   return (
     <>
       <AddSalesOrderItemModal
@@ -512,42 +526,27 @@ const SalesOrderDetails = () => {
                 <Typography sx={{ fontSize: 'inherit' }}>
                   Next Action:
                 </Typography>
-                {(salesOrder?.platformType === PlatformType.SHOPEE ||
-                  salesOrder?.platformType === PlatformType.LAZADA) &&
-                activeStep > 2 ? (
-                  <Tooltip
-                    title='Delivery details not available at this moment.'
-                    enterDelay={500}
-                  >
-                    <span>
-                      <Button
-                        variant='contained'
-                        size='medium'
-                        onClick={nextStep}
-                        disabled={
-                          (salesOrder?.platformType === PlatformType.SHOPEE ||
-                            salesOrder?.platformType === PlatformType.LAZADA) &&
-                          activeStep > 2
-                        }
-                      >
-                        {steps[activeStep].nextAction}
-                      </Button>
-                    </span>
-                  </Tooltip>
-                ) : (
-                  <Button
-                    variant='contained'
-                    size='medium'
-                    onClick={nextStep}
-                    disabled={
-                      (salesOrder?.platformType === PlatformType.SHOPEE ||
-                        salesOrder?.platformType === PlatformType.LAZADA) &&
-                      activeStep > 2
-                    }
-                  >
-                    {steps[activeStep].nextAction}
-                  </Button>
-                )}
+
+                <Tooltip
+                  title={salesOrder?.platformType === PlatformType.SHOPEE ? 'Delivery handled by the eCommerce platform' : steps[activeStep].tooltip}
+                  enterDelay={500}
+                >
+                  <span>
+                    <Button
+                      variant='contained'
+                      size='medium'
+                      onClick={nextStep}
+                      disabled={
+                        (salesOrder?.platformType === PlatformType.SHOPEE ||
+                          salesOrder?.platformType === PlatformType.LAZADA ||
+                          salesOrder?.orderStatus === OrderStatus.CANCELLED) &&
+                        (activeStep > 2 || activeStep === 1)
+                      }
+                    >
+                      {steps[activeStep].nextAction}
+                    </Button>
+                  </span>
+                </Tooltip>
               </div>
             </Paper>
           </div>
