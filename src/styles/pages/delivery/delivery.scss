@@ -263,3 +263,20 @@
   padding-right: 2rem;
   padding-top: 2rem;
 }
+
+.delivery-legend-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.delivery-legend-image {
+  padding-right: 0.5rem;
+  padding-left: 1rem;
+}
+
+.delivery-legend-typography {
+  padding-right: 1rem;
+}
