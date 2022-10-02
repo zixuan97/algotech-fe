@@ -31,14 +31,17 @@ const AllSalesOrders = () => {
   const [salesOrders, setSalesOrders] = useState<SalesOrder[]>([]);
   const [searchField, setSearchField] = useState<string>('');
   const [filterPlatform, setFilterPlatform] = useState<string>('ALL');
+  const [loading, setLoading] = useState<boolean>(true);
   const [dateRange, setDateRange] = React.useState<MomentRange>([
     moment().startOf('day').subtract(10, 'day'),
     moment().endOf('day')
   ]);
 
   useEffect(() => {
+    setLoading(true);
     asyncFetchCallback(getSalesOrdersByRangeSvc(dateRange), (res) => {
       setSalesOrders(res);
+      setLoading(false);
     });
   }, [dateRange]);
 
