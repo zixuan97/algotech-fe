@@ -1,4 +1,4 @@
-import { Typography, Divider, Paper } from '@mui/material';
+import { Typography, Divider } from '@mui/material';
 import React from 'react';
 import assignedMarker from 'src/resources/components/delivery/assigned.png';
 import unassignedMarker from 'src/resources/components/delivery/unassigned.png';
