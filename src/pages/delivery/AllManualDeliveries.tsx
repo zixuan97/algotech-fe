@@ -151,8 +151,11 @@ const AllManualDeliveries = () => {
               icon={blueIcon}
             >
               <Popup>
-                {data.ADDRESS}
-                {data.orders.orderId}
+                Delivery address: {data.ADDRESS}
+                <br></br>
+                Order Id: {data.orders.orderId}
+                <br></br>
+                Order Status: {data.orders.orderStatus}
               </Popup>
             </Marker>
           );

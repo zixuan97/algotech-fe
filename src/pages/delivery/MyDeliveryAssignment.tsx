@@ -19,7 +19,7 @@ import {
 } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
-import { DeliveryOrder } from '../../models/types';
+import { DeliveryOrder, OrderStatus } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   editDeliveryOrder,
@@ -55,7 +55,22 @@ const columns: GridColDef[] = [
     field: 'orderStatus',
     headerName: 'Delivery Status',
     flex: 1,
-    renderCell: DeliveryOrderStatusCell
+    renderCell: DeliveryOrderStatusCell,
+    valueGetter: (params) => {
+      let orderStatus = params.row.salesOrder.orderStatus;
+      let cell;
+
+      if (orderStatus === OrderStatus.READY_FOR_DELIVERY) {
+        cell = 'Delivery Scheduled';
+      } else if (orderStatus === OrderStatus.SHIPPED) {
+        cell = 'Shipped';
+      } else if (orderStatus === OrderStatus.COMPLETED) {
+        cell = 'Completed';
+      } else {
+        cell = 'Cancelled';
+      }
+      return cell;
+    }
   },
   {
     field: 'salesOrder',
@@ -68,7 +83,7 @@ const columns: GridColDef[] = [
     field: 'deliveryDate',
     headerName: 'Delivery Date',
     flex: 1,
-    valueFormatter: (params: GridValueFormatterParams<Date>) => {
+    valueGetter: (params: GridValueGetterParams) => {
       let date = params.value;
       let valueFormatted = moment(date).format('DD/MM/YYYY');
       return valueFormatted;
@@ -97,7 +112,22 @@ const MyDeliveryAssignment = () => {
       field: 'orderStatus',
       headerName: 'Delivery Status',
       flex: 1,
-      renderCell: DeliveryOrderStatusCell
+      renderCell: DeliveryOrderStatusCell,
+      valueGetter: (params) => {
+        let orderStatus = params.row.salesOrder.orderStatus;
+        let cell;
+
+        if (orderStatus === OrderStatus.READY_FOR_DELIVERY) {
+          cell = 'Delivery Scheduled';
+        } else if (orderStatus === OrderStatus.SHIPPED) {
+          cell = 'Shipped';
+        } else if (orderStatus === OrderStatus.COMPLETED) {
+          cell = 'Completed';
+        } else {
+          cell = 'Cancelled';
+        }
+        return cell;
+      }
     },
     {
       field: 'salesOrder',
@@ -110,7 +140,7 @@ const MyDeliveryAssignment = () => {
       field: 'deliveryDate',
       headerName: 'Delivery Date',
       flex: 1,
-      valueFormatter: (params: GridValueFormatterParams<Date>) => {
+      valueGetter: (params: GridValueGetterParams) => {
         let date = params.value;
         let valueFormatted = moment(date).format('DD/MM/YYYY');
         return valueFormatted;
@@ -182,7 +212,7 @@ const MyDeliveryAssignment = () => {
     // TODO: implement error callback
     setLoading(true);
     asyncFetchCallback(
-      getAllAssignedDeliveriesByDate(dateRange,user?.id),
+      getAllAssignedDeliveriesByDate(dateRange, user?.id),
       (res) => {
         setLoading(false);
         setAssignedDeliveries(res);
@@ -192,7 +222,7 @@ const MyDeliveryAssignment = () => {
       },
       () => setLoading(false)
     );
-  }, [user,dateRange]);
+  }, [user, dateRange]);
 
   // React.useEffect(() => {
   //   // TODO: implement error callback
@@ -226,10 +256,10 @@ const MyDeliveryAssignment = () => {
     setFilteredData(
       searchField
         ? assignedDeliveries.filter((category) =>
-            Object.values(category).some((value) =>
-              String(value).toLowerCase().match(searchField.toLowerCase())
-            )
+          Object.values(category).some((value) =>
+            String(value).toLowerCase().match(searchField.toLowerCase())
           )
+        )
         : assignedDeliveries
     );
   }, [searchField, assignedDeliveries]);
