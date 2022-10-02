@@ -576,6 +576,7 @@ const SalesOrderDetails = () => {
                 getRowId={(row) => editSalesOrderItems.indexOf(row)}
                 autoHeight
                 pageSize={5}
+                loading={loading}
               />
               <OrderSummaryCard salesOrder={salesOrder!} />
             </div>

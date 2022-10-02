@@ -11,7 +11,8 @@ import {
   Typography,
   Divider,
   InputLabel,
-  FormControl
+  FormControl,
+  CircularProgress
 } from '@mui/material';
 import { Search, FilterList } from '@mui/icons-material';
 import { PlatformType } from 'src/models/types';
@@ -31,14 +32,17 @@ const AllSalesOrders = () => {
   const [salesOrders, setSalesOrders] = useState<SalesOrder[]>([]);
   const [searchField, setSearchField] = useState<string>('');
   const [filterPlatform, setFilterPlatform] = useState<string>('ALL');
+  const [loading, setLoading] = useState<boolean>(true);
   const [dateRange, setDateRange] = React.useState<MomentRange>([
     moment().startOf('day').subtract(10, 'day'),
     moment().endOf('day')
   ]);
 
   useEffect(() => {
+    setLoading(true);
     asyncFetchCallback(getSalesOrdersByRangeSvc(dateRange), (res) => {
       setSalesOrders(res);
+      setLoading(false);
     });
   }, [dateRange]);
 
@@ -56,7 +60,9 @@ const AllSalesOrders = () => {
                 saleOrder.salesOrderItems.some((item) =>
                   item.productName?.toLowerCase().includes(searchFieldLower)
                 ) ||
-                _.startCase(saleOrder.orderStatus).toLowerCase().includes(searchFieldLower)
+                _.startCase(saleOrder.orderStatus)
+                  .toLowerCase()
+                  .includes(searchFieldLower)
               );
             } else {
               return (
@@ -67,9 +73,10 @@ const AllSalesOrders = () => {
                   saleOrder.orderId.toLowerCase().includes(searchFieldLower) ||
                   saleOrder.salesOrderItems.some((item) =>
                     item.productName?.toLowerCase().includes(searchFieldLower)
-                  ) || 
-                  _.startCase(saleOrder.orderStatus).toLowerCase().includes(searchFieldLower)
-                  )
+                  ) ||
+                  _.startCase(saleOrder.orderStatus)
+                    .toLowerCase()
+                    .includes(searchFieldLower))
               );
             }
           })
@@ -94,6 +101,7 @@ const AllSalesOrders = () => {
       >
         <h1>Sales Order Fulfilment</h1>
         <Stack direction='row' spacing={3}>
+          {loading && <CircularProgress color='secondary' />}
           <Typography className='container-center'>View sales from</Typography>
           <DateRangePicker
             dateRange={dateRange}
