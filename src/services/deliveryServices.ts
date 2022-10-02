@@ -23,6 +23,18 @@ export const getManualDeliveryOrdersByRangeSvc = (
     .then((res) => res.data);
 };
 
+export const getShippitDeliveryOrdersByRangeSvc = (
+  dateRange: MomentRange
+): Promise<DeliveryOrder[]> => {
+  const reqBody = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format()
+  };
+  return axios
+    .post(`${apiRoot}/delivery/shippitDeliveries/date`, reqBody)
+    .then((res) => res.data);
+};
+
 export const getAllShippitDeliveries = async (): Promise<DeliveryOrder[]> => {
   return axios.get(`${apiRoot}/delivery/shippit/all`).then((res) => res.data);
 };
@@ -126,10 +138,10 @@ export const getAllAssignedDeliveriesByDate = async (
     time_to: dateRange[1].format(),
     assignedUserId: id
   };
-  console.log(resBody)
+  console.log(resBody);
   return axios
     .post(`${apiRoot}/delivery/byUser/assignedByDate`, resBody)
-    .then((res) => res.data );
+    .then((res) => res.data);
 };
 
 export const getCurrentLocationLatLng = async (
@@ -150,7 +162,7 @@ export const getAllUnassignedDeliveries = async (
   // console.log(timeFilter)
   return axios
     .post(`${apiRoot}/delivery/unassignedByDate`, timeFilter)
-    .then((res) =>   res.data );
+    .then((res) => res.data);
 };
 
 export const getAllUnassignedDeliveriesPostalCodeByDate = (
