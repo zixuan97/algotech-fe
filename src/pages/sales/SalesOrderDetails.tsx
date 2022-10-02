@@ -169,9 +169,7 @@ const SalesOrderDetails = () => {
       setAvailProducts(products);
       setAvailBundleProducts(products);
       setActiveStep(
-        steps.findIndex(
-          (step) => step.currentState === salesOrder.orderStatus
-        )
+        steps.findIndex((step) => step.currentState === salesOrder.orderStatus)
       );
       setLoading(false);
     };
@@ -219,11 +217,10 @@ const SalesOrderDetails = () => {
     }
   }, [id, orderId, navigate, products, statusStepper]);
 
-  console.log(activeStep);
 
   const nextStep = () => {
     if (activeStep < statusStepper.length - 1) {
-      const newStatus = statusStepper[activeStep + 1].currentState;
+      const newStatus = statusStepper[activeStep].currentState;
       if (newStatus === OrderStatus.PREPARED) {
         setModalOpen(true);
       } else if (
@@ -528,7 +525,11 @@ const SalesOrderDetails = () => {
                 </Typography>
 
                 <Tooltip
-                  title={salesOrder?.platformType === PlatformType.SHOPEE ? 'Delivery handled by the eCommerce platform' : steps[activeStep].tooltip}
+                  title={
+                    salesOrder?.platformType === PlatformType.SHOPEE
+                      ? 'Delivery handled by the eCommerce platform'
+                      : steps[activeStep].tooltip
+                  }
                   enterDelay={500}
                 >
                   <span>
@@ -540,7 +541,7 @@ const SalesOrderDetails = () => {
                         (salesOrder?.platformType === PlatformType.SHOPEE ||
                           salesOrder?.platformType === PlatformType.LAZADA ||
                           salesOrder?.orderStatus === OrderStatus.CANCELLED) &&
-                        (activeStep > 2 || activeStep === 1)
+                        (activeStep > 3 || activeStep === 1)
                       }
                     >
                       {steps[activeStep].nextAction}
