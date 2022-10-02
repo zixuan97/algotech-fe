@@ -504,7 +504,7 @@ const SalesOrderDetails = () => {
       <div className='center-div'>
         <Box className='center-box'>
           <div className='sales-header-content'>
-            <StatusStepper orderStatus={salesOrder?.orderStatus!} />
+            <StatusStepper orderStatus={salesOrder?.orderStatus!}/>
             <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
             <Paper elevation={3} className='sales-action-card '>
               <OrderInfoGrid salesOrder={salesOrder!} />
@@ -516,7 +516,7 @@ const SalesOrderDetails = () => {
                   salesOrder?.platformType === PlatformType.LAZADA) &&
                 activeStep > 2 ? (
                   <Tooltip
-                    title='Delivery details not available at this moment.'
+                    title='Delivery is handled by the platform.'
                     enterDelay={500}
                   >
                     <span>
