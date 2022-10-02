@@ -105,7 +105,7 @@ const SalesOrderDetails = () => {
                 variant='contained'
                 size='medium'
                 onClick={() => {
-                  removeItemFromList(params.row.productName);
+                  removeItemFromList(params.row.productName, params.row.id);
                 }}
               >
                 Remove Item
@@ -317,22 +317,41 @@ const SalesOrderDetails = () => {
     });
   };
 
-  const removeItemFromList = (productName: String) => {
-    const temp = [...editSalesOrderItems];
-    temp.splice(
-      temp.indexOf(
-        temp.find((item) => {
-          return item.productName === productName && item.isNewAdded;
+  const removeItemFromList = (productName: String, idx: number) => {
+    const salesOrderItemsToUpdate = [...editSalesOrderItems];
+    if (idx && salesOrderItemsToUpdate[0].id === idx) {
+      salesOrderItemsToUpdate.splice(0, 1);
+    } else {
+      if (idx) {
+        salesOrderItemsToUpdate.splice(
+          salesOrderItemsToUpdate.findIndex((item) => {
+            return item.id === idx;
+          })!,
+          1
+        );
+      } else {
+        salesOrderItemsToUpdate.splice(
+          salesOrderItemsToUpdate.findIndex((item) => {
+            return item.productName === productName && item.isNewAdded;
+          })!,
+          1
+        );
+      }
+    }
+    setEditSalesOrderItems(salesOrderItemsToUpdate);
+
+    if (
+      !availProducts.find((product) => {
+        return product.name === productName;
+      })
+    ) {
+      setAvailProducts((prev) => [
+        ...prev,
+        products.find((prod) => {
+          return prod.name === productName;
         })!
-      )
-    );
-    setEditSalesOrderItems(temp);
-    setAvailProducts((prev) => [
-      ...prev,
-      products.find((prod) => {
-        return prod.name === productName;
-      })!
-    ]);
+      ]);
+    }
   };
 
   const updateSalesOrderWithNewSalesOrderItem = () => {
