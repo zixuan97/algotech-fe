@@ -14,7 +14,9 @@ const PositiveNonZeroNumberEditCellAction = ({
   const apiRef = useGridApiContext();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = parseInt(e.target.value);
+    let newValue = parseInt(e.target.value);
+
+    if (newValue < 1) newValue = 1;
 
     apiRef.current.setEditCellValue({
       id: gridId,
