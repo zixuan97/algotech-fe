@@ -1,5 +1,3 @@
-import { MoreVert } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
 import moment from 'moment';
 import { Line } from 'react-chartjs-2';
 import { DailySales } from 'src/models/types';
@@ -72,9 +70,9 @@ const OrdersCard = ({ dailySales }: OrdersCardProps) => {
               />
             </div>
           )}
-          <IconButton>
+          {/* <IconButton>
             <MoreVert />
-          </IconButton>
+          </IconButton> */}
         </>
       }
     />

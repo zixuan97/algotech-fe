@@ -9,7 +9,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { ChevronLeft, Info } from '@mui/icons-material';
+import { ChevronLeft } from '@mui/icons-material';
 import {
   OrderStatus,
   PlatformType,
@@ -38,7 +38,6 @@ import OrderSummaryCard from '../../components/sales/order/OrderSummaryCard';
 import StatusStepper from '../../components/sales/order/StatusStepper';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import ViewCurrentBundleModal from './ViewCurrentBundleModal';
-import PlatformChip from 'src/components/sales/order/PlatformChip';
 
 const SalesOrderDetails = () => {
   let params = new URLSearchParams(window.location.search);
@@ -494,7 +493,10 @@ const SalesOrderDetails = () => {
 
       <div className='top-carrot'>
         <Tooltip title='Return to Sales Order' enterDelay={300}>
-          <IconButton size='large' onClick={() => navigate(-1)}>
+          <IconButton
+            size='large'
+            onClick={() => navigate('/sales/allSalesOrders')}
+          >
             <ChevronLeft />
           </IconButton>
         </Tooltip>

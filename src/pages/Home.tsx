@@ -22,7 +22,6 @@ const Home = ({ children }: HomeProps) => {
   const navigate = useNavigate();
 
   const shopifyCallback = React.useCallback((salesOrder: SalesOrder) => {
-    console.log(salesOrder);
     toast(
       <OrderToast
         salesOrder={salesOrder}
