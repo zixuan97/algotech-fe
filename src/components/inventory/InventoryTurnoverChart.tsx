@@ -23,6 +23,11 @@ const options = {
       beginAtZero: true,
       grace: '20%'
     }
+  },
+  plugins: {
+    legend: {
+      display: false
+    }
   }
 };
 
