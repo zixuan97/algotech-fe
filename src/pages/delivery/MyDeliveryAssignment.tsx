@@ -13,10 +13,8 @@ import {
   Stack,
   Typography,
   Button,
-  CircularProgress,
-  Alert
+  CircularProgress
 } from '@mui/material';
-import { Search } from '@mui/icons-material';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import { DeliveryOrder, OrderStatus } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
@@ -28,7 +26,6 @@ import {
   getAllUnassignedDeliveriesPostalCodeByDate,
   getCurrentLocationLatLng
 } from 'src/services/deliveryServices';
-import { useNavigate } from 'react-router';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import assignedMarker from 'src/resources/components/delivery/assigned.png';
@@ -41,6 +38,7 @@ import moment from 'moment';
 import DeliveryOrderStatusCell from 'src/components/delivery/DeliveryOrderStatusCell';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import DeliveryLegend from 'src/components/delivery/DeliveryLegend';
 
 const columns: GridColDef[] = [
   {
@@ -194,17 +192,17 @@ const MyDeliveryAssignment = () => {
 
   const assignedIcon = new Icon({
     iconUrl: assignedMarker,
-    iconSize: [23, 35]
+    iconSize: [25, 38]
   });
 
   const unassignedIcon = new Icon({
     iconUrl: unassignedMarker,
-    iconSize: [23, 35]
+    iconSize: [25, 38]
   });
 
   const currentIcon = new Icon({
     iconUrl: currentMarker,
-    iconSize: [23, 35]
+    iconSize: [25, 38]
   });
 
   React.useEffect(() => {
@@ -302,14 +300,14 @@ const MyDeliveryAssignment = () => {
       getAllUnassignedDeliveriesPostalCodeByDate(dateRange),
       setUnassignedDeliveryPostalCode
     );
-  }, [dateRange]);
+  }, [dateRange, unassignedDeliveries]);
 
   React.useEffect(() => {
     asyncFetchCallback(
       getAllAssignedDeliveriesPostalCodeByDate(dateRange, user?.id),
       setAssignedDeliveryPostalCode
     );
-  }, [dateRange, user?.id]);
+  }, [dateRange, user?.id, assignedDeliveries]);
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentLocation(e.target.value);
@@ -404,10 +402,7 @@ const MyDeliveryAssignment = () => {
         })}
       </MapContainer>
       <br></br>
-      <Typography variant='h3' align='left'>
-        Green: Unassigned Deliveries &nbsp; Red: Assigned Deliveries &nbsp;
-        Blue: Current Location
-      </Typography>
+      <DeliveryLegend />
       <br></br>
       <DataGrid
         columns={columns}
