@@ -13,7 +13,7 @@ import {
   GridActionsCellItem,
   GridEventListener,
   GridRowId,
-  GridRenderEditCellParams,
+  GridRenderEditCellParams
 } from '@mui/x-data-grid';
 import { Product, BundleProduct } from 'src/models/types';
 import BundleProductEditToolbarCellAction from './BundleProductEditToolbarCellAction';
@@ -23,7 +23,7 @@ import {
   convertGridRowToBundleProduct,
   convertBundleProductToGridRow,
   getAvailableProducts,
-  BundleProductGridRow,
+  BundleProductGridRow
 } from './inventoryHelper';
 import { toPairs } from 'lodash';
 import PositiveNonZeroNumberEditCellAction from './PositiveNonZeroNumberEditCellAction';
@@ -74,7 +74,9 @@ export default function BundleProductEditGrid({
       (row) => row.gridId !== id
     );
     setBundleProductGridRows(updatedBundleProductGridRows);
-    updateBundleProductList(convertGridRowToBundleProduct(updatedBundleProductGridRows));
+    updateBundleProductList(
+      convertGridRowToBundleProduct(updatedBundleProductGridRows)
+    );
   };
 
   const handleCancelClick = (id: GridRowId) => () => {
@@ -85,7 +87,9 @@ export default function BundleProductEditGrid({
 
     const editedRow = bundleProductGridRows.find((row) => row.gridId === id);
     if (editedRow!.isNew) {
-      setBundleProductGridRows(bundleProductGridRows.filter((row) => row.gridId !== id));
+      setBundleProductGridRows(
+        bundleProductGridRows.filter((row) => row.gridId !== id)
+      );
     }
   };
 
@@ -95,14 +99,16 @@ export default function BundleProductEditGrid({
       quantity: isNaN(newRow.quantity) ? 0 : newRow.quantity,
       product: newRow.product,
       productId: newRow.product.id,
-      
-      isNew: false,
+
+      isNew: false
     };
     const updatedBundleProductGridRows = bundleProductGridRows.map((row) =>
       row.gridId === newRow.gridId ? updatedRow : row
     );
     setBundleProductGridRows(updatedBundleProductGridRows);
-    updateBundleProductList(convertGridRowToBundleProduct(updatedBundleProductGridRows));
+    updateBundleProductList(
+      convertGridRowToBundleProduct(updatedBundleProductGridRows)
+    );
     return updatedRow;
   };
 
@@ -128,7 +134,7 @@ export default function BundleProductEditGrid({
       flex: 1,
       editable: true,
       renderEditCell: (params) => (
-        <PositiveNonZeroNumberEditCellAction params={params} allowDecimals={false} />
+        <PositiveNonZeroNumberEditCellAction params={params} />
       )
     },
     {

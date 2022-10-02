@@ -4,25 +4,18 @@ import React from 'react';
 
 type PositiveNonZeroNumberEditCellActionProps = {
   params: GridRenderEditCellParams<number>;
-  allowDecimals?: boolean;
 };
 
 const PositiveNonZeroNumberEditCellAction = ({
-  params,
-  allowDecimals = true
+  params
 }: PositiveNonZeroNumberEditCellActionProps) => {
   const { id: gridId, field, value } = params;
 
   const apiRef = useGridApiContext();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      
-    let newValue = allowDecimals
-      ? Number.parseFloat(e.target.value).toFixed(2)
-      : parseInt(e.target.value);
-      
-      if (e.target.value === '0') newValue = 1;
-    
+    const newValue = parseInt(e.target.value);
+
     apiRef.current.setEditCellValue({
       id: gridId,
       field,
@@ -37,8 +30,8 @@ const PositiveNonZeroNumberEditCellAction = ({
       value={value}
       onChange={handleChange}
       inputProps={{
-        inputMode: allowDecimals ? 'decimal' : 'numeric',
-        min: '0'
+        inputMode: 'numeric',
+        min: 1
       }}
     />
   );

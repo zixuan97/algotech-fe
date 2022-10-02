@@ -5,7 +5,7 @@ import {
   GridRowModesModel,
   GridToolbarContainer
 } from '@mui/x-data-grid';
-import { Product, Bundle, BundleProduct } from 'src/models/types';
+import { Product } from 'src/models/types';
 import { randomId } from '@mui/x-data-grid-generator';
 import { BundleProductGridRow } from './inventoryHelper';
 
@@ -36,7 +36,7 @@ const BundleProductEditToolbarCellAction = ({
 
         product: availableProducts[0],
         productId: availableProducts[0].id,
-        quantity: 0
+        quantity: 1
       }
     ]);
     setRowModesModel((oldModel) => ({
