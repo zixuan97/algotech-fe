@@ -3,7 +3,6 @@ import {
   DataGrid,
   GridColDef,
   GridValueGetterParams,
-  GridValueFormatterParams,
   GridRenderCellParams
 } from '@mui/x-data-grid';
 import ManualDeliveryCellAction from 'src/components/delivery/ManualDeliveryCellAction';
@@ -32,9 +31,9 @@ import {
 import { useNavigate } from 'react-router';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
-import redMarker from 'src/components/delivery/red_marker.png';
-import greenMarker from 'src/components/delivery/green_marker.png';
-import blueMarker from 'src/components/delivery/blue_marker.png';
+import assignedMarker from 'src/components/delivery/assigned.png';
+import unassignedMarker from 'src/components/delivery/unassigned.png';
+import currentMarker from 'src/components/delivery/current.png';
 import AuthContext from 'src/context/auth/authContext';
 import DateRangePicker from 'src/components/common/DateRangePicker';
 import { MomentRange } from 'src/utils/dateUtils';
@@ -193,19 +192,19 @@ const MyDeliveryAssignment = () => {
     moment().endOf('day')
   ]);
 
-  const redIcon = new Icon({
-    iconUrl: redMarker,
-    iconSize: [23, 38]
+  const assignedIcon = new Icon({
+    iconUrl: assignedMarker,
+    iconSize: [23, 35]
   });
 
-  const greenIcon = new Icon({
-    iconUrl: greenMarker,
-    iconSize: [23, 38]
+  const unassignedIcon = new Icon({
+    iconUrl: unassignedMarker,
+    iconSize: [23, 35]
   });
 
-  const blueIcon = new Icon({
-    iconUrl: blueMarker,
-    iconSize: [23, 38]
+  const currentIcon = new Icon({
+    iconUrl: currentMarker,
+    iconSize: [23, 35]
   });
 
   React.useEffect(() => {
@@ -223,20 +222,6 @@ const MyDeliveryAssignment = () => {
       () => setLoading(false)
     );
   }, [user, dateRange]);
-
-  // React.useEffect(() => {
-  //   // TODO: implement error callback
-  //   setLoading(true);
-  //   asyncFetchCallback(
-  //     getAllUnassignedDeliveries(),
-  //     (res) => {
-  //       setLoading(false);
-  //       setUnassignedDeliveries(res);
-  //       console.log(res);
-  //     },
-  //     () => setLoading(false)
-  //   );
-  // }, []);
 
   React.useEffect(() => {
     // TODO: implement error callback
@@ -256,10 +241,10 @@ const MyDeliveryAssignment = () => {
     setFilteredData(
       searchField
         ? assignedDeliveries.filter((category) =>
-          Object.values(category).some((value) =>
-            String(value).toLowerCase().match(searchField.toLowerCase())
+            Object.values(category).some((value) =>
+              String(value).toLowerCase().match(searchField.toLowerCase())
+            )
           )
-        )
         : assignedDeliveries
     );
   }, [searchField, assignedDeliveries]);
@@ -300,8 +285,7 @@ const MyDeliveryAssignment = () => {
         if (res.length === 0) {
           setAlert({
             severity: 'error',
-            message:
-              'Location not found, please enter a valid location!'
+            message: 'Location not found, please enter a valid location!'
           });
         } else {
           setAlert({
@@ -309,7 +293,7 @@ const MyDeliveryAssignment = () => {
             message: 'Current location marker plotted successfully.'
           });
         }
-      },
+      }
     );
   };
 
@@ -332,10 +316,6 @@ const MyDeliveryAssignment = () => {
     console.log(currentLocation);
   };
 
-  // const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setSearchField(e.target.value);
-  // };
-
   const handleConfirmAssignment = (deliveryOrder: DeliveryOrder) => {
     console.log(deliveryOrder);
     setModalOpen(true);
@@ -351,18 +331,13 @@ const MyDeliveryAssignment = () => {
         title='Assign Delivery'
         body='Are you sure you want to take on this delivery? For any changes in delivery assignment, please contact admin!'
       />
-      <h1>My Assigned Deliveries</h1>
-      <div className='grid-toolbar'>
-        {/* <div className='search-bar'>
-          <Search />
-          <TextField
-            id='search'
-            label='Search'
-            margin='normal'
-            // fullWidth
-            onChange={handleSearchFieldChange}
-          />
-        </div> */}
+      <Stack
+        direction='row'
+        width='100%'
+        alignItems='center'
+        justifyContent='space-between'
+      >
+        <h1>My Assigned Deliveries</h1>
         <Stack direction='row' spacing={2}>
           <Typography className='date-picker-text'>
             View deliveries from
@@ -372,7 +347,7 @@ const MyDeliveryAssignment = () => {
             updateDateRange={setDateRange}
           />
         </Stack>
-      </div>
+      </Stack>
       <MapContainer
         center={[1.3667, 103.8]}
         zoom={12}
@@ -388,7 +363,7 @@ const MyDeliveryAssignment = () => {
         {latlng && (
           <Marker
             position={[latlng.LATITUDE, latlng.LONGTITUDE]}
-            icon={blueIcon}
+            icon={currentIcon}
           >
             <Popup>Your current location is {latlng.ADDRESS} </Popup>
           </Marker>
@@ -398,7 +373,7 @@ const MyDeliveryAssignment = () => {
             <Marker
               key={data.orders.orderId}
               position={[data.LATITUDE, data.LONGTITUDE]}
-              icon={greenIcon}
+              icon={unassignedIcon}
             >
               <Popup>
                 Delivery address: {data.ADDRESS}
@@ -415,7 +390,7 @@ const MyDeliveryAssignment = () => {
             <Marker
               key={data.orders.orderId}
               position={[data.LATITUDE, data.LONGTITUDE]}
-              icon={redIcon}
+              icon={assignedIcon}
             >
               <Popup>
                 Delivery address: {data.ADDRESS}
@@ -428,6 +403,7 @@ const MyDeliveryAssignment = () => {
           );
         })}
       </MapContainer>
+      <br></br>
       <Typography variant='h3' align='left'>
         Green: Unassigned Deliveries &nbsp; Red: Assigned Deliveries &nbsp;
         Blue: Current Location
