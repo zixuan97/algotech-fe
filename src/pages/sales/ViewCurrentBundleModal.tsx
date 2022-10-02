@@ -9,7 +9,12 @@ import {
   TextField
 } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
-import { Product, SalesOrderBundleItem } from 'src/models/types';
+import {
+  OrderStatus,
+  Product,
+  SalesOrder,
+  SalesOrderBundleItem
+} from 'src/models/types';
 import '../../styles/pages/sales/orders.scss';
 import '../../styles/common/common.scss';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
@@ -32,6 +37,7 @@ type ViewCurrentBundleModalProps = {
     idx: number
   ) => void;
   onSave: () => void;
+  salesOrder: SalesOrder;
 };
 
 const ViewCurrentBundleModal = ({
@@ -43,7 +49,8 @@ const ViewCurrentBundleModal = ({
   updateNewSalesOrderBundleItem,
   addNewItemToBundleItems,
   removeItemFromBundleItems,
-  onSave
+  onSave,
+  salesOrder
 }: ViewCurrentBundleModalProps) => {
   const [prodName, setProdName] = useState<String>('');
   const [quantity, setQuantity] = useState<String>('');
@@ -65,19 +72,21 @@ const ViewCurrentBundleModal = ({
       renderCell: (params) => {
         return (
           <>
-            <Button
-              variant='contained'
-              size='medium'
-              onClick={() => {
-                removeItemFromBundleItems(
-                  params.row.productName,
-                  params.row.salesOrderItemId,
-                  params.row.id
-                );
-              }}
-            >
-              Remove Item
-            </Button>
+            {salesOrder.orderStatus === OrderStatus.PREPARING && (
+              <Button
+                variant='contained'
+                size='medium'
+                onClick={() => {
+                  removeItemFromBundleItems(
+                    params.row.productName,
+                    params.row.salesOrderItemId,
+                    params.row.id
+                  );
+                }}
+              >
+                Remove Item
+              </Button>
+            )}
           </>
         );
       }
@@ -123,79 +132,83 @@ const ViewCurrentBundleModal = ({
                 getRowId={(row) => editSalesOrderBundleItems?.indexOf(row)!}
                 autoHeight
               />
-              <div style={{ margin: '1%' }}>
-                <DialogContentText
-                  id='alert-dialog-description'
-                  style={{ margin: '.5%' }}
-                >
-                  Add new products into the bundle here.
-                </DialogContentText>
-                <TextField
-                  required
-                  fullWidth
-                  id='outlined-field'
-                  select
-                  label='Product'
-                  value={prodName}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    if (e.target.value) {
-                      updateNewSalesOrderBundleItem(e, 'productName');
-                      setProdName(e.target.value);
-                    }
-                  }}
-                >
-                  {availProducts.map((option) => (
-                    <MenuItem key={option.id} value={option.name}>
-                      {option.name}
-                    </MenuItem>
-                  ))}
-                </TextField>
+              {salesOrder && salesOrder.orderStatus === OrderStatus.PREPARING && (
+                <div style={{ margin: '1%' }}>
+                  <DialogContentText
+                    id='alert-dialog-description'
+                    style={{ margin: '.5%' }}
+                  >
+                    Add new products into the bundle here.
+                  </DialogContentText>
+                  <TextField
+                    required
+                    fullWidth
+                    id='outlined-field'
+                    select
+                    label='Product'
+                    value={prodName}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      if (e.target.value) {
+                        updateNewSalesOrderBundleItem(e, 'productName');
+                        setProdName(e.target.value);
+                      }
+                    }}
+                  >
+                    {availProducts.map((option) => (
+                      <MenuItem key={option.id} value={option.name}>
+                        {option.name}
+                      </MenuItem>
+                    ))}
+                  </TextField>
 
-                <TextField
-                  autoFocus
-                  margin='dense'
-                  id='outlined-number'
-                  label='Quantity'
-                  type='number'
-                  fullWidth
-                  variant='standard'
-                  value={quantity}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    if (e.target.value) {
-                      updateNewSalesOrderBundleItem(e, 'quantity');
-                      setQuantity(e.target.value);
-                    }
-                  }}
-                  InputLabelProps={{
-                    shrink: true
-                  }}
-                />
-                <Button
-                  disabled={!prodName || !quantity}
-                  autoFocus={!focusPassthrough}
-                  onClick={() => {
-                    addNewItemToBundleItems();
-                    setProdName('');
-                    setQuantity('');
-                  }}
-                >
-                  Add Product
-                </Button>
-              </div>
+                  <TextField
+                    autoFocus
+                    margin='dense'
+                    id='outlined-number'
+                    label='Quantity'
+                    type='number'
+                    fullWidth
+                    variant='standard'
+                    value={quantity}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                      if (e.target.value) {
+                        updateNewSalesOrderBundleItem(e, 'quantity');
+                        setQuantity(e.target.value);
+                      }
+                    }}
+                    InputLabelProps={{
+                      shrink: true
+                    }}
+                  />
+                  <Button
+                    disabled={!prodName || !quantity}
+                    autoFocus={!focusPassthrough}
+                    onClick={() => {
+                      addNewItemToBundleItems();
+                      setProdName('');
+                      setQuantity('');
+                    }}
+                  >
+                    Add Product
+                  </Button>
+                </div>
+              )}
             </DialogContent>
-            <DialogActions>
-              <Button autoFocus={!focusPassthrough} onClick={onClose}>
-                Cancel
-              </Button>
-              <Button
-                type='submit'
-                autoFocus={focusPassthrough}
-                onClick={onSave}
-                disabled={editSalesOrderBundleItems?.length! < 1}
-              >
-                Save Changes
-              </Button>
-            </DialogActions>
+            {salesOrder && salesOrder.orderStatus === OrderStatus.PREPARING && (
+              <DialogActions>
+                <Button autoFocus={!focusPassthrough} onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button
+                  type='submit'
+                  autoFocus={focusPassthrough}
+                  onClick={onSave}
+                  disabled={editSalesOrderBundleItems?.length! < 1}
+                >
+                  Save Changes
+                </Button>
+              </DialogActions>
+            )}
           </Dialog>
         </form>
       </div>

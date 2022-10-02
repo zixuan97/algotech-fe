@@ -113,8 +113,8 @@ const SalesOrderDetails = () => {
             </>
           );
         } else if (
-          Array.from(params.row.salesOrderBundleItems).length > 0 &&
-          salesOrder?.orderStatus === OrderStatus.PREPARING
+          Array.from(params.row.salesOrderBundleItems).length > 0 
+          // && salesOrder?.orderStatus === OrderStatus.PREPARING
         ) {
           return (
             <>
@@ -519,6 +519,7 @@ const SalesOrderDetails = () => {
         addNewItemToBundleItems={addNewItemToBundleItems}
         removeItemFromBundleItems={removeItemFromBundleItems}
         onSave={saveChangesToBundle}
+        salesOrder={salesOrder!}
       />
 
       <div className='top-carrot'>
