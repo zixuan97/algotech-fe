@@ -19,8 +19,11 @@ const options = {
     }
   },
   plugins: {
+    legend: {
+      display: false
+    },
     datalabels: {
-      formatter: (value: number) => value.toLocaleString()
+      display: false
     }
   }
 };

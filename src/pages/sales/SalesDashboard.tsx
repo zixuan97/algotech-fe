@@ -1,11 +1,10 @@
-import { Download, FilterList, MoreVert, Search } from '@mui/icons-material';
+import { Download, FilterList, Search } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import {
   Button,
   Divider,
   FormControl,
   Grid,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -174,11 +173,11 @@ const SalesDashboard = () => {
               text={`Revenue earned from ${dateRange[0].format(
                 READABLE_DDMMYY
               )} to ${dateRange[1].format(READABLE_DDMMYY)}`}
-              component={
-                <IconButton>
-                  <MoreVert />
-                </IconButton>
-              }
+              //   component={
+              //     <IconButton>
+              //       <MoreVert />
+              //     </IconButton>
+              //   }
             />
           </Grid>
           <Grid item xs={6}>
@@ -243,22 +242,23 @@ const SalesDashboard = () => {
             >
               Reset
             </Button>
-            <Button
-              variant='contained'
-              size='large'
-              sx={{ height: 'fit-content' }}
-              onClick={() =>
-                getExcelFromApiWithDate(
-                  'POST',
-                  '/sales/excel',
-                  `SalesData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`,
-                  dateRange
-                )
-              }
-            >
-              Export
-            </Button>
           </div>
+          <Button
+            variant='contained'
+            size='large'
+            sx={{ mr: 2 }}
+            endIcon={<Download />}
+            onClick={() =>
+              getExcelFromApiWithDate(
+                'POST',
+                '/sales/excel',
+                `SalesData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`,
+                dateRange
+              )
+            }
+          >
+            Export Sales Orders to Excel
+          </Button>
         </div>
         <SalesOrdersGrid salesOrders={filteredSalesOrders} />
       </div>
