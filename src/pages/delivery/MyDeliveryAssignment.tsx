@@ -194,17 +194,17 @@ const MyDeliveryAssignment = () => {
 
   const assignedIcon = new Icon({
     iconUrl: assignedMarker,
-    iconSize: [23, 35]
+    iconSize: [25, 38]
   });
 
   const unassignedIcon = new Icon({
     iconUrl: unassignedMarker,
-    iconSize: [23, 35]
+    iconSize: [25, 38]
   });
 
   const currentIcon = new Icon({
     iconUrl: currentMarker,
-    iconSize: [23, 35]
+    iconSize: [25, 38]
   });
 
   React.useEffect(() => {
