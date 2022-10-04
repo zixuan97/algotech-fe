@@ -87,8 +87,10 @@ export const updateSalesOrderStatusSvc = (
     .then((res) => res.data);
 };
 
-export const getDeliveryTypeSvc = (id: number): Promise<DeliveryOrder> => {
+export const getDeliveryTypeSvc = (
+  salesOrderId: number
+): Promise<DeliveryOrder> => {
   return axios
-  .get(`${apiRoot}/delivery/sales/${id}`)
-  .then((res) => res.data);
-}
+    .get(`${apiRoot}/delivery/sales/${salesOrderId}`)
+    .then((res) => res.data);
+};
