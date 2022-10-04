@@ -51,7 +51,7 @@ const steps = [
     nextAction: 'Order Delivered'
   },
   {
-    currentState: OrderStatus.COMPLETED,
+    currentState: OrderStatus.DELIVERED,
     label: 'Order Delivered',
     icon: <TaskAltRounded sx={{ fontSize: 35 }} />
   }
@@ -207,7 +207,7 @@ const ManualDeliveryDetails = () => {
         originalDeliveryOrder?.salesOrder.orderStatus ===
         OrderStatus.READY_FOR_DELIVERY
           ? OrderStatus.SHIPPED
-          : OrderStatus.COMPLETED
+          : OrderStatus.DELIVERED
     };
 
     await asyncFetchCallback(
@@ -220,7 +220,7 @@ const ManualDeliveryDetails = () => {
         ) {
           updatedOrderStatus = OrderStatus.SHIPPED;
         } else {
-          updatedOrderStatus = OrderStatus.COMPLETED;
+          updatedOrderStatus = OrderStatus.DELIVERED;
         }
 
         let updatedOrder = Object.assign(

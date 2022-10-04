@@ -20,7 +20,7 @@ const DeliveryOrderStatusCell = ({ row }: GridRenderCellParams) => {
         color: 'white'
       }}
     />
-  ) : orderStatus === OrderStatus.COMPLETED ? (
+  ) : orderStatus === OrderStatus.DELIVERED ? (
     <Chip
       label='Completed'
       style={{

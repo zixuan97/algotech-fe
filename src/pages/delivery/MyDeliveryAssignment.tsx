@@ -61,7 +61,7 @@ const columns: GridColDef[] = [
         cell = 'Delivery Scheduled';
       } else if (orderStatus === OrderStatus.SHIPPED) {
         cell = 'Shipped';
-      } else if (orderStatus === OrderStatus.COMPLETED) {
+      } else if (orderStatus === OrderStatus.DELIVERED) {
         cell = 'Completed';
       } else {
         cell = 'Cancelled';
@@ -118,7 +118,7 @@ const MyDeliveryAssignment = () => {
           cell = 'Delivery Scheduled';
         } else if (orderStatus === OrderStatus.SHIPPED) {
           cell = 'Shipped';
-        } else if (orderStatus === OrderStatus.COMPLETED) {
+        } else if (orderStatus === OrderStatus.DELIVERED) {
           cell = 'Completed';
         } else {
           cell = 'Cancelled';
