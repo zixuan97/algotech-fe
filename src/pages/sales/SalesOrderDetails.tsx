@@ -66,6 +66,8 @@ const SalesOrderDetails = () => {
   const [newSalesOrderBundleItem, setNewSalesOrderBundleItem] =
     useState<SalesOrderBundleItem>();
   const [saleOrderLineItemId, setSaleOrderLineItemId] = useState<number>(0);
+  const [canEdit, setCanEdit] = useState<boolean>(false);
+
   const columns: GridColDef[] = [
     {
       field: 'productName',
@@ -112,10 +114,7 @@ const SalesOrderDetails = () => {
               </Button>
             </>
           );
-        } else if (
-          Array.from(params.row.salesOrderBundleItems).length > 0 
-          // && salesOrder?.orderStatus === OrderStatus.PREPARING
-        ) {
+        } else if (Array.from(params.row.salesOrderBundleItems).length > 0) {
           return (
             <>
               <Button
@@ -149,6 +148,21 @@ const SalesOrderDetails = () => {
           }),
     [salesOrder?.orderStatus]
   );
+
+  useEffect(() => {
+    if (salesOrder) {
+      setCanEdit(salesOrder.orderStatus === OrderStatus.PREPARING);
+    }
+
+    if (statusStepper && salesOrder) {
+      setActiveStep(
+        statusStepper.findIndex(
+          (step) => step.currentState === salesOrder.orderStatus
+        )
+      );
+    }
+  }, [salesOrder, statusStepper]);
+
   useEffect(() => {
     if (editSalesOrderBundleItems) {
       setAvailBundleProducts(
@@ -168,9 +182,6 @@ const SalesOrderDetails = () => {
       setEditSalesOrderItems([...salesOrder.salesOrderItems]);
       setAvailProducts(products);
       setAvailBundleProducts(products);
-      setActiveStep(
-        steps.findIndex((step) => step.currentState === salesOrder.orderStatus)
-      );
       setLoading(false);
     };
     const errorCallback = () => {
@@ -191,11 +202,6 @@ const SalesOrderDetails = () => {
             setEditSalesOrderItems([...salesOrder.salesOrderItems]);
             setAvailProducts(products);
             setAvailBundleProducts(products);
-            setActiveStep(
-              steps.findIndex(
-                (step) => step.currentState === salesOrder.orderStatus
-              )
-            );
             setLoading(false);
           } else {
             setAlert({
@@ -217,50 +223,51 @@ const SalesOrderDetails = () => {
     }
   }, [id, orderId, navigate, products, statusStepper]);
 
-
   const nextStep = () => {
-    if (activeStep < statusStepper.length - 1) {
-      const newStatus = statusStepper[activeStep].currentState;
-      if (newStatus === OrderStatus.PREPARED) {
-        setModalOpen(true);
-      } else if (
-        newStatus === OrderStatus.READY_FOR_DELIVERY &&
-        (salesOrder?.platformType === PlatformType.SHOPIFY ||
-          salesOrder?.platformType === PlatformType.OTHERS)
-      ) {
-        salesOrder.id &&
-          navigate({
-            pathname: '/delivery/createDelivery',
-            search: createSearchParams({
-              id: salesOrder.id.toString()
-            }).toString()
-          });
-      } else if (
-        activeStep > 3 &&
-        (salesOrder?.platformType === PlatformType.SHOPIFY ||
-          salesOrder?.platformType === PlatformType.OTHERS)
-      ) {
-        salesOrder.id &&
-          asyncFetchCallback(getDeliveryTypeSvc(salesOrder.id), (res) => {
-            if (res.shippingType === ShippingType.SHIPPIT) {
-              navigate({
-                pathname: '/delivery/shippitDeliveryDetails',
-                search: createSearchParams({
-                  id: res.shippitTrackingNum.toString()
-                }).toString()
-              });
-            } else if (res.shippingType === ShippingType.MANUAL) {
-              navigate({
-                pathname: '/delivery/manualDeliveryDetails',
-                search: createSearchParams({
-                  id: res.id.toString()
-                }).toString()
-              });
-            }
-          });
-      } else {
-        updateSalesOrderStatus(newStatus);
-      }
+    let newStatus = statusStepper[activeStep].currentState;
+    if (activeStep < 6) {
+      newStatus = statusStepper[activeStep + 1].currentState;
+    }
+
+    if (newStatus === OrderStatus.PREPARED) {
+      setModalOpen(true);
+    } else if (
+      newStatus === OrderStatus.READY_FOR_DELIVERY &&
+      (salesOrder?.platformType === PlatformType.SHOPIFY ||
+        salesOrder?.platformType === PlatformType.OTHERS)
+    ) {
+      salesOrder.id &&
+        navigate({
+          pathname: '/delivery/createDelivery',
+          search: createSearchParams({
+            id: salesOrder.id.toString()
+          }).toString()
+        });
+    } else if (
+      activeStep > 3 &&
+      (salesOrder?.platformType === PlatformType.SHOPIFY ||
+        salesOrder?.platformType === PlatformType.OTHERS)
+    ) {
+      salesOrder.id &&
+        asyncFetchCallback(getDeliveryTypeSvc(salesOrder.id), (res) => {
+          if (res.shippingType === ShippingType.SHIPPIT) {
+            navigate({
+              pathname: '/delivery/shippitDeliveryDetails',
+              search: createSearchParams({
+                id: res.shippitTrackingNum.toString()
+              }).toString()
+            });
+          } else if (res.shippingType === ShippingType.MANUAL) {
+            navigate({
+              pathname: '/delivery/manualDeliveryDetails',
+              search: createSearchParams({
+                id: res.id.toString()
+              }).toString()
+            });
+          }
+        });
+    } else {
+      updateSalesOrderStatus(newStatus);
     }
   };
 
@@ -483,6 +490,7 @@ const SalesOrderDetails = () => {
     setEditSalesOrderItems(temp);
     setShowCurrentBundleModal(false);
   };
+
   return (
     <>
       <AddSalesOrderItemModal
@@ -520,6 +528,7 @@ const SalesOrderDetails = () => {
         removeItemFromBundleItems={removeItemFromBundleItems}
         onSave={saveChangesToBundle}
         salesOrder={salesOrder!}
+        canEdit={canEdit}
       />
 
       <div className='top-carrot'>
@@ -548,7 +557,7 @@ const SalesOrderDetails = () => {
                   title={
                     salesOrder?.platformType === PlatformType.SHOPEE
                       ? 'Delivery handled by the eCommerce platform'
-                      : steps[activeStep].tooltip
+                      : statusStepper[activeStep].tooltip
                   }
                   enterDelay={500}
                 >
@@ -558,13 +567,13 @@ const SalesOrderDetails = () => {
                       size='medium'
                       onClick={nextStep}
                       disabled={
-                        (salesOrder?.platformType === PlatformType.SHOPEE ||
-                          salesOrder?.platformType === PlatformType.LAZADA ||
-                          salesOrder?.orderStatus === OrderStatus.CANCELLED) &&
-                        (activeStep > 3 || activeStep === 1)
+                        ((salesOrder?.platformType === PlatformType.SHOPEE ||
+                          salesOrder?.platformType === PlatformType.LAZADA) &&
+                          activeStep > 2) ||
+                        salesOrder?.orderStatus === OrderStatus.CANCELLED
                       }
                     >
-                      {steps[activeStep].nextAction}
+                      {statusStepper[activeStep].nextAction}
                     </Button>
                   </span>
                 </Tooltip>
@@ -576,7 +585,7 @@ const SalesOrderDetails = () => {
             <div className='sales-content-body'>
               <div className='grid-toolbar'>
                 <h4>Order ID: #{salesOrder?.orderId}</h4>
-                {salesOrder?.orderStatus === OrderStatus.PREPARING && (
+                {canEdit && (
                   <div className='button-group'>
                     <Button
                       variant='contained'

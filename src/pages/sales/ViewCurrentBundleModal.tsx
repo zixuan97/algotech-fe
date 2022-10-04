@@ -8,7 +8,7 @@ import {
   MenuItem,
   TextField
 } from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   OrderStatus,
   Product,
@@ -22,6 +22,7 @@ import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 type ViewCurrentBundleModalProps = {
   open: boolean;
+  canEdit: boolean;
   onClose: () => void;
   focusPassthrough?: boolean;
   editSalesOrderBundleItems: SalesOrderBundleItem[];
@@ -42,6 +43,7 @@ type ViewCurrentBundleModalProps = {
 
 const ViewCurrentBundleModal = ({
   open,
+  canEdit,
   onClose,
   focusPassthrough = false,
   availProducts,
@@ -55,6 +57,7 @@ const ViewCurrentBundleModal = ({
   const [prodName, setProdName] = useState<String>('');
   const [quantity, setQuantity] = useState<String>('');
   const [bundleAlert, setBundleAlert] = useState<AlertType | null>(null);
+
   const columns: GridColDef[] = [
     { field: 'productName', headerName: 'Product Name', flex: 1 },
     {
@@ -132,7 +135,7 @@ const ViewCurrentBundleModal = ({
                 getRowId={(row) => editSalesOrderBundleItems?.indexOf(row)!}
                 autoHeight
               />
-              {salesOrder && salesOrder.orderStatus === OrderStatus.PREPARING && (
+              {canEdit && (
                 <div style={{ margin: '1%' }}>
                   <DialogContentText
                     id='alert-dialog-description'
@@ -194,7 +197,7 @@ const ViewCurrentBundleModal = ({
                 </div>
               )}
             </DialogContent>
-            {salesOrder && salesOrder.orderStatus === OrderStatus.PREPARING && (
+            {canEdit && (
               <DialogActions>
                 <Button autoFocus={!focusPassthrough} onClick={onClose}>
                   Cancel
