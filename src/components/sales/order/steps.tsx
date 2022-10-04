@@ -62,7 +62,7 @@ export const steps = [
     tooltip: 'View delivery details for this order'
   },
   {
-    currentState: OrderStatus.COMPLETED || 'DELIVERED',
+    currentState: OrderStatus.DELIVERED || 'DELIVERED',
     label: 'Order Received',
     icon: <TaskAltRounded sx={{ fontSize: 35 }} />,
     nextAction: 'View Delivery Details',

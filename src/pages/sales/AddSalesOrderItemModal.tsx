@@ -10,7 +10,6 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 import { Product } from 'src/models/types';
-// import { AdditionalSalesOrderItem } from './SalesOrderDetails';
 import '../../styles/pages/sales/orders.scss';
 import '../../styles/common/common.scss';
 
