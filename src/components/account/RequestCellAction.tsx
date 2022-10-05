@@ -5,11 +5,11 @@ import '../../styles/common/actionCells.scss';
 import { useNavigate } from 'react-router';
 import { createSearchParams } from 'react-router-dom';
 
-const AccountCellAction = ({ id }: GridRenderCellParams) => {
+const RequestCellAction = ({ id }: GridRenderCellParams) => {
   const navigate = useNavigate();
   const navToViewAccount = (edit: boolean) =>
     navigate({
-      pathname: '/accounts/viewAccount',
+      pathname: '/accounts/viewAccountRequest',
       search: createSearchParams({
         id: id.toString(),
       }).toString()
@@ -17,10 +17,10 @@ const AccountCellAction = ({ id }: GridRenderCellParams) => {
   return (
     <div className='action-cell'>
       <Button variant='contained' onClick={() => navToViewAccount(false)}>
-        View
+        View Request
       </Button>
     </div>
   );
 };
 
-export default AccountCellAction;
+export default RequestCellAction;

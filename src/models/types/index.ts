@@ -12,7 +12,8 @@ export enum UserRole {
 
 export enum UserStatus {
   ACTIVE = 'ACTIVE',
-  DISABLED = 'DISABLED'
+  DISABLED = 'DISABLED',
+  PENDING = 'PENDING'
 }
 
 export enum PaymentStatus {

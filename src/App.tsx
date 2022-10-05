@@ -62,6 +62,8 @@ import AllSalesOrder from './pages/sales/AllSalesOrders';
 import SalesOrderDetails from './pages/sales/SalesOrderDetails';
 import NotFound from './pages/NotFound';
 import ShopPerformance from './pages/sales/ShopPerformance';
+import Requests from './pages/account/Requests';
+import ViewAccountRequest from './pages/account/ViewAccountRequest';
 
 const theme = createTheme({
   palette: {
@@ -275,6 +277,8 @@ const App = () => {
                     <Route index element={<Accounts />} />
                     <Route path='viewAccount' element={<ViewAccount />} />
                     <Route path='createNewUser' element={<CreateNewUser />} />
+                    <Route path='requests' element={<Requests />} />
+                    <Route path='viewAccountRequest' element={<ViewAccountRequest />} />
                   </Route>
                   <Route path='*' element={<NotFound />} />
                 </Route>

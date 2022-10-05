@@ -29,6 +29,7 @@ type MenuOpen = {
   delivery: boolean;
   customers: boolean;
   hr: boolean;
+  accounts: boolean;
 };
 
 const menuOpenDefaultState: MenuOpen = {
@@ -38,7 +39,8 @@ const menuOpenDefaultState: MenuOpen = {
   procurement: false,
   delivery: false,
   customers: false,
-  hr: false
+  hr: false,
+  accounts: false
 };
 
 const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
@@ -169,15 +171,20 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
             to='/customers'
             disabled
           />
+
           <ListItemLink icon={<AccountBox />} primary='HR' to='/hr' disabled />
+
           <RoleComponent allowedRoles={[UserRole.ADMIN]}>
-            <ListItemLink
+            <NestedList
+              title={'Accounts'}
+              open={menuOpen.accounts}
+              toggleOpen={(open) => toggleMenuOpen('accounts', open)}
               icon={<People />}
-              primary='User Accounts'
-              to='/accounts'
               disabled={disabled}
-              typographyProps={{ fontWeight: 500 }}
-            />
+            >
+              <ListItemLink primary='User Accounts' to='/accounts' />
+              <ListItemLink primary='Account Requests' to='/accounts/requests' />
+            </NestedList>
           </RoleComponent>
         </List>
       </Drawer>
