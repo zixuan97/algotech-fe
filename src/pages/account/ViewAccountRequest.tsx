@@ -172,7 +172,6 @@ const ViewAccountRequest = () => {
               </Button>
             </div>
           </div>
-
           <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <div className='content-body'>
@@ -184,7 +183,6 @@ const ViewAccountRequest = () => {
                       <Typography>{user?.firstName}</Typography>
                     </div>
                   </Grid>
-
                   <Grid item xs={6}>
                     <div>
                       <h4>Last Name</h4>
@@ -210,7 +208,6 @@ const ViewAccountRequest = () => {
             </div>
             <div className='view-button-group'>
               <Button
-                type='submit'
                 variant='contained'
                 color='primary'
                 onClick={() => {
