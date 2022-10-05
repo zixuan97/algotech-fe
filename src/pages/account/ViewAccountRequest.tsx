@@ -8,7 +8,7 @@ import {
   Tooltip,
   Grid,
   CircularProgress,
-  Typography,
+  Typography
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -21,28 +21,11 @@ import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User, UserStatus } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
-interface ModalProps {
-  wrapperParam: wrapperParam;
-  modalOpen: boolean;
-  onClose: () => void;
-}
-interface wrapperParam {
+interface modalParam {
   title: string;
   body: string;
   funct: () => void;
 }
-
-const WrapperModal = ({ wrapperParam, modalOpen, onClose }: ModalProps) => {
-  return (
-    <ConfirmationModal
-      title={wrapperParam.title}
-      body={wrapperParam.body}
-      onConfirm={wrapperParam.funct}
-      open={modalOpen}
-      onClose={onClose}
-    />
-  );
-};
 
 const ViewAccountRequest = () => {
   let params = new URLSearchParams(window.location.search);
@@ -51,7 +34,7 @@ const ViewAccountRequest = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [alert, setAlert] = useState<AlertType | null>(null);
-  const [wrapParam, setWrapParam] = useState<wrapperParam>({
+  const [modalParam, setModalParam] = useState<modalParam>({
     title: '',
     body: '',
     funct: () => {}
@@ -60,7 +43,7 @@ const ViewAccountRequest = () => {
 
   const handleRejectButtonClick = () => {
     setModalOpen(true);
-    setWrapParam({
+    setModalParam({
       title: 'Reject Account Request',
       body: 'Are you sure you want to reject this account request?',
       funct: disableAccount
@@ -69,7 +52,7 @@ const ViewAccountRequest = () => {
 
   const handleApproveButtonClick = () => {
     setModalOpen(true);
-    setWrapParam({
+    setModalParam({
       title: 'Approve Account Request',
       body: 'Are you sure you want to approve this account request?',
       funct: enableAccount
@@ -87,9 +70,10 @@ const ViewAccountRequest = () => {
         navigate(`/accounts/requests`);
         setUser((oldUser) => {
           return {
-            ...oldUser!, status: UserStatus.DISABLED
-          }
-        })
+            ...oldUser!,
+            status: UserStatus.DISABLED
+          };
+        });
       });
     setModalOpen(false);
   };
@@ -105,9 +89,10 @@ const ViewAccountRequest = () => {
         navigate(`/accounts/requests`);
         setUser((oldUser) => {
           return {
-            ...oldUser!, status: UserStatus.ACTIVE
-          }
-        })
+            ...oldUser!,
+            status: UserStatus.ACTIVE
+          };
+        });
       });
     setModalOpen(false);
   };
@@ -132,12 +117,14 @@ const ViewAccountRequest = () => {
 
   return (
     <>
-      <WrapperModal
-        modalOpen={modalOpen}
+      <ConfirmationModal
+        open={modalOpen}
         onClose={() => {
           setModalOpen(false);
         }}
-        wrapperParam={wrapParam}
+        onConfirm={modalParam.funct}
+        title={modalParam.title}
+        body={modalParam.body}
       />
 
       <Tooltip title='Return to Requests' enterDelay={300}>
