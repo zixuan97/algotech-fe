@@ -45,3 +45,7 @@ export const updatePasswordSvc = (userEmail: string, currentPassword: string, ne
     .post(`${apiRoot}/user/updatepw`, {userEmail, currentPassword, newPassword })
     .then((res) => res.data);
 };
+
+export const getallB2BRequests = (): Promise<Array<User>> => {
+  return axios.get(`${apiRoot}/user/all`).then((res) => res.data);
+};
