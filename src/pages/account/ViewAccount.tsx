@@ -26,28 +26,11 @@ import { User, UserStatus, UserRole } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
 import validator from 'validator';
-interface ModalProps {
-  wrapperParam: wrapperParam;
-  modalOpen: boolean;
-  onClose: () => void;
-}
-interface wrapperParam {
+interface modalParam {
   title: string;
   body: string;
   funct: () => void;
 }
-
-const WrapperModal = ({ wrapperParam, modalOpen, onClose }: ModalProps) => {
-  return (
-    <ConfirmationModal
-      title={wrapperParam.title}
-      body={wrapperParam.body}
-      onConfirm={wrapperParam.funct}
-      open={modalOpen}
-      onClose={onClose}
-    />
-  );
-};
 
 const roles = Object.keys(UserRole).filter((v) => isNaN(Number(v)));
 
@@ -60,17 +43,16 @@ const ViewAccount = () => {
   const [loading, setLoading] = React.useState<boolean>(true);
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [edit, setEdit] = useState<boolean>(false);
-  const [wrapParam, setWrapParam] = useState<wrapperParam>({
+  const [modalParam, setModalParam] = useState<modalParam>({
     title: '',
     body: '',
-    funct: () => { }
+    funct: () => {}
   });
   const id = params.get('id');
-  
 
   const handleDisableButtonClick = () => {
     setModalOpen(true);
-    setWrapParam({
+    setModalParam({
       title: 'Disable Account',
       body: 'Are you sure you want to disable this account?',
       funct: disableAccount
@@ -79,7 +61,7 @@ const ViewAccount = () => {
 
   const handleEnableButtonClick = () => {
     setModalOpen(true);
-    setWrapParam({
+    setModalParam({
       title: 'Enable Account',
       body: 'Are you sure you want to enable this account?',
       funct: enableAccount
@@ -88,7 +70,7 @@ const ViewAccount = () => {
 
   const handleDeleteButtonClick = () => {
     setModalOpen(true);
-    setWrapParam({
+    setModalParam({
       title: 'Delete Account',
       body: 'Are you sure you want to delete this account?',
       funct: deleteAccount
@@ -103,7 +85,8 @@ const ViewAccount = () => {
         () => {
           setAlert({
             severity: 'success',
-            message: 'Account deleted. You will be redirected back to the Accounts page.'
+            message:
+              'Account deleted. You will be redirected back to the Accounts page.'
           });
           setModalOpen(false);
           setTimeout(() => navigate('/accounts'), 3500);
@@ -129,9 +112,10 @@ const ViewAccount = () => {
         navigate(`/accounts/viewAccount?id=${id}`);
         setUser((oldUser) => {
           return {
-            ...oldUser!, status: UserStatus.DISABLED
-          }
-        })
+            ...oldUser!,
+            status: UserStatus.DISABLED
+          };
+        });
       });
     setModalOpen(false);
   };
@@ -147,32 +131,31 @@ const ViewAccount = () => {
         navigate(`/accounts/viewAccount?id=${id}`);
         setUser((oldUser) => {
           return {
-            ...oldUser!, status: UserStatus.ACTIVE
-          }
-        })
+            ...oldUser!,
+            status: UserStatus.ACTIVE
+          };
+        });
       });
     setModalOpen(false);
   };
 
   useEffect(() => {
     id &&
-      asyncFetchCallback(
-        getUserDetailsSvc(id),
-        (user: User) => {
-          if (user) {
-            setUser(user);
-            setEditUser(user);
-            setLoading(false);
-          } else {
-            setAlert({
-              severity: 'error',
-              message: 'User does not exist. You will be redirected back to the Accounts page.'
-            });
-            setLoading(false);
-            setTimeout(() => navigate('/accounts'), 3500);
-          }
+      asyncFetchCallback(getUserDetailsSvc(id), (user: User) => {
+        if (user) {
+          setUser(user);
+          setEditUser(user);
+          setLoading(false);
+        } else {
+          setAlert({
+            severity: 'error',
+            message:
+              'User does not exist. You will be redirected back to the Accounts page.'
+          });
+          setLoading(false);
+          setTimeout(() => navigate('/accounts'), 3500);
         }
-      );
+      });
   }, [id, navigate]);
 
   const userFieldOnChange = (
@@ -212,12 +195,14 @@ const ViewAccount = () => {
 
   return (
     <>
-      <WrapperModal
-        modalOpen={modalOpen}
+      <ConfirmationModal
+        open={modalOpen}
         onClose={() => {
           setModalOpen(false);
         }}
-        wrapperParam={wrapParam}
+        onConfirm={modalParam.funct}
+        title={modalParam.title}
+        body={modalParam.body}
       />
 
       <Tooltip title='Return to Accounts' enterDelay={300}>
@@ -249,7 +234,12 @@ const ViewAccount = () => {
                 variant='contained'
                 className='create-btn'
                 color='primary'
-                disabled={edit && (!validator.isEmail(editUser?.email!) || validator.isEmpty(editUser?.lastName!) || validator.isEmpty(editUser?.firstName!))}
+                disabled={
+                  edit &&
+                  (!validator.isEmail(editUser?.email!) ||
+                    validator.isEmpty(editUser?.lastName!) ||
+                    validator.isEmpty(editUser?.firstName!))
+                }
                 onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
                   if (!edit) {
                     setEdit(true);
@@ -261,7 +251,7 @@ const ViewAccount = () => {
               >
                 {edit ? 'SAVE CHANGES' : 'EDIT'}
               </Button>
-              {!edit &&
+              {!edit && (
                 <Button
                   type='submit'
                   variant='contained'
@@ -271,9 +261,9 @@ const ViewAccount = () => {
                 >
                   DELETE
                 </Button>
-              }
+              )}
 
-              {!edit &&
+              {!edit && (
                 <Button
                   type='submit'
                   variant='contained'
@@ -287,7 +277,7 @@ const ViewAccount = () => {
                 >
                   {user?.status === 'ACTIVE' ? 'DISABLE' : 'ENABLE'}
                 </Button>
-              }
+              )}
             </div>
           </div>
 
@@ -396,7 +386,9 @@ const ViewAccount = () => {
                     ) : (
                       <div>
                         <h4>Role</h4>
-                        <Typography>{user?.role} ({user?.status})</Typography>
+                        <Typography>
+                          {user?.role} ({user?.status})
+                        </Typography>
                       </div>
                     )}
                   </Grid>

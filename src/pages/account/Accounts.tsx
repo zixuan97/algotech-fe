@@ -3,13 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import AccountCellAction from 'src/components/account/AccountCellAction';
 import '../../styles/pages/accounts.scss';
-import { Button, CircularProgress, TextField } from '@mui/material';
+import { Button, TextField } from '@mui/material';
 import { User } from 'src/models/types';
 import { getAllUserSvc } from 'src/services/accountService';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { Search } from '@mui/icons-material';
 
-//TODO: Include avatar
 const columns: GridColDef[] = [
   { field: 'firstName', headerName: 'First Name', flex: 1 },
   { field: 'lastName', headerName: 'Last Name', flex: 1 },
@@ -61,7 +60,7 @@ const Accounts = () => {
 
   return (
     <div className='accounts'>
-      <h1>User Accounts</h1>
+      <h1>ERP Accounts</h1>
       <div className='grid-toolbar'>
         <div className='search-bar'>
           <Search />
@@ -72,7 +71,6 @@ const Accounts = () => {
             fullWidth
             onChange={handleSearchFieldChange}
           />
-          {loading && <CircularProgress color='secondary' />}
         </div>
         <Button
           variant='contained'
@@ -85,7 +83,7 @@ const Accounts = () => {
           Create New User
         </Button>
       </div>
-      <DataGrid columns={columns} rows={filteredData} autoHeight />
+      <DataGrid columns={columns} rows={filteredData} autoHeight loading={loading}/>
     </div>
   );
 };

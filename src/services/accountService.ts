@@ -46,6 +46,19 @@ export const updatePasswordSvc = (userEmail: string, currentPassword: string, ne
     .then((res) => res.data);
 };
 
-export const getallB2BRequests = (): Promise<Array<User>> => {
-  return axios.get(`${apiRoot}/user/all`).then((res) => res.data);
+//-----B2B-----
+export const getAllB2BRequests = (): Promise<Array<User>> => {
+  return axios.get(`${apiRoot}/user/b2b/all`).then((res) => res.data);
+};
+
+export const getallPendingB2BRequests = (): Promise<Array<User>> => {
+  return axios.get(`${apiRoot}/user/b2b/pending`).then((res) => res.data);
+};
+
+export const rejectUserReqSvc = (userId: string): Promise<any> => {
+  return axios.put(`${apiRoot}/user/reject/${userId}`).then((res) => res.data);
+};
+
+export const approveUserReqSvc = (userId: string): Promise<any> => {
+  return axios.put(`${apiRoot}/user/approve/${userId}`).then((res) => res.data);
 };
