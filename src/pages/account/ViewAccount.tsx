@@ -26,6 +26,7 @@ import { User, UserStatus, UserRole } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
 import validator from 'validator';
+import AccountEditButtonGrp from 'src/components/account/AccountEditButtonGrp';
 interface modalParam {
   title: string;
   body: string;
@@ -217,67 +218,21 @@ const ViewAccount = () => {
             <h1>View User Account </h1>
             <div className='button-group'>
               {loading && <CircularProgress color='secondary' />}
-              {edit && (
-                <Button
-                  variant='contained'
-                  className='create-btn'
-                  color='primary'
-                  onClick={() => {
-                    setEdit(false);
-                    setEditUser(user);
-                  }}
-                >
-                  DISCARD CHANGES
-                </Button>
-              )}
-              <Button
-                variant='contained'
-                className='create-btn'
-                color='primary'
-                disabled={
-                  edit &&
-                  (!validator.isEmail(editUser?.email!) ||
-                    validator.isEmpty(editUser?.lastName!) ||
-                    validator.isEmpty(editUser?.firstName!))
-                }
-                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  if (!edit) {
-                    setEdit(true);
-                  } else {
-                    handleSaveButtonClick(e);
-                    setEdit(false);
-                  }
-                }}
-              >
-                {edit ? 'SAVE CHANGES' : 'EDIT'}
-              </Button>
-              {!edit && (
-                <Button
-                  type='submit'
-                  variant='contained'
-                  className='create-btn'
-                  color='primary'
-                  onClick={handleDeleteButtonClick}
-                >
-                  DELETE
-                </Button>
-              )}
-
-              {!edit && (
-                <Button
-                  type='submit'
-                  variant='contained'
-                  className='create-btn'
-                  color='primary'
-                  onClick={
-                    user?.status === 'ACTIVE'
-                      ? handleDisableButtonClick
-                      : handleEnableButtonClick
-                  }
-                >
-                  {user?.status === 'ACTIVE' ? 'DISABLE' : 'ENABLE'}
-                </Button>
-              )}
+              {user?.status !== UserStatus.PENDING &&
+                user?.status !== UserStatus.REJECTED && (
+                  <AccountEditButtonGrp
+                    loading={loading}
+                    edit={edit}
+                    user={user!}
+                    editUser={editUser!}
+                    handleDeleteButtonClick={handleDeleteButtonClick}
+                    handleDisableButtonClick={handleDisableButtonClick}
+                    handleEnableButtonClick={handleEnableButtonClick}
+                    setEditUser={() => setEditUser(user!)}
+                    setEdit={setEdit}
+                    handleSaveButtonClick={handleSaveButtonClick}
+                  />
+                )}
             </div>
           </div>
 
