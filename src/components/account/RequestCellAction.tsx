@@ -9,7 +9,7 @@ const RequestCellAction = ({ id }: GridRenderCellParams) => {
   const navigate = useNavigate();
   const navToViewAccount = (edit: boolean) =>
     navigate({
-      pathname: '/accounts/viewAccountRequest',
+      pathname: '/accounts/viewBusinessAccount',
       search: createSearchParams({
         id: id.toString(),
       }).toString()
@@ -17,7 +17,7 @@ const RequestCellAction = ({ id }: GridRenderCellParams) => {
   return (
     <div className='action-cell'>
       <Button variant='contained' onClick={() => navToViewAccount(false)}>
-        View Request
+        View Account
       </Button>
     </div>
   );

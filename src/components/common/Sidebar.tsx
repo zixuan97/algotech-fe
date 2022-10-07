@@ -182,8 +182,8 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
               icon={<People />}
               disabled={disabled}
             >
-              <ListItemLink primary='User Accounts' to='/accounts' />
-              <ListItemLink primary='Account Requests' to='/accounts/requests' />
+              <ListItemLink primary='ERP Accounts' to='/accounts' />
+              <ListItemLink primary='B2B Accounts' to='/accounts/business' />
             </NestedList>
           </RoleComponent>
         </List>

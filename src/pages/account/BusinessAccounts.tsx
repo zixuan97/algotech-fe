@@ -3,8 +3,8 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import '../../styles/pages/accounts.scss';
 import { TextField } from '@mui/material';
 import { User } from 'src/models/types';
-import { getallB2BRequests } from 'src/services/accountService';
-import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
+import { getAllB2BRequests } from 'src/services/accountService';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import { Search } from '@mui/icons-material';
 import RequestCellAction from 'src/components/account/RequestCellAction';
 import _ from 'lodash';
@@ -25,7 +25,7 @@ const columns: GridColDef[] = [
   }
 ];
 
-const Requests = () => {
+const BusinessAccounts = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredData, setFilteredData] = React.useState<User[]>([]);
   const [searchField, setSearchField] = React.useState<string>('');
@@ -33,7 +33,7 @@ const Requests = () => {
 
   useEffect(() => {
     setLoading(true);
-    asyncFetchCallback(getallB2BRequests(), (users: Array<User>) => {
+    asyncFetchCallback(getAllB2BRequests(), (users: Array<User>) => {
       setUsers(users);
       setLoading(false);
     });
@@ -59,7 +59,7 @@ const Requests = () => {
 
   return (
     <div className='accounts'>
-      <h1>B2B Account Requests</h1>
+      <h1>B2B Accounts</h1>
       <div className='grid-toolbar'>
         <div className='search-bar'>
           <Search />
@@ -82,4 +82,4 @@ const Requests = () => {
   );
 };
 
-export default Requests;
+export default BusinessAccounts;

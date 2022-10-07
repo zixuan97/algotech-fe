@@ -12,12 +12,9 @@ import {
   AccordionSummary,
   AccordionDetails,
   Alert,
-  OutlinedInput,
-  InputAdornment,
-  IconButton
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
-import { ExpandMore, Visibility, VisibilityOff } from '@mui/icons-material';
+import { ExpandMore } from '@mui/icons-material';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User } from 'src/models/types';
 import { editUserSvc, updatePasswordSvc } from 'src/services/accountService';

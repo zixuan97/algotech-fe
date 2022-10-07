@@ -15,19 +15,22 @@ import { ChevronLeft } from '@mui/icons-material';
 import {
   disableUserSvc,
   enableUserSvc,
-  getUserDetailsSvc
+  getUserDetailsSvc,
+  rejectUserReqSvc,
+  approveUserReqSvc
 } from 'src/services/accountService';
-import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
+import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import { User, UserStatus } from 'src/models/types';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
+import ApproveRejectButtonGrp from 'src/components/account/ApproveRejectButtonGrp';
 interface modalParam {
   title: string;
   body: string;
   funct: () => void;
 }
 
-const ViewAccountRequest = () => {
+const ViewBusinessAccount = () => {
   let params = new URLSearchParams(window.location.search);
   const navigate = useNavigate();
   const [user, setUser] = useState<User>();
@@ -46,7 +49,7 @@ const ViewAccountRequest = () => {
     setModalParam({
       title: 'Reject Account Request',
       body: 'Are you sure you want to reject this account request?',
-      funct: disableAccount
+      funct: rejectAccount
     });
   };
 
@@ -55,19 +58,18 @@ const ViewAccountRequest = () => {
     setModalParam({
       title: 'Approve Account Request',
       body: 'Are you sure you want to approve this account request?',
-      funct: enableAccount
+      funct: approveAccount
     });
   };
 
-  const disableAccount = () => {
+  const rejectAccount = () => {
     id &&
-      asyncFetchCallback(disableUserSvc(id), () => {
+      asyncFetchCallback(rejectUserReqSvc(id), () => {
         setAlert({
           severity: 'warning',
           message: 'Account request rejected.'
         });
         setModalOpen(false);
-        navigate(`/accounts/requests`);
         setUser((oldUser) => {
           return {
             ...oldUser!,
@@ -78,15 +80,14 @@ const ViewAccountRequest = () => {
     setModalOpen(false);
   };
 
-  const enableAccount = () => {
+  const approveAccount = () => {
     id &&
-      asyncFetchCallback(enableUserSvc(id), () => {
+      asyncFetchCallback(approveUserReqSvc(id), () => {
         setAlert({
           severity: 'success',
           message: 'Account request approved.'
         });
         setModalOpen(false);
-        navigate(`/accounts/requests`);
         setUser((oldUser) => {
           return {
             ...oldUser!,
@@ -107,10 +108,10 @@ const ViewAccountRequest = () => {
           setAlert({
             severity: 'error',
             message:
-              'User does not exist. You will be redirected back to the Requests page.'
+              'User does not exist. You will be redirected back to the B2B Accounts page.'
           });
           setLoading(false);
-          setTimeout(() => navigate('/requests'), 3500);
+          setTimeout(() => navigate('/accounts/business'), 3500);
         }
       });
   }, [id, navigate]);
@@ -128,7 +129,7 @@ const ViewAccountRequest = () => {
       />
 
       <Tooltip title='Return to Requests' enterDelay={300}>
-        <IconButton size='large' onClick={() => navigate('/accounts/requests')}>
+        <IconButton size='large' onClick={() => navigate('/accounts/business')}>
           <ChevronLeft />
         </IconButton>
       </Tooltip>
@@ -137,27 +138,13 @@ const ViewAccountRequest = () => {
         <Box className='center-box'>
           <div className='header-content'>
             <h1>View Account Request</h1>
-            <div className='button-group'>
-              {loading && <CircularProgress color='secondary' />}
-              <Button
-                type='submit'
-                variant='contained'
-                className='create-btn'
-                color='warning'
-                onClick={handleRejectButtonClick}
-              >
-                Reject
-              </Button>
-              <Button
-                type='submit'
-                variant='contained'
-                className='create-btn'
-                color='primary'
-                onClick={handleApproveButtonClick}
-              >
-                Approve
-              </Button>
-            </div>
+            {user?.status === UserStatus.PENDING && (
+              <ApproveRejectButtonGrp
+                loading={loading}
+                handleRejectButtonClick={handleRejectButtonClick}
+                handleApproveButtonClick={handleApproveButtonClick}
+              />
+            )}
           </div>
           <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
@@ -211,4 +198,4 @@ const ViewAccountRequest = () => {
   );
 };
 
-export default ViewAccountRequest;
+export default ViewBusinessAccount;
