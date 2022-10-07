@@ -38,13 +38,13 @@ const columns: GridColDef[] = [
     field: 'sku',
     headerName: 'SKU',
     flex: 1,
-    valueGetter: (params: GridValueGetterParams) => params.row.product.sku
+    valueGetter: (params: GridValueGetterParams) => params.row.productSku
   },
   {
     field: 'name',
     headerName: 'Product Name',
     flex: 1,
-    valueGetter: (params: GridValueGetterParams) => params.row.product.name
+    valueGetter: (params: GridValueGetterParams) => params.row.productName
   },
   { field: 'rate', headerName: 'Rate per Unit', flex: 1 },
   { field: 'quantity', headerName: 'Quantity', flex: 1 }
@@ -435,7 +435,12 @@ const ProcurementOrderDetails = () => {
       </div>
       <div className='data-table-section'>
         <h2>Order Items</h2>
-        <DataGrid columns={columns} rows={originalOrderItems} autoHeight />
+        <DataGrid
+          columns={columns}
+          rows={originalOrderItems}
+          getRowId={(row) => row.productSku}
+          autoHeight
+        />
       </div>
     </div>
   );
