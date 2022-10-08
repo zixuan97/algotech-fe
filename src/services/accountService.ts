@@ -6,8 +6,13 @@ import { User } from 'src/models/types';
 import { NewUserType } from '../pages/account/CreateNewUser';
 import apiRoot from './util/apiRoot';
 
+
 export const getAllUserSvc = (): Promise<Array<User>> => {
   return axios.get(`${apiRoot}/user/all`).then((res) => res.data);
+};
+
+export const getAllNonB2BUserSvc = (): Promise<Array<User>> => {
+  return axios.get(`${apiRoot}/user/nonb2b/all`).then((res) => res.data);
 };
 
 export const getUserDetailsSvc = (userId: string): Promise<User> => {
