@@ -15,22 +15,13 @@ import {
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import {
-  deleteUserSvc,
-  disableUserSvc,
-  editUserSvc,
-  enableUserSvc,
   getUserDetailsSvc
 } from 'src/services/accountService';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User, UserStatus, UserRole } from 'src/models/types';
-import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
 import validator from 'validator';
-interface modalParam {
-  title: string;
-  body: string;
-  funct: () => void;
-}
+import AccountEditButtonGrp from 'src/components/account/AccountEditButtonGrp';
 
 const roles = Object.keys(UserRole).filter((v) => isNaN(Number(v)));
 
@@ -39,105 +30,10 @@ const ViewAccount = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User>();
   const [editUser, setEditUser] = useState<User>();
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [edit, setEdit] = useState<boolean>(false);
-  const [modalParam, setModalParam] = useState<modalParam>({
-    title: '',
-    body: '',
-    funct: () => {}
-  });
   const id = params.get('id');
-
-  const handleDisableButtonClick = () => {
-    setModalOpen(true);
-    setModalParam({
-      title: 'Disable Account',
-      body: 'Are you sure you want to disable this account?',
-      funct: disableAccount
-    });
-  };
-
-  const handleEnableButtonClick = () => {
-    setModalOpen(true);
-    setModalParam({
-      title: 'Enable Account',
-      body: 'Are you sure you want to enable this account?',
-      funct: enableAccount
-    });
-  };
-
-  const handleDeleteButtonClick = () => {
-    setModalOpen(true);
-    setModalParam({
-      title: 'Delete Account',
-      body: 'Are you sure you want to delete this account?',
-      funct: deleteAccount
-    });
-  };
-
-  const deleteAccount = () => {
-    setModalOpen(false);
-    id &&
-      asyncFetchCallback(
-        deleteUserSvc(id),
-        () => {
-          setAlert({
-            severity: 'success',
-            message:
-              'Account deleted. You will be redirected back to the Accounts page.'
-          });
-          setModalOpen(false);
-          setTimeout(() => navigate('/accounts'), 3500);
-        },
-        () => {
-          setModalOpen(false);
-          setAlert({
-            severity: 'error',
-            message: 'Cannot delete user at this point. Try again later.'
-          });
-        }
-      );
-  };
-
-  const disableAccount = () => {
-    id &&
-      asyncFetchCallback(disableUserSvc(id), () => {
-        setAlert({
-          severity: 'warning',
-          message: 'Account disabled.'
-        });
-        setModalOpen(false);
-        navigate(`/accounts/viewAccount?id=${id}`);
-        setUser((oldUser) => {
-          return {
-            ...oldUser!,
-            status: UserStatus.DISABLED
-          };
-        });
-      });
-    setModalOpen(false);
-  };
-
-  const enableAccount = () => {
-    id &&
-      asyncFetchCallback(enableUserSvc(id), () => {
-        setAlert({
-          severity: 'success',
-          message: 'Account enabled.'
-        });
-        setModalOpen(false);
-        navigate(`/accounts/viewAccount?id=${id}`);
-        setUser((oldUser) => {
-          return {
-            ...oldUser!,
-            status: UserStatus.ACTIVE
-          };
-        });
-      });
-    setModalOpen(false);
-  };
 
   useEffect(() => {
     id &&
@@ -170,41 +66,8 @@ const ViewAccount = () => {
     });
   };
 
-  const handleSaveButtonClick = (e: any) => {
-    e.preventDefault();
-    setLoading(true);
-    asyncFetchCallback(
-      editUserSvc(editUser!),
-      () => {
-        setAlert({
-          severity: 'success',
-          message: 'Account edited.'
-        });
-        setLoading(false);
-        setUser(editUser);
-      },
-      () => {
-        setAlert({
-          severity: 'error',
-          message: 'Error saving changes for account! Try again later.'
-        });
-        setLoading(false);
-      }
-    );
-  };
-
   return (
     <>
-      <ConfirmationModal
-        open={modalOpen}
-        onClose={() => {
-          setModalOpen(false);
-        }}
-        onConfirm={modalParam.funct}
-        title={modalParam.title}
-        body={modalParam.body}
-      />
-
       <Tooltip title='Return to Accounts' enterDelay={300}>
         <IconButton size='large' onClick={() => navigate('/accounts')}>
           <ChevronLeft />
@@ -217,66 +80,22 @@ const ViewAccount = () => {
             <h1>View User Account </h1>
             <div className='button-group'>
               {loading && <CircularProgress color='secondary' />}
-              {edit && (
-                <Button
-                  variant='contained'
-                  className='create-btn'
-                  color='primary'
-                  onClick={() => {
-                    setEdit(false);
-                    setEditUser(user);
-                  }}
-                >
-                  DISCARD CHANGES
-                </Button>
-              )}
-              <Button
-                variant='contained'
-                className='create-btn'
-                color='primary'
-                disabled={
-                  edit &&
-                  (!validator.isEmail(editUser?.email!) ||
-                    validator.isEmpty(editUser?.lastName!) ||
-                    validator.isEmpty(editUser?.firstName!))
-                }
-                onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                  if (!edit) {
-                    setEdit(true);
-                  } else {
-                    handleSaveButtonClick(e);
-                    setEdit(false);
-                  }
-                }}
-              >
-                {edit ? 'SAVE CHANGES' : 'EDIT'}
-              </Button>
-              {!edit && (
-                <Button
-                  type='submit'
-                  variant='contained'
-                  className='create-btn'
-                  color='primary'
-                  onClick={handleDeleteButtonClick}
-                >
-                  DELETE
-                </Button>
-              )}
-
-              {!edit && (
-                <Button
-                  type='submit'
-                  variant='contained'
-                  className='create-btn'
-                  color='primary'
-                  onClick={
-                    user?.status === 'ACTIVE'
-                      ? handleDisableButtonClick
-                      : handleEnableButtonClick
-                  }
-                >
-                  {user?.status === 'ACTIVE' ? 'DISABLE' : 'ENABLE'}
-                </Button>
+              {user?.status !== UserStatus.PENDING &&
+              user?.status !== UserStatus.REJECTED && (
+                <AccountEditButtonGrp
+                  id={id!}
+                  loading ={loading}
+                  edit={edit}
+                  user={user!}
+                  editUser={editUser!}
+                  setEditUser={() => setEditUser(user!)}
+                  setEdit={setEdit}
+                  setLoading={setLoading}
+                  setAlert={setAlert}
+                  setUser={setUser}
+                  viewPath='/accounts/viewAccount'
+                  deletePath='/accounts'
+                />
               )}
             </div>
           </div>
