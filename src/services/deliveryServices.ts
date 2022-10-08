@@ -23,6 +23,12 @@ export const getManualDeliveryOrdersByRangeSvc = (
     .then((res) => res.data);
 };
 
+export const cancelManualDelivery = async (
+  id: string | number
+): Promise<void> => {
+  return axios.post(`${apiRoot}/delivery/cancelManual/${id}`);
+};
+
 export const getShippitDeliveryOrdersByRangeSvc = (
   dateRange: MomentRange
 ): Promise<DeliveryOrder[]> => {

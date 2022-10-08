@@ -15,8 +15,6 @@ import {
 import { useNavigate } from 'react-router';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Icon } from 'leaflet';
-import { arrayBuffer } from 'stream/consumers';
-import axios from 'axios';
 import manualMarker from 'src/resources/components/delivery/manual.png';
 import DateRangePicker from 'src/components/common/DateRangePicker';
 import { MomentRange } from 'src/utils/dateUtils';
@@ -33,25 +31,34 @@ const columns: GridColDef[] = [
     field: 'salesOrderId',
     headerName: 'Sales Order ID',
     flex: 1,
-    valueGetter: (params: GridValueGetterParams) => params.row.salesOrder.id
+    valueGetter: (params: GridValueGetterParams) =>
+      params.row.salesOrder.orderId
   },
   {
-    field: 'orderStatus',
+    field: 'id',
+    headerName: 'Delivery Order ID',
+    flex: 1
+  },
+  {
+    field: 'status',
     headerName: 'Delivery Status',
     flex: 1,
     renderCell: DeliveryOrderStatusCell,
     valueGetter: (params) => {
       let orderStatus = params.row.salesOrder.orderStatus;
+      let deliveryStatus = params.row.deliveryStatus?.status;
       let cell;
+
+      if (deliveryStatus === 'cancelled') {
+        cell = ' Cancelled';
+      }
 
       if (orderStatus === OrderStatus.READY_FOR_DELIVERY) {
         cell = 'Delivery Scheduled';
       } else if (orderStatus === OrderStatus.SHIPPED) {
         cell = 'Shipped';
-      } else if (orderStatus === OrderStatus.DELIVERED) {
-        cell = 'Completed';
       } else {
-        cell = 'Cancelled';
+        cell = 'Completed';
       }
       return cell;
     }

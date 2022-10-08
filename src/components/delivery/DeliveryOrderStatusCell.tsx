@@ -5,8 +5,14 @@ import { OrderStatus } from 'src/models/types';
 
 const DeliveryOrderStatusCell = ({ row }: GridRenderCellParams) => {
   const orderStatus = row.salesOrder.orderStatus;
+  const deliveryStatus = row.deliveryStatus?.status;
 
-  return orderStatus === OrderStatus.READY_FOR_DELIVERY ? (
+  return deliveryStatus === 'cancelled' ? (
+    <Chip
+      label='Cancelled'
+      style={{ backgroundColor: '#D9D9D9', fontFamily: 'Poppins' }}
+    />
+  ) : orderStatus === OrderStatus.READY_FOR_DELIVERY ? (
     <Chip
       label='Delivery Scheduled'
       style={{ backgroundColor: '#E4F4D8', fontFamily: 'Poppins' }}
@@ -20,7 +26,7 @@ const DeliveryOrderStatusCell = ({ row }: GridRenderCellParams) => {
         color: 'white'
       }}
     />
-  ) : orderStatus === OrderStatus.DELIVERED ? (
+  ) : (
     <Chip
       label='Completed'
       style={{
@@ -28,11 +34,6 @@ const DeliveryOrderStatusCell = ({ row }: GridRenderCellParams) => {
         fontFamily: 'Poppins',
         color: 'white'
       }}
-    />
-  ) : (
-    <Chip
-      label='Cancelled'
-      style={{ backgroundColor: '#D9D9D9', fontFamily: 'Poppins' }}
     />
   );
 };
