@@ -5,7 +5,7 @@ import AccountCellAction from 'src/components/account/AccountCellAction';
 import '../../styles/pages/accounts.scss';
 import { Button, TextField } from '@mui/material';
 import { User } from 'src/models/types';
-import { getAllUserSvc } from 'src/services/accountService';
+import { getAllNonB2BUserSvc } from 'src/services/accountService';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { Search } from '@mui/icons-material';
 
@@ -34,7 +34,7 @@ const Accounts = () => {
 
   useEffect(() => {
     setLoading(true);
-    asyncFetchCallback(getAllUserSvc(), (users: Array<User>) => {
+    asyncFetchCallback(getAllNonB2BUserSvc(), (users: Array<User>) => {
       setUsers(users);
       setLoading(false);
     });
