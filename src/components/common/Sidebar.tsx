@@ -164,13 +164,32 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
               to='/delivery/allShippitDeliveries'
             />
           </NestedList>
+          
 
-          <ListItemLink
+          <NestedList
             icon={<People />}
-            primary='Customers'
-            to='/customers'
-            disabled
-          />
+            title={'Customers'}
+            open={menuOpen.customers}
+            toggleOpen={(open) => toggleMenuOpen('customers', open)}
+            disabled={disabled}
+          >
+            <ListItemLink
+              primary='All Customers'
+              to='customer/allCustomers'
+            />
+            <ListItemLink
+              primary='Newsletter Templates'
+              to=''
+            />
+            <ListItemLink
+              primary='Scheduled Newsletters'
+              to=''
+            />
+              <ListItemLink
+              primary='Sent Newsletters'
+              to=''
+            />
+          </NestedList>
 
           <ListItemLink icon={<AccountBox />} primary='HR' to='/hr' disabled />
 
