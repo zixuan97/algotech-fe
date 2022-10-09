@@ -6,7 +6,7 @@ export enum UserRole {
   PARTTIME = 'PARTTIME',
   FULLTIME = 'FULLTIME',
   CUSTOMER = 'CUSTOMER',
-  DISTRIBUTOR = 'DISTRIBUTOR', 
+  DISTRIBUTOR = 'DISTRIBUTOR',
   CORPORATE = 'CORPORATE'
 }
 
@@ -232,4 +232,10 @@ export interface SalesBestseller {
 export interface SalesRevenue {
   revenue: number;
   createddate: Date;
+}
+
+export interface SupplierProductInfo {
+  supplierId: number;
+  productId: number;
+  rate: number;
 }
