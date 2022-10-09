@@ -3,7 +3,7 @@ import { GridRenderCellParams } from '@mui/x-data-grid';
 import React from 'react';
 import { OrderStatus } from 'src/models/types';
 
-const DeliveryOrderStatusCell = ({ row }: GridRenderCellParams) => {
+const ManualDeliveryOrderStatusCell = ({ row }: GridRenderCellParams) => {
   const orderStatus = row.salesOrder.orderStatus;
   const deliveryStatus = row.deliveryStatus?.status;
 
@@ -38,4 +38,4 @@ const DeliveryOrderStatusCell = ({ row }: GridRenderCellParams) => {
   );
 };
 
-export default DeliveryOrderStatusCell;
+export default ManualDeliveryOrderStatusCell;

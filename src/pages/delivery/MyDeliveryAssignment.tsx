@@ -35,7 +35,7 @@ import AuthContext from 'src/context/auth/authContext';
 import DateRangePicker from 'src/components/common/DateRangePicker';
 import { MomentRange } from 'src/utils/dateUtils';
 import moment from 'moment';
-import DeliveryOrderStatusCell from 'src/components/delivery/DeliveryOrderStatusCell';
+import ManualDeliveryOrderStatusCell from 'src/components/delivery/ManualDeliveryOrderStatusCell';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import DeliveryLegend from 'src/components/delivery/DeliveryLegend';
@@ -43,7 +43,7 @@ import DeliveryLegend from 'src/components/delivery/DeliveryLegend';
 const columns: GridColDef[] = [
   {
     field: 'salesOrderId',
-    headerName: 'Order ID',
+    headerName: ' Sales Order ID',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) =>
       params.row.salesOrder.orderId
@@ -52,20 +52,25 @@ const columns: GridColDef[] = [
     field: 'orderStatus',
     headerName: 'Delivery Status',
     flex: 1,
-    renderCell: DeliveryOrderStatusCell,
+    renderCell: ManualDeliveryOrderStatusCell,
     valueGetter: (params) => {
       let orderStatus = params.row.salesOrder.orderStatus;
+      let deliveryStatus = params.row.deliveryStatus?.status;
       let cell;
+
+      if (deliveryStatus === 'cancelled') {
+        cell = 'Cancelled';
+        return cell;
+      }
 
       if (orderStatus === OrderStatus.READY_FOR_DELIVERY) {
         cell = 'Delivery Scheduled';
       } else if (orderStatus === OrderStatus.SHIPPED) {
         cell = 'Shipped';
-      } else if (orderStatus === OrderStatus.DELIVERED) {
-        cell = 'Completed';
       } else {
-        cell = 'Cancelled';
+        cell = 'Completed';
       }
+
       return cell;
     }
   },
@@ -100,7 +105,7 @@ const MyDeliveryAssignment = () => {
   const columnsBottom: GridColDef[] = [
     {
       field: 'salesOrderId',
-      headerName: 'Order ID',
+      headerName: 'Sales Order ID',
       flex: 1,
       valueGetter: (params: GridValueGetterParams) =>
         params.row.salesOrder.orderId
@@ -109,20 +114,25 @@ const MyDeliveryAssignment = () => {
       field: 'orderStatus',
       headerName: 'Delivery Status',
       flex: 1,
-      renderCell: DeliveryOrderStatusCell,
+      renderCell: ManualDeliveryOrderStatusCell,
       valueGetter: (params) => {
         let orderStatus = params.row.salesOrder.orderStatus;
+        let deliveryStatus = params.row.deliveryStatus?.status;
         let cell;
+
+        if (deliveryStatus === 'cancelled') {
+          cell = 'Cancelled';
+          return cell;
+        }
 
         if (orderStatus === OrderStatus.READY_FOR_DELIVERY) {
           cell = 'Delivery Scheduled';
         } else if (orderStatus === OrderStatus.SHIPPED) {
           cell = 'Shipped';
-        } else if (orderStatus === OrderStatus.DELIVERED) {
-          cell = 'Completed';
         } else {
-          cell = 'Cancelled';
+          cell = 'Completed';
         }
+
         return cell;
       }
     },

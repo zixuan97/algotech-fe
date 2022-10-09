@@ -19,7 +19,7 @@ import manualMarker from 'src/resources/components/delivery/manual.png';
 import DateRangePicker from 'src/components/common/DateRangePicker';
 import { MomentRange } from 'src/utils/dateUtils';
 import moment from 'moment';
-import DeliveryOrderStatusCell from 'src/components/delivery/DeliveryOrderStatusCell';
+import ManualDeliveryOrderStatusCell from 'src/components/delivery/ManualDeliveryOrderStatusCell';
 
 const manualIcon = new Icon({
   iconUrl: manualMarker,
@@ -43,14 +43,15 @@ const columns: GridColDef[] = [
     field: 'status',
     headerName: 'Delivery Status',
     flex: 1,
-    renderCell: DeliveryOrderStatusCell,
+    renderCell: ManualDeliveryOrderStatusCell,
     valueGetter: (params) => {
       let orderStatus = params.row.salesOrder.orderStatus;
       let deliveryStatus = params.row.deliveryStatus?.status;
       let cell;
 
       if (deliveryStatus === 'cancelled') {
-        cell = ' Cancelled';
+        cell = 'Cancelled';
+        return cell;
       }
 
       if (orderStatus === OrderStatus.READY_FOR_DELIVERY) {
@@ -60,6 +61,7 @@ const columns: GridColDef[] = [
       } else {
         cell = 'Completed';
       }
+
       return cell;
     }
   },
