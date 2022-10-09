@@ -4,18 +4,52 @@ import '../../styles/pages/delivery/delivery.scss';
 import '../../styles/common/common.scss';
 import { DeliveryOrder } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import {
-  getAllShippitDeliveries,
-  getShippitDeliveryOrdersByRangeSvc
-} from 'src/services/deliveryServices';
+import { getShippitDeliveryOrdersByRangeSvc } from 'src/services/deliveryServices';
 import moment from 'moment';
 import ShippitDeliveryCellAction from 'src/components/delivery/ShippitDeliveryCellAction';
 import { MomentRange } from 'src/utils/dateUtils';
 import { Stack, Typography } from '@mui/material';
 import DateRangePicker from 'src/components/common/DateRangePicker';
+import ShippitDeliveryOrderStatusCell from 'src/components/delivery/ShippitDeliveryOrderStatusCell';
 
 const columns: GridColDef[] = [
+  {
+    field: 'salesOrderId',
+    headerName: 'Sales Order ID',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) =>
+      params.row.salesOrder.orderId
+  },
+  {
+    field: 'id',
+    headerName: 'Delivery Order ID',
+    flex: 1
+  },
   { field: 'shippitTrackingNum', headerName: 'Tracking Number', flex: 1 },
+  {
+    field: 'status',
+    headerName: 'Delivery Status',
+    flex: 1,
+    renderCell: ShippitDeliveryOrderStatusCell,
+    valueGetter: (params) => {
+      let deliveryStatus = params.row.deliveryStatus.status;
+      let cell;
+
+      if (deliveryStatus === 'order_placed') {
+        cell = 'Order Placed';
+      } else if (deliveryStatus === 'despatch_in_progress') {
+        cell = 'Packing Order';
+      } else if (deliveryStatus === 'ready_for_pickup') {
+        cell = 'Booked for Delivery';
+      } else if (deliveryStatus === 'untrackable') {
+        cell = 'Out for Delivery';
+      } else {
+        cell = 'Cancelled';
+      }
+
+      return cell;
+    }
+  },
   { field: 'deliveryMode', headerName: 'Delivery Mode', flex: 1 },
   {
     field: 'deliveryDate',
@@ -57,7 +91,6 @@ const AllShippitDeliveries = () => {
         moment(a.deliveryDate).diff(b.deliveryDate)
       );
       setDeliveryData(sortedDeliveryDate);
-      console.log(sortedDeliveryDate);
     });
     setLoading(false);
   }, [dateRange]);
