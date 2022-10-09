@@ -11,8 +11,16 @@ import {
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import React from 'react';
-import { Product } from 'src/models/types';
+import {
+  Product,
+  SupplierProduct,
+  SupplierProductInfo
+} from 'src/models/types';
 import { getAllProducts } from 'src/services/productService';
+import {
+  getAllSupplierProducts,
+  getSupplierById
+} from 'src/services/supplierService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import '../../styles/pages/procurement.scss';
 import TimeoutAlert, { AlertType } from '../common/TimeoutAlert';
@@ -24,11 +32,13 @@ type AddProductModalProps = {
   onConfirm: (
     rate: string,
     quantity: string,
-    selectedProduct: Product | undefined
+    selectedProduct: Product | undefined,
+    supplierId: string | undefined
   ) => void;
   title: string;
   focusPassthrough?: boolean;
   addedProductsId: number[];
+  selectedSupplierId: number | undefined;
 };
 
 const AddProductModal = ({
@@ -38,12 +48,19 @@ const AddProductModal = ({
   onConfirm,
   title,
   focusPassthrough = false,
-  addedProductsId
+  addedProductsId,
+  selectedSupplierId
 }: AddProductModalProps) => {
   const [sku, setSku] = React.useState<string>('');
   const [rate, setRate] = React.useState<string>('');
+  const [supplierId, setSupplierId] = React.useState<string>('');
   const [quantity, setQuantity] = React.useState<string>('');
   const [products, setProducts] = React.useState<Product[]>([]);
+  const [selectedSupplierProducts, setSelectedSupplierProducts] =
+    React.useState<SupplierProduct[]>([]);
+  const [allSupplierProducts, setAllSupplierProducts] = React.useState<
+    SupplierProductInfo[]
+  >([]);
   const [selectedProduct, setSelectedProduct] = React.useState<Product>();
   const [alert, setAlert] = React.useState<AlertType | null>(null);
 
@@ -52,9 +69,29 @@ const AddProductModal = ({
     setSelectedProduct(products.find((item) => item.sku === e.target.value));
   };
 
+  const onSkuChangeWithFixedRate = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let selectedSupplierProduct = selectedSupplierProducts.find(
+      (item) => item.product.sku === e.target.value
+    );
+    setSku(e.target.value);
+    setSelectedProduct(selectedSupplierProduct!.product);
+    setRate(selectedSupplierProduct!.rate.toString());
+  };
+
+  const onRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let selectedSupplierProduct = allSupplierProducts.find(
+      (supplierProduct) =>
+        supplierProduct.productId == selectedProduct?.id &&
+        supplierProduct.supplierId.toString() == e.target.value
+    );
+    setRate(selectedSupplierProduct!.rate.toString());
+    setSupplierId(e.target.value);
+  };
+
   const onCancelHandler = () => {
     setSku('');
     setRate('');
+    setSupplierId('');
     setQuantity('');
 
     onClose();
@@ -64,7 +101,8 @@ const AddProductModal = ({
     sku: string,
     rate: string,
     quantity: string,
-    selectedProduct: Product | undefined
+    selectedProduct: Product | undefined,
+    supplierId: string | undefined
   ) => {
     if (sku === '' || undefined) {
       setAlert({
@@ -77,16 +115,7 @@ const AddProductModal = ({
     if (rate === '' || undefined) {
       setAlert({
         severity: 'warning',
-        message: 'Please Enter a Rate!'
-      });
-      return;
-    }
-
-    if (parseInt(rate) <= 0) {
-      console.log(parseInt(rate));
-      setAlert({
-        severity: 'warning',
-        message: 'Please Enter a valid Rate!'
+        message: 'Please Select a Rate!'
       });
       return;
     }
@@ -107,10 +136,11 @@ const AddProductModal = ({
       return;
     }
 
-    onConfirm(rate, quantity, selectedProduct);
+    onConfirm(rate, quantity, selectedProduct, supplierId);
 
     setSku('');
     setRate('');
+    setSupplierId('');
     setQuantity('');
   };
 
@@ -123,10 +153,24 @@ const AddProductModal = ({
       }
     }
     setAlert(null);
-    asyncFetchCallback(getAllProducts(), (res) =>
-      setProducts(res.filter((item) => !addedProductsId.includes(item.id)))
-    );
-  }, [open, onClose, addedProductsId, productIdToDisplay]);
+
+    if (selectedSupplierId) {
+      asyncFetchCallback(getSupplierById(selectedSupplierId), (res) =>
+        setSelectedSupplierProducts(
+          res['supplierProduct'].filter(
+            (item) => !addedProductsId.includes(item.product.id)
+          )
+        )
+      );
+    } else {
+      asyncFetchCallback(getAllProducts(), (res) =>
+        setProducts(res.filter((item) => !addedProductsId.includes(item.id)))
+      );
+      asyncFetchCallback(getAllSupplierProducts(), (res) =>
+        setAllSupplierProducts(res)
+      );
+    }
+  }, [open, onClose, addedProductsId, productIdToDisplay, selectedSupplierId]);
 
   return (
     <div>
@@ -152,38 +196,105 @@ const AddProductModal = ({
           <div className='modal-text-fields'>
             <Grid container direction={'column'} spacing={3}>
               <Grid item>
-                <TextField
-                  id='outlined-required'
-                  label='SKU'
-                  name='sku'
-                  value={sku}
-                  onChange={onSkuChange}
-                  select
-                  required
-                  fullWidth
-                >
-                  {products.map((option) => (
-                    <MenuItem key={option.id} value={option.sku}>
-                      <ListItemText inset>SKU: {option.sku}</ListItemText>
-                      <Typography variant='subtitle1' color='text.secondary'>
-                        Product Name: {option.name}
-                      </Typography>
-                    </MenuItem>
-                  ))}
-                </TextField>
+                {!selectedSupplierId ? (
+                  <TextField
+                    id='outlined-required'
+                    label='SKU'
+                    name='sku'
+                    value={sku}
+                    onChange={onSkuChange}
+                    select
+                    required
+                    fullWidth
+                  >
+                    {products.map((option) => (
+                      <MenuItem key={option.id} value={option.sku}>
+                        <ListItemText inset>SKU: {option.sku}</ListItemText>
+                        <Typography variant='subtitle1' color='text.secondary'>
+                          Product Name: {option.name}
+                        </Typography>
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                ) : (
+                  <TextField
+                    id='outlined-required'
+                    label='SKU'
+                    name='sku'
+                    value={sku}
+                    onChange={onSkuChangeWithFixedRate}
+                    select
+                    required
+                    fullWidth
+                  >
+                    {selectedSupplierProducts.map((option) => (
+                      <MenuItem
+                        key={option.product.id}
+                        value={option.product.sku}
+                      >
+                        <ListItemText inset>
+                          SKU: {option.product.sku}
+                        </ListItemText>
+                        <Typography variant='subtitle1' color='text.secondary'>
+                          Product Name: {option.product.name}
+                        </Typography>
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
               </Grid>
               <Grid item>
-                <TextField
-                  id='outlined-required'
-                  label='Rate per Unit'
-                  name='rate'
-                  type='number'
-                  value={rate}
-                  onChange={(e) => setRate(e.target.value)}
-                  placeholder='Eg. $5'
-                  required
-                  fullWidth
-                />
+                {!selectedSupplierId ? (
+                  <TextField
+                    id='outlined-required'
+                    label='Rate per Unit'
+                    name='rate'
+                    value={supplierId}
+                    onChange={onRateChange}
+                    select
+                    required
+                    fullWidth
+                  >
+                    {allSupplierProducts
+                      .filter(
+                        (supplierProduct) =>
+                          supplierProduct.productId === selectedProduct?.id
+                      )
+                      .map((option) => (
+                        <MenuItem
+                          key={option.supplierId}
+                          value={option.supplierId}
+                        >
+                          <ListItemText inset>
+                            Supplier ID: {option.supplierId}
+                          </ListItemText>
+                          <Typography
+                            variant='subtitle1'
+                            color='text.secondary'
+                            style={{ display: 'flex', paddingLeft: '4rem' }}
+                          >
+                            Rate: ${option.rate}
+                          </Typography>
+                        </MenuItem>
+                      ))}
+                  </TextField>
+                ) : (
+                  <TextField
+                    id='outlined-required'
+                    label='Rate per Unit'
+                    name='rate'
+                    variant='filled'
+                    InputLabelProps={{ shrink: true }}
+                    value={
+                      selectedSupplierProducts.find(
+                        (supplierProduct) => supplierProduct.product.sku === sku
+                      )?.rate
+                    }
+                    required
+                    disabled
+                    fullWidth
+                  />
+                )}
               </Grid>
               <Grid item>
                 <TextField
@@ -206,7 +317,7 @@ const AddProductModal = ({
             </Button>
             <Button
               onClick={() =>
-                submitHandler(sku, rate, quantity, selectedProduct)
+                submitHandler(sku, rate, quantity, selectedProduct, supplierId)
               }
               autoFocus={focusPassthrough}
             >

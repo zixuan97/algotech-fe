@@ -8,7 +8,8 @@ import {
   Button,
   CircularProgress,
   Backdrop,
-  Grid
+  Grid,
+  Autocomplete
 } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import {
@@ -55,6 +56,8 @@ const CreateProcurementOrder = () => {
   const [addedProductsId, setAddedProductsId] = React.useState<number[]>([]);
   const [productIdToDisplay, setProductIdToDisplay] = React.useState<number>();
   const [searchParams] = useSearchParams();
+  const [disableSelectSupplier, setDisableSelectSupplier] =
+    React.useState<boolean>(false);
   const id = searchParams.get('id');
 
   React.useEffect(() => {
@@ -105,15 +108,29 @@ const CreateProcurementOrder = () => {
     setAddedProductsId(
       addedProductsId.filter((addedId) => addedId.toString() !== id)
     );
+
+    if (updatedOrderItems.length === 0) {
+      setDisableSelectSupplier(false);
+    }
   };
 
   const handleAddOrderItem = async (
     rate: string,
     quantity: string,
-    selectedProduct: Product | undefined
+    selectedProduct: Product | undefined,
+    supplierId: string | undefined
   ) => {
     setModalOpen(false);
     setLoading(true);
+
+    if (supplierId) {
+      setNewProcurementOrder((prev) => ({
+        ...prev,
+        supplier: suppliers.find(
+          (supplier) => supplier.id.toString() == supplierId
+        )
+      }));
+    }
 
     if (selectedProduct) {
       let newProcurementOrderItem: NewProcurementOrderItem = {
@@ -130,6 +147,7 @@ const CreateProcurementOrder = () => {
         severity: 'success',
         message: 'Product added to order successfully!'
       });
+      setDisableSelectSupplier(true);
     }
   };
 
@@ -289,6 +307,8 @@ const CreateProcurementOrder = () => {
                   select
                   required
                   fullWidth
+                  variant={disableSelectSupplier ? 'filled' : 'outlined'}
+                  disabled={disableSelectSupplier}
                 >
                   {suppliers.map((option) => (
                     <MenuItem key={option.id} value={option.id}>
@@ -354,6 +374,7 @@ const CreateProcurementOrder = () => {
                 onConfirm={handleAddOrderItem}
                 title='Add Product to Order'
                 addedProductsId={addedProductsId}
+                selectedSupplierId={newProcurementOrder?.supplier?.id}
               />
               <Button
                 type='submit'

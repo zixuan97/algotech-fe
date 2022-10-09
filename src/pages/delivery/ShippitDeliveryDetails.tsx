@@ -78,17 +78,22 @@ const ShippitDeliveryDetails = () => {
         (res) => {
           setDeliveryOrder(res);
           setTrackingUrl('https://app.staging.shippit.com/tracking/' + id);
-          setActiveStep(
-            steps.findIndex(
-              (step) => step.status === res.deliveryStatus?.status
-            )
-          );
+
+          if (deliveryOrder?.deliveryStatus?.status !== 'cancelled') {
+            setActiveStep(
+              steps.findIndex(
+                (step) => step.status === res.deliveryStatus?.status
+              )
+            );
+          } else {
+            setActiveStep(-1);
+          }
           setLoading(false);
         },
         () => setLoading(false)
       );
     }
-  }, [id]);
+  }, [id, deliveryOrder?.deliveryStatus?.status]);
 
   const openTracking = async () => {
     window.open(trackingUrl, '_blank');
@@ -154,12 +159,25 @@ const ShippitDeliveryDetails = () => {
     await asyncFetchCallback(
       cancelShippitDelivery(id!),
       (res) => {
+        let updatedDeliveryStatus = Object.assign(
+          {},
+          deliveryOrder?.deliveryStatus,
+          { status: 'cancelled' }
+        );
+
+        setDeliveryOrder((deliveryOrder) => {
+          if (deliveryOrder) {
+            return {
+              ...deliveryOrder,
+              deliveryStatus: updatedDeliveryStatus
+            };
+          } else {
+            return deliveryOrder;
+          }
+        });
         setAlert({
           severity: 'success',
           message: 'Shippit Order cancelled successfully.'
-        });
-        asyncFetchCallback(getDeliveryOrderByTracking(id!), (res) => {
-          setDeliveryOrder(res);
         });
         setLoading(false);
       },
@@ -217,8 +235,8 @@ const ShippitDeliveryDetails = () => {
           {deliveryOrder?.deliveryStatus?.status === 'cancelled' && (
             <div className='shippit-order-cancelled-chip-container'>
               <Chip
-                label='Order Cancelled'
-                style={{ backgroundColor: '#F12B2C', fontFamily: 'Poppins' }}
+                label='Delivery Cancelled'
+                style={{ backgroundColor: '#D9D9D9', fontFamily: 'Poppins' }}
               />
             </div>
           )}
@@ -288,23 +306,23 @@ const ShippitDeliveryDetails = () => {
           <div className='delivery-address-grid'>
             <h3 className='labelText'>Delivery Address</h3>
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12}>
                 <h4 className='labelText'>Name</h4>
                 <Typography>
                   {deliveryOrder?.salesOrder.customerName}
                 </Typography>
               </Grid>
-              <Grid item xs={8}>
+              <Grid item xs={12}>
                 <h4 className='labelText'>Address</h4>
                 <Typography>
                   {deliveryOrder?.salesOrder.customerAddress}
                 </Typography>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <h4 className='labelText'>Country</h4>
                 <Typography>Singapore</Typography>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <h4 className='labelText'>Postal Code</h4>
                 <Typography> {deliveryOrder?.salesOrder.postalCode}</Typography>
               </Grid>

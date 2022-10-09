@@ -26,6 +26,7 @@ import { useSearchParams } from 'react-router-dom';
 import { DeliveryOrder, OrderStatus, User, UserRole } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
+  cancelManualDelivery,
   editDeliveryOrder,
   getDeliveryOrderById
 } from 'src/services/deliveryServices';
@@ -87,17 +88,22 @@ const ManualDeliveryDetails = () => {
         (res) => {
           setOriginalDeliveryOrder(res);
           setUpdatedDeliveryOrder(res);
-          setActiveStep(
-            steps.findIndex(
-              (step) => step.currentState === res.salesOrder.orderStatus
-            )
-          );
+
+          if (originalDeliveryOrder?.deliveryStatus?.status !== 'cancelled') {
+            setActiveStep(
+              steps.findIndex(
+                (step) => step.currentState === res.salesOrder.orderStatus
+              )
+            );
+          } else {
+            setActiveStep(-1);
+          }
           setLoading(false);
         },
         () => setLoading(false)
       );
     }
-  }, [id]);
+  }, [id, originalDeliveryOrder?.deliveryStatus?.status]);
 
   React.useEffect(() => {
     setLoading(true);
@@ -259,29 +265,20 @@ const ManualDeliveryDetails = () => {
     setCancelDeliveryModalOpen(false);
     setLoading(true);
 
-    setActiveStep((prev) => prev + 1);
-
-    let reqBody = {
-      id: originalDeliveryOrder?.id,
-      salesOrderId: originalDeliveryOrder?.salesOrderId,
-      assignedUserId: originalDeliveryOrder?.assignedUser?.id,
-      orderStatus: OrderStatus.CANCELLED
-    };
-
     await asyncFetchCallback(
-      editDeliveryOrder(reqBody),
+      cancelManualDelivery(id!),
       (res) => {
-        let updatedOrder = Object.assign(
+        let updatedDeliveryStatus = Object.assign(
           {},
-          originalDeliveryOrder?.salesOrder,
-          { orderStatus: OrderStatus.CANCELLED }
+          originalDeliveryOrder?.deliveryStatus,
+          { status: 'cancelled' }
         );
 
         setOriginalDeliveryOrder((originalDeliveryOrder) => {
           if (originalDeliveryOrder) {
             return {
               ...originalDeliveryOrder,
-              salesOrder: updatedOrder
+              deliveryStatus: updatedDeliveryStatus
             };
           } else {
             return originalDeliveryOrder;
@@ -336,18 +333,16 @@ const ManualDeliveryDetails = () => {
             </IconButton>
           </Tooltip>
           <h1>View Manual Delivery Order ID: #{originalDeliveryOrder?.id}</h1>
-          {originalDeliveryOrder?.salesOrder.orderStatus ===
-            OrderStatus.CANCELLED && (
+          {originalDeliveryOrder?.deliveryStatus?.status === 'cancelled' && (
             <div className='order-cancelled-chip-container'>
               <Chip
-                label='Order Cancelled'
-                style={{ backgroundColor: '#F12B2C', fontFamily: 'Poppins' }}
+                label='Delivery Cancelled'
+                style={{ backgroundColor: '#D9D9D9', fontFamily: 'Poppins' }}
               />
             </div>
           )}
         </div>
-        {originalDeliveryOrder?.salesOrder.orderStatus !==
-          OrderStatus.CANCELLED && (
+        {originalDeliveryOrder?.deliveryStatus?.status !== 'cancelled' && (
           <div className='delivery-edit-button-container'>
             <Button
               variant='contained'
@@ -374,7 +369,7 @@ const ManualDeliveryDetails = () => {
               open={cancelDeliveryModalOpen}
               onClose={() => setCancelDeliveryModalOpen(false)}
               onConfirm={handleCancelDeliveryOrder}
-              title='Cancel Delivery Over'
+              title='Cancel Delivery Order'
               body='Are you sure you want to cancel the delivery order? This action cannot be reversed.'
             />
             {edit && (
@@ -408,21 +403,17 @@ const ManualDeliveryDetails = () => {
           />
         </div>
       )}
-      {originalDeliveryOrder?.salesOrder.orderStatus !==
-        OrderStatus.CANCELLED && (
-        <div className='delivery-details-stepper'>
-          <Stepper activeStep={activeStep} alternativeLabel>
-            {steps.map((step) => (
-              <Step key={step.label}>
-                <StepLabel icon={step.icon}>{step.label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-        </div>
-      )}
+      <div className='delivery-details-stepper'>
+        <Stepper activeStep={activeStep} alternativeLabel>
+          {steps.map((step) => (
+            <Step key={step.label}>
+              <StepLabel icon={step.icon}>{step.label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+      </div>
       {activeStep !== 2 &&
-        originalDeliveryOrder?.salesOrder.orderStatus !==
-          OrderStatus.CANCELLED && (
+        originalDeliveryOrder?.deliveryStatus?.status !== 'cancelled' && (
           <div className='delivery-details-action-section'>
             <Paper elevation={2} className='delivery-details-action-card'>
               <Typography sx={{ fontSize: 'inherit' }}>Next Action:</Typography>
@@ -448,23 +439,23 @@ const ManualDeliveryDetails = () => {
           <div className='delivery-address-grid'>
             <h3 className='labelText'>Delivery Address</h3>
             <Grid container spacing={2}>
-              <Grid item xs={4}>
+              <Grid item xs={12}>
                 <h4 className='labelText'>Name</h4>
                 <Typography>
                   {originalDeliveryOrder?.salesOrder.customerName}
                 </Typography>
               </Grid>
-              <Grid item xs={8}>
+              <Grid item xs={12}>
                 <h4 className='labelText'>Address</h4>
                 <Typography>
                   {originalDeliveryOrder?.salesOrder.customerAddress}
                 </Typography>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <h4 className='labelText'>Country</h4>
                 <Typography>Singapore</Typography>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={6}>
                 <h4 className='labelText'>Postal Code</h4>
                 <Typography>
                   {originalDeliveryOrder?.salesOrder.postalCode}
