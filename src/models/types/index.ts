@@ -239,3 +239,17 @@ export interface SupplierProductInfo {
   productId: number;
   rate: number;
 }
+
+export interface Customer {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  mobile: number;
+  lastOrderDate?: Date;
+  daysSinceLastOrder?: number;
+  avgOrderValue?: number;
+  totalOrderValue?: number;
+  salesOrders?: SalesOrder[];
+  // newsletters?: Newsletter[];
+}

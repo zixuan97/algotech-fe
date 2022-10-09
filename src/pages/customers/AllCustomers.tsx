@@ -1,53 +1,48 @@
 import React from 'react';
 import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
-import ManualDeliveryCellAction from 'src/components/delivery/ManualDeliveryCellAction';
+import AllCustomersCellAction from 'src/components/customers/AllCustomersCellAction';
 import '../../styles/common/common.scss';
-import '../../styles/pages/delivery/map.scss';
-import '../../styles/pages/delivery/delivery.scss';
-import 'leaflet/dist/leaflet.css';
-import { Stack, Typography } from '@mui/material';
-import { DeliveryOrder, OrderStatus } from '../../models/types';
+import '../../styles/pages/customer/customer.scss';
+import { Stack, TextField, Typography } from '@mui/material';
+import { Search } from '@mui/icons-material';
+import { Customer } from '../../models/types';
+import { getAllCustomers } from 'src/services/customerService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import {
-  getAllDeliveriesPostalCodeByDate,
-  getManualDeliveryOrdersByRangeSvc
-} from 'src/services/deliveryServices';
 import { useNavigate } from 'react-router';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import { Icon } from 'leaflet';
-import manualMarker from 'src/resources/components/delivery/manual.png';
-import DateRangePicker from 'src/components/common/DateRangePicker';
-import { MomentRange } from 'src/utils/dateUtils';
 import moment from 'moment';
 
-const manualIcon = new Icon({
-  iconUrl: manualMarker,
-  iconSize: [25, 38]
-});
-// TODO: Check if delivery date is undefined
+
+
 const columns: GridColDef[] = [
   {
-    field: 'salesOrderId',
-    headerName: 'Sales Order ID',
+    field: 'firstName',
+    headerName: 'First Name',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) =>
       params.row.salesOrder.orderId
   },
   {
-    field: 'id',
-    headerName: 'Delivery Order ID',
+    field: 'lastName',
+    headerName: 'Last Name',
     flex: 1
   },
   {
-    field: 'salesOrder',
-    headerName: 'Address',
-    flex: 1,
+    field: 'email',
+    headerName: 'Email',
+    flex: 1.5,
     valueGetter: (params: GridValueGetterParams) =>
       params.row.salesOrder.customerAddress
   },
   {
-    field: 'deliveryDate',
-    headerName: 'Delivery Date',
+    field: 'mobile',
+    headerName: 'Mobile',
+    flex: 0.5,
+    valueGetter: (params: GridValueGetterParams) =>
+      params.row.salesOrder.customerAddress
+  },
+  {
+    field: 'lastOrderDate',
+    headerName: 'Last Order Date',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) => {
       let date = params.value;
@@ -56,48 +51,70 @@ const columns: GridColDef[] = [
     }
   },
   {
+    field: 'avgOrderValue',
+    headerName: 'Avg. Order Value',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) =>
+      params.row.salesOrder.customerAddress
+  },
+  {
+    field: 'totalOrderValue',
+    headerName: 'Total Order Value',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) =>
+      params.row.salesOrder.customerAddress
+  },
+  {
     field: 'action',
     headerName: 'Action',
     headerAlign: 'right',
     align: 'right',
     flex: 1,
-    renderCell: ManualDeliveryCellAction
+    renderCell: AllCustomersCellAction
   }
 ];
 
 const AllCustomers = () => {
   const navigate = useNavigate();
 
-  const [deliveryData, setDeliveryData] = React.useState<DeliveryOrder[]>([]);
+  const [customerData, setCustomerData] = React.useState<Customer[]>([]);
+  const [filteredData, setFilteredData] = React.useState<Customer[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const [deliveryPostalCode, setDeliveryPostalCode] = React.useState<any[]>([]);
-  const [dateRange, setDateRange] = React.useState<MomentRange>([
-    moment().startOf('month'),
-    moment().endOf('day')
-  ]);
+  const [searchField, setSearchField] = React.useState<string>('');
 
   React.useEffect(() => {
-    asyncFetchCallback(
-      getAllDeliveriesPostalCodeByDate(dateRange),
-      setDeliveryPostalCode
+    setFilteredData(
+      searchField
+        ? customerData.filter((category) =>
+            Object.values(category).some((value) =>
+              String(value).toLowerCase().includes(searchField.toLowerCase())
+            )
+          )
+        : customerData
     );
-  }, [dateRange]);
+  }, [searchField, customerData]);
 
   React.useEffect(() => {
     // TODO: implement error callback
     setLoading(true);
-    asyncFetchCallback(getManualDeliveryOrdersByRangeSvc(dateRange), (res) => {
-      const sortedDeliveryDate = res.sort((a, b) =>
-        moment(a.deliveryDate).diff(b.deliveryDate)
-      );
-      setDeliveryData(sortedDeliveryDate);
-      console.log(sortedDeliveryDate);
-    });
-    setLoading(false);
-  }, [dateRange]);
+    asyncFetchCallback(
+      getAllCustomers(),
+      (res) => {
+        setLoading(false);
+        setCustomerData(res);
+      },
+      () => setLoading(false)
+    );
+  }, []);
+
+
+  const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // here
+    setSearchField(e.target.value);
+  };
 
   return (
-    <div className='delivery-orders'>
+    <div className='all-customers'>
       <Stack
         direction='row'
         width='100%'
@@ -105,20 +122,21 @@ const AllCustomers = () => {
         justifyContent='space-between'
       >
         <h1>All Customers</h1>
-        <Stack direction='row' spacing={2}>
-          <Typography className='date-picker-text'>
-            View deliveries from
-          </Typography>
-          <DateRangePicker
-            dateRange={dateRange}
-            updateDateRange={setDateRange}
-          />
-        </Stack>
       </Stack>
+      <div className='search-bar'>
+          <Search />
+          <TextField
+            id='search'
+            label='Search'
+            margin='normal'
+            fullWidth
+            onChange={handleSearchFieldChange}
+          />
+        </div>
       <div className='data-grid-container'>
         <DataGrid
           columns={columns}
-          rows={deliveryData}
+          rows={filteredData}
           autoHeight
           loading={loading}
         />

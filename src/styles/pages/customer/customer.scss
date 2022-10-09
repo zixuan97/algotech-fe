@@ -1,0 +1,67 @@
+@use '../../variables/colors.scss';
+@use '../../variables/fonts.scss';
+@use '../../common/common.scss';
+
+.all-customers {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 2rem;
+}
+
+.data-grid-container {
+    padding-top: 2rem;
+}
+
+.customer-cards {
+    display: flex;
+    width: 100%;
+    padding-top: 1rem;
+    flex-direction: row;
+}
+
+.customer-details-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 50%;
+    margin: 1%;
+    padding: 1%;
+}
+
+.customer-details-grid {
+    padding-left: 1rem;
+    padding-bottom: 2rem;
+}
+
+.labelText {
+    font-family: 'Poppins';
+    color: colors.$primary;
+}
+
+.order-overview-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 50%;
+    margin: 1%;
+    padding: 1%;
+  }
+  
+.order-overview-grid {
+    padding-left: 1rem;
+}
+
+.orders-table {
+    padding-top: 2rem;
+    padding: 1%;
+}
+
+.newsletter-table {
+    padding: 1%;
+    padding-bottom: 1rem;
+}
+
+.data-grid-container-newsletter {
+    padding-top: 1rem;
+}
