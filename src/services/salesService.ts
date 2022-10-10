@@ -10,11 +10,11 @@ import {
 import { MomentRange } from 'src/utils/dateUtils';
 import apiRoot from './util/apiRoot';
 
-export const getSalesOrderDetailsSvc = (id: string): Promise<SalesOrder> => {
+export const getSalesOrderDetailsSvc = async (id: string): Promise<SalesOrder> => {
   return axios.get(`${apiRoot}/sales/id/${id}`).then((res) => res.data);
 };
 
-export const getSalesOrderDetailsByOrderIdSvc = (
+export const getSalesOrderDetailsByOrderIdSvc = async (
   salesOrderId: string
 ): Promise<SalesOrder> => {
   return axios
@@ -22,11 +22,11 @@ export const getSalesOrderDetailsByOrderIdSvc = (
     .then((res) => res.data);
 };
 
-export const getAllSalesOrderSvc = (): Promise<SalesOrder[]> => {
+export const getAllSalesOrderSvc = async (): Promise<SalesOrder[]> => {
   return axios.get(`${apiRoot}/sales/all`).then((res) => res.data);
 };
 
-export const getSalesOrdersByRangeSvc = (
+export const getSalesOrdersByRangeSvc = async (
   dateRange: MomentRange
 ): Promise<SalesOrder[]> => {
   const timeFilter = {
@@ -38,7 +38,7 @@ export const getSalesOrdersByRangeSvc = (
     .then((res) => res.data);
 };
 
-export const getDailySalesByRangeSvc = (
+export const getDailySalesByRangeSvc = async (
   dateRange: MomentRange
 ): Promise<DailySales[]> => {
   const timeFilter = {
@@ -50,7 +50,7 @@ export const getDailySalesByRangeSvc = (
     .then((res) => res.data);
 };
 
-export const getSalesRevenueByRangeSvc = (
+export const getSalesRevenueByRangeSvc = async (
   dateRange: MomentRange
 ): Promise<SalesRevenue[]> => {
   const timeFilter = {
@@ -62,7 +62,7 @@ export const getSalesRevenueByRangeSvc = (
     .then((res) => res.data);
 };
 
-export const getSalesBestsellersByRangeSvc = (
+export const getSalesBestsellersByRangeSvc = async (
   dateRange: MomentRange
 ): Promise<SalesBestseller[]> => {
   const timeFilter = {
@@ -74,11 +74,11 @@ export const getSalesBestsellersByRangeSvc = (
     .then((res) => res.data);
 };
 
-export const completeOrderPrepSvc = (salesOrder: SalesOrder): Promise<any> => {
+export const completeOrderPrepSvc = async (salesOrder: SalesOrder): Promise<any> => {
   return axios.put(`${apiRoot}/sales`, salesOrder).then((res) => res.data);
 };
 
-export const updateSalesOrderStatusSvc = (
+export const updateSalesOrderStatusSvc = async (
   id: number,
   orderStatus: OrderStatus
 ): Promise<any> => {
@@ -87,7 +87,7 @@ export const updateSalesOrderStatusSvc = (
     .then((res) => res.data);
 };
 
-export const getDeliveryTypeSvc = (
+export const getDeliveryTypeSvc = async (
   salesOrderId: number
 ): Promise<DeliveryOrder> => {
   return axios
