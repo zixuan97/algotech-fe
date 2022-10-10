@@ -45,6 +45,7 @@ import MyDeliveryAssignment from './pages/delivery/MyDeliveryAssignment';
 import ShippitDeliveryDetails from './pages/delivery/ShippitDeliveryDetails';
 
 import AllCustomers from './pages/customers/AllCustomers';
+import CustomerDetails from './pages/customers/CustomerDetails';
 
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
@@ -67,6 +68,7 @@ import NotFound from './pages/NotFound';
 import ShopPerformance from './pages/sales/ShopPerformance';
 import ViewBusinessAccount from './pages/account/ViewBusinessAccount';
 import BusinessAccounts from './pages/account/BusinessAccounts';
+
 
 const theme = createTheme({
   palette: {
@@ -223,6 +225,11 @@ const App = () => {
                   <Route
                     path='customer/allCustomers'
                     element={<AllCustomers />}
+                  />
+
+                  <Route
+                    path='customer/customerDetails'
+                    element={<CustomerDetails />}
                   />
 
                   {/* --- Sales Routes --- */}
