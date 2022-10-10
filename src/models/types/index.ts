@@ -253,3 +253,8 @@ export interface Customer {
   salesOrders?: SalesOrder[];
   // newsletters?: Newsletter[];
 }
+
+export interface CustomerOrderValue {
+  value: number;
+  month: String;
+}
