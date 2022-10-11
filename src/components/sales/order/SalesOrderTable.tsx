@@ -49,7 +49,7 @@ const Row = ({ row }: { row: SalesOrder }) => {
             size='small'
             onClick={() => setOpen(!open)}
           >
-            {open ? <KeyboardArrowDown/> : <KeyboardArrowUp  />}
+            {open ? <KeyboardArrowDown /> : <KeyboardArrowUp />}
           </IconButton>
         </TableCell>
         <TableCell component='th' scope='row' align='center'>
@@ -63,7 +63,15 @@ const Row = ({ row }: { row: SalesOrder }) => {
           <PlatformChip salesOrder={row!} />
         </TableCell>
         <TableCell align='center'>${row.amount.toFixed(2)}</TableCell>
-        <TableCell align='center'>{row.customerAddress ?? 'NA'}</TableCell>
+        <TableCell
+          align='center'
+          style={{
+            whiteSpace: 'normal',
+            wordWrap: 'break-word'
+          }}
+        >
+          {row.customerAddress ?? 'NA'}
+        </TableCell>
         <TableCell align='center'>
           <Button
             variant='contained'

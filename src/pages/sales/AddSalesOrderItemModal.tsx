@@ -51,7 +51,7 @@ const AddSalesOrderItemModal = ({
         >
           <DialogTitle id='alert-dialog-title'>{title}</DialogTitle>
           <DialogContent>
-            <DialogContentText id='alert-dialog-description'>
+            <DialogContentText id='alert-dialog-description' style={{marginBottom: '10%'}}>
               {body}
             </DialogContentText>
 
