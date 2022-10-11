@@ -46,6 +46,11 @@ import ShippitDeliveryDetails from './pages/delivery/ShippitDeliveryDetails';
 
 import AllCustomers from './pages/customers/AllCustomers';
 import CustomerDetails from './pages/customers/CustomerDetails';
+import AllSentNewsletters from './pages/customers/AllSentNewsletters';
+import AllScheduledNewsletters from './pages/customers/AllScheduledNewsletters';
+import AllNewsletterTemplates from './pages/customers/AllNewsletterTemplates';
+import CreateNewsletterTemplate from './pages/customers/CreateNewsletterTemplate';
+import ScheduleNewsletter from './pages/customers/ScheduleNewsletter';
 
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
@@ -68,7 +73,6 @@ import NotFound from './pages/NotFound';
 import ShopPerformance from './pages/sales/ShopPerformance';
 import ViewBusinessAccount from './pages/account/ViewBusinessAccount';
 import BusinessAccounts from './pages/account/BusinessAccounts';
-
 
 const theme = createTheme({
   palette: {
@@ -226,10 +230,29 @@ const App = () => {
                     path='customer/allCustomers'
                     element={<AllCustomers />}
                   />
-
                   <Route
                     path='customer/customerDetails'
                     element={<CustomerDetails />}
+                  />
+                  <Route
+                    path='customer/allSentNewsletters'
+                    element={<AllSentNewsletters />}
+                  />
+                  <Route
+                    path='customer/allScheduledNewsletters'
+                    element={<AllScheduledNewsletters />}
+                  />
+                  <Route
+                    path='customer/allNewsletterTemplates'
+                    element={<AllNewsletterTemplates />}
+                  />
+                  <Route
+                    path='customer/createNewsletterTemplate'
+                    element={<CreateNewsletterTemplate />}
+                  />
+                  <Route
+                    path='customer/scheduleNewsletter'
+                    element={<ScheduleNewsletter />}
                   />
 
                   {/* --- Sales Routes --- */}
@@ -294,7 +317,10 @@ const App = () => {
                     <Route path='viewAccount' element={<ViewAccount />} />
                     <Route path='createNewUser' element={<CreateNewUser />} />
                     <Route path='business' element={<BusinessAccounts />} />
-                    <Route path='viewBusinessAccount' element={<ViewBusinessAccount />} />
+                    <Route
+                      path='viewBusinessAccount'
+                      element={<ViewBusinessAccount />}
+                    />
                   </Route>
                   <Route path='*' element={<NotFound />} />
                 </Route>
