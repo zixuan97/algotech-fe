@@ -51,7 +51,8 @@ export enum PlatformType {
   REDMART = 'REDMART',
   SHOPIFY = 'SHOPIFY',
   SHOPEE = 'SHOPEE',
-  OTHERS = 'OTHERS'
+  OTHERS = 'OTHERS',
+  B2B = 'B2B'
 }
 
 export enum DeliveryMode {
