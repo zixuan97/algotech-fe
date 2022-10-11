@@ -4,7 +4,8 @@ import {
   LocalGroceryStore,
   People,
   Receipt,
-  LocalShipping
+  LocalShipping,
+  MenuBook
 } from '@mui/icons-material';
 import { Button, Divider, Drawer, List, Toolbar } from '@mui/material';
 import React from 'react';
@@ -30,6 +31,7 @@ type MenuOpen = {
   customers: boolean;
   hr: boolean;
   accounts: boolean;
+  catalogue: boolean;
 };
 
 const menuOpenDefaultState: MenuOpen = {
@@ -40,7 +42,8 @@ const menuOpenDefaultState: MenuOpen = {
   delivery: false,
   customers: false,
   hr: false,
-  accounts: false
+  accounts: false,
+  catalogue: false
 };
 
 const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
@@ -74,10 +77,7 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
           >
             The Kettle Gourmet{' '}
           </Button>
-          <img src={logo} width={75} height={65} />
-          {/* <IconButton onClick={() => toggleOpen(false)}>
-            <ChevronLeft />
-          </IconButton> */}
+          <img src={logo} width={75} height={65} alt=''/>
         </Toolbar>
         <Divider />
         <List>
@@ -103,6 +103,17 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
           </NestedList>
 
           <NestedList
+            title={'Catalogue'}
+            open={menuOpen.catalogue}
+            toggleOpen={(open) => toggleMenuOpen('catalogue', open)}
+            icon={<MenuBook />}
+            disabled={disabled}
+          >
+            <ListItemLink primary='Product Catalogue' to='/inventory/dashboard' />
+            <ListItemLink primary='Bundle Catalogue' to='/inventory/allProducts' />
+          </NestedList>
+
+          <NestedList
             title={'Sales'}
             open={menuOpen.sales}
             toggleOpen={(open) => toggleMenuOpen('sales', open)}
@@ -112,17 +123,16 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
             <List component='div' disablePadding>
               <ListItemLink primary='Dashboard' to='/sales/dashboard' />
               <ListItemLink
-                primary='Create Orders'
-                to='/orders/createNewOrder'
-                disabled
+                primary='Shop Performance'
+                to='sales/shopPerformance'
               />
               <ListItemLink
                 primary='Order Fulfillment'
                 to='sales/allSalesOrders'
               />
               <ListItemLink
-                primary='Shop Performance'
-                to='sales/shopPerformance'
+                primary='Bulk Orders'
+                to='sales/allSalesOrders'
               />
             </List>
           </NestedList>
