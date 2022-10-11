@@ -77,7 +77,7 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
           >
             The Kettle Gourmet{' '}
           </Button>
-          <img src={logo} width={75} height={65} alt=''/>
+          <img src={logo} width={75} height={65} alt='' />
         </Toolbar>
         <Divider />
         <List>
@@ -109,8 +109,14 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
             icon={<MenuBook />}
             disabled={disabled}
           >
-            <ListItemLink primary='Product Catalogue' to='/inventory/dashboard' />
-            <ListItemLink primary='Bundle Catalogue' to='/inventory/allProducts' />
+            <ListItemLink
+              primary='Product Catalogue'
+              to='/inventory/dashboard'
+            />
+            <ListItemLink
+              primary='Bundle Catalogue'
+              to='/inventory/allProducts'
+            />
           </NestedList>
 
           <NestedList
@@ -130,10 +136,7 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
                 primary='Order Fulfillment'
                 to='sales/allSalesOrders'
               />
-              <ListItemLink
-                primary='Bulk Orders'
-                to='sales/allSalesOrders'
-              />
+              <ListItemLink primary='Bulk Orders' to='sales/allSalesOrders' />
             </List>
           </NestedList>
 
@@ -174,7 +177,6 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
               to='/delivery/allShippitDeliveries'
             />
           </NestedList>
-          
 
           <NestedList
             icon={<People />}
@@ -183,21 +185,18 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
             toggleOpen={(open) => toggleMenuOpen('customers', open)}
             disabled={disabled}
           >
-            <ListItemLink
-              primary='All Customers'
-              to='customer/allCustomers'
-            />
+            <ListItemLink primary='All Customers' to='customer/allCustomers' />
             <ListItemLink
               primary='Newsletter Templates'
-              to=''
+              to='customer/allNewsletterTemplates'
             />
             <ListItemLink
               primary='Scheduled Newsletters'
-              to=''
+              to='customer/allScheduledNewsletters'
             />
-              <ListItemLink
+            <ListItemLink
               primary='Sent Newsletters'
-              to=''
+              to='customer/allSentNewsletters'
             />
           </NestedList>
 

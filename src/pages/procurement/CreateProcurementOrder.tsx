@@ -8,8 +8,7 @@ import {
   Button,
   CircularProgress,
   Backdrop,
-  Grid,
-  Autocomplete
+  Grid
 } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import {
@@ -358,7 +357,7 @@ const CreateProcurementOrder = () => {
               autoHeight
               getRowId={(row) => row.product.id}
             />
-            <div className='button-container'>
+            <div className='create-button-container'>
               <Button
                 variant='contained'
                 size='medium'

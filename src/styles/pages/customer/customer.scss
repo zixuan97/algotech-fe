@@ -3,65 +3,127 @@
 @use '../../common/common.scss';
 
 .all-customers {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    padding: 2rem;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 2rem;
 }
 
 .data-grid-container {
-    padding-top: 2rem;
+  padding-top: 2rem;
 }
 
 .customer-cards {
-    display: flex;
-    width: 100%;
-    padding-top: 1rem;
-    flex-direction: row;
+  display: flex;
+  width: 100%;
+  padding-top: 1rem;
+  flex-direction: row;
 }
 
 .customer-details-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    width: 50%;
-    margin: 1%;
-    padding: 1%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 50%;
+  margin: 1%;
+  padding: 1%;
 }
 
 .customer-details-grid {
-    padding-left: 1rem;
-    padding-bottom: 2rem;
+  padding-left: 1rem;
+  padding-bottom: 2rem;
 }
 
 .labelText {
-    font-family: 'Poppins';
-    color: colors.$primary;
+  font-family: 'Poppins';
+  color: colors.$primary;
 }
 
 .order-overview-card {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    width: 50%;
-    margin: 1%;
-    padding: 1%;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 50%;
+  margin: 1%;
+  padding: 1%;
+}
+
 .order-overview-grid {
-    padding-left: 1rem;
+  padding-left: 1rem;
 }
 
 .orders-table {
-    padding-top: 2rem;
-    padding: 1%;
+  padding-top: 2rem;
+  padding: 1%;
 }
 
 .newsletter-table {
-    padding: 1%;
-    padding-bottom: 1rem;
+  padding: 1%;
+  padding-bottom: 1rem;
 }
 
 .data-grid-container-newsletter {
-    padding-top: 1rem;
+  padding-top: 1rem;
+}
+
+.view-newsletters {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 2rem;
+}
+
+.scheduled-newsletters-toolbar {
+  width: 40%;
+  display: flex;
+  padding: 0 0 1em;
+  gap: 15px 15px;
+  justify-content: flex-end;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.newsletter-templates {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 2rem;
+}
+
+.newsletter-templates-toolbar {
+  width: 40%;
+  display: flex;
+  padding: 0 0 1em;
+  gap: 15px 15px;
+  justify-content: flex-end;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.create-newsletter-template {
+  width: 90%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.create-newsletter-template-heading {
+  display: flex;
+  flex-direction: row;
+  padding-top: 2rem;
+  padding-left: 2rem;
+}
+
+.schedule-newsletter {
+  width: 90%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.schedule-newsletter-heading {
+  display: flex;
+  flex-direction: row;
+  padding-top: 2rem;
+  padding-left: 2rem;
 }
