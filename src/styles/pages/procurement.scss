@@ -95,7 +95,7 @@
   justify-content: flex-start;
 }
 
-.button-container {
+.create-button-container {
   padding-top: 2rem;
   padding-bottom: 2rem;
   width: 100%;
@@ -135,7 +135,9 @@
   align-items: center;
 }
 
-.button-container {
+.view-details-button-container {
+  padding-top: 3rem;
+  padding-bottom: 2rem;
   display: flex;
   justify-content: flex-end;
   width: max-content;

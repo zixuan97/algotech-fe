@@ -225,7 +225,7 @@ const ProcurementOrderDetails = () => {
           </Tooltip>
           <h1>View Procurement Order ID: #{originalOrder?.id}</h1>
         </div>
-        <div className='button-container'>
+        <div className='view-details-button-container'>
           <Button
             variant='contained'
             onClick={() => {
