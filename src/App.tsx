@@ -29,6 +29,9 @@ import AllWarehouses from './pages/inventory/Warehouses';
 import WarehouseDetails from './pages/inventory/WarehouseDetails';
 import CreateWarehouse from './pages/inventory/CreateWarehouse';
 
+import ProductCatalogue from './pages/catalogue/ProductCatalogue';
+import BundleCatalogue from './pages/catalogue/BundleCatalogue';
+
 import AllProcurementOrders from './pages/procurement/AllProcurementOrders';
 import CreateProcurementOrder from './pages/procurement/CreateProcurementOrder';
 import ProcurementOrderDetails from './pages/procurement/ProcurementOrderDetails';
@@ -200,6 +203,17 @@ const App = () => {
                   <Route
                     path='inventory/createWarehouse'
                     element={<CreateWarehouse />}
+                  />
+
+                  {/* --- (B2B) Catalogue --- */}
+
+                  <Route
+                    path='catalogue/productCatalogue'
+                    element={<ProductCatalogue />}
+                  />
+                  <Route
+                    path='catalogue/bundleCatalogue'
+                    element={<BundleCatalogue />}
                   />
 
                   {/* --- Delivery Routes --- */}
