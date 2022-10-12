@@ -19,7 +19,7 @@ const columns: GridColDef[] = [
     headerName: 'First Name',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) =>
-      params.row.salesOrder.orderId
+      params.row.firstName
   },
   {
     field: 'lastName',
@@ -29,23 +29,23 @@ const columns: GridColDef[] = [
   {
     field: 'email',
     headerName: 'Email',
-    flex: 1.5,
+    flex: 1.3,
     valueGetter: (params: GridValueGetterParams) =>
-      params.row.salesOrder.customerAddress
+      params.row.email
   },
   {
     field: 'mobile',
     headerName: 'Mobile',
-    flex: 0.5,
+    flex: 0.7,
     valueGetter: (params: GridValueGetterParams) =>
-      params.row.salesOrder.customerAddress
+      params.row.contactNo
   },
   {
     field: 'lastOrderDate',
     headerName: 'Last Order Date',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) => {
-      let date = params.value;
+      let date = params.row.lastOrderDate;
       let valueFormatted = moment(date).format('DD/MM/YYYY');
       return valueFormatted;
     }
@@ -55,14 +55,14 @@ const columns: GridColDef[] = [
     headerName: 'Avg. Order Value',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) =>
-      params.row.salesOrder.customerAddress
+      "$" + params.row.totalSpent/params.row.ordersCount
   },
   {
     field: 'totalOrderValue',
     headerName: 'Total Order Value',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) =>
-      params.row.salesOrder.customerAddress
+      "$" + params.row.totalSpent
   },
   {
     field: 'action',
@@ -102,6 +102,7 @@ const AllCustomers = () => {
       (res) => {
         setLoading(false);
         setCustomerData(res);
+        console.log(res);
       },
       () => setLoading(false)
     );
@@ -129,6 +130,7 @@ const AllCustomers = () => {
             id='search'
             label='Search'
             margin='normal'
+            placeholder='First Name, Last Name, Email or Mobile'
             fullWidth
             onChange={handleSearchFieldChange}
           />

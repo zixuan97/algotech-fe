@@ -8,4 +8,10 @@
 
  export const getAllCustomers = async (): Promise<Customer[]> => {
     return axios.get(`${apiRoot}/customer/all`).then((res) => res.data);
-  };
+ };
+
+ export const getCustomerById = async (
+  id: string | any
+): Promise<Customer> => {
+  return axios.get(`${apiRoot}/customer/id/${id}`).then((res) => res.data);
+};
