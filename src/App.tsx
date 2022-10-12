@@ -29,8 +29,13 @@ import AllWarehouses from './pages/inventory/Warehouses';
 import WarehouseDetails from './pages/inventory/WarehouseDetails';
 import CreateWarehouse from './pages/inventory/CreateWarehouse';
 
-import ProductCatalogue from './pages/catalogue/ProductCatalogue';
-import BundleCatalogue from './pages/catalogue/BundleCatalogue';
+import AllProductCatalogue from './pages/catalogue/AllProductCatalogue';
+import ProductCatalogueItemDetails from './pages/catalogue/ProductCatalogueItemDetails';
+import CreateProductCatalogueItem from './pages/catalogue/CreateProductCatalogueItem';
+
+import AllBundleCatalogue from './pages/catalogue/AllBundleCatalogue';
+import BundleCatalogueItemDetails from './pages/catalogue/BundleCatalogueItemDetails';
+import CreateBundleCatalogueItem from './pages/catalogue/CreateBundleCatalogueItem';
 
 import AllProcurementOrders from './pages/procurement/AllProcurementOrders';
 import CreateProcurementOrder from './pages/procurement/CreateProcurementOrder';
@@ -208,12 +213,29 @@ const App = () => {
                   {/* --- (B2B) Catalogue --- */}
 
                   <Route
-                    path='catalogue/productCatalogue'
-                    element={<ProductCatalogue />}
+                    path='catalogue/allProductCatalogue'
+                    element={<AllProductCatalogue />}
                   />
                   <Route
-                    path='catalogue/bundleCatalogue'
-                    element={<BundleCatalogue />}
+                    path='catalogue/productCatalogueItemDetails'
+                    element={<ProductCatalogueItemDetails />}
+                  />
+                  <Route
+                    path='catalogue/createProductCatalogueItem'
+                    element={<CreateProductCatalogueItem />}
+                  />
+
+                  <Route
+                    path='catalogue/allBundleCatalogue'
+                    element={<AllBundleCatalogue />}
+                  />
+                  <Route
+                    path='catalogue/bundleCatalogueItemDetails'
+                    element={<BundleCatalogueItemDetails />}
+                  />
+                  <Route
+                    path='catalogue/createBundleCatalogueItem'
+                    element={<CreateBundleCatalogueItem />}
                   />
 
                   {/* --- Delivery Routes --- */}

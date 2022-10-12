@@ -1,4 +1,4 @@
-const BundleCatalogue = () => {
+const AllBundleCatalogue = () => {
   return (
     <div className='product-inventory'>
       <h1>Manage Bundle Catalogue</h1>
@@ -6,4 +6,4 @@ const BundleCatalogue = () => {
   );
 };
 
-export default BundleCatalogue;
+export default AllBundleCatalogue;

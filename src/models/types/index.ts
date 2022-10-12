@@ -134,6 +134,20 @@ export interface BundleProduct {
   quantity: number;
 }
 
+export interface ProductCatalogue {
+  price: number;
+  product: Product;
+  image?: string;
+  description: string;
+}
+
+export interface BundleCatalogue {
+  price: number;
+  bundle: Bundle;
+  image?: string;
+  description: string;
+}
+
 export interface ProcurementOrder {
   id: number;
   orderDate: Date;
