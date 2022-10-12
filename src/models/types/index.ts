@@ -60,6 +60,19 @@ export enum DeliveryMode {
   EXPRESS = 'EXPRESS',
   PRIORITY = 'PRIORITY'
 }
+export enum PaymentMode {
+  CREDIT_CARD = 'CREDIT_CARD',
+  BANK_TRANSFER = 'BANK_TRANSFER',
+  PAYNOW = 'PAYNOW'
+}
+
+export enum BulkOrderStatus {
+  CREATED = 'CREATED',
+  PAYMENT_SUCCESS = 'PAYMENT_SUCCESS',
+  PAYMENT_FAILED = 'PAYMENT_FAILED',
+  FULFILLED = 'FULFILLED',
+  CANCELLED = 'CANCELLED'
+}
 
 export interface User {
   id: number;
@@ -258,4 +271,14 @@ export interface Customer {
 export interface CustomerOrderValue {
   value: number;
   month: String;
+}
+export interface BulkOrder {
+  id: number;
+  amount: number;
+  payeeName: String;
+  payeeEmail: String;
+  payeeRemarks: String;
+  paymentMode: PaymentMode;
+  bulkOrderStatus: BulkOrderStatus;
+  salesOrders: SalesOrder[];
 }

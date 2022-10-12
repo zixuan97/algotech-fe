@@ -79,35 +79,11 @@ export const createPdfFromComponent = async (
 export const getExcelFromApi = (
   httpMethod: string,
   api: string,
-  fileName: string
-) => {
-  const xhr = new XMLHttpRequest();
-  xhr.open(httpMethod, `${apiRoot}${api}`, true);
-  xhr.responseType = 'arraybuffer';
-  xhr.onload = function (e) {
-    if (this.status === 200) {
-      const blob = new Blob([this.response], {
-        type: 'application/octet-stream'
-      });
-      downloadFile(window.URL.createObjectURL(blob), fileName);
-    }
-  };
-  xhr.send();
-};
-
-export const getExcelFromApiWithDate = (
-  httpMethod: string,
-  api: string,
   fileName: string,
-  dateRange: MomentRange
+  dateRange?: MomentRange
 ) => {
-  const timeFilter = {
-    time_from: dateRange[0].format(),
-    time_to: dateRange[1].format()
-  };
   const xhr = new XMLHttpRequest();
   xhr.open(httpMethod, `${apiRoot}${api}`, true);
-  xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
   xhr.responseType = 'arraybuffer';
   xhr.onload = function (e) {
     if (this.status === 200) {
@@ -117,6 +93,14 @@ export const getExcelFromApiWithDate = (
       downloadFile(window.URL.createObjectURL(blob), fileName);
     }
   };
-  xhr.send(JSON.stringify(timeFilter));
-
+  if (dateRange) {
+    const timeFilter = {
+      time_from: dateRange[0].format(),
+      time_to: dateRange[1].format()
+    };
+    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+    xhr.send(JSON.stringify(timeFilter));
+  } else {
+    xhr.send();
+  }
 };
