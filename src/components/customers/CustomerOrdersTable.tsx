@@ -21,7 +21,7 @@ import _ from 'lodash';
 import moment from 'moment';
 import React from 'react';
 import { SalesOrder } from 'src/models/types';
-import PlatformChip from './PlatformChip';
+import PlatformChip from 'src/components/sales/order/PlatformChip'
 
 interface props {
   filteredData: SalesOrder[];
