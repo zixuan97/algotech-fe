@@ -93,19 +93,21 @@ const BulkOrderDetails = () => {
           <Paper elevation={3}>
             <div className='sales-content-body'>
               <div className='grid-toolbar'>
-                <h4>Order Details</h4>
+                <h3>Order Details</h3>
               </div>
               {bulkOrder && (
-                <DataGrid
-                  style={{ wordWrap: 'break-word' }}
-                  columns={bulkOrderLineItems}
-                  rows={salesOrders ?? []}
-                  autoHeight
-                  pageSize={5}
-                  loading={loading}
-                />
+                <>
+                  <DataGrid
+                    style={{ wordWrap: 'break-word' }}
+                    columns={bulkOrderLineItems}
+                    rows={salesOrders ?? []}
+                    autoHeight
+                    pageSize={5}
+                    loading={loading}
+                  />
+                  <BulkOrderSummary bulkOrder={bulkOrder!} />
+                </>
               )}
-              {bulkOrder && <BulkOrderSummary bulkOrder={bulkOrder!} />}
             </div>
           </Paper>
         </Box>

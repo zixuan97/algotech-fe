@@ -11,9 +11,9 @@ const BulkOrderSummary = ({ bulkOrder }: props) => {
       <div>
         <h5>Merchandising Total: ${bulkOrder.amount.toFixed(2)}</h5>
         <h5>Shipping: -</h5>
-        <h5>No. of Deliveries: {bulkOrder.salesOrders.length ?? 0}</h5>
+        <h5>No. Of Deliveries: {bulkOrder.salesOrders.length ?? 0}</h5>
         <h5>
-          Payment Method:{' '}
+          Payment Method:
           {_.startCase(bulkOrder.paymentMode.toString().toLowerCase())}
         </h5>
       </div>
