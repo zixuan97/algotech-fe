@@ -24,3 +24,17 @@ export const getNewsletterTemplateById = async (
 ): Promise<NewsletterTemplate> => {
   return axios.get(`${apiRoot}/newsletter/${id}`).then((res) => res.data);
 };
+
+export const editNewsletterTemplate = async (body: object): Promise<void> => {
+  return axios.put(`${apiRoot}/newsletter`, body);
+};
+
+export const deleteNewsletterTemplate = async (
+  id: string | number
+): Promise<void> => {
+  return axios.delete(`${apiRoot}/newsletter/${id}`);
+};
+
+export const createNewsletterTemplate = async (body: object): Promise<void> => {
+  return axios.post(`${apiRoot}/newsletter`, body);
+};
