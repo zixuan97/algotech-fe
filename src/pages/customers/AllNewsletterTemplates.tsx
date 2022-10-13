@@ -3,26 +3,43 @@ import { useNavigate } from 'react-router';
 import { Button } from '@mui/material';
 import '../../styles/pages/customer/customer.scss';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { getAllNewsletterTemplates } from 'src/services/customerService';
+import { NewsletterTemplate } from 'src/models/types';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import ViewNewsletterButton from 'src/components/customers/ViewNewsletterButton';
 
 const columns: GridColDef[] = [
   { field: 'name', headerName: 'Newsletter Name', flex: 1 },
   { field: 'emailSubject', headerName: 'Email Subject', flex: 1 },
-  { field: 'discountCode', headerName: 'Discount Code', flex: 1 }
-];
-
-const data = [
+  { field: 'discountCode', headerName: 'Discount Code', flex: 1 },
   {
-    id: 1,
-    name: 'Christmas 2022',
-    emailSubject: 'Christmas with Kettle Gourmet!',
-    discountCode: 'XMAS22'
+    field: 'action',
+    headerName: 'Action',
+    type: 'number',
+    flex: 1,
+    renderCell: ViewNewsletterButton
   }
 ];
 
 const NewsletterTemplates = () => {
   const navigate = useNavigate();
 
+  const [newsletterTemplates, setNewsletterTemplates] = React.useState<
+    NewsletterTemplate[]
+  >([]);
   const [loading, setLoading] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    setLoading(true);
+    asyncFetchCallback(
+      getAllNewsletterTemplates(),
+      (res) => {
+        setLoading(false);
+        setNewsletterTemplates(res);
+      },
+      () => setLoading(false)
+    );
+  }, []);
 
   return (
     <div className='newsletter-templates'>
@@ -39,7 +56,12 @@ const NewsletterTemplates = () => {
           Create Newsletter Template
         </Button>
       </div>
-      <DataGrid columns={columns} loading={loading} rows={data} autoHeight />
+      <DataGrid
+        columns={columns}
+        loading={loading}
+        rows={newsletterTemplates}
+        autoHeight
+      />
     </div>
   );
 };

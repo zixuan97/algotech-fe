@@ -272,6 +272,7 @@ export interface CustomerOrderValue {
   value: number;
   month: String;
 }
+
 export interface BulkOrder {
   id: number;
   amount: number;
@@ -281,4 +282,13 @@ export interface BulkOrder {
   paymentMode: PaymentMode;
   bulkOrderStatus: BulkOrderStatus;
   salesOrders: SalesOrder[];
+}
+
+export interface NewsletterTemplate {
+  id: number;
+  name: String;
+  emailSubject: String;
+  emailBodyTitle: String;
+  emailBody: String;
+  discountCode: String;
 }

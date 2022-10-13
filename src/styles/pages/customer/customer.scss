@@ -123,6 +123,124 @@
   padding-left: 2rem;
 }
 
+.view-newsletter-template {
+  width: 90%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.view-newsletter-template-heading {
+  display: flex;
+  flex-direction: row;
+  padding-top: 2rem;
+  padding-left: 2rem;
+}
+
+.view-newsletter-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  margin: 1%;
+  padding: 1%;
+}
+
+.view-newsletter-grid {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.view-newsletter-template-grid-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.view-newsletter-template-label-text {
+  font-family: 'Poppins';
+  color: colors.$primary;
+  padding-left: 2rem;
+  white-space: nowrap;
+}
+
+.view-newsletter-template-value-text {
+  padding-left: 2rem;
+}
+
+.view-newsletter-button-container {
+  display: flex;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  justify-content: center;
+}
+
+.modal-top-bar {
+  background-color: colors.$primary;
+  height: 100px;
+}
+
+.modal-top-bar-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.modal-logo {
+  position: absolute;
+  z-index: 10;
+  top: 45px;
+  left: 250px;
+}
+
+.modal-icon-container {
+  display: flex;
+  width: 50%;
+  justify-content: flex-end;
+  align-items: flex-start;
+}
+
+.modal-body {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.preview-template-title-text {
+  font-family: 'Poppins';
+  padding-top: 2rem;
+}
+
+.preview-template-body-text {
+  padding: 3rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.preview-template-discount-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.preview-template-discount-label {
+  font-family: 'Poppins';
+}
+
+.preview-template-discount-code {
+  font-family: 'Poppins';
+  color: colors.$secondary;
+  padding-left: 0.5rem;
+  padding-bottom: 1rem;
+  text-decoration: underline;
+}
+
+.modal-bottom-bar {
+  display: flex;
+  width: 600px;
+  background-color: colors.$primary;
+  height: 60px;
+}
+
 .schedule-newsletter {
   width: 90%;
   display: flex;
