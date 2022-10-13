@@ -24,3 +24,7 @@ export const getNewsletterTemplateById = async (
 ): Promise<NewsletterTemplate> => {
   return axios.get(`${apiRoot}/newsletter/${id}`).then((res) => res.data);
 };
+
+export const editNewsletterTemplate = async (body: object): Promise<void> => {
+  return axios.put(`${apiRoot}/newsletter`, body);
+};

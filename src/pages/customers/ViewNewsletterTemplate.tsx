@@ -10,13 +10,18 @@ import {
   Grid,
   IconButton,
   Paper,
+  TextField,
   Tooltip,
   Typography
 } from '@mui/material';
 import { NewsletterTemplate } from 'src/models/types';
-import { getNewsletterTemplateById } from 'src/services/customerService';
+import {
+  editNewsletterTemplate,
+  getNewsletterTemplateById
+} from 'src/services/customerService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import PreviewTemplateModal from 'src/components/customers/PreviewTemplateModal';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 const ViewNewsletterTemplate = () => {
   const navigate = useNavigate();
@@ -25,7 +30,11 @@ const ViewNewsletterTemplate = () => {
 
   const [originalNewsletterTemplate, setOriginalNewsletterTemplate] =
     React.useState<NewsletterTemplate>();
+  const [updatedNewsletterTemplate, setUpdatedNewsletterTemplate] =
+    React.useState<NewsletterTemplate>();
+  const [edit, setEdit] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [openPreviewModal, setOpenPreviewModal] =
     React.useState<boolean>(false);
 
@@ -36,6 +45,7 @@ const ViewNewsletterTemplate = () => {
         getNewsletterTemplateById(id),
         (res) => {
           setOriginalNewsletterTemplate(res);
+          setUpdatedNewsletterTemplate(res);
           setLoading(false);
         },
         () => setLoading(false)
@@ -43,15 +53,145 @@ const ViewNewsletterTemplate = () => {
     }
   }, [id]);
 
+  const handleEditNewsletterTemplate = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    await setUpdatedNewsletterTemplate((prev) => {
+      if (prev) {
+        return { ...prev, [e.target.name]: e.target.value };
+      } else {
+        return prev;
+      }
+    });
+  };
+
+  const handleCancelUpdate = async () => {
+    setEdit(false);
+    setUpdatedNewsletterTemplate(originalNewsletterTemplate);
+  };
+
+  const handleNewsletterTemplateUpdate = async () => {
+    if (updatedNewsletterTemplate?.name === '') {
+      setAlert({
+        severity: 'warning',
+        message: 'Please input newsletter name!'
+      });
+      return;
+    }
+
+    if (updatedNewsletterTemplate?.emailSubject === '') {
+      setAlert({
+        severity: 'warning',
+        message: 'Please input email subject!'
+      });
+      return;
+    }
+
+    if (updatedNewsletterTemplate?.emailBodyTitle === '') {
+      setAlert({
+        severity: 'warning',
+        message: 'Please input email body title!'
+      });
+      return;
+    }
+
+    if (updatedNewsletterTemplate?.emailBody === '') {
+      setAlert({
+        severity: 'warning',
+        message: 'Please input email body!'
+      });
+      return;
+    }
+
+    if (updatedNewsletterTemplate?.discountCode === '') {
+      setAlert({
+        severity: 'warning',
+        message: 'Please input discount code!'
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    let reqBody = {
+      id: originalNewsletterTemplate?.id,
+      name: updatedNewsletterTemplate?.name,
+      emailSubject: updatedNewsletterTemplate?.emailSubject,
+      emailBodyTitle: updatedNewsletterTemplate?.emailBodyTitle,
+      emailBody: updatedNewsletterTemplate?.emailBody,
+      discountCode: updatedNewsletterTemplate?.discountCode
+    };
+
+    await asyncFetchCallback(
+      editNewsletterTemplate(reqBody),
+      (res) => {
+        setOriginalNewsletterTemplate((originalNewsletterTemplate) => {
+          if (originalNewsletterTemplate) {
+            return {
+              ...originalNewsletterTemplate,
+              name: updatedNewsletterTemplate!.name,
+              emailSubject: updatedNewsletterTemplate!.emailSubject,
+              emailBodyTitle: updatedNewsletterTemplate!.emailBodyTitle,
+              emailBody: updatedNewsletterTemplate!.emailBody,
+              discountCode: updatedNewsletterTemplate!.discountCode
+            };
+          } else {
+            return originalNewsletterTemplate;
+          }
+        });
+        setAlert({
+          severity: 'success',
+          message: 'Newsletter Template updated successfully.'
+        });
+        setLoading(false);
+        setEdit(false);
+      },
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message: 'Newsletter Template was not updated successfully.'
+        });
+        setEdit(false);
+      }
+    );
+  };
+
   return (
     <div className='view-newsletter-template'>
-      <div className='view-newsletter-template-heading'>
-        <Tooltip title='Return to Previous Page' enterDelay={300}>
-          <IconButton size='large' onClick={() => navigate(-1)}>
-            <ChevronLeft />
-          </IconButton>
-        </Tooltip>
-        <h1>View Newsletter Template ID: #{id}</h1>
+      <div className='view-newsletter-template-top-section'>
+        <div className='view-newsletter-template-heading'>
+          <Tooltip title='Return to Previous Page' enterDelay={300}>
+            <IconButton size='large' onClick={() => navigate(-1)}>
+              <ChevronLeft />
+            </IconButton>
+          </Tooltip>
+          <h1>View Newsletter Template ID: #{id}</h1>
+        </div>
+        <div className='view-newsletter-template-edit-button-container'>
+          <Button
+            variant='contained'
+            onClick={() => {
+              if (!edit) {
+                setEdit(true);
+              } else {
+                handleNewsletterTemplateUpdate();
+              }
+            }}
+          >
+            {edit ? 'Save Changes' : 'Edit'}
+          </Button>
+          {edit && (
+            <Button
+              variant='contained'
+              size='medium'
+              sx={{ width: 'fit-content' }}
+              onClick={handleCancelUpdate}
+            >
+              Cancel
+            </Button>
+          )}
+        </div>
       </div>
       <Backdrop
         sx={{
@@ -62,45 +202,118 @@ const ViewNewsletterTemplate = () => {
       >
         <CircularProgress color='inherit' />
       </Backdrop>
+      {alert && (
+        <div className='view-newsletter-alert'>
+          <TimeoutAlert
+            alert={alert}
+            timeout={6000}
+            clearAlert={() => setAlert(null)}
+          />
+        </div>
+      )}
       <Paper elevation={2} className='view-newsletter-card'>
         <Grid container spacing={2} className='view-newsletter-grid'>
           <Grid item xs={12} className='view-newsletter-template-grid-item'>
             <h3 className='view-newsletter-template-label-text'>
               Newsletter Name
             </h3>
-            <Typography className='view-newsletter-template-value-text'>
-              {originalNewsletterTemplate?.name}
-            </Typography>
+            {edit ? (
+              <TextField
+                id='outlined-required'
+                name='name'
+                style={{ paddingLeft: '2rem' }}
+                value={updatedNewsletterTemplate?.name}
+                onChange={handleEditNewsletterTemplate}
+                placeholder='Enter updated name here.'
+                fullWidth
+              />
+            ) : (
+              <Typography className='view-newsletter-template-value-text'>
+                {originalNewsletterTemplate?.name}
+              </Typography>
+            )}
           </Grid>
           <Grid item xs={12} className='view-newsletter-template-grid-item'>
             <h3 className='view-newsletter-template-label-text'>
               Email Subject
             </h3>
-            <Typography className='view-newsletter-template-value-text'>
-              {originalNewsletterTemplate?.emailSubject}
-            </Typography>
+            {edit ? (
+              <TextField
+                id='outlined-required'
+                name='emailSubject'
+                style={{ paddingLeft: '2rem' }}
+                value={updatedNewsletterTemplate?.emailSubject}
+                onChange={handleEditNewsletterTemplate}
+                placeholder='Enter updated email subject here.'
+                fullWidth
+                multiline
+              />
+            ) : (
+              <Typography className='view-newsletter-template-value-text'>
+                {originalNewsletterTemplate?.emailSubject}
+              </Typography>
+            )}
           </Grid>
           <Grid item xs={12} className='view-newsletter-template-grid-item'>
             <h3 className='view-newsletter-template-label-text'>
               Email Body Title
             </h3>
-            <Typography className='view-newsletter-template-value-text'>
-              {originalNewsletterTemplate?.emailBodyTitle}
-            </Typography>
+            {edit ? (
+              <TextField
+                id='outlined-required'
+                name='emailBodyTitle'
+                style={{ paddingLeft: '2rem' }}
+                value={updatedNewsletterTemplate?.emailBodyTitle}
+                onChange={handleEditNewsletterTemplate}
+                placeholder='Enter updated email body title here.'
+                fullWidth
+                multiline
+              />
+            ) : (
+              <Typography className='view-newsletter-template-value-text'>
+                {originalNewsletterTemplate?.emailBodyTitle}
+              </Typography>
+            )}
           </Grid>
           <Grid item xs={12} className='view-newsletter-template-grid-item'>
             <h3 className='view-newsletter-template-label-text'>Email Body</h3>
-            <Typography className='view-newsletter-template-value-text'>
-              {originalNewsletterTemplate?.emailBody}
-            </Typography>
+            {edit ? (
+              <TextField
+                id='outlined-required'
+                name='emailBody'
+                style={{ paddingLeft: '2rem' }}
+                value={updatedNewsletterTemplate?.emailBody}
+                onChange={handleEditNewsletterTemplate}
+                placeholder='Enter updated email body here.'
+                fullWidth
+                multiline
+              />
+            ) : (
+              <Typography className='view-newsletter-template-value-text'>
+                {originalNewsletterTemplate?.emailBody}
+              </Typography>
+            )}
           </Grid>
           <Grid item xs={12} className='view-newsletter-template-grid-item'>
             <h3 className='view-newsletter-template-label-text'>
               Discount Code
             </h3>
-            <Typography className='view-newsletter-template-value-text'>
-              {originalNewsletterTemplate?.discountCode}
-            </Typography>
+            {edit ? (
+              <TextField
+                id='outlined-required'
+                name='discountCode'
+                style={{ paddingLeft: '2rem' }}
+                value={updatedNewsletterTemplate?.discountCode}
+                onChange={handleEditNewsletterTemplate}
+                placeholder='Enter updated discount code here.'
+                fullWidth
+                multiline
+              />
+            ) : (
+              <Typography className='view-newsletter-template-value-text'>
+                {originalNewsletterTemplate?.discountCode}
+              </Typography>
+            )}
           </Grid>
         </Grid>
       </Paper>
