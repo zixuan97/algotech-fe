@@ -12,11 +12,24 @@ import { getAllProductCatalogues } from '../../services/productCatalogueService'
 
 const columns: GridColDef[] = [
   {
+    field: 'sku',
+    headerName: 'SKU',
+    valueGetter: (params: GridValueGetterParams) => params.row.product.sku,
+    flex: 1
+  },
+  {
     field: 'name',
     headerName: 'Product Name',
     // valueFormatter: (params) => params.value.name,
     valueGetter: (params: GridValueGetterParams) => params.row.product.name,
     flex: 2
+  },
+  {
+    field: 'brand',
+    headerName: 'Brand',
+    valueGetter: (params: GridValueGetterParams) =>
+      params.row.product.brand.name,
+    flex: 1
   },
   {
     field: 'price',
@@ -34,7 +47,7 @@ const columns: GridColDef[] = [
   }
 ];
 
-const AllProductCatalogue = () => {
+const AllCatalogueProducts = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -58,28 +71,28 @@ const AllProductCatalogue = () => {
     );
   }, []);
 
-  // React.useEffect(() => {
-  //   setFilteredData(
-  //     searchField
-  //       ? productCatalogueData.filter((productCatalogueItem) =>
-  //           Object.values(productCatalogueItem).some((value) =>
-  //             String(value).toLowerCase().includes(searchField.toLowerCase())
-  //           )
-  //         )
-  //       : productCatalogueData
-  //   );
-  // }, [searchField, productCatalogueData]);
-
   React.useEffect(() => {
     setFilteredData(
       searchField
         ? productCatalogueData.filter((productCatalogueItem) => {
             const searchFieldLower = searchField.toLowerCase().trim();
-            productCatalogueItem.product.name
-              ?.toLowerCase()
-              .includes(searchFieldLower);
-            Object.values(productCatalogueItem).some((value) =>
-              String(value).toLowerCase().includes(searchField.toLowerCase())
+            return (
+              productCatalogueItem.product.name
+                ?.toLowerCase()
+                .includes(searchFieldLower) ||
+              // productCatalogueItem.description
+              //   .toLowerCase()
+              //   .includes(searchFieldLower) ||
+              productCatalogueItem.price
+                .toString()
+                .toLowerCase()
+                .includes(searchFieldLower) ||
+              productCatalogueItem.product.brand.name
+                .toLowerCase()
+                .includes(searchFieldLower) ||
+              productCatalogueItem.product.sku
+                .toLowerCase()
+                .includes(searchFieldLower)
             );
           })
         : productCatalogueData
@@ -111,10 +124,10 @@ const AllProductCatalogue = () => {
           size='large'
           sx={{ height: 'fit-content' }}
           onClick={() =>
-            navigate({ pathname: '/catalogue/createProductCatalogueItem' })
+            navigate({ pathname: '/catalogue/createCatalogueProduct' })
           }
         >
-          Create Product Catalogue Item
+          Create Catalogue Product
         </Button>
       </div>
       <DataGrid
@@ -127,4 +140,4 @@ const AllProductCatalogue = () => {
   );
 };
 
-export default AllProductCatalogue;
+export default AllCatalogueProducts;

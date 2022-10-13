@@ -135,13 +135,16 @@ export interface BundleProduct {
 }
 
 export interface ProductCatalogue {
+  id: number;
   price: number;
   product: Product;
+  productId: number;
   image?: string;
   description: string;
 }
 
 export interface BundleCatalogue {
+  id: number;
   price: number;
   bundle: Bundle;
   image?: string;

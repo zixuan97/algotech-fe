@@ -111,11 +111,11 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
           >
             <ListItemLink
               primary='Product Catalogue'
-              to='/catalogue/allProductCatalogue'
+              to='/catalogue/allCatalogueProducts'
             />
             <ListItemLink
               primary='Bundle Catalogue'
-              to='/catalogue/allBundleCatalogue'
+              to='/catalogue/allCatalogueBundles'
             />
           </NestedList>
 

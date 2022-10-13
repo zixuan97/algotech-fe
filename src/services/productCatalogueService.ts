@@ -11,7 +11,9 @@ export const getAllProductCatalogues = async (): Promise<
 export const getProductCatalogueById = async (
   id: string | number
 ): Promise<ProductCatalogue> => {
-  return axios.get(`${apiRoot}/productcatalogue/${id}`).then((res) => res.data);
+  return axios
+    .get(`${apiRoot}/productcatalogue/id/${id}`)
+    .then((res) => res.data);
 };
 
 export const createProductCatalogue = async (

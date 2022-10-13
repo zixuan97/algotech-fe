@@ -27,13 +27,10 @@ import { useSearchParams } from 'react-router-dom';
 import { Product, ProductCatalogue } from 'src/models/types';
 import '../../styles/pages/delivery/delivery.scss';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getSalesOrderDetailsSvc } from 'src/services/salesService';
-import authContext from 'src/context/auth/authContext';
 import {
   createProductCatalogue,
   getAllProductCatalogues
 } from '../../services/productCatalogueService';
-import { getAllProducts } from 'src/services/productService';
 import { isValidProductCatalogue } from 'src/components/catalogue/catalogueHelper';
 import TimeoutAlert, {
   AlertType,
@@ -42,8 +39,9 @@ import TimeoutAlert, {
 import inventoryContext from 'src/context/inventory/inventoryContext';
 import { getBase64 } from 'src/utils/fileUtils';
 import { omit } from 'lodash';
+import { getAllProducts } from 'src/services/productService';
 
-const CreateProductCatalogueItem = () => {
+const CreateCatalogueProduct = () => {
   const navigate = useNavigate();
   const imgRef = React.useRef<HTMLInputElement | null>(null);
 
@@ -51,18 +49,47 @@ const CreateProductCatalogueItem = () => {
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
 
-  const { products } = React.useContext(inventoryContext);
-  const availableProducts = products;
-
   const [newProductCatalogue, setNewProductCatalogue] = React.useState<
     Partial<ProductCatalogue>
   >({});
+
+  const { products } = React.useContext(inventoryContext);
+  const [availableProducts, setAvailableProducts] =
+    React.useState<Product[]>(products);
+  const [unavailProductIds, setUnavailProductIds] = React.useState<number[]>(
+    []
+  );
+
+  const [selectedProduct, setSelectedProduct] = React.useState<Product>();
+
+  React.useEffect(() => {
+    asyncFetchCallback(
+      getAllProductCatalogues(),
+      (res) => {
+        res.forEach((pc) => {
+          console.log('pdt cat', pc);
+
+          unavailProductIds?.push(pc.productId);
+          setUnavailProductIds(unavailProductIds);
+          console.log('unavailableProductIds', unavailProductIds);
+
+          setAvailableProducts(
+            availableProducts.filter(
+              (pdt) => !unavailProductIds.includes(pdt.id)
+            )
+          );
+          console.log('availableProducts', availableProducts);
+        });
+      },
+      () => setLoading(false)
+    );
+  }, []);
 
   React.useEffect(() => {
     setDisableCreate(!isValidProductCatalogue(newProductCatalogue));
   }, [newProductCatalogue]);
 
-  const handleEditProductCatalogue = (
+  const handleEditCatalogueProduct = (
     e: React.ChangeEvent<HTMLInputElement>,
     isNumber: boolean = false
   ) => {
@@ -70,11 +97,30 @@ const CreateProductCatalogueItem = () => {
     setNewProductCatalogue((prev) => ({ ...prev, [e.target.name]: value }));
   };
 
-  const handleEditPdt = (e: SelectChangeEvent<number>) =>
+  const handleEditPrice = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    await setNewProductCatalogue((prev) => {
+      const value = Number.parseFloat(e.target.value).toFixed(2);
+
+      // const value = (Math.round(Number(e.target.value) * 100) / 100).toFixed(2);
+
+      console.log('value', value);
+      console.log('e.target.value', e.target.value);
+      if (prev) {
+        return { ...prev, [e.target.name]: value };
+      } else {
+        return prev;
+      }
+    });
+  };
+
+  const handleEditPdt = (e: SelectChangeEvent<number>) => {
+    const pdt = products.find((product) => product.id === e.target.value);
     setNewProductCatalogue((prev) => ({
       ...prev,
-      product: products.find((product) => product.id === e.target.value)
+      product: pdt
     }));
+    setSelectedProduct(pdt!);
+  };
 
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -106,6 +152,7 @@ const CreateProductCatalogueItem = () => {
     e.preventDefault();
 
     if (newProductCatalogue) {
+      console.log('newProductCatalogue: ', newProductCatalogue);
       setLoading(true);
       await asyncFetchCallback(
         createProductCatalogue(newProductCatalogue as ProductCatalogue),
@@ -115,7 +162,7 @@ const CreateProductCatalogueItem = () => {
             severity: 'success',
             message: 'Product catalogue item successfully created!'
           });
-          setTimeout(() => navigate('/catalogue/AllProductCatalogue'), 3000);
+          setTimeout(() => navigate('/catalogue/allCatalogueProducts'), 3000);
         },
         (err) => {
           const resData = err.response?.data as AxiosErrDataBody;
@@ -139,7 +186,7 @@ const CreateProductCatalogueItem = () => {
       <div className='create-product'>
         <Box className='create-product-box'>
           <div className='header-content'>
-            <h1>Create Product Catalogue Item</h1>
+            <h1>Create Catalogue Product</h1>
           </div>
           {alert && (
             <Alert severity={alert.severity} onClose={() => setAlert(null)}>
@@ -215,25 +262,91 @@ const CreateProductCatalogueItem = () => {
                   </div>
                   <div className='product-text-fields'>
                     <FormControl>
-                      <InputLabel id='brand-label' required>
-                        Product
+                      <InputLabel id='product-label' required>
+                        Product SKU
                       </InputLabel>
                       <Select
                         required
-                        labelId='brand-label'
-                        id='brand'
+                        labelId='product-label'
+                        id='product'
                         value={newProductCatalogue.product?.id}
                         onChange={handleEditPdt}
-                        input={<OutlinedInput label='Brand' />}
+                        input={<OutlinedInput label='Product SKU' />}
                       >
                         {availableProducts.map((option) => (
                           <MenuItem key={option.id} value={option.id}>
-                            {option.name}
+                            {option.sku}
                           </MenuItem>
                         ))}
                       </Select>
                     </FormControl>
+                    <TextField
+                      label='Product Name'
+                      name='productName'
+                      defaultValue=' '
+                      value={selectedProduct?.name}
+                      variant='filled'
+                      disabled
+                      fullWidth
+                    />
+                    <TextField
+                      label='Product Brand'
+                      name='productBrand'
+                      defaultValue=' '
+                      value={selectedProduct?.brand.name}
+                      variant='filled'
+                      disabled
+                      fullWidth
+                    />
+                    <TextField
+                      required
+                      id='price'
+                      label='Price'
+                      name='price'
+                      placeholder='e.g. 10.50'
+                      type='number'
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleEditCatalogueProduct(e, true)
+                      }
+                      // onBlur={(e) =>
+                      //   setNewProductCatalogue((prev) => ({
+                      //     ...prev,
+                      //     [e.target.name]: parseFloat(e.target.value).toFixed(2)
+                      //   }))
+                      // }
+                      // inputProps={{ step: '1', maxLength: 13 }}
+                      value={newProductCatalogue?.price}
+                    />
                   </div>
+                </div>
+                <TextField
+                  fullWidth
+                  label='Description'
+                  name='description'
+                  value={newProductCatalogue?.description}
+                  onChange={handleEditCatalogueProduct}
+                  placeholder='eg.: Our best-selling flavour to date!'
+                  multiline
+                  rows={4}
+                />
+                <div className='button-group'>
+                  <Button
+                    variant='text'
+                    className='cancel-btn'
+                    color='primary'
+                    onClick={() => navigate('/catalogue/allCatalogueProducts')}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type='submit'
+                    variant='contained'
+                    className='create-btn'
+                    color='primary'
+                    disabled={disableCreate}
+                  >
+                    Create Catalogue Product
+                  </Button>
                 </div>
               </FormGroup>
             </form>
@@ -244,4 +357,4 @@ const CreateProductCatalogueItem = () => {
   );
 };
 
-export default CreateProductCatalogueItem;
+export default CreateCatalogueProduct;

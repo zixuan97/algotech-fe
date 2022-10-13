@@ -13,14 +13,14 @@ const ProductCatalogueCellAction = ({ id }: GridRenderCellParams) => {
         variant='contained'
         onClick={() =>
           navigate({
-            pathname: '/catalogue/productCatalogueItemDetails',
+            pathname: '/catalogue/catalogueProductDetails',
             search: createSearchParams({
               id: id.toString()
             }).toString()
           })
         }
       >
-        View Product Catalogue Item
+        View Details
       </Button>
     </div>
   );

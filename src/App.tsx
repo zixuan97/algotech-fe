@@ -29,13 +29,13 @@ import AllWarehouses from './pages/inventory/Warehouses';
 import WarehouseDetails from './pages/inventory/WarehouseDetails';
 import CreateWarehouse from './pages/inventory/CreateWarehouse';
 
-import AllProductCatalogue from './pages/catalogue/AllProductCatalogue';
-import ProductCatalogueItemDetails from './pages/catalogue/ProductCatalogueItemDetails';
-import CreateProductCatalogueItem from './pages/catalogue/CreateProductCatalogueItem';
+import AllCatalogueProducts from './pages/catalogue/AllCatalogueProducts';
+import CatalogueProductDetails from './pages/catalogue/CatalogueProductDetails';
+import CreateCatalogueProduct from './pages/catalogue/CreateCatalogueProduct';
 
-import AllBundleCatalogue from './pages/catalogue/AllBundleCatalogue';
-import BundleCatalogueItemDetails from './pages/catalogue/BundleCatalogueItemDetails';
-import CreateBundleCatalogueItem from './pages/catalogue/CreateBundleCatalogueItem';
+import AllCatalogueBundles from './pages/catalogue/AllCatalogueBundles';
+import CatalogueBundleDetails from './pages/catalogue/CatalogueBundleDetails';
+import CreateCatalogueBundle from './pages/catalogue/CreateCatalogueBundle';
 
 import AllProcurementOrders from './pages/procurement/AllProcurementOrders';
 import CreateProcurementOrder from './pages/procurement/CreateProcurementOrder';
@@ -213,29 +213,29 @@ const App = () => {
                   {/* --- (B2B) Catalogue --- */}
 
                   <Route
-                    path='catalogue/allProductCatalogue'
-                    element={<AllProductCatalogue />}
+                    path='catalogue/allCatalogueProducts'
+                    element={<AllCatalogueProducts />}
                   />
                   <Route
-                    path='catalogue/productCatalogueItemDetails'
-                    element={<ProductCatalogueItemDetails />}
+                    path='catalogue/catalogueProductDetails'
+                    element={<CatalogueProductDetails />}
                   />
                   <Route
-                    path='catalogue/createProductCatalogueItem'
-                    element={<CreateProductCatalogueItem />}
+                    path='catalogue/createCatalogueProduct'
+                    element={<CreateCatalogueProduct />}
                   />
 
                   <Route
-                    path='catalogue/allBundleCatalogue'
-                    element={<AllBundleCatalogue />}
+                    path='catalogue/allCatalogueBundles'
+                    element={<AllCatalogueBundles />}
                   />
                   <Route
-                    path='catalogue/bundleCatalogueItemDetails'
-                    element={<BundleCatalogueItemDetails />}
+                    path='catalogue/catalogueBundleDetails'
+                    element={<CatalogueBundleDetails />}
                   />
                   <Route
-                    path='catalogue/createBundleCatalogueItem'
-                    element={<CreateBundleCatalogueItem />}
+                    path='catalogue/createCatalogueBundle'
+                    element={<CreateCatalogueBundle />}
                   />
 
                   {/* --- Delivery Routes --- */}

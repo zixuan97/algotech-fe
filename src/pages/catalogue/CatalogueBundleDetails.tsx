@@ -1,4 +1,4 @@
-const BundleCatalogueItemDetails = () => {
+const CatalogueBundleDetails = () => {
   return (
     <div className='product-inventory'>
       <h1>Bundle Catalogue Item Details</h1>
@@ -6,4 +6,4 @@ const BundleCatalogueItemDetails = () => {
   );
 };
 
-export default BundleCatalogueItemDetails;
+export default CatalogueBundleDetails;

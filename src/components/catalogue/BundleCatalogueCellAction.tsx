@@ -13,14 +13,14 @@ const BundleCatalogueCellAction = ({ id }: GridRenderCellParams) => {
         variant='contained'
         onClick={() =>
           navigate({
-            pathname: '/catalogue/bundleCatalogueItemDetails',
+            pathname: '/catalogue/catalogueBundleDetails',
             search: createSearchParams({
               id: id.toString()
             }).toString()
           })
         }
       >
-        View Bundle Catalogue Item
+        View Catalogue Bundle
       </Button>
     </div>
   );
