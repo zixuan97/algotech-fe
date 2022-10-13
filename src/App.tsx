@@ -73,6 +73,8 @@ import NotFound from './pages/NotFound';
 import ShopPerformance from './pages/sales/ShopPerformance';
 import ViewBusinessAccount from './pages/account/ViewBusinessAccount';
 import BusinessAccounts from './pages/account/BusinessAccounts';
+import AllBulkOrders from './pages/sales/bulkOrders/AllBulkOrders';
+import BulkOrderDetails from './pages/sales/bulkOrders/BulkOrderDetails';
 
 const theme = createTheme({
   palette: {
@@ -280,6 +282,14 @@ const App = () => {
                   <Route
                     path='sales/shopPerformance'
                     element={<ShopPerformance />}
+                  />
+                  <Route
+                    path='sales/allBulkOrders'
+                    element={<AllBulkOrders />}
+                  />
+                  <Route
+                    path='sales/bulkOrderDetails'
+                    element={<BulkOrderDetails />}
                   />
 
                   {/* --- Procurement Routes --- */}

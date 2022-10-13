@@ -187,11 +187,10 @@ const SalesOrderDetails = () => {
     const errorCallback = () => {
       setAlert({
         severity: 'error',
-        message:
-          'Sales Order does not exist. You will be redirected back to the Sales Order Overview page.'
+        message: 'Sales Order does not exist. You will be redirected back.'
       });
       setLoading(false);
-      setTimeout(() => navigate('/sales/allSalesOrders'), 3500);
+      setTimeout(() => navigate(-1), 3500);
     };
     if (id) {
       asyncFetchCallback(
@@ -207,10 +206,10 @@ const SalesOrderDetails = () => {
             setAlert({
               severity: 'error',
               message:
-                'Sales Order does not exist. You will be redirected back to the Sales Order Overview page.'
+                'Sales Order does not exist. You will be redirected back.'
             });
             setLoading(false);
-            setTimeout(() => navigate('/sales/allSalesOrders'), 3500);
+            setTimeout(() => navigate(-1), 3500);
           }
         }
       );
@@ -532,11 +531,8 @@ const SalesOrderDetails = () => {
       />
 
       <div className='top-carrot'>
-        <Tooltip title='Return to Sales Order' enterDelay={300}>
-          <IconButton
-            size='large'
-            onClick={() => navigate('/sales/allSalesOrders')}
-          >
+        <Tooltip title='Return to previous page' enterDelay={300}>
+          <IconButton size='large' onClick={() => navigate(-1)}>
             <ChevronLeft />
           </IconButton>
         </Tooltip>

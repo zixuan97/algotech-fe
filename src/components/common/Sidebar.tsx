@@ -136,7 +136,7 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
                 primary='Order Fulfillment'
                 to='sales/allSalesOrders'
               />
-              <ListItemLink primary='Bulk Orders' to='sales/allSalesOrders' />
+              <ListItemLink primary='Bulk Orders' to='sales/allBulkOrders' />
             </List>
           </NestedList>
 
