@@ -248,7 +248,7 @@ const ViewNewsletterTemplate = () => {
         <CircularProgress color='inherit' />
       </Backdrop>
       {alert && (
-        <div className='view-newsletter-alert'>
+        <div className='newsletter-alert'>
           <TimeoutAlert
             alert={alert}
             timeout={6000}

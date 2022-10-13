@@ -34,3 +34,7 @@ export const deleteNewsletterTemplate = async (
 ): Promise<void> => {
   return axios.delete(`${apiRoot}/newsletter/${id}`);
 };
+
+export const createNewsletterTemplate = async (body: object): Promise<void> => {
+  return axios.post(`${apiRoot}/newsletter`, body);
+};
