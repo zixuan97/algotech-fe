@@ -44,7 +44,7 @@ import {
 import {
   createPdfFromComponent,
   downloadFile,
-  getExcelFromApiWithDate
+  getExcelFromApi
 } from 'src/utils/fileUtils';
 import '../../styles/common/common.scss';
 import '../../styles/pages/sales/orders.scss';
@@ -258,7 +258,7 @@ const SalesDashboard = () => {
             sx={{ mr: 2 }}
             endIcon={<Download />}
             onClick={() =>
-              getExcelFromApiWithDate(
+              getExcelFromApi(
                 'POST',
                 '/sales/excel',
                 `SalesData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`,
