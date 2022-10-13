@@ -16,12 +16,14 @@ import {
 } from '@mui/material';
 import { NewsletterTemplate } from 'src/models/types';
 import {
+  deleteNewsletterTemplate,
   editNewsletterTemplate,
   getNewsletterTemplateById
 } from 'src/services/customerService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import PreviewTemplateModal from 'src/components/customers/PreviewTemplateModal';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
+import ConfirmationModal from 'src/components/common/ConfirmationModal';
 
 const ViewNewsletterTemplate = () => {
   const navigate = useNavigate();
@@ -37,6 +39,7 @@ const ViewNewsletterTemplate = () => {
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [openPreviewModal, setOpenPreviewModal] =
     React.useState<boolean>(false);
+  const [openDeleteModal, setOpenDeleteModal] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setLoading(true);
@@ -157,6 +160,33 @@ const ViewNewsletterTemplate = () => {
     );
   };
 
+  const handleNewsletterTemplateDelete = async () => {
+    setOpenDeleteModal(false);
+    setLoading(true);
+
+    if (originalNewsletterTemplate) {
+      asyncFetchCallback(
+        deleteNewsletterTemplate(originalNewsletterTemplate.id),
+        () => {
+          setLoading(false);
+          setAlert({
+            severity: 'success',
+            message:
+              'Newsletter Template successfully deleted. You will be redirected back to the All Newsletter Templates page now.'
+          });
+          setTimeout(() => navigate('/customer/allNewsletterTemplates'), 3500);
+        },
+        (err) => {
+          setLoading(false);
+          setAlert({
+            severity: 'error',
+            message: 'Newsletter Template was not deleted successfully.'
+          });
+        }
+      );
+    }
+  };
+
   return (
     <div className='view-newsletter-template'>
       <div className='view-newsletter-template-top-section'>
@@ -181,6 +211,21 @@ const ViewNewsletterTemplate = () => {
           >
             {edit ? 'Save Changes' : 'Edit'}
           </Button>
+          {!edit && (
+            <Button
+              variant='contained'
+              onClick={() => setOpenDeleteModal(true)}
+            >
+              Delete
+            </Button>
+          )}
+          <ConfirmationModal
+            open={openDeleteModal}
+            onClose={() => setOpenDeleteModal(false)}
+            onConfirm={handleNewsletterTemplateDelete}
+            title='Delete Newsletter Template'
+            body='Are you sure you want to delete this template? This action cannot be reversed.'
+          />
           {edit && (
             <Button
               variant='contained'
