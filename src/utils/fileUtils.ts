@@ -76,14 +76,16 @@ export const createPdfFromComponent = async (
   return URL.createObjectURL(pdf.output('blob'));
 };
 
+
 export const getExcelFromApi = (
   httpMethod: string,
   api: string,
   fileName: string,
-  dateRange?: MomentRange
+  reqBody?: object
 ) => {
   const xhr = new XMLHttpRequest();
   xhr.open(httpMethod, `${apiRoot}${api}`, true);
+  xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
   xhr.responseType = 'arraybuffer';
   xhr.onload = function (e) {
     if (this.status === 200) {
@@ -93,14 +95,5 @@ export const getExcelFromApi = (
       downloadFile(window.URL.createObjectURL(blob), fileName);
     }
   };
-  if (dateRange) {
-    const timeFilter = {
-      time_from: dateRange[0].format(),
-      time_to: dateRange[1].format()
-    };
-    xhr.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
-    xhr.send(JSON.stringify(timeFilter));
-  } else {
-    xhr.send();
-  }
+  xhr.send(JSON.stringify(reqBody));
 };

@@ -259,12 +259,12 @@ export interface Customer {
   firstName: string;
   lastName: string;
   email: string;
-  mobile: number;
+  contactNo: number;
   lastOrderDate?: Date;
-  daysSinceLastOrder?: number;
-  avgOrderValue?: number;
-  totalOrderValue?: number;
-  salesOrders?: SalesOrder[];
+  totalSpent: number;
+  ordersCount: number;
+  salesOrders: SalesOrder[];
+  // daysSinceLastOrder?: number;
   // newsletters?: Newsletter[];
 }
 

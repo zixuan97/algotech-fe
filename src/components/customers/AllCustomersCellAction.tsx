@@ -13,7 +13,7 @@ const AllCustomersCellAction = ({ id }: GridRenderCellParams) => {
         variant='contained'
         onClick={() =>
           navigate({
-            pathname: '',
+            pathname: '/customer/customerDetails',
             search: createSearchParams({
               id: id.toString()
             }).toString()
