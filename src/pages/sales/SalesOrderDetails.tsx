@@ -23,7 +23,7 @@ import { useNavigate, createSearchParams } from 'react-router-dom';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import inventoryContext from 'src/context/inventory/inventoryContext';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import AddSalesOrderItemModal from './AddSalesOrderItemModal';
+import AddSalesOrderItemModal from '../../components/sales/order/AddSalesOrderItemModal';
 import {
   completeOrderPrepSvc,
   getDeliveryTypeSvc,
@@ -37,7 +37,7 @@ import OrderInfoGrid from '../../components/sales/order/OrderInfoGrid';
 import OrderSummaryCard from '../../components/sales/order/OrderSummaryCard';
 import StatusStepper from '../../components/sales/order/StatusStepper';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
-import ViewCurrentBundleModal from './ViewCurrentBundleModal';
+import ViewCurrentBundleModal from '../../components/sales/order/ViewCurrentBundleModal';
 
 const SalesOrderDetails = () => {
   let params = new URLSearchParams(window.location.search);
