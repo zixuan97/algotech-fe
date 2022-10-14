@@ -10,8 +10,8 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 import { Product } from 'src/models/types';
-import '../../styles/pages/sales/orders.scss';
-import '../../styles/common/common.scss';
+import '../../../styles/pages/sales/orders.scss';
+import '../../../styles/common/common.scss';
 
 type AddSalesOrderItemModalProps = {
   open: boolean;

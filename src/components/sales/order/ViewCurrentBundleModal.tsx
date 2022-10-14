@@ -15,8 +15,8 @@ import {
   SalesOrder,
   SalesOrderBundleItem
 } from 'src/models/types';
-import '../../styles/pages/sales/orders.scss';
-import '../../styles/common/common.scss';
+import '../../../styles/pages/sales/orders.scss';
+import '../../../styles/common/common.scss';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
