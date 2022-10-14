@@ -29,6 +29,14 @@ import AllWarehouses from './pages/inventory/Warehouses';
 import WarehouseDetails from './pages/inventory/WarehouseDetails';
 import CreateWarehouse from './pages/inventory/CreateWarehouse';
 
+import AllCatalogueProducts from './pages/catalogue/AllCatalogueProducts';
+import CatalogueProductDetails from './pages/catalogue/CatalogueProductDetails';
+import CreateCatalogueProduct from './pages/catalogue/CreateCatalogueProduct';
+
+import AllCatalogueBundles from './pages/catalogue/AllCatalogueBundles';
+import CatalogueBundleDetails from './pages/catalogue/CatalogueBundleDetails';
+import CreateCatalogueBundle from './pages/catalogue/CreateCatalogueBundle';
+
 import AllProcurementOrders from './pages/procurement/AllProcurementOrders';
 import CreateProcurementOrder from './pages/procurement/CreateProcurementOrder';
 import ProcurementOrderDetails from './pages/procurement/ProcurementOrderDetails';
@@ -200,6 +208,34 @@ const App = () => {
                   <Route
                     path='inventory/createWarehouse'
                     element={<CreateWarehouse />}
+                  />
+
+                  {/* --- (B2B) Catalogue --- */}
+
+                  <Route
+                    path='catalogue/allCatalogueProducts'
+                    element={<AllCatalogueProducts />}
+                  />
+                  <Route
+                    path='catalogue/catalogueProductDetails'
+                    element={<CatalogueProductDetails />}
+                  />
+                  <Route
+                    path='catalogue/createCatalogueProduct'
+                    element={<CreateCatalogueProduct />}
+                  />
+
+                  <Route
+                    path='catalogue/allCatalogueBundles'
+                    element={<AllCatalogueBundles />}
+                  />
+                  <Route
+                    path='catalogue/catalogueBundleDetails'
+                    element={<CatalogueBundleDetails />}
+                  />
+                  <Route
+                    path='catalogue/createCatalogueBundle'
+                    element={<CreateCatalogueBundle />}
                   />
 
                   {/* --- Delivery Routes --- */}
