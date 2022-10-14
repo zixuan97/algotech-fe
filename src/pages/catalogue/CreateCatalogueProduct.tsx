@@ -8,10 +8,8 @@ import {
   CircularProgress,
   FormControl,
   FormGroup,
-  Grid,
   IconButton,
   InputLabel,
-  ListItemText,
   MenuItem,
   OutlinedInput,
   Paper,
@@ -23,7 +21,6 @@ import {
   Typography
 } from '@mui/material';
 import { ChevronLeft, Delete } from '@mui/icons-material';
-import { useSearchParams } from 'react-router-dom';
 import { Product, ProductCatalogue } from 'src/models/types';
 import '../../styles/pages/delivery/delivery.scss';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
@@ -32,11 +29,10 @@ import {
   getAllProductCatalogues
 } from '../../services/productCatalogueService';
 import { isValidProductCatalogue } from 'src/components/catalogue/catalogueHelper';
-import TimeoutAlert, {
+import {
   AlertType,
   AxiosErrDataBody
 } from 'src/components/common/TimeoutAlert';
-import inventoryContext from 'src/context/inventory/inventoryContext';
 import { getBase64 } from 'src/utils/fileUtils';
 import { omit } from 'lodash';
 import { getAllProducts } from 'src/services/productService';
@@ -48,14 +44,13 @@ const CreateCatalogueProduct = () => {
   const [disableCreate, setDisableCreate] = React.useState<boolean>(true);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
-
   const [newProductCatalogue, setNewProductCatalogue] = React.useState<
     Partial<ProductCatalogue>
   >({});
-
-  const { products } = React.useContext(inventoryContext);
-  const [availableProducts, setAvailableProducts] =
-    React.useState<Product[]>(products);
+  const [allProducts, setAllProducts] = React.useState<Product[]>([]);
+  const [availableProducts, setAvailableProducts] = React.useState<Product[]>(
+    []
+  );
   const [unavailProductIds, setUnavailProductIds] = React.useState<number[]>(
     []
   );
@@ -63,27 +58,20 @@ const CreateCatalogueProduct = () => {
   const [selectedProduct, setSelectedProduct] = React.useState<Product>();
 
   React.useEffect(() => {
-    asyncFetchCallback(
-      getAllProductCatalogues(),
-      (res) => {
-        res.forEach((pc) => {
-          console.log('pdt cat', pc);
+    asyncFetchCallback(getAllProductCatalogues(), (res) => {
+      res.forEach((pc) => {
+        unavailProductIds?.push(pc.productId);
+        setUnavailProductIds(unavailProductIds);
+      });
+    });
 
-          unavailProductIds?.push(pc.productId);
-          setUnavailProductIds(unavailProductIds);
-          console.log('unavailableProductIds', unavailProductIds);
-
-          setAvailableProducts(
-            availableProducts.filter(
-              (pdt) => !unavailProductIds.includes(pdt.id)
-            )
-          );
-          console.log('availableProducts', availableProducts);
-        });
-      },
-      () => setLoading(false)
-    );
-  }, []);
+    asyncFetchCallback(getAllProducts(), (res) => {
+      setAllProducts(res);
+      setAvailableProducts(
+        res.filter((pdt) => !unavailProductIds.includes(pdt.id))
+      );
+    });
+  }, [unavailProductIds]);
 
   React.useEffect(() => {
     setDisableCreate(!isValidProductCatalogue(newProductCatalogue));
@@ -98,23 +86,27 @@ const CreateCatalogueProduct = () => {
   };
 
   const handleEditPrice = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    await setNewProductCatalogue((prev) => {
-      const value = Number.parseFloat(e.target.value).toFixed(2);
+    let value = e.target.value;
+    let numDecimals;
 
-      // const value = (Math.round(Number(e.target.value) * 100) / 100).toFixed(2);
+    if (value.toString().split('.').length === 1) {
+      numDecimals = 0;
+    } else {
+      numDecimals = value.toString().split('.')[1].length;
+    }
 
-      console.log('value', value);
-      console.log('e.target.value', e.target.value);
-      if (prev) {
-        return { ...prev, [e.target.name]: value };
-      } else {
-        return prev;
-      }
-    });
+    if (numDecimals > 2) {
+      value = parseFloat(e.target.value).toFixed(2);
+    }
+
+    setNewProductCatalogue((prev) => ({
+      ...prev,
+      [e.target.name]: value
+    }));
   };
 
   const handleEditPdt = (e: SelectChangeEvent<number>) => {
-    const pdt = products.find((product) => product.id === e.target.value);
+    const pdt = allProducts.find((product) => product.id === e.target.value);
     setNewProductCatalogue((prev) => ({
       ...prev,
       product: pdt
@@ -305,17 +297,12 @@ const CreateCatalogueProduct = () => {
                       name='price'
                       placeholder='e.g. 10.50'
                       type='number'
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        handleEditCatalogueProduct(e, true)
-                      }
-                      // onBlur={(e) =>
-                      //   setNewProductCatalogue((prev) => ({
-                      //     ...prev,
-                      //     [e.target.name]: parseFloat(e.target.value).toFixed(2)
-                      //   }))
-                      // }
-                      // inputProps={{ step: '1', maxLength: 13 }}
+                      onChange={handleEditPrice}
                       value={newProductCatalogue?.price}
+                      inputProps={{
+                        inputMode: 'decimal',
+                        min: '0'
+                      }}
                     />
                   </div>
                 </div>
