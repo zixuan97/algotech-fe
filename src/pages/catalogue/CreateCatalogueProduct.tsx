@@ -74,7 +74,7 @@ const CreateCatalogueProduct = () => {
       );
       console.log('availProd', availableProducts);
     });
-  }, [unavailProductIds]);
+  }, [allProducts, availableProducts, unavailProductIds]);
 
   React.useEffect(() => {
     setDisableCreate(!isValidProductCatalogue(newProductCatalogue));

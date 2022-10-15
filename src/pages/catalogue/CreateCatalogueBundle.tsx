@@ -74,7 +74,7 @@ const CreateCatalogueBundle = () => {
       );
       console.log('availBun', availableBundles);
     });
-  }, [unavailBundleIds]);
+  }, [allBundles, availableBundles, unavailBundleIds]);
 
   React.useEffect(() => {
     setDisableCreate(!isValidBundleCatalogue(newBundleCatalogue));
