@@ -59,9 +59,6 @@ const CatalogueProductDetails = () => {
   const [loading, setLoading] = React.useState<boolean>(false);
   const [backdropLoading, setBackdropLoading] = React.useState<boolean>(false);
 
-  const { products } = React.useContext(inventoryContext);
-  //need the filter here
-  const availableProducts = products;
   const [selectedProduct, setSelectedProduct] = React.useState<Product>();
 
   const [originalCatalogueProduct, setOriginalCatalogueProduct] =
@@ -110,13 +107,24 @@ const CatalogueProductDetails = () => {
     );
   };
 
-  const handleEditPdt = (e: SelectChangeEvent<number>) => {
-    const pdt = products.find((product) => product.id === e.target.value);
-    // setEditCatalogueProduct((prev) => ({
-    //   ...prev,
-    //   product: pdt
-    // }));
-    setSelectedProduct(pdt!);
+  const handleEditPrice = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = parseFloat(e.target.value);
+    let numDecimals;
+
+    if (value.toString().split('.').length === 1) {
+      numDecimals = 0;
+    } else {
+      numDecimals = value.toString().split('.')[1].length;
+    }
+
+    if (numDecimals > 2) {
+      value = parseFloat(value.toFixed(2));
+    }
+
+    setEditCatalogueProduct((prev) => ({
+      ...prev,
+      [e.target.name]: value
+    }));
   };
 
   const handleImage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -204,6 +212,16 @@ const CatalogueProductDetails = () => {
 
   return (
     <div>
+      <Backdrop
+        sx={{
+          color: '#fff',
+          zIndex: (theme) => theme.zIndex.drawer + 1
+        }}
+        open={backdropLoading}
+      >
+        <CircularProgress color='inherit' />
+      </Backdrop>
+
       <Tooltip title='Return to Previous Page' enterDelay={300}>
         <IconButton size='large' onClick={() => navigate(-1)}>
           <ChevronLeft />
@@ -399,25 +417,20 @@ const CatalogueProductDetails = () => {
                         name='price'
                         placeholder='e.g. 10.50'
                         type='number'
-                        error={
-                          editCatalogueProduct?.price! < 0 ||
-                          !editCatalogueProduct?.price
-                        }
-                        helperText={
-                          editCatalogueProduct?.price! < 0 ||
-                          !editCatalogueProduct?.price
-                            ? 'Price must be above 0!'
-                            : ''
-                        }
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          handleEditCatalogueProduct(e, true)
-                        }
+                        onChange={handleEditPrice}
                         value={editCatalogueProduct?.price}
+                        inputProps={{
+                          inputMode: 'decimal',
+                          min: '0',
+                          step: '0.01'
+                        }}
                       />
                     ) : (
                       <Typography
                         sx={{ padding: '15px' }}
-                      >{`Price: ${editCatalogueProduct?.price}`}</Typography>
+                      >{`Price: ${editCatalogueProduct?.price.toFixed(
+                        2
+                      )}`}</Typography>
                     )}
                   </div>
                 </div>
@@ -432,10 +445,14 @@ const CatalogueProductDetails = () => {
                     multiline
                     rows={4}
                   />
-                ) : (
+                ) : editCatalogueProduct?.description ? (
                   <Typography
                     sx={{ padding: '15px' }}
                   >{`Description: ${editCatalogueProduct?.description}`}</Typography>
+                ) : (
+                  <Typography
+                    sx={{ padding: '15px' }}
+                  >{`Description: -`}</Typography>
                 )}
               </FormGroup>
             </form>
