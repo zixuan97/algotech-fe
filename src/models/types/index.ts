@@ -147,6 +147,7 @@ export interface BundleCatalogue {
   id: number;
   price: number;
   bundle: Bundle;
+  bundleId: number;
   image?: string;
   description: string;
 }
