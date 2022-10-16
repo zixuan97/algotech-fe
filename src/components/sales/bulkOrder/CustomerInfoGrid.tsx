@@ -1,4 +1,5 @@
 import { Grid } from '@mui/material';
+import moment from 'moment';
 import React from 'react';
 import { BulkOrder } from 'src/models/types';
 
@@ -11,10 +12,16 @@ const CustomerInfoGrid = ({ bulkOrder }: props) => {
     <div className='order-info-grid'>
       <Grid container spacing={1}>
         <Grid item xs={10}>
-          Payee Name: {bulkOrder.payeeName}
+          Bulk Order For: {bulkOrder.payeeName}
         </Grid>
         <Grid item xs={12}>
           Email: {bulkOrder.payeeEmail ?? 'NA'}
+        </Grid>
+        <Grid item xs={12}>
+          Contact No: {bulkOrder.payeeContactNo ?? '-'}
+        </Grid>
+        <Grid item xs={12}>
+          Ordered On: {moment(new Date(bulkOrder.createdTime.toString())).format('DD/MM/YYYY')}
         </Grid>
         <Grid item xs={12}>
           Customer Comments: {bulkOrder.payeeRemarks! ?? '-'}

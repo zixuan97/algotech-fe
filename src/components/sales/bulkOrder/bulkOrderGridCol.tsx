@@ -45,13 +45,25 @@ export const SalesOrderCellAction = ({ id }: GridRenderCellParams) => {
 
 export const bulkOrderColumns: GridColDef[] = [
   { field: 'payeeName', headerName: 'Payee Name', flex: 1 },
-  { field: 'payeeEmail', headerName: 'Email', flex: 1 },
-  { field: 'paymentMode', headerName: 'Payment Mode', flex: 1 },
-  { field: 'bulkOrderStatus', headerName: 'Order Status', flex: 1 },
+  { field: 'payeeEmail', headerName: 'Email', flex: 1.5 },
+  {
+    field: 'paymentMode',
+    headerName: 'Payment Mode',
+    flex: 1,
+    valueFormatter: (params) =>
+      _.startCase(params.value.toString().toLowerCase())
+  },
+  {
+    field: 'bulkOrderStatus',
+    headerName: 'Order Status',
+    flex: 1,
+    valueFormatter: (params) =>
+      _.startCase(params.value.toString().toLowerCase())
+  },
   {
     field: 'salesOrders',
     headerName: 'No. Of Orders',
-    flex: 1,
+    flex: 0.5,
     valueGetter: (params) => params.row.salesOrders ?? 0,
     valueFormatter: (params) => params.value.length
   },

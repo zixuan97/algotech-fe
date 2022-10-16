@@ -293,11 +293,13 @@ export interface CustomerOrderValue {
 export interface BulkOrder {
   id: number;
   amount: number;
+  paymentMode: PaymentMode;
   payeeName: String;
   payeeEmail: String;
   payeeRemarks: String;
-  paymentMode: PaymentMode;
   bulkOrderStatus: BulkOrderStatus;
+  payeeContactNo: String;
+  createdTime: String;
   salesOrders: SalesOrder[];
 }
 
