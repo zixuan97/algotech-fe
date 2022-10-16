@@ -281,6 +281,7 @@ export interface Customer {
   totalSpent: number;
   ordersCount: number;
   salesOrders: SalesOrder[];
+  ordersByMonth: [];
   // daysSinceLastOrder?: number;
   // newsletters?: Newsletter[];
 }

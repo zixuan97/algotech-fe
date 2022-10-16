@@ -27,29 +27,29 @@ const options = {
 };
 
 type OrderAmountProps = {
-  values: CustomerOrderValue[];
+  values: [];
 };
 
 const OrderAmountChart = ({ values }: OrderAmountProps) => {
-  const data = {
-    labels: values.map((rev) =>
-      rev.month
-    ),
-    datasets: [
-      {
-        label: 'Amount',
-        data: values.map((rev) => rev.value),
-        barPercentage: 0.5,
-        borderRadius: 5,
-        backgroundColor: '#DAD7FE'
-      }
-    ]
-  };
+  // const data = {
+  //   labels: values.map((rev) =>
+  //     rev.month
+  //   ),
+  //   datasets: [
+  //     {
+  //       label: 'Amount',
+  //       data: values.map((rev) => rev.value),
+  //       barPercentage: 0.5,
+  //       borderRadius: 5,
+  //       backgroundColor: '#DAD7FE'
+  //     }
+  //   ]
+  // };
   return (
     <Card style={{ padding: '0.5em 2em 2em', height: '48vh' }}>
       <h3>Order Amount</h3>
       <Divider className='full-divider' />
-      <Bar data={data} options={options} />
+      {/* <Bar data={data} options={options} /> */}
     </Card>
   );
 };
