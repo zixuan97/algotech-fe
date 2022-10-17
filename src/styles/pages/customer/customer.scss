@@ -358,6 +358,7 @@
 .schedule-newsletter-customers-heading {
   padding-top: 1rem;
   padding-left: 2rem;
+  white-space: nowrap;
 }
 
 .schedule-newsletter-filter-button-container {
@@ -368,7 +369,7 @@
   width: max-content;
   gap: 10px 10px;
   margin: 2% 2% 2% 2%;
-  width: 80%;
+  width: 100%;
 }
 
 .filter-menu-heading {
@@ -442,4 +443,9 @@
   flex-direction: row;
   align-items: center;
   padding-left: 2rem;
+}
+
+.customers-data-grid {
+  padding-left: 2rem;
+  padding-bottom: 2rem;
 }
