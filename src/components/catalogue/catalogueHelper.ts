@@ -18,3 +18,12 @@ export const isValidProductCatalogue = (
     productCatalogueToValidate.product && productCatalogueToValidate.price
   );
 };
+
+export const isValidBundleCatalogue = (
+  bundleCatalogueToValidate: Partial<BundleCatalogue> | null
+): boolean => {
+  if (!bundleCatalogueToValidate) return false;
+  return !!(
+    bundleCatalogueToValidate.bundle && bundleCatalogueToValidate.price
+  );
+};

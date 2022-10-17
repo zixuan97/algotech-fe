@@ -64,14 +64,17 @@ const CreateCatalogueProduct = () => {
         setUnavailProductIds(unavailProductIds);
       });
     });
+    console.log('unavailProdIds', unavailProductIds);
 
     asyncFetchCallback(getAllProducts(), (res) => {
       setAllProducts(res);
+      console.log('allProd', allProducts);
       setAvailableProducts(
         res.filter((pdt) => !unavailProductIds.includes(pdt.id))
       );
+      console.log('availProd', availableProducts);
     });
-  }, [unavailProductIds]);
+  }, [allProducts, availableProducts, unavailProductIds]);
 
   React.useEffect(() => {
     setDisableCreate(!isValidProductCatalogue(newProductCatalogue));
@@ -86,7 +89,7 @@ const CreateCatalogueProduct = () => {
   };
 
   const handleEditPrice = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
+    let value = parseFloat(e.target.value);
     let numDecimals;
 
     if (value.toString().split('.').length === 1) {
@@ -96,7 +99,7 @@ const CreateCatalogueProduct = () => {
     }
 
     if (numDecimals > 2) {
-      value = parseFloat(e.target.value).toFixed(2);
+      value = parseFloat(value.toFixed(2));
     }
 
     setNewProductCatalogue((prev) => ({
@@ -301,7 +304,8 @@ const CreateCatalogueProduct = () => {
                       value={newProductCatalogue?.price}
                       inputProps={{
                         inputMode: 'decimal',
-                        min: '0'
+                        min: '0',
+                        step: '0.01'
                       }}
                     />
                   </div>
