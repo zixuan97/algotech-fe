@@ -8,6 +8,7 @@ import {
   Divider,
   Grid,
   IconButton,
+  Menu,
   MenuItem,
   Stack,
   TextField,
@@ -103,6 +104,8 @@ const ScheduleNewsletter = () => {
   const [loading, setLoading] = React.useState<boolean>(false);
   const [openPreviewModal, setOpenPreviewModal] =
     React.useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   React.useEffect(() => {
     setLoading(true);
@@ -160,6 +163,14 @@ const ScheduleNewsletter = () => {
     }
   };
 
+  const handleOpenFilterMenu = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleFilterMenuClose = () => {
+    setAnchorEl(null);
+  };
+
   const handleFilterCustomers = async () => {
     let daysSinceLastPurchase = Number(daysSinceLastPurchaseString);
     let allTimeOrderValue = Number(allTimeOrderValueString);
@@ -204,6 +215,8 @@ const ScheduleNewsletter = () => {
       return;
     }
 
+    setAnchorEl(null);
+
     let reqBody = Object.assign(
       {},
       daysSinceLastPurchase && { daysSinceLastPurchase },
@@ -225,6 +238,8 @@ const ScheduleNewsletter = () => {
   };
 
   const clearFilters = async () => {
+    setAnchorEl(null);
+
     await setDaysSinceLastPurchase('');
     await setAllTimeOrderValue('');
     await setMinAvgOrderValue('');
@@ -266,7 +281,7 @@ const ScheduleNewsletter = () => {
       >
         <CircularProgress color='inherit' />
       </Backdrop>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} className='schedule-newsletter-grid'>
         <Grid item xs={10} className='schedule-newsletter-grid-item'>
           <h3 className='schedule-newsletter-grid-label-text'>
             Newsletter Name:
@@ -321,105 +336,116 @@ const ScheduleNewsletter = () => {
         </Grid>
       </Grid>
       <Divider />
-      <div className='filter-customers-alert'>
-        <TimeoutAlert
-          alert={alert}
-          timeout={6000}
-          clearAlert={() => setAlert(null)}
-        />
-      </div>
-      <Stack
-        direction='row'
-        spacing={2}
-        justifyContent='flex-end'
-        paddingRight='1rem'
-        paddingBottom='1rem'
-      >
-        <Button
-          variant='outlined'
-          startIcon={<FilterAltIcon />}
-          size='medium'
-          sx={{ height: 'fit-content' }}
-          onClick={handleFilterCustomers}
-        >
-          Filter
-        </Button>
-        <Button
-          variant='outlined'
-          startIcon={<ClearIcon />}
-          size='medium'
-          sx={{ height: 'fit-content' }}
-          onClick={clearFilters}
-        >
-          Clear
-        </Button>
-      </Stack>
       <div className='schedule-newsletter-customers-toolbar'>
         <h2 className='schedule-newsletter-customers-heading'>Customers</h2>
-        <Stack
-          direction='row'
-          width='100%'
-          alignItems='center'
-          justifyContent='flex-end'
+        <div className='schedule-newsletter-filter-button-container'>
+          <Button
+            id='basic-button'
+            variant='outlined'
+            aria-controls={open ? 'basic-menu' : undefined}
+            aria-haspopup='true'
+            aria-expanded={open ? 'true' : undefined}
+            startIcon={<FilterAltIcon />}
+            onClick={handleOpenFilterMenu}
+          >
+            Manage Filters
+          </Button>
+        </div>
+        <Menu
+          id='basic-menu'
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleFilterMenuClose}
+          disableAutoFocusItem
+          MenuListProps={{
+            'aria-labelledby': 'basic-button'
+          }}
+          keepMounted
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          transformOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
-          <Stack
-            direction='column'
-            spacing={2}
-            paddingLeft='2rem'
-            paddingRight='1rem'
-          >
-            <Typography>Days Since Last Purchase</Typography>
-            <TextField
-              name='daysSinceLastPurchase'
-              type='number'
-              value={daysSinceLastPurchaseString}
-              onChange={handleEditCustomerFilters}
-              fullWidth
-            />
-          </Stack>
-          <Stack
-            direction='column'
-            spacing={2}
-            paddingLeft='1rem'
-            paddingRight='1rem'
-          >
-            <Typography>All Time Order Value</Typography>
-            <TextField
-              name='allTimeOrderValue'
-              type='number'
-              value={allTimeOrderValueString}
-              onChange={handleEditCustomerFilters}
-              fullWidth
-            />
-          </Stack>
-          <Stack
-            direction='column'
-            spacing={2}
-            paddingLeft='1rem'
-            paddingRight='1rem'
-          >
-            <Typography>Average Order Value</Typography>
-            <Stack direction='row' spacing={2} alignItems='center'>
-              <TextField
-                name='minAvgOrderValue'
-                label='Min'
-                type='number'
-                value={minAvgOrderValueString}
-                onChange={handleEditCustomerFilters}
-                fullWidth
+          <h3 className='filter-menu-heading'>Filter By</h3>
+          {alert && (
+            <div className='filter-customers-alert'>
+              <TimeoutAlert
+                alert={alert}
+                timeout={6000}
+                clearAlert={() => setAlert(null)}
               />
-              <Typography>to</Typography>
+            </div>
+          )}
+          <Stack direction='column' spacing={2} paddingLeft='1rem'>
+            <Stack direction='column' spacing={2} paddingRight='1rem'>
+              <Typography>Days Since Last Purchase</Typography>
               <TextField
-                name='maxAvgOrderValue'
-                label='Max'
+                name='daysSinceLastPurchase'
                 type='number'
-                value={maxAvgOrderValueString}
+                value={daysSinceLastPurchaseString}
                 onChange={handleEditCustomerFilters}
-                fullWidth
+                sx={{ width: 165 }}
               />
             </Stack>
+            <Divider />
+            <Stack direction='column' spacing={2} paddingRight='1rem'>
+              <Typography>All Time Order Value</Typography>
+              <TextField
+                name='allTimeOrderValue'
+                type='number'
+                value={allTimeOrderValueString}
+                onChange={handleEditCustomerFilters}
+                sx={{ width: 165 }}
+              />
+            </Stack>
+            <Divider />
+            <Stack direction='column' spacing={2} paddingRight='1rem'>
+              <Typography>Average Order Value</Typography>
+              <Stack direction='row' spacing={2} alignItems='center'>
+                <TextField
+                  name='minAvgOrderValue'
+                  label='Min'
+                  type='number'
+                  value={minAvgOrderValueString}
+                  onChange={handleEditCustomerFilters}
+                  fullWidth
+                />
+                <Typography>to</Typography>
+                <TextField
+                  name='maxAvgOrderValue'
+                  label='Max'
+                  type='number'
+                  value={maxAvgOrderValueString}
+                  onChange={handleEditCustomerFilters}
+                  fullWidth
+                />
+              </Stack>
+            </Stack>
+            <Stack
+              direction='row'
+              spacing={2}
+              paddingRight='1rem'
+              paddingTop='3rem'
+              paddingBottom='1rem'
+              justifyContent='flex-end'
+            >
+              <Button
+                variant='contained'
+                size='medium'
+                sx={{ height: 'fit-content' }}
+                onClick={handleFilterCustomers}
+              >
+                Filter
+              </Button>
+              <Button
+                variant='outlined'
+                size='medium'
+                sx={{ height: 'fit-content' }}
+                onClick={clearFilters}
+              >
+                Clear
+              </Button>
+            </Stack>
           </Stack>
-        </Stack>
+        </Menu>
       </div>
       <div className='filter-customers-data-grid'>
         <DataGrid

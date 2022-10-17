@@ -173,7 +173,6 @@
   width: 100%;
   display: flex;
   flex-direction: row;
-  // padding: 2rem;
   padding-bottom: 0rem;
 }
 
@@ -323,6 +322,10 @@
   padding-left: 2rem;
 }
 
+.schedule-newsletter-grid {
+  padding-top: 2rem;
+}
+
 .schedule-newsletter-grid-item {
   display: flex;
   flex-direction: row;
@@ -346,27 +349,40 @@
 }
 
 .schedule-newsletter-customers-toolbar {
+  width: 100%;
   display: flex;
-  justify-content: center;
   flex-direction: row;
-  padding: 2rem;
-  padding-right: 0rem;
+  padding-bottom: 0rem;
 }
 
 .schedule-newsletter-customers-heading {
   padding-top: 1rem;
+  padding-left: 2rem;
 }
 
-.filter-customer-button-container {
-  flex-direction: row;
-  padding-top: 3rem;
+.schedule-newsletter-filter-button-container {
+  padding-top: 1rem;
+  padding-bottom: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  width: max-content;
+  gap: 10px 10px;
+  margin: 2% 2% 2% 2%;
+  width: 80%;
+}
+
+.filter-menu-heading {
+  padding-left: 1rem;
+  font-family: 'Poppins';
+  color: colors.$primary;
 }
 
 .filter-customers-alert {
   display: flex;
   flex-direction: row;
-  padding-left: 2rem;
-  padding-top: 2rem;
+  padding-left: 1rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 .filter-customers-data-grid {
@@ -377,4 +393,53 @@
 .orders-chart {
   padding-top: 2rem;
   padding: 1%;
+}
+
+.view-scheduled-newsletter {
+  width: 90%;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+}
+
+.view-scheduled-newsletter-top-section {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 0rem;
+}
+
+.view-scheduled-newsletter-heading {
+  display: flex;
+  flex-direction: row;
+  padding-left: 2rem;
+  padding-top: 2rem;
+  width: 100%;
+  align-items: center;
+}
+
+.view-scheduled-newsletter-grid {
+  padding-top: 2rem;
+}
+
+.view-scheduled-newsletter-grid-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: 2rem;
+}
+
+.view-scheduled-newsletter-grid-label-text {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  white-space: nowrap;
+  font-family: 'Poppins';
+  color: colors.$primary;
+}
+
+.view-scheduled-newsletter-preview-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 2rem;
 }
