@@ -106,7 +106,6 @@ const CustomerDetails = () => {
   const [filterPlatform, setFilterPlatform] = useState<string>('ALL');
   const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
-  const [values, setValue] = React.useState<[]>([]);
 
   // React.useEffect(() => {
   //   setFilteredData(
@@ -225,13 +224,20 @@ const CustomerDetails = () => {
                 <h4 className='labelText'>Average Order Amount</h4>
                 {customerData?.totalSpent && customerData.ordersCount && (
                   <Typography>
-                    ${customerData!.totalSpent / customerData!.ordersCount}
+                    $
+                    {(
+                      customerData!.totalSpent / customerData!.ordersCount
+                    ).toFixed(2)}
                   </Typography>
                 )}
               </Grid>
               <Grid item xs={6}>
                 <h4 className='labelText'>Total Order Amount</h4>
-                <Typography>${customerData?.totalSpent}</Typography>
+                {customerData?.totalSpent && (
+                  <Typography>
+                    ${(customerData?.totalSpent).toFixed(2)}
+                  </Typography>
+                )}
               </Grid>
             </Grid>
           </div>
@@ -239,9 +245,11 @@ const CustomerDetails = () => {
       </div>
       <br></br>
       <div className='orders-chart'>
+        {customerData?.ordersByMonth && (
         <Grid item xs={6}>
-          <OrdersChart values={values} />
+          <OrdersChart values={customerData?.ordersByMonth} />
         </Grid>
+        )}
       </div>
       <div className='orders-table'>
         <Stack
@@ -309,7 +317,7 @@ const CustomerDetails = () => {
             sx={{ mr: 2 }}
             endIcon={<Download />}
             onClick={() => {
-              const reqBody = { customerEmail : customerData?.email };
+              const reqBody = { customerEmail: customerData?.email };
               getExcelFromApi(
                 'POST',
                 '/customer/excel',
