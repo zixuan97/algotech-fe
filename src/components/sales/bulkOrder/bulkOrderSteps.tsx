@@ -33,14 +33,14 @@ export const bulkOrderSteps = [
     currentState: BulkOrderStatus.PAYMENT_SUCCESS,
     label: 'Order Paid',
     icon: <AccountBalanceWalletRounded sx={{ fontSize: 35 }} />,
-    nextAction: 'Bulk Prep',
+    nextAction: 'Bulk Prepare',
     tooltip: 'Bulk prepare the orders, otherwise individually prepare each order'
   },
   {
     currentState: BulkOrderStatus.FULFILLED,
     label: 'Order Fulfilled',
     icon: <PlaylistAddCheckCircleRounded sx={{ fontSize: 35 }} />,
-    nextAction: 'Back',
+    nextAction: 'Back To All Bulk Order',
     tooltip: 'Order completed, no further actions from your end'
   },
 ];

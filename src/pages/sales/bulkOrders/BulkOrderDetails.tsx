@@ -30,26 +30,6 @@ const BulkOrderDetails = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [activeStep, setActiveStep] = useState<number>(0);
 
-  useEffect(() => {
-    setLoading(true);
-    if (id) {
-      asyncFetchCallback(getBulkOrderByIdSvc(id), (bo: BulkOrder) => {
-        if (bo) {
-          setBulkOrder(bo);
-          setSalesOrders(bo.salesOrders);
-          setLoading(false);
-        } else {
-          setAlert({
-            severity: 'error',
-            message: 'Sales Order does not exist. You will be redirected back.'
-          });
-          setLoading(false);
-          setTimeout(() => navigate(-1), 3500);
-        }
-      });
-    }
-  }, [id, navigate]);
-
   const statusStepper = useMemo(
     () =>
       bulkOrder?.bulkOrderStatus === BulkOrderStatus.CANCELLED
@@ -75,6 +55,35 @@ const BulkOrderDetails = () => {
     [bulkOrder?.bulkOrderStatus]
   );
 
+  useEffect(() => {
+    setLoading(true);
+    if (id) {
+      asyncFetchCallback(getBulkOrderByIdSvc(id), (bo: BulkOrder) => {
+        if (bo) {
+          setBulkOrder(bo);
+          setSalesOrders(bo.salesOrders);
+          setLoading(false);
+          if(statusStepper){
+            setActiveStep(
+              statusStepper.findIndex(
+                (step) => step.currentState === bo.bulkOrderStatus
+              )
+            );
+          }
+        } else {
+          setAlert({
+            severity: 'error',
+            message: 'Sales Order does not exist. You will be redirected back.'
+          });
+          setLoading(false);
+          setTimeout(() => navigate(-1), 3500);
+        }
+      });
+    }
+  }, [id, navigate, statusStepper]);
+
+
+
   return (
     <>
       <div className='top-carrot'>
@@ -97,20 +106,27 @@ const BulkOrderDetails = () => {
                 <Typography sx={{ fontSize: 'inherit' }}>
                   Next Action:
                 </Typography>
-                <span>
-                  <Button
-                    variant='contained'
-                    size='medium'
-                    disabled={
-                      bulkOrder?.bulkOrderStatus ===
-                        BulkOrderStatus.CANCELLED ||
-                      bulkOrder?.bulkOrderStatus ===
-                        BulkOrderStatus.PAYMENT_FAILED
-                    }
-                  >
-                    {statusStepper[activeStep].nextAction}
-                  </Button>
-                </span>
+                <Tooltip
+                  title={statusStepper[activeStep].tooltip}
+                  enterDelay={500}
+                >
+                  <span>
+                    <Button
+                      variant='contained'
+                      size='medium'
+                      disabled={
+                        bulkOrder?.bulkOrderStatus ===
+                          BulkOrderStatus.CANCELLED ||
+                        bulkOrder?.bulkOrderStatus ===
+                          BulkOrderStatus.PAYMENT_FAILED ||
+                          bulkOrder?.bulkOrderStatus ===
+                          BulkOrderStatus.FULFILLED
+                      }
+                    >
+                      {statusStepper[activeStep].nextAction}
+                    </Button>
+                  </span>
+                </Tooltip>
               </div>
             </Paper>
           </div>

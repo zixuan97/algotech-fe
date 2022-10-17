@@ -58,16 +58,14 @@ const AllBulkOrders = () => {
               return (
                 bulkOrder.payeeEmail.toLowerCase().includes(searchFieldLower) ||
                 bulkOrder.payeeName.toLowerCase().includes(searchFieldLower) ||
-                bulkOrder.payeeRemarks
-                  .toLowerCase()
-                  .includes(searchFieldLower) ||
                 bulkOrder.salesOrders.some((salesOrder) => {
                   return salesOrder.salesOrderItems.some((item) => {
                     return item.productName
                       ?.toLowerCase()
                       .includes(searchFieldLower);
                   });
-                }) ||
+                }) 
+                ||
                 _.startCase(bulkOrder.bulkOrderStatus)
                   .toLowerCase()
                   .includes(searchFieldLower)
@@ -79,9 +77,6 @@ const AllBulkOrders = () => {
                   .toLowerCase()
                   .includes(searchFieldLower) ||
                   bulkOrder.payeeName
-                    .toLowerCase()
-                    .includes(searchFieldLower) ||
-                  bulkOrder.payeeRemarks
                     .toLowerCase()
                     .includes(searchFieldLower) ||
                   bulkOrder.salesOrders.some((salesOrder) => {
