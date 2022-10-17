@@ -309,3 +309,10 @@ export interface NewsletterTemplate {
   emailBody: String;
   discountCode: String;
 }
+
+export interface ScheduledNewsletter {
+  id: number;
+  newsletterId: number;
+  customerEmails: String[];
+  sendDate: Date;
+}
