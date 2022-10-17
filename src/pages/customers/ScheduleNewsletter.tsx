@@ -328,6 +328,32 @@ const ScheduleNewsletter = () => {
           clearAlert={() => setAlert(null)}
         />
       </div>
+      <Stack
+        direction='row'
+        spacing={2}
+        justifyContent='flex-end'
+        paddingRight='1rem'
+        paddingBottom='1rem'
+      >
+        <Button
+          variant='outlined'
+          startIcon={<FilterAltIcon />}
+          size='medium'
+          sx={{ height: 'fit-content' }}
+          onClick={handleFilterCustomers}
+        >
+          Filter
+        </Button>
+        <Button
+          variant='outlined'
+          startIcon={<ClearIcon />}
+          size='medium'
+          sx={{ height: 'fit-content' }}
+          onClick={clearFilters}
+        >
+          Clear
+        </Button>
+      </Stack>
       <div className='schedule-newsletter-customers-toolbar'>
         <h2 className='schedule-newsletter-customers-heading'>Customers</h2>
         <Stack
@@ -340,7 +366,7 @@ const ScheduleNewsletter = () => {
             direction='column'
             spacing={2}
             paddingLeft='2rem'
-            paddingRight='2rem'
+            paddingRight='1rem'
           >
             <Typography>Days Since Last Purchase</Typography>
             <TextField
@@ -354,8 +380,8 @@ const ScheduleNewsletter = () => {
           <Stack
             direction='column'
             spacing={2}
-            paddingLeft='2rem'
-            paddingRight='2rem'
+            paddingLeft='1rem'
+            paddingRight='1rem'
           >
             <Typography>All Time Order Value</Typography>
             <TextField
@@ -369,8 +395,8 @@ const ScheduleNewsletter = () => {
           <Stack
             direction='column'
             spacing={2}
-            paddingLeft='2rem'
-            paddingRight='2rem'
+            paddingLeft='1rem'
+            paddingRight='1rem'
           >
             <Typography>Average Order Value</Typography>
             <Stack direction='row' spacing={2} alignItems='center'>
@@ -393,31 +419,6 @@ const ScheduleNewsletter = () => {
               />
             </Stack>
           </Stack>
-        </Stack>
-        <Stack
-          direction='row'
-          spacing={2}
-          alignItems='center'
-          paddingTop='3rem'
-        >
-          <Button
-            variant='outlined'
-            startIcon={<FilterAltIcon />}
-            size='medium'
-            sx={{ height: 'fit-content' }}
-            onClick={handleFilterCustomers}
-          >
-            Filter
-          </Button>
-          <Button
-            variant='outlined'
-            startIcon={<ClearIcon />}
-            size='medium'
-            sx={{ height: 'fit-content' }}
-            onClick={clearFilters}
-          >
-            Clear
-          </Button>
         </Stack>
       </div>
       <div className='filter-customers-data-grid'>
