@@ -9,7 +9,9 @@ export const getAllBundleCatalogues = async (): Promise<BundleCatalogue[]> => {
 export const getBundleCatalogueById = async (
   id: string | number
 ): Promise<BundleCatalogue> => {
-  return axios.get(`${apiRoot}/bundlecatalogue/${id}`).then((res) => res.data);
+  return axios
+    .get(`${apiRoot}/bundlecatalogue/id/${id}`)
+    .then((res) => res.data);
 };
 
 export const createBundleCatalogue = async (

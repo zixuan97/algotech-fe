@@ -1,7 +1,6 @@
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 import apiRoot from 'src/services/util/apiRoot';
-import { MomentRange } from './dateUtils';
 
 type PDFOrientation = 'portrait' | 'landscape';
 
@@ -76,7 +75,6 @@ export const createPdfFromComponent = async (
   return URL.createObjectURL(pdf.output('blob'));
 };
 
-
 export const getExcelFromApi = (
   httpMethod: string,
   api: string,
@@ -85,7 +83,6 @@ export const getExcelFromApi = (
 ) => {
   const xhr = new XMLHttpRequest();
   xhr.open(httpMethod, `${apiRoot}${api}`, true);
-  xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
   xhr.responseType = 'arraybuffer';
   xhr.onload = function (e) {
     if (this.status === 200) {

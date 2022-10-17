@@ -38,3 +38,9 @@ export const deleteNewsletterTemplate = async (
 export const createNewsletterTemplate = async (body: object): Promise<void> => {
   return axios.post(`${apiRoot}/newsletter`, body);
 };
+
+export const filterAndGetCustomers = async (
+  body: object
+): Promise<Customer[]> => {
+  return axios.post(`${apiRoot}/customer/filter`, body).then((res) => res.data.customers);
+};

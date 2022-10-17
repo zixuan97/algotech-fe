@@ -51,27 +51,24 @@ const CreateCatalogueProduct = () => {
   const [availableProducts, setAvailableProducts] = React.useState<Product[]>(
     []
   );
-  const [unavailProductIds, setUnavailProductIds] = React.useState<number[]>(
-    []
-  );
 
   const [selectedProduct, setSelectedProduct] = React.useState<Product>();
 
   React.useEffect(() => {
+    const existingPdtCtlgIds: number[] = [];
     asyncFetchCallback(getAllProductCatalogues(), (res) => {
       res.forEach((pc) => {
-        unavailProductIds?.push(pc.productId);
-        setUnavailProductIds(unavailProductIds);
+        existingPdtCtlgIds.push(pc.productId);
       });
     });
 
     asyncFetchCallback(getAllProducts(), (res) => {
       setAllProducts(res);
       setAvailableProducts(
-        res.filter((pdt) => !unavailProductIds.includes(pdt.id))
+        res.filter((pdt) => !existingPdtCtlgIds.includes(pdt.id))
       );
     });
-  }, [unavailProductIds]);
+  }, []);
 
   React.useEffect(() => {
     setDisableCreate(!isValidProductCatalogue(newProductCatalogue));
@@ -86,7 +83,7 @@ const CreateCatalogueProduct = () => {
   };
 
   const handleEditPrice = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
+    let value = parseFloat(e.target.value);
     let numDecimals;
 
     if (value.toString().split('.').length === 1) {
@@ -96,7 +93,7 @@ const CreateCatalogueProduct = () => {
     }
 
     if (numDecimals > 2) {
-      value = parseFloat(e.target.value).toFixed(2);
+      value = parseFloat(value.toFixed(2));
     }
 
     setNewProductCatalogue((prev) => ({
@@ -197,7 +194,7 @@ const CreateCatalogueProduct = () => {
             </Backdrop>
             <form onSubmit={handleSave}>
               <FormGroup className='create-product-form'>
-                <div className='top-content'>
+                <div className='top-content' style={{ maxWidth: '100%' }}>
                   <div>
                     <Box
                       sx={{
@@ -252,7 +249,10 @@ const CreateCatalogueProduct = () => {
                       )}
                     </Toolbar>
                   </div>
-                  <div className='product-text-fields'>
+                  <div
+                    className='product-text-fields'
+                    style={{ maxWidth: 'calc(98% - 215px)' }}
+                  >
                     <FormControl>
                       <InputLabel id='product-label' required>
                         Product SKU
@@ -301,7 +301,8 @@ const CreateCatalogueProduct = () => {
                       value={newProductCatalogue?.price}
                       inputProps={{
                         inputMode: 'decimal',
-                        min: '0'
+                        min: '0',
+                        step: '0.01'
                       }}
                     />
                   </div>

@@ -147,6 +147,7 @@ export interface BundleCatalogue {
   id: number;
   price: number;
   bundle: Bundle;
+  bundleId: number;
   image?: string;
   description: string;
 }
@@ -281,6 +282,7 @@ export interface Customer {
   totalSpent: number;
   ordersCount: number;
   salesOrders: SalesOrder[];
+  ordersByMonth: [];
   // daysSinceLastOrder?: number;
   // newsletters?: Newsletter[];
 }
@@ -310,4 +312,11 @@ export interface NewsletterTemplate {
   emailBodyTitle: String;
   emailBody: String;
   discountCode: String;
+}
+
+export interface ScheduledNewsletter {
+  id: number;
+  newsletterId: number;
+  customerEmails: String[];
+  sendDate: Date;
 }

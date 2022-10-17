@@ -173,7 +173,7 @@
   width: 100%;
   display: flex;
   flex-direction: row;
-  padding: 2rem;
+  // padding: 2rem;
   padding-bottom: 0rem;
 }
 
@@ -192,7 +192,7 @@
   display: flex;
   justify-content: flex-end;
   width: max-content;
-  padding-right: 4rem;
+  padding-right: 2rem;
   gap: 10px 10px;
   margin: 2% 2% 2% 2%;
   width: 40%;
@@ -321,6 +321,57 @@
   flex-direction: row;
   padding-top: 2rem;
   padding-left: 2rem;
+}
+
+.schedule-newsletter-grid-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-bottom: 2rem;
+}
+
+.schedule-newsletter-grid-label-text {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  white-space: nowrap;
+  font-family: 'Poppins';
+  color: colors.$primary;
+}
+
+.schedule-newsletter-preview-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 2rem;
+}
+
+.schedule-newsletter-customers-toolbar {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  padding: 2rem;
+  padding-right: 0rem;
+}
+
+.schedule-newsletter-customers-heading {
+  padding-top: 1rem;
+}
+
+.filter-customer-button-container {
+  flex-direction: row;
+  padding-top: 3rem;
+}
+
+.filter-customers-alert {
+  display: flex;
+  flex-direction: row;
+  padding-left: 2rem;
+  padding-top: 2rem;
+}
+
+.filter-customers-data-grid {
+  padding-left: 2rem;
+  padding-bottom: 2rem;
 }
 
 .orders-chart {

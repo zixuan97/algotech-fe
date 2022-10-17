@@ -20,7 +20,7 @@ const BundleCatalogueCellAction = ({ id }: GridRenderCellParams) => {
           })
         }
       >
-        View Catalogue Bundle
+        View Details
       </Button>
     </div>
   );
