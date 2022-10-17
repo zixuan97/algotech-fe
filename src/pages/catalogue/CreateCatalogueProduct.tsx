@@ -51,30 +51,24 @@ const CreateCatalogueProduct = () => {
   const [availableProducts, setAvailableProducts] = React.useState<Product[]>(
     []
   );
-  const [unavailProductIds, setUnavailProductIds] = React.useState<number[]>(
-    []
-  );
 
   const [selectedProduct, setSelectedProduct] = React.useState<Product>();
 
   React.useEffect(() => {
+    const existingPdtCtlgIds: number[] = [];
     asyncFetchCallback(getAllProductCatalogues(), (res) => {
       res.forEach((pc) => {
-        unavailProductIds?.push(pc.productId);
-        setUnavailProductIds(unavailProductIds);
+        existingPdtCtlgIds.push(pc.productId);
       });
     });
-    console.log('unavailProdIds', unavailProductIds);
 
     asyncFetchCallback(getAllProducts(), (res) => {
       setAllProducts(res);
-      console.log('allProd', allProducts);
       setAvailableProducts(
-        res.filter((pdt) => !unavailProductIds.includes(pdt.id))
+        res.filter((pdt) => !existingPdtCtlgIds.includes(pdt.id))
       );
-      console.log('availProd', availableProducts);
     });
-  }, [allProducts, availableProducts, unavailProductIds]);
+  }, []);
 
   React.useEffect(() => {
     setDisableCreate(!isValidProductCatalogue(newProductCatalogue));
@@ -200,7 +194,7 @@ const CreateCatalogueProduct = () => {
             </Backdrop>
             <form onSubmit={handleSave}>
               <FormGroup className='create-product-form'>
-                <div className='top-content'>
+                <div className='top-content' style={{ maxWidth: '100%' }}>
                   <div>
                     <Box
                       sx={{
@@ -255,7 +249,10 @@ const CreateCatalogueProduct = () => {
                       )}
                     </Toolbar>
                   </div>
-                  <div className='product-text-fields'>
+                  <div
+                    className='product-text-fields'
+                    style={{ maxWidth: 'calc(98% - 215px)' }}
+                  >
                     <FormControl>
                       <InputLabel id='product-label' required>
                         Product SKU

@@ -10,7 +10,9 @@ import {
 import { MomentRange } from 'src/utils/dateUtils';
 import apiRoot from './util/apiRoot';
 
-export const getSalesOrderDetailsSvc = async (id: string): Promise<SalesOrder> => {
+export const getSalesOrderDetailsSvc = async (
+  id: string
+): Promise<SalesOrder> => {
   return axios.get(`${apiRoot}/sales/id/${id}`).then((res) => res.data);
 };
 
@@ -74,7 +76,9 @@ export const getSalesBestsellersByRangeSvc = async (
     .then((res) => res.data);
 };
 
-export const completeOrderPrepSvc = async (salesOrder: SalesOrder): Promise<any> => {
+export const completeOrderPrepSvc = async (
+  salesOrder: SalesOrder
+): Promise<any> => {
   return axios.put(`${apiRoot}/sales`, salesOrder).then((res) => res.data);
 };
 
