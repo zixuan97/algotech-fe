@@ -8,10 +8,8 @@ import {
   CircularProgress,
   FormControl,
   FormGroup,
-  Grid,
   IconButton,
   InputLabel,
-  ListItemText,
   MenuItem,
   OutlinedInput,
   Paper,
@@ -23,20 +21,19 @@ import {
   Typography
 } from '@mui/material';
 import { ChevronLeft, Delete } from '@mui/icons-material';
-import { useSearchParams } from 'react-router-dom';
 import { Bundle, BundleCatalogue } from 'src/models/types';
-import '../../styles/pages/delivery/delivery.scss';
+// import '../../styles/pages/delivery/delivery.scss';
+import '../../styles/pages/inventory/inventory.scss';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   createBundleCatalogue,
   getAllBundleCatalogues
 } from '../../services/bundleCatalogueService';
 import { isValidBundleCatalogue } from 'src/components/catalogue/catalogueHelper';
-import TimeoutAlert, {
+import {
   AlertType,
   AxiosErrDataBody
 } from 'src/components/common/TimeoutAlert';
-import inventoryContext from 'src/context/inventory/inventoryContext';
 import { getBase64 } from 'src/utils/fileUtils';
 import { omit } from 'lodash';
 import { getAllBundles } from 'src/services/bundleService';
@@ -53,28 +50,24 @@ const CreateCatalogueBundle = () => {
   >({});
   const [allBundles, setAllBundles] = React.useState<Bundle[]>([]);
   const [availableBundles, setAvailableBundles] = React.useState<Bundle[]>([]);
-  const [unavailBundleIds, setUnavailBundleIds] = React.useState<number[]>([]);
 
   const [selectedBundle, setSelectedBundle] = React.useState<Bundle>();
 
   React.useEffect(() => {
+    const existingBdlCtlgIds: number[] = [];
     asyncFetchCallback(getAllBundleCatalogues(), (res) => {
       res.forEach((bc) => {
-        unavailBundleIds?.push(bc.bundleId);
-        setUnavailBundleIds(unavailBundleIds);
+        existingBdlCtlgIds.push(bc.bundleId);
       });
     });
-    console.log('unavailBunIds', unavailBundleIds);
 
     asyncFetchCallback(getAllBundles(), (res) => {
       setAllBundles(res);
-      console.log('allBun', allBundles);
       setAvailableBundles(
-        res.filter((bun) => !unavailBundleIds.includes(bun.id))
+        res.filter((bun) => !existingBdlCtlgIds.includes(bun.id))
       );
-      console.log('availBun', availableBundles);
     });
-  }, [allBundles, availableBundles, unavailBundleIds]);
+  }, []);
 
   React.useEffect(() => {
     setDisableCreate(!isValidBundleCatalogue(newBundleCatalogue));
@@ -200,7 +193,11 @@ const CreateCatalogueBundle = () => {
             </Backdrop>
             <form onSubmit={handleSave}>
               <FormGroup className='create-product-form'>
-                <div className='top-content'>
+                <div
+                  className='top-content'
+                  //   style={{ maxWidth: 'calc(98% - 215px)' }}
+                  style={{ maxWidth: '100%' }}
+                >
                   <div>
                     <Box
                       sx={{
@@ -255,12 +252,17 @@ const CreateCatalogueBundle = () => {
                       )}
                     </Toolbar>
                   </div>
-                  <div className='product-text-fields'>
-                    <FormControl>
+                  <div
+                    className='product-text-fields'
+                    style={{ maxWidth: 'calc(98% - 215px)' }}
+                  >
+                    <FormControl fullWidth>
                       <InputLabel id='bundle-label' required>
                         Bundle Name
                       </InputLabel>
                       <Select
+                        fullWidth
+                        inputProps={{ style: { maxWidth: '100%' } }}
                         required
                         labelId='bundle-label'
                         id='bundle'
@@ -291,6 +293,7 @@ const CreateCatalogueBundle = () => {
                       rows={5}
                     />
                     <TextField
+                      fullWidth
                       required
                       id='price'
                       label='Price'
