@@ -304,16 +304,17 @@ const CustomerDetails = () => {
           </Grid>
         )}
       </div>
-      <div className='orders-table'>
-        <Stack
-          direction='row'
-          width='100%'
-          alignItems='center'
-          justifyContent='space-between'
-        >
-          <h2>Customer's Orders</h2>
-        </Stack>
-        {/* <div className='search-bar'>
+      {customerData?.salesOrders?.length ? (
+        <div className='orders-table'>
+          <Stack
+            direction='row'
+            width='100%'
+            alignItems='center'
+            justifyContent='space-between'
+          >
+            <h2>Customer's Orders</h2>
+          </Stack>
+          {/* <div className='search-bar'>
           <Search />
           <TextField
             id='search'
@@ -323,146 +324,153 @@ const CustomerDetails = () => {
             onChange={handleSearchFieldChange}
           />
         </div> */}
-        <div className='order-grid-toolbar'>
-          <div className='search-bar'>
-            <FilterList />
-            <FormControl style={{ width: '50%' }}>
-              <InputLabel id='search-platform'>Platform</InputLabel>
-              <Select
-                id='search-platform'
-                value={filterPlatform}
-                label='Platform'
-                placeholder='Platform'
-                onChange={handleFilterChange}
-              >
-                {platforms.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+          <div className='order-grid-toolbar'>
+            <div className='search-bar'>
+              <FilterList />
+              <FormControl style={{ width: '50%' }}>
+                <InputLabel id='search-platform'>Platform</InputLabel>
+                <Select
+                  id='search-platform'
+                  value={filterPlatform}
+                  label='Platform'
+                  placeholder='Platform'
+                  onChange={handleFilterChange}
+                >
+                  {platforms.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-            <Search />
-            <TextField
-              id='search'
-              label='Search'
-              fullWidth
-              value={searchField}
-              placeholder='Address, OrderId, Product Name, Status'
-              onChange={handleSearchFieldChange}
-            />
+              <Search />
+              <TextField
+                id='search'
+                label='Search'
+                fullWidth
+                value={searchField}
+                placeholder='Address, OrderId, Product Name, Status'
+                onChange={handleSearchFieldChange}
+              />
+              <Button
+                variant='contained'
+                size='large'
+                sx={{ height: 'fit-content' }}
+                onClick={() => {
+                  setSearchField('');
+                  setFilterPlatform('ALL');
+                }}
+              >
+                Reset
+              </Button>
+            </div>
             <Button
               variant='contained'
               size='large'
-              sx={{ height: 'fit-content' }}
+              sx={{ mr: 2 }}
+              endIcon={<Download />}
               onClick={() => {
-                setSearchField('');
-                setFilterPlatform('ALL');
+                const reqBody = { customerEmail: customerData?.email };
+                getExcelFromApi(
+                  'POST',
+                  '/customer/excel',
+                  `CustomerOrderData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`,
+                  reqBody
+                );
               }}
             >
-              Reset
+              Export Customer's Orders
             </Button>
           </div>
-          <Button
-            variant='contained'
-            size='large'
-            sx={{ mr: 2 }}
-            endIcon={<Download />}
-            onClick={() => {
-              const reqBody = { customerEmail: customerData?.email };
-              getExcelFromApi(
-                'POST',
-                '/customer/excel',
-                `CustomerOrderData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`,
-                reqBody
-              );
-            }}
+          <div className='data-grid-container'>
+            {filteredData && <CustomerOrderTable filteredData={filteredData} />}
+          </div>
+        </div>
+      ) : (
+        ''
+      )}
+      {customerData?.bulkOrders?.length ? (
+        <div className='orders-table'>
+          <Stack
+            direction='row'
+            width='100%'
+            alignItems='center'
+            justifyContent='space-between'
           >
-            Export Customer's Orders
-          </Button>
-        </div>
-        <div className='data-grid-container'>
-          {filteredData && <CustomerOrderTable filteredData={filteredData} />}
-        </div>
-      </div>
-      <div className='orders-table'>
-        <Stack
-          direction='row'
-          width='100%'
-          alignItems='center'
-          justifyContent='space-between'
-        >
-          <h2>Customer's Bulk Orders</h2>
-        </Stack>
-        <div className='order-grid-toolbar'>
-          <div className='search-bar'>
-            <FilterList />
-            <FormControl style={{ width: '50%' }}>
-              <InputLabel id='search-platform'>Order Status</InputLabel>
-              <Select
-                id='search-platform'
-                value={filterOrderStatus}
-                label='Order Status'
-                placeholder='Order Station'
-                onChange={handleFilterOrderChange}
-              >
-                {orderStatus.map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+            <h2>Customer's Bulk Orders</h2>
+          </Stack>
+          <div className='order-grid-toolbar'>
+            <div className='search-bar'>
+              <FilterList />
+              <FormControl style={{ width: '50%' }}>
+                <InputLabel id='search-platform'>Order Status</InputLabel>
+                <Select
+                  id='search-platform'
+                  value={filterOrderStatus}
+                  label='Order Status'
+                  placeholder='Order Station'
+                  onChange={handleFilterOrderChange}
+                >
+                  {orderStatus.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-            <Search />
-            <TextField
-              id='search'
-              label='Search'
-              fullWidth
-              value={searchBulkOrderField}
-              placeholder='Payment Mode, Order Status'
-              onChange={handleBulkOrderSearchFieldChange}
-            />
+              <Search />
+              <TextField
+                id='search'
+                label='Search'
+                fullWidth
+                value={searchBulkOrderField}
+                placeholder='Payment Mode, Order Status'
+                onChange={handleBulkOrderSearchFieldChange}
+              />
+              <Button
+                variant='contained'
+                size='large'
+                sx={{ height: 'fit-content' }}
+                onClick={() => {
+                  setSearchBulkOrderField('');
+                  setFilterOrderStatus('ALL');
+                }}
+              >
+                Reset
+              </Button>
+            </div>
             <Button
               variant='contained'
               size='large'
-              sx={{ height: 'fit-content' }}
+              sx={{ mr: 2 }}
+              endIcon={<Download />}
               onClick={() => {
-                setSearchBulkOrderField('');
-                setFilterOrderStatus('ALL');
+                const reqBody = { customerEmail: customerData?.email };
+                getExcelFromApi(
+                  'POST',
+                  '/customer/excel',
+                  `CustomerOrderData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`,
+                  reqBody
+                );
               }}
             >
-              Reset
+              Export Customer's Orders
             </Button>
           </div>
-          <Button
-            variant='contained'
-            size='large'
-            sx={{ mr: 2 }}
-            endIcon={<Download />}
-            onClick={() => {
-              const reqBody = { customerEmail: customerData?.email };
-              getExcelFromApi(
-                'POST',
-                '/customer/excel',
-                `CustomerOrderData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`,
-                reqBody
-              );
-            }}
-          >
-            Export Customer's Orders
-          </Button>
+          {filteredBulkOrderData && (
+            <DataGrid
+              columns={bulkOrderColumns}
+              rows={filteredBulkOrderData}
+              autoHeight
+              loading={loading}
+            />
+          )}
         </div>
-        {filteredBulkOrderData && (
-          <DataGrid
-            columns={bulkOrderColumns}
-            rows={filteredBulkOrderData}
-            autoHeight
-            loading={loading}
-          />
-        )}
-      </div>
+      ) : (
+        ''
+      )}
       {/* <div className='newsletter-table'>
         <Stack
           direction='row'
