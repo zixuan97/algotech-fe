@@ -1,55 +1,68 @@
 import { Card, Divider } from '@mui/material';
-import { Chart as ChartJS, registerables } from 'chart.js';
+import { Chart as ChartJS, ChartTypeRegistry, registerables, TooltipItem } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
+import moment from 'moment';
 import { CustomerOrderValue } from 'src/models/types';
+import { READABLE_MMYYYY } from 'src/utils/dateUtils';
 
 ChartJS.register(...registerables);
 
-const options = {
-  scales: {
-    x: {
-      grid: {
-        display: false
-      }
-    },
-    y: {
-      beginAtZero: true
-    }
-  },
-  plugins: {
-    legend: {
-      display: false
-    },
-    datalabels: {
-      display: false
-    }
-  }
-};
+
 
 type OrderAmountProps = {
-  values: [];
+  values: CustomerOrderValue[];
 };
 
+
 const OrderAmountChart = ({ values }: OrderAmountProps) => {
-  // const data = {
-  //   labels: values.map((rev) =>
-  //     rev.month
-  //   ),
-  //   datasets: [
-  //     {
-  //       label: 'Amount',
-  //       data: values.map((rev) => rev.value),
-  //       barPercentage: 0.5,
-  //       borderRadius: 5,
-  //       backgroundColor: '#DAD7FE'
-  //     }
-  //   ]
-  // };
+  const data = {
+    labels: values.map((rev) =>
+      moment(rev.month).format(READABLE_MMYYYY)
+    ),
+    datasets: [
+      {
+        data: values.map((rev) => rev.totalamount),
+        barPercentage: 0.5,
+        borderRadius: 5,
+        backgroundColor: '#DAD7FE'
+      }
+    ]
+  };
+  const options = {
+    scales: {
+      x: {
+        grid: {
+          display: false
+        }
+      },
+      y: {
+        beginAtZero: true
+      }
+    },
+    plugins: {
+      legend: {
+        display: false
+      },
+      datalabels: {
+        display: false
+      },
+      tooltip: {
+        callbacks: {
+          label: (context: TooltipItem<keyof ChartTypeRegistry>) => {
+            const amount = `Total Amount : ${context.formattedValue}`
+            const num = `Number of Orders: ${values[context.dataIndex].numorders}`
+            const concat = amount + '   ' + num
+            return concat;
+          }
+        }
+      }
+    }
+  };
   return (
-    <Card style={{ padding: '0.5em 2em 2em', height: '48vh' }}>
+    <Card style={{ padding: '0.5em 2em 2em', height: 'auto' }}>
       <h3>Order Amount</h3>
       <Divider className='full-divider' />
-      {/* <Bar data={data} options={options} /> */}
+      <Bar data={data} options={options} />
     </Card>
   );
 };

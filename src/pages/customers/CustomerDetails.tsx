@@ -171,6 +171,8 @@ const CustomerDetails = () => {
     );
   }, [id]);
 
+  console.log(customerData?.ordersByMonth)
+
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // here
     setSearchField(e.target.value);
