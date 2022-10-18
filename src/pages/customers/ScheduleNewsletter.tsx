@@ -9,33 +9,29 @@ import {
   Grid,
   IconButton,
   MenuItem,
-  Stack,
   TextField,
-  Tooltip,
-  Typography
+  Tooltip
 } from '@mui/material';
 import {
   Customer,
   NewsletterTemplate,
   ScheduledNewsletter
 } from 'src/models/types';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import ClearIcon from '@mui/icons-material/Clear';
 import moment, { Moment } from 'moment';
-import { DesktopDatePicker } from '@mui/x-date-pickers';
+import { DateTimePicker } from '@mui/x-date-pickers';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   filterAndGetCustomers,
   getAllNewsletterTemplates
 } from 'src/services/customerService';
 import PreviewTemplateModal from 'src/components/customers/PreviewTemplateModal';
-import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import {
   DataGrid,
   GridColDef,
   GridRowId,
   GridValueGetterParams
 } from '@mui/x-data-grid';
+import FilterCustomersMenu from 'src/components/customers/FilterCustomersMenu';
 
 export type NewScheduledNewsletter = Partial<ScheduledNewsletter> & {};
 
@@ -87,19 +83,10 @@ const ScheduleNewsletter = () => {
     React.useState<NewScheduledNewsletter>();
   const [selectedNewsletterTemplate, setSelectedNewsletterTemplate] =
     React.useState<NewsletterTemplate>();
-  const [selectedDate, setSelectedDate] = React.useState<Moment>(
-    moment().startOf('day')
+  const [selectedDate, setSelectedDate] = React.useState<Moment | null>(
+    moment()
   );
-  const [daysSinceLastPurchaseString, setDaysSinceLastPurchase] =
-    React.useState<string>('');
-  const [allTimeOrderValueString, setAllTimeOrderValue] =
-    React.useState<string>('');
-  const [minAvgOrderValueString, setMinAvgOrderValue] =
-    React.useState<string>('');
-  const [maxAvgOrderValueString, setMaxAvgOrderValue] =
-    React.useState<string>('');
   const [customers, setCustomers] = React.useState<Customer[]>([]);
-  const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [openPreviewModal, setOpenPreviewModal] =
     React.useState<boolean>(false);
@@ -146,105 +133,15 @@ const ScheduleNewsletter = () => {
     );
   };
 
-  const handleEditCustomerFilters = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (e.target.name === 'daysSinceLastPurchase') {
-      await setDaysSinceLastPurchase(e.target.value);
-    } else if (e.target.name === 'allTimeOrderValue') {
-      await setAllTimeOrderValue(e.target.value);
-    } else if (e.target.name === 'minAvgOrderValue') {
-      await setMinAvgOrderValue(e.target.value);
-    } else {
-      await setMaxAvgOrderValue(e.target.value);
-    }
-  };
-
-  const handleFilterCustomers = async () => {
-    let daysSinceLastPurchase = Number(daysSinceLastPurchaseString);
-    let allTimeOrderValue = Number(allTimeOrderValueString);
-    let minAvgOrderValue = Number(minAvgOrderValueString);
-    let maxAvgOrderValue = Number(maxAvgOrderValueString);
-
-    if (
-      (daysSinceLastPurchaseString !== '' && daysSinceLastPurchase < 0) ||
-      (allTimeOrderValueString !== '' && allTimeOrderValue < 0) ||
-      (minAvgOrderValueString !== '' && minAvgOrderValue < 0) ||
-      (maxAvgOrderValueString !== '' && maxAvgOrderValue < 0)
-    ) {
-      setAlert({
-        severity: 'warning',
-        message: 'All filter values must be positive!'
-      });
-      return;
-    }
-
-    if (minAvgOrderValueString !== '' && maxAvgOrderValueString === '') {
-      setAlert({
-        severity: 'warning',
-        message: 'Please enter a max average order value!'
-      });
-      return;
-    }
-
-    if (maxAvgOrderValueString !== '' && minAvgOrderValueString === '') {
-      setAlert({
-        severity: 'warning',
-        message: 'Please enter a min average order value!'
-      });
-      return;
-    }
-
-    if (minAvgOrderValue > maxAvgOrderValue) {
-      setAlert({
-        severity: 'warning',
-        message:
-          'Please ensure min average order value is less than max average order value!'
-      });
-      return;
-    }
-
-    let reqBody = Object.assign(
-      {},
-      daysSinceLastPurchase && { daysSinceLastPurchase },
-      allTimeOrderValue && { allTimeOrderValue },
-      minAvgOrderValue && { minAvgOrderValue },
-      maxAvgOrderValue && { maxAvgOrderValue }
-    );
-
-    setLoading(true);
-
-    await asyncFetchCallback(
-      filterAndGetCustomers(reqBody),
-      (res) => {
-        setCustomers(res);
-        setLoading(false);
-      },
-      () => setLoading(false)
-    );
-  };
-
-  const clearFilters = async () => {
-    await setDaysSinceLastPurchase('');
-    await setAllTimeOrderValue('');
-    await setMinAvgOrderValue('');
-    await setMaxAvgOrderValue('');
-
-    await asyncFetchCallback(
-      filterAndGetCustomers({}),
-      (res) => {
-        setCustomers(res);
-        setLoading(false);
-      },
-      () => setLoading(false)
-    );
-  };
-
   const onRowsSelectionHandler = (ids: GridRowId[]) => {
     const selectedRowsData = ids.map((id) =>
       customers.find((row) => row.id === id)
     );
     console.log(selectedRowsData);
+  };
+
+  const getFilteredCustomers = (customers: Customer[]) => {
+    setCustomers(customers);
   };
 
   return (
@@ -266,7 +163,7 @@ const ScheduleNewsletter = () => {
       >
         <CircularProgress color='inherit' />
       </Backdrop>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} className='schedule-newsletter-grid'>
         <Grid item xs={10} className='schedule-newsletter-grid-item'>
           <h3 className='schedule-newsletter-grid-label-text'>
             Newsletter Name:
@@ -311,115 +208,19 @@ const ScheduleNewsletter = () => {
       <Grid container spacing={2}>
         <Grid item xs={6} className='schedule-newsletter-grid-item'>
           <h3 className='schedule-newsletter-grid-label-text'>Date to Send:</h3>
-          <DesktopDatePicker
+          <DateTimePicker
             label='Date to Send'
             value={selectedDate}
-            minDate={moment().startOf('day')}
+            minDate={moment()}
             onChange={(date) => setSelectedDate(moment(date))}
             renderInput={(params) => <TextField required {...params} />}
           />
         </Grid>
       </Grid>
       <Divider />
-      <div className='filter-customers-alert'>
-        <TimeoutAlert
-          alert={alert}
-          timeout={6000}
-          clearAlert={() => setAlert(null)}
-        />
-      </div>
-      <Stack
-        direction='row'
-        spacing={2}
-        justifyContent='flex-end'
-        paddingRight='1rem'
-        paddingBottom='1rem'
-      >
-        <Button
-          variant='outlined'
-          startIcon={<FilterAltIcon />}
-          size='medium'
-          sx={{ height: 'fit-content' }}
-          onClick={handleFilterCustomers}
-        >
-          Filter
-        </Button>
-        <Button
-          variant='outlined'
-          startIcon={<ClearIcon />}
-          size='medium'
-          sx={{ height: 'fit-content' }}
-          onClick={clearFilters}
-        >
-          Clear
-        </Button>
-      </Stack>
       <div className='schedule-newsletter-customers-toolbar'>
         <h2 className='schedule-newsletter-customers-heading'>Customers</h2>
-        <Stack
-          direction='row'
-          width='100%'
-          alignItems='center'
-          justifyContent='flex-end'
-        >
-          <Stack
-            direction='column'
-            spacing={2}
-            paddingLeft='2rem'
-            paddingRight='1rem'
-          >
-            <Typography>Days Since Last Purchase</Typography>
-            <TextField
-              name='daysSinceLastPurchase'
-              type='number'
-              value={daysSinceLastPurchaseString}
-              onChange={handleEditCustomerFilters}
-              fullWidth
-            />
-          </Stack>
-          <Stack
-            direction='column'
-            spacing={2}
-            paddingLeft='1rem'
-            paddingRight='1rem'
-          >
-            <Typography>All Time Order Value</Typography>
-            <TextField
-              name='allTimeOrderValue'
-              type='number'
-              value={allTimeOrderValueString}
-              onChange={handleEditCustomerFilters}
-              fullWidth
-            />
-          </Stack>
-          <Stack
-            direction='column'
-            spacing={2}
-            paddingLeft='1rem'
-            paddingRight='1rem'
-          >
-            <Typography>Average Order Value</Typography>
-            <Stack direction='row' spacing={2} alignItems='center'>
-              <TextField
-                name='minAvgOrderValue'
-                label='Min'
-                type='number'
-                value={minAvgOrderValueString}
-                onChange={handleEditCustomerFilters}
-                fullWidth
-              />
-              <Typography>to</Typography>
-              <TextField
-                name='maxAvgOrderValue'
-                label='Max'
-                type='number'
-                value={maxAvgOrderValueString}
-                onChange={handleEditCustomerFilters}
-                fullWidth
-              />
-            </Stack>
-          </Stack>
-        </Stack>
+        <FilterCustomersMenu updateCustomers={getFilteredCustomers} />
       </div>
       <div className='filter-customers-data-grid'>
         <DataGrid

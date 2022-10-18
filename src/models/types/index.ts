@@ -288,8 +288,10 @@ export interface Customer {
 }
 
 export interface CustomerOrderValue {
-  value: number;
-  month: String;
+  month: Date;
+  totalamount: number;
+  numorders: number;
+
 }
 
 export interface BulkOrder {
