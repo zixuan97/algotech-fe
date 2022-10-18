@@ -60,6 +60,7 @@ import AllNewsletterTemplates from './pages/customers/AllNewsletterTemplates';
 import CreateNewsletterTemplate from './pages/customers/CreateNewsletterTemplate';
 import ScheduleNewsletter from './pages/customers/ScheduleNewsletter';
 import ViewNewsletterTemplate from './pages/customers/ViewNewsletterTemplate';
+import ViewScheduledNewsletter from './pages/customers/ViewScheduledNewsletter';
 
 import Accounts from './pages/account/Accounts';
 import ViewAccount from './pages/account/ViewAccount';
@@ -296,6 +297,10 @@ const App = () => {
                   <Route
                     path='customer/viewNewsletterTemplate'
                     element={<ViewNewsletterTemplate />}
+                  />
+                  <Route
+                    path='customer/viewScheduledNewsletter'
+                    element={<ViewScheduledNewsletter />}
                   />
 
                   {/* --- Sales Routes --- */}
