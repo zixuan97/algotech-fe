@@ -83,6 +83,8 @@ export interface User {
   role: UserRole;
   status: UserStatus;
   isVerified: boolean;
+  company?: string;
+  contactNo?: string;
 }
 
 export interface Category {
@@ -298,11 +300,14 @@ export interface CustomerOrderValue {
 export interface BulkOrder {
   id: number;
   amount: number;
+  paymentMode: PaymentMode;
   payeeName: String;
   payeeEmail: String;
+  payeeCompany: String;
   payeeRemarks: String;
-  paymentMode: PaymentMode;
   bulkOrderStatus: BulkOrderStatus;
+  payeeContactNo: String;
+  createdTime: Date;
   salesOrders: SalesOrder[];
 }
 

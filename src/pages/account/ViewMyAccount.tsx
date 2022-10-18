@@ -102,7 +102,7 @@ const ViewMyAccount = () => {
     e.preventDefault();
     setLoading(true);
     asyncFetchCallback(
-      updatePasswordSvc(user?.email!, currentPassword, newPassword),
+      updatePasswordSvc({...user!, password: newPassword }),
       () => {
         setLoading(false);
         setAlert({
