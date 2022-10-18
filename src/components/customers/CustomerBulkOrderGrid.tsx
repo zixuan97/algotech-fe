@@ -27,24 +27,6 @@ export const BulkOrderCellAction = ({ id }: GridRenderCellParams) => {
   );
 };
 
-export const SalesOrderCellAction = ({ id }: GridRenderCellParams) => {
-  const navigate = useNavigate();
-  const navToViewBulkOrder = (edit: boolean) =>
-    navigate({
-      pathname: '/sales/salesOrderDetails',
-      search: createSearchParams({
-        id: id.toString()
-      }).toString()
-    });
-  return (
-    <div className='action-cell'>
-      <Button variant='contained' onClick={() => navToViewBulkOrder(false)}>
-        View Order
-      </Button>
-    </div>
-  );
-};
-
 export const bulkOrderColumns: GridColDef[] = [
   { field: 'createdTime',
     headerName: 'Order Date',
@@ -63,7 +45,7 @@ export const bulkOrderColumns: GridColDef[] = [
   {
     field: 'salesOrders',
     headerName: 'No. Of Orders',
-    flex: 1,
+    flex: 0.5,
     valueGetter: (params) => params.row.salesOrders ?? 0,
     valueFormatter: (params) => params.value.length
   },
