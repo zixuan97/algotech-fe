@@ -4,6 +4,7 @@ import { PlatformType, SalesOrder } from 'src/models/types';
 import { Chart as ChartJS, ChartTypeRegistry, TooltipItem } from 'chart.js';
 import { OrderedMap } from 'immutable';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { startCase } from 'lodash';
 
 ChartJS.register(ChartDataLabels);
 
@@ -12,10 +13,18 @@ const labels = [
   PlatformType.LAZADA,
   PlatformType.REDMART,
   PlatformType.SHOPIFY,
-  PlatformType.OTHERS
+  PlatformType.OTHERS,
+  PlatformType.B2B
 ];
 
-const colors = ['#FFB46F', '#9BBFE0', '#F49A93', '#C6D68F', '#D9D9D9'];
+const colors = [
+  '#FFB46F',
+  '#9BBFE0',
+  '#F49A93',
+  '#C6D68F',
+  '#D9D9D9',
+  '#CDCDFF'
+];
 
 const options = {
   plugins: {
@@ -37,6 +46,8 @@ const options = {
           const percentage = `${((context.parsed / totalQty) * 100).toFixed(
             2
           )}%`;
+
+          console.log(context);
           return `${context.label}: ${context.formattedValue} (${percentage})`;
         }
       }
@@ -63,9 +74,7 @@ type PlatformPieChartProps = {
 const PlatformPieChart = ({ salesOrders }: PlatformPieChartProps) => {
   // TODO: change to API call once implemented
   const data = {
-    labels: labels.map(
-      (lbl) => lbl.charAt(0).toUpperCase() + lbl.slice(1).toLowerCase()
-    ),
+    labels: labels.map((lbl) => startCase(lbl.toLowerCase())),
     datasets: [
       {
         label: 'Sales by Platform',
