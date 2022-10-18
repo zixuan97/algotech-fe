@@ -91,7 +91,7 @@ const SalesOrderDetails = () => {
       align: 'center',
       flex: 1,
       valueGetter: (params) => params.row.price ?? 0,
-      valueFormatter: (params) => params.value.toFixed(2)
+      valueFormatter: (params) => '$' + params.value.toFixed(2)
     },
     {
       field: 'action',

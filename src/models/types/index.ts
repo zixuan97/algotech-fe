@@ -283,6 +283,7 @@ export interface Customer {
   ordersCount: number;
   salesOrders: SalesOrder[];
   ordersByMonth: [];
+  bulkOrders: BulkOrder[];
   // daysSinceLastOrder?: number;
   // newsletters?: Newsletter[];
 }

@@ -45,14 +45,6 @@ interface props {
         <TableCell component='th' scope='row' align='center'>
           {moment(row.createdTime).format('DD/MM/YYYY')}
         </TableCell>
-
-        <TableCell align='center'>
-          <Chip label={_.startCase(row.orderStatus.toLowerCase())} />
-        </TableCell>
-        <TableCell align='center'>
-          <PlatformChip salesOrder={row!} />
-        </TableCell>
-        <TableCell align='center'>${row.amount.toFixed(2)}</TableCell>
         <TableCell
           align='center'
           style={{
@@ -62,6 +54,13 @@ interface props {
         >
           {row.customerAddress ?? 'NA'}
         </TableCell>
+        <TableCell align='center'>
+          <Chip label={_.startCase(row.orderStatus.toLowerCase())} />
+        </TableCell>
+        <TableCell align='center'>
+          <PlatformChip salesOrder={row!} />
+        </TableCell>
+        <TableCell align='center'>${row.amount.toFixed(2)}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
@@ -128,10 +127,11 @@ const CustomerOrderTable = ({ filteredData }: props) => {
           <TableRow>
             <TableCell width={25} />
             <TableCell align='center'>Order Date</TableCell>
+            <TableCell align='center'>Delivery Address</TableCell>
             <TableCell align='center'>Status</TableCell>
             <TableCell align='center'>Platform</TableCell>
             <TableCell align='center'>Order Amount</TableCell>
-            <TableCell align='center'>Delivery Address</TableCell>
+
           </TableRow>
         </TableHead>
         <TableBody style={{ width: '100%' }}>
