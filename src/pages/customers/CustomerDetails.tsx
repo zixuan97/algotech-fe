@@ -297,13 +297,17 @@ const CustomerDetails = () => {
         </Paper>
       </div>
       <br></br>
-      <div className='orders-chart'>
-        {customerData?.ordersByMonth && (
-          <Grid item xs={6}>
-            <OrdersChart values={customerData?.ordersByMonth} />
-          </Grid>
-        )}
-      </div>
+      {customerData?.salesOrders?.length ? (
+        <div className='orders-chart'>
+          {customerData?.ordersByMonth && (
+            <Grid item xs={6}>
+              <OrdersChart values={customerData?.ordersByMonth} />
+            </Grid>
+          )}
+        </div>
+      ) : (
+        ''
+      )}
       {customerData?.salesOrders?.length ? (
         <div className='orders-table'>
           <Stack
