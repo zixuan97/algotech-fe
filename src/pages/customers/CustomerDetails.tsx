@@ -19,7 +19,8 @@ import {
 } from '@mui/material';
 import { Download, FilterList, Search } from '@mui/icons-material';
 import { useSearchParams } from 'react-router-dom';
-import { Customer, PlatformType } from '../../models/types';
+import { Customer, PlatformType, BulkOrderStatus } from '../../models/types';
+import { bulkOrderColumns } from 'src/components/customers/CustomerBulkOrderGrid';
 import { getCustomerById } from 'src/services/customerService';
 import CustomerOrderTable from 'src/components/customers/CustomerOrdersTable';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
@@ -33,6 +34,13 @@ import { DDMMYYYY, getTodayFormattedDate } from 'src/utils/dateUtils';
 
 let platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
 platforms.unshift('ALL');
+
+let orderStatus = Object.keys(BulkOrderStatus)
+  .filter((v) => isNaN(Number(v)))
+  .map((status) => {
+    return _.startCase(status);
+  });
+orderStatus.unshift('ALL');
 
 // const columns: GridColDef[] = [
 //   {
@@ -102,10 +110,12 @@ const CustomerDetails = () => {
   const id = searchParams.get('id');
 
   const [customerData, setCustomerData] = React.useState<Customer>();
-  // const [filteredData, setFilteredData] = React.useState<[]>([]);
   const [filterPlatform, setFilterPlatform] = useState<string>('ALL');
+  const [filterOrderStatus, setFilterOrderStatus] = useState<string>('ALL');
   const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
+  const [searchBulkOrderField, setSearchBulkOrderField] =
+    React.useState<string>('');
 
   // React.useEffect(() => {
   //   setFilteredData(
@@ -157,6 +167,36 @@ const CustomerDetails = () => {
     [customerData?.salesOrders, filterPlatform, searchField]
   );
 
+  const filteredBulkOrderData = useMemo(
+    () =>
+      filterOrderStatus || searchBulkOrderField
+        ? customerData?.bulkOrders.filter((bulkOrder) => {
+            const searchFieldLower = searchBulkOrderField.toLowerCase().trim();
+            if (filterOrderStatus === 'ALL') {
+              return (
+                bulkOrder.paymentMode
+                  .toLowerCase()
+                  .includes(searchFieldLower) ||
+                _.startCase(bulkOrder.bulkOrderStatus)
+                  .toLowerCase()
+                  .includes(searchFieldLower)
+              );
+            } else {
+              return (
+                bulkOrder.bulkOrderStatus === filterOrderStatus &&
+                (bulkOrder.paymentMode
+                  .toLowerCase()
+                  .includes(searchFieldLower) ||
+                  _.startCase(bulkOrder.bulkOrderStatus)
+                    .toLowerCase()
+                    .includes(searchFieldLower))
+              );
+            }
+          })
+        : customerData?.bulkOrders,
+    [customerData?.bulkOrders, filterOrderStatus, searchBulkOrderField]
+  );
+
   React.useEffect(() => {
     // TODO: implement error callback
     setLoading(true);
@@ -171,15 +211,26 @@ const CustomerDetails = () => {
     );
   }, [id]);
 
-  console.log(customerData?.ordersByMonth)
+  console.log(customerData?.ordersByMonth);
 
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // here
     setSearchField(e.target.value);
   };
 
+  const handleBulkOrderSearchFieldChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    // here
+    setSearchBulkOrderField(e.target.value);
+  };
+
   const handleFilterChange = (event: SelectChangeEvent) => {
     setFilterPlatform(event.target.value);
+  };
+
+  const handleFilterOrderChange = (event: SelectChangeEvent) => {
+    setFilterOrderStatus(event.target.value);
   };
 
   return (
@@ -248,9 +299,9 @@ const CustomerDetails = () => {
       <br></br>
       <div className='orders-chart'>
         {customerData?.ordersByMonth && (
-        <Grid item xs={6}>
-          <OrdersChart values={customerData?.ordersByMonth} />
-        </Grid>
+          <Grid item xs={6}>
+            <OrdersChart values={customerData?.ordersByMonth} />
+          </Grid>
         )}
       </div>
       <div className='orders-table'>
@@ -334,6 +385,83 @@ const CustomerDetails = () => {
         <div className='data-grid-container'>
           {filteredData && <CustomerOrderTable filteredData={filteredData} />}
         </div>
+      </div>
+      <div className='orders-table'>
+        <Stack
+          direction='row'
+          width='100%'
+          alignItems='center'
+          justifyContent='space-between'
+        >
+          <h2>Customer's Bulk Orders</h2>
+        </Stack>
+        <div className='order-grid-toolbar'>
+          <div className='search-bar'>
+            <FilterList />
+            <FormControl style={{ width: '50%' }}>
+              <InputLabel id='search-platform'>Order Status</InputLabel>
+              <Select
+                id='search-platform'
+                value={filterOrderStatus}
+                label='Order Status'
+                placeholder='Order Station'
+                onChange={handleFilterOrderChange}
+              >
+                {orderStatus.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <Search />
+            <TextField
+              id='search'
+              label='Search'
+              fullWidth
+              value={searchBulkOrderField}
+              placeholder='Payment Mode, Order Status'
+              onChange={handleBulkOrderSearchFieldChange}
+            />
+            <Button
+              variant='contained'
+              size='large'
+              sx={{ height: 'fit-content' }}
+              onClick={() => {
+                setSearchBulkOrderField('');
+                setFilterOrderStatus('ALL');
+              }}
+            >
+              Reset
+            </Button>
+          </div>
+          <Button
+            variant='contained'
+            size='large'
+            sx={{ mr: 2 }}
+            endIcon={<Download />}
+            onClick={() => {
+              const reqBody = { customerEmail: customerData?.email };
+              getExcelFromApi(
+                'POST',
+                '/customer/excel',
+                `CustomerOrderData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`,
+                reqBody
+              );
+            }}
+          >
+            Export Customer's Orders
+          </Button>
+        </div>
+        {filteredBulkOrderData && (
+          <DataGrid
+            columns={bulkOrderColumns}
+            rows={filteredBulkOrderData}
+            autoHeight
+            loading={loading}
+          />
+        )}
       </div>
       {/* <div className='newsletter-table'>
         <Stack
