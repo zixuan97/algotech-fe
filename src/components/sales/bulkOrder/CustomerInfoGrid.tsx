@@ -2,6 +2,7 @@ import { Grid } from '@mui/material';
 import moment from 'moment';
 import React from 'react';
 import { BulkOrder } from 'src/models/types';
+import { READABLE_DDMMYY_TIME } from 'src/utils/dateUtils';
 
 interface props {
   bulkOrder: BulkOrder;
@@ -21,7 +22,7 @@ const CustomerInfoGrid = ({ bulkOrder }: props) => {
           Contact No: {bulkOrder.payeeContactNo ?? '-'}
         </Grid>
         <Grid item xs={12}>
-          Ordered On: {moment(new Date(bulkOrder.createdTime.toString())).format('DD/MM/YYYY')}
+          Ordered On: {moment(bulkOrder.createdTime).format(READABLE_DDMMYY_TIME)}
         </Grid>
         <Grid item xs={12}>
           Customer Comments: {bulkOrder.payeeRemarks! ?? '-'}

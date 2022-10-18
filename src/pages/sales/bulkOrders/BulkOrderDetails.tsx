@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BulkOrder, BulkOrderStatus, SalesOrder } from 'src/models/types';
 import CustomerInfoGrid from 'src/components/sales/bulkOrder/CustomerInfoGrid';
 import BulkOrderSummary from 'src/components/sales/bulkOrder/BulkOrderSummary';
@@ -17,8 +17,9 @@ import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { getBulkOrderByIdSvc } from 'src/services/bulkOrderService';
 import { bulkOrderLineItems } from 'src/components/sales/bulkOrder/bulkOrderGridCol';
 import { DataGrid } from '@mui/x-data-grid';
-import BulkOrderStepper from 'src/components/sales/bulkOrder/BulkOrderStepper';
-import { bulkOrderSteps } from 'src/components/sales/bulkOrder/bulkOrderSteps';
+import BulkOrderStepper, {
+  BulkOrderSteps
+} from 'src/components/sales/bulkOrder/BulkOrderStepper';
 
 const BulkOrderDetails = () => {
   const navigate = useNavigate();
@@ -30,31 +31,6 @@ const BulkOrderDetails = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [activeStep, setActiveStep] = useState<number>(0);
 
-  const statusStepper = useMemo(
-    () =>
-      bulkOrder?.bulkOrderStatus === BulkOrderStatus.CANCELLED
-        ? bulkOrderSteps.filter((step) => {
-            return (
-              step.currentState !== BulkOrderStatus.PAYMENT_SUCCESS &&
-              step.currentState !== BulkOrderStatus.PAYMENT_FAILED
-            );
-          })
-        : bulkOrder?.bulkOrderStatus === BulkOrderStatus.PAYMENT_FAILED
-        ? bulkOrderSteps.filter((step) => {
-            return (
-              step.currentState !== BulkOrderStatus.CANCELLED &&
-              step.currentState !== BulkOrderStatus.PAYMENT_SUCCESS
-            );
-          })
-        : bulkOrderSteps.filter((step) => {
-            return (
-              step.currentState !== BulkOrderStatus.CANCELLED &&
-              step.currentState !== BulkOrderStatus.PAYMENT_FAILED
-            );
-          }),
-    [bulkOrder?.bulkOrderStatus]
-  );
-
   useEffect(() => {
     setLoading(true);
     if (id) {
@@ -63,13 +39,12 @@ const BulkOrderDetails = () => {
           setBulkOrder(bo);
           setSalesOrders(bo.salesOrders);
           setLoading(false);
-          if(statusStepper){
             setActiveStep(
-              statusStepper.findIndex(
+              BulkOrderSteps.findIndex(
                 (step) => step.currentState === bo.bulkOrderStatus
               )
             );
-          }
+          
         } else {
           setAlert({
             severity: 'error',
@@ -80,9 +55,7 @@ const BulkOrderDetails = () => {
         }
       });
     }
-  }, [id, navigate, statusStepper]);
-
-
+  }, [id, navigate]);
 
   return (
     <>
@@ -107,7 +80,7 @@ const BulkOrderDetails = () => {
                   Next Action:
                 </Typography>
                 <Tooltip
-                  title={statusStepper[activeStep].tooltip}
+                  title={BulkOrderSteps[activeStep].tooltip}
                   enterDelay={500}
                 >
                   <span>
@@ -119,11 +92,10 @@ const BulkOrderDetails = () => {
                           BulkOrderStatus.CANCELLED ||
                         bulkOrder?.bulkOrderStatus ===
                           BulkOrderStatus.PAYMENT_FAILED ||
-                          bulkOrder?.bulkOrderStatus ===
-                          BulkOrderStatus.FULFILLED
+                        bulkOrder?.bulkOrderStatus === BulkOrderStatus.FULFILLED
                       }
                     >
-                      {statusStepper[activeStep].nextAction}
+                      {BulkOrderSteps[activeStep].nextAction}
                     </Button>
                   </span>
                 </Tooltip>
