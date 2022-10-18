@@ -297,7 +297,7 @@ const CustomerDetails = () => {
         </Paper>
       </div>
       <br></br>
-      {customerData?.salesOrders?.length ? (
+      {!! customerData?.salesOrders?.length && (
         <div className='orders-chart'>
           {customerData?.ordersByMonth && (
             <Grid item xs={6}>
@@ -305,10 +305,8 @@ const CustomerDetails = () => {
             </Grid>
           )}
         </div>
-      ) : (
-        ''
       )}
-      {customerData?.salesOrders?.length ? (
+      {!! customerData?.salesOrders?.length && (
         <div className='orders-table'>
           <Stack
             direction='row'
@@ -391,10 +389,8 @@ const CustomerDetails = () => {
             {filteredData && <CustomerOrderTable filteredData={filteredData} />}
           </div>
         </div>
-      ) : (
-        ''
       )}
-      {customerData?.bulkOrders?.length ? (
+      {!! customerData?.bulkOrders?.length && (
         <div className='orders-table'>
           <Stack
             direction='row'
@@ -472,8 +468,6 @@ const CustomerDetails = () => {
             />
           )}
         </div>
-      ) : (
-        ''
       )}
       {/* <div className='newsletter-table'>
         <Stack
