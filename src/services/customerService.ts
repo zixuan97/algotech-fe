@@ -42,5 +42,11 @@ export const createNewsletterTemplate = async (body: object): Promise<void> => {
 export const filterAndGetCustomers = async (
   body: object
 ): Promise<Customer[]> => {
-  return axios.post(`${apiRoot}/customer/filter`, body).then((res) => res.data.customers);
+  return axios
+    .post(`${apiRoot}/customer/filter`, body)
+    .then((res) => res.data.customers);
+};
+
+export const scheduleNewsletter = async (body: object): Promise<void> => {
+  return axios.post(`${apiRoot}/newsletter/schedule`, body);
 };
