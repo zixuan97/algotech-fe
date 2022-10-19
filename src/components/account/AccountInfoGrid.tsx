@@ -28,12 +28,29 @@ const AccountInfoGrid = ({ user }: props) => {
       </Grid>
       <Grid item xs={6}>
         <div>
+          <h4>Contact No</h4>
+          <Typography>
+            {user?.contactNo ?? '-'}
+          </Typography>
+        </div>
+      </Grid>
+      <Grid item xs={6}>
+        <div>
+          <h4>Company</h4>
+          <Typography>
+            {user?.company ?? '-'}
+          </Typography>
+        </div>
+      </Grid>
+      <Grid item xs={6}>
+        <div>
           <h4>Role</h4>
           <Typography>
             {user?.role} ({user?.status})
           </Typography>
         </div>
       </Grid>
+
     </Grid>
   );
 };
