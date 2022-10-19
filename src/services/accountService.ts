@@ -45,9 +45,9 @@ export const forgetPasswordSvc = async (recipientEmail: string): Promise<any> =>
     .then((res) => res.data);
 };
 
-export const updatePasswordSvc = async (updatedUser: User): Promise<any> => {
+export const updatePasswordSvc = async (userEmail: string, currentPassword: string, newPassword: string): Promise<any> => {
   return axios
-    .patch(`${apiRoot}/user/changepw`, updatedUser)
+    .post(`${apiRoot}/user/updatepw`, {userEmail, currentPassword, newPassword})
     .then((res) => res.data);
 };
 

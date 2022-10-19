@@ -23,7 +23,7 @@ const AccountEditGrid = ({ editUser, setEditUser }: props) => {
   };
 
   return (
-    <Grid container spacing={1}>
+    <Grid container spacing={2}>
       <Grid item xs={6}>
         <TextField
           fullWidth
@@ -54,6 +54,38 @@ const AccountEditGrid = ({ editUser, setEditUser }: props) => {
           value={editUser?.lastName}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             userFieldOnChange(e, 'lastName')
+          }
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <TextField
+          fullWidth
+          required
+          id='outlined-quantity'
+          label='Contact Number'
+          name='contactNo'
+          placeholder='eg.: 81119222'
+          error={!editUser?.contactNo}
+          helperText={!editUser?.contactNo ? 'Contact Number is empty!' : ''}
+          value={editUser?.contactNo}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            userFieldOnChange(e, 'contactNo')
+          }
+        />
+      </Grid>
+      <Grid item xs={6}>
+        <TextField
+          fullWidth
+          required
+          id='outlined-quantity'
+          label='Company'
+          name='company'
+          placeholder='eg.: Singapore Pte Ltd'
+          error={!editUser?.company}
+          helperText={!editUser?.company ? 'Company is empty!' : ''}
+          value={editUser?.company}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            userFieldOnChange(e, 'company')
           }
         />
       </Grid>
