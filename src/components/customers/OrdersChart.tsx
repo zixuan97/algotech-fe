@@ -1,5 +1,10 @@
 import { Card, Divider } from '@mui/material';
-import { Chart as ChartJS, ChartTypeRegistry, registerables, TooltipItem } from 'chart.js';
+import {
+  Chart as ChartJS,
+  ChartTypeRegistry,
+  registerables,
+  TooltipItem
+} from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import moment from 'moment';
 import { CustomerOrderValue } from 'src/models/types';
@@ -7,18 +12,13 @@ import { READABLE_MMYYYY } from 'src/utils/dateUtils';
 
 ChartJS.register(...registerables);
 
-
-
 type OrderAmountProps = {
   values: CustomerOrderValue[];
 };
 
-
 const OrderAmountChart = ({ values }: OrderAmountProps) => {
   const data = {
-    labels: values.map((rev) =>
-      moment(rev.month).format(READABLE_MMYYYY)
-    ),
+    labels: values.map((rev) => moment(rev.month).format(READABLE_MMYYYY)),
     datasets: [
       {
         data: values.map((rev) => rev.totalamount),
@@ -38,6 +38,12 @@ const OrderAmountChart = ({ values }: OrderAmountProps) => {
       y: {
         beginAtZero: true
       }
+      // ticks: {
+      //   // Include a dollar sign in the ticks
+      //   callback: function (value: string) {
+      //     return '$' + value;
+      //   }
+      // }
     },
     plugins: {
       legend: {
@@ -49,9 +55,11 @@ const OrderAmountChart = ({ values }: OrderAmountProps) => {
       tooltip: {
         callbacks: {
           label: (context: TooltipItem<keyof ChartTypeRegistry>) => {
-            const amount = `Total Amount : ${context.formattedValue}`
-            const num = `Number of Orders: ${values[context.dataIndex].numorders}`
-            const concat = amount + '   ' + num
+            const amount = `Total Amount : $ ${context.formattedValue}`;
+            const num = `Number of Orders: ${
+              values[context.dataIndex].numorders
+            }`;
+            const concat = amount + '   ' + num;
             return concat;
           }
         }

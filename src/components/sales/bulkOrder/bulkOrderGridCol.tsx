@@ -82,10 +82,10 @@ export const bulkOrderLineItems: GridColDef[] = [
   { field: 'customerAddress', headerName: 'Delivery Address', flex: 1 },
   {
     field: 'amount',
-    headerName: 'Amount ($)',
+    headerName: 'Amount',
     flex: 1,
     valueGetter: (params) => params.row.amount ?? 0,
-    valueFormatter: (params) => params.value.toFixed(2)
+    valueFormatter: (params) => '$' + params.value.toFixed(2)
   },
   {
     field: 'orderStatus',
