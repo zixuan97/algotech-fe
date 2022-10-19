@@ -4,8 +4,7 @@ import {
   Button,
   IconButton,
   Paper,
-  Tooltip,
-  Typography
+  Tooltip
 } from '@mui/material';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { useNavigate } from 'react-router-dom';

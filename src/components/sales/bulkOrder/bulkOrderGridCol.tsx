@@ -6,6 +6,8 @@ import '../../../styles/common/actionCells.scss';
 import { useNavigate } from 'react-router';
 import { createSearchParams } from 'react-router-dom';
 import _ from 'lodash';
+import PaymentModeCell from 'src/components/customers/PaymentModeCell';
+import BulkOrderStatusCell from 'src/components/customers/BulkOrderStatusCell';
 
 export const BulkOrderCellAction = ({ id }: GridRenderCellParams) => {
   const navigate = useNavigate();
@@ -50,6 +52,7 @@ export const bulkOrderColumns: GridColDef[] = [
     field: 'paymentMode',
     headerName: 'Payment Mode',
     flex: 1,
+    renderCell: PaymentModeCell,
     valueFormatter: (params) =>
       _.startCase(params.value.toString().toLowerCase())
   },
@@ -57,6 +60,7 @@ export const bulkOrderColumns: GridColDef[] = [
     field: 'bulkOrderStatus',
     headerName: 'Order Status',
     flex: 1,
+    renderCell: BulkOrderStatusCell,
     valueFormatter: (params) =>
       _.startCase(params.value.toString().toLowerCase())
   },
