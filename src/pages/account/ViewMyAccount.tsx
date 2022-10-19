@@ -11,7 +11,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Alert,
+  Alert
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ExpandMore } from '@mui/icons-material';
@@ -102,7 +102,7 @@ const ViewMyAccount = () => {
     e.preventDefault();
     setLoading(true);
     asyncFetchCallback(
-      updatePasswordSvc({...user!, password: newPassword }),
+      updatePasswordSvc(user!.email, currentPassword, newPassword),
       () => {
         setLoading(false);
         setAlert({
@@ -322,7 +322,7 @@ const ViewMyAccount = () => {
                                   label='Current Password'
                                   name='currPwd'
                                   value={currentPassword}
-                                  variant="outlined"
+                                  variant='outlined'
                                   onChange={(e: any) => {
                                     setCurrentPassword(e.target.value);
                                     setShowCurrPwdError(true);
@@ -330,16 +330,17 @@ const ViewMyAccount = () => {
                                   InputProps={{
                                     endAdornment: (
                                       <PasswordEndAdornment
-                                      showPassword={showPassword}
-                                      setShowPassword={() =>
-                                        setShowPassword((prev) => !prev)}
+                                        showPassword={showPassword}
+                                        setShowPassword={() =>
+                                          setShowPassword((prev) => !prev)
+                                        }
                                       />
-                                    ),
+                                    )
                                   }}
                                 />
                               </Grid>
                               <Grid item xs={12}>
-                              <TextField
+                                <TextField
                                   required
                                   fullWidth
                                   type={showPassword ? 'text' : 'password'}
@@ -367,7 +368,7 @@ const ViewMyAccount = () => {
                                   label='New Password'
                                   name='newPwd'
                                   value={newPassword}
-                                  variant="outlined"
+                                  variant='outlined'
                                   onChange={(e: any) => {
                                     setNewPassword(e.target.value);
                                     setShowNewPwdError(true);
@@ -375,16 +376,17 @@ const ViewMyAccount = () => {
                                   InputProps={{
                                     endAdornment: (
                                       <PasswordEndAdornment
-                                      showPassword={showPassword}
-                                      setShowPassword={() =>
-                                        setShowPassword((prev) => !prev)}
+                                        showPassword={showPassword}
+                                        setShowPassword={() =>
+                                          setShowPassword((prev) => !prev)
+                                        }
                                       />
-                                    ),
+                                    )
                                   }}
                                 />
                               </Grid>
                               <Grid item xs={12}>
-                              <TextField
+                                <TextField
                                   required
                                   fullWidth
                                   type={showPassword ? 'text' : 'password'}
@@ -409,7 +411,7 @@ const ViewMyAccount = () => {
                                   label='Confirm New Password'
                                   name='cfmNewPwd'
                                   value={confirmPassword}
-                                  variant="outlined"
+                                  variant='outlined'
                                   onChange={(e: any) => {
                                     setConfirmPassword(e.target.value);
                                     setShowCfmPwdError(true);
@@ -417,11 +419,12 @@ const ViewMyAccount = () => {
                                   InputProps={{
                                     endAdornment: (
                                       <PasswordEndAdornment
-                                      showPassword={showPassword}
-                                      setShowPassword={() =>
-                                        setShowPassword((prev) => !prev)}
+                                        showPassword={showPassword}
+                                        setShowPassword={() =>
+                                          setShowPassword((prev) => !prev)
+                                        }
                                       />
-                                    ),
+                                    )
                                   }}
                                 />
                               </Grid>
