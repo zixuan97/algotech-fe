@@ -6,8 +6,10 @@ import { GridRenderCellParams } from '@mui/x-data-grid';
 import { useNavigate } from 'react-router';
 import { createSearchParams } from 'react-router-dom';
 import _ from 'lodash';
-import PaymentChip from './PaymentChip';
+import PaymentModeCell from './PaymentModeCell';
 import moment from 'moment';
+import { BulkOrderStatus, PaymentMode } from 'src/models/types';
+import BulkOrderStatusCell from './BulkOrderStatusCell';
 
 export const BulkOrderCellAction = ({ id }: GridRenderCellParams) => {
   const navigate = useNavigate();
@@ -36,12 +38,47 @@ export const bulkOrderColumns: GridColDef[] = [
   },
   { field: 'paymentMode', 
     headerName: 'Payment Mode', 
-    flex: 1
+    flex: 1,
+    renderCell: PaymentModeCell,
+    // valueFormatter: (params) => _.startCase(params.value.toString().toLowerCase())
     // valueGetter: (params) => params.row.paymentMode,
-    // // valueFormatter: (params) => {<Chip label={_.startCase(params.value.toLowerCase())} />}
     // valueFormatter: (params) => {<PaymentChip bulkOrder={params.value}/>}
+    valueGetter: (params) => {
+      let paymentMode = params.row.paymentMode;
+      let cell;
+
+      if (paymentMode === PaymentMode.CREDIT_CARD) {
+        cell = 'Credit Card';
+      } else if (paymentMode === PaymentMode.BANK_TRANSFER) {
+        cell = 'Bank Transfer';
+      } else {
+        cell = 'Paynow';
+      }
+      return cell;
+    }
   },
-  { field: 'bulkOrderStatus', headerName: 'Order Status', flex: 1 },
+  { field: 'bulkOrderStatus',
+    headerName: 'Order Status',
+    flex: 1,
+    renderCell: BulkOrderStatusCell ,
+    valueGetter: (params) => {
+      let bulkOrderStatus = params.row.bulkOrderStatus;
+      let cell;
+
+      if (bulkOrderStatus === BulkOrderStatus.CANCELLED) {
+        cell = 'Cancelled';
+      } else if (bulkOrderStatus === BulkOrderStatus.CREATED) {
+        cell = 'Created';
+      } else if (bulkOrderStatus === BulkOrderStatus.FULFILLED) {
+        cell = 'Fulfilled';
+      } else if (bulkOrderStatus === BulkOrderStatus.PAYMENT_FAILED) {
+        cell = 'Payment Failed';
+      } else {
+        cell = 'Payment Success';
+      }
+      return cell;
+    }
+  },
   {
     field: 'salesOrders',
     headerName: 'No. Of Orders',

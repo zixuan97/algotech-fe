@@ -24,9 +24,7 @@ import { bulkOrderColumns } from 'src/components/customers/CustomerBulkOrderGrid
 import { getCustomerById } from 'src/services/customerService';
 import CustomerOrderTable from 'src/components/customers/CustomerOrdersTable';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { useNavigate } from 'react-router';
 import moment from 'moment';
-import { Console } from 'console';
 import _, { values } from 'lodash';
 import OrdersChart from 'src/components/customers/OrdersChart';
 import { getExcelFromApi } from 'src/utils/fileUtils';
@@ -42,69 +40,8 @@ let orderStatus = Object.keys(BulkOrderStatus)
   });
 orderStatus.unshift('ALL');
 
-// const columns: GridColDef[] = [
-//   {
-//     field: 'firstName',
-//     headerName: 'First Name',
-//     flex: 1,
-//     valueGetter: (params: GridValueGetterParams) =>
-//       params.row.salesOrder.orderId
-//   },
-//   {
-//     field: 'lastName',
-//     headerName: 'Last Name',
-//     flex: 1
-//   },
-//   {
-//     field: 'email',
-//     headerName: 'Email',
-//     flex: 1.5,
-//     valueGetter: (params: GridValueGetterParams) =>
-//       params.row.salesOrder.customerAddress
-//   },
-//   {
-//     field: 'mobile',
-//     headerName: 'Mobile',
-//     flex: 0.5,
-//     valueGetter: (params: GridValueGetterParams) =>
-//       params.row.salesOrder.customerAddress
-//   },
-//   {
-//     field: 'lastOrderDate',
-//     headerName: 'Last Order Date',
-//     flex: 1,
-//     valueGetter: (params: GridValueGetterParams) => {
-//       let date = params.value;
-//       let valueFormatted = moment(date).format('DD/MM/YYYY');
-//       return valueFormatted;
-//     }
-//   },
-//   {
-//     field: 'avgOrderValue',
-//     headerName: 'Avg. Order Value',
-//     flex: 1,
-//     valueGetter: (params: GridValueGetterParams) =>
-//       params.row.salesOrder.customerAddress
-//   },
-//   {
-//     field: 'totalOrderValue',
-//     headerName: 'Total Order Value',
-//     flex: 1,
-//     valueGetter: (params: GridValueGetterParams) =>
-//       params.row.salesOrder.customerAddress
-//   },
-//   {
-//     field: 'action',
-//     headerName: 'Action',
-//     headerAlign: 'right',
-//     align: 'right',
-//     flex: 1,
-//     renderCell: AllCustomersCellAction
-//   }
-// ];
 
 const CustomerDetails = () => {
-  const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
@@ -116,18 +53,6 @@ const CustomerDetails = () => {
   const [searchField, setSearchField] = React.useState<string>('');
   const [searchBulkOrderField, setSearchBulkOrderField] =
     React.useState<string>('');
-
-  // React.useEffect(() => {
-  //   setFilteredData(
-  //     searchField
-  //       ? customerData.salesOrders.filter((category) =>
-  //           Object.values(category).some((value) =>
-  //             String(value).toLowerCase().includes(searchField.toLowerCase())
-  //           )
-  //         )
-  //       : customerData.salesOrders
-  //   );
-  // }, [searchField]);
 
   const filteredData = useMemo(
     () =>
@@ -297,7 +222,7 @@ const CustomerDetails = () => {
         </Paper>
       </div>
       <br></br>
-      {!! customerData?.salesOrders?.length && (
+      {!!customerData?.salesOrders?.length && (
         <div className='orders-chart'>
           {customerData?.ordersByMonth && (
             <Grid item xs={6}>
@@ -306,7 +231,16 @@ const CustomerDetails = () => {
           )}
         </div>
       )}
-      {!! customerData?.salesOrders?.length && (
+      {!!customerData?.bulkOrders?.length && (
+        <div className='orders-chart'>
+          {customerData?.bulkOrdersByMonth && (
+            <Grid item xs={6}>
+              <OrdersChart values={customerData?.bulkOrdersByMonth} />
+            </Grid>
+          )}
+        </div>
+      )}
+      {!!customerData?.salesOrders?.length && (
         <div className='orders-table'>
           <Stack
             direction='row'
@@ -314,18 +248,8 @@ const CustomerDetails = () => {
             alignItems='center'
             justifyContent='space-between'
           >
-            <h2>Customer's Orders</h2>
+            <h2>Customer Orders</h2>
           </Stack>
-          {/* <div className='search-bar'>
-          <Search />
-          <TextField
-            id='search'
-            label='Search'
-            margin='normal'
-            fullWidth
-            onChange={handleSearchFieldChange}
-          />
-        </div> */}
           <div className='order-grid-toolbar'>
             <div className='search-bar'>
               <FilterList />
@@ -390,7 +314,7 @@ const CustomerDetails = () => {
           </div>
         </div>
       )}
-      {!! customerData?.bulkOrders?.length && (
+      {!!customerData?.bulkOrders?.length && (
         <div className='orders-table'>
           <Stack
             direction='row'
@@ -398,7 +322,7 @@ const CustomerDetails = () => {
             alignItems='center'
             justifyContent='space-between'
           >
-            <h2>Customer's Bulk Orders</h2>
+            <h2>Customer Bulk Orders</h2>
           </Stack>
           <div className='order-grid-toolbar'>
             <div className='search-bar'>
