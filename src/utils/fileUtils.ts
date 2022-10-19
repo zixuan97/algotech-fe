@@ -83,6 +83,7 @@ export const getExcelFromApi = (
 ) => {
   const xhr = new XMLHttpRequest();
   xhr.open(httpMethod, `${apiRoot}${api}`, true);
+  xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8");
   xhr.responseType = 'arraybuffer';
   xhr.onload = function (e) {
     if (this.status === 200) {
