@@ -16,7 +16,7 @@ const BulkOrderStatusCell = ({ row }: GridRenderCellParams) => {
       label='Cancelled'
       style={{ backgroundColor: '#D9D9D9', fontFamily: 'Poppins' }}
     />
-  ) : orderStatus === BulkOrderStatus.FULFILLED? (
+  ) : orderStatus === BulkOrderStatus.FULFILLED ? (
     <Chip
       label='Fulfilled'
       style={{ backgroundColor: '#2E7D32', fontFamily: 'Poppins' }}
@@ -31,8 +31,7 @@ const BulkOrderStatusCell = ({ row }: GridRenderCellParams) => {
       label='Payment Success'
       style={{
         backgroundColor: '#7FD083',
-        fontFamily: 'Poppins',
-        color: 'white'
+        fontFamily: 'Poppins'
       }}
     />
   );

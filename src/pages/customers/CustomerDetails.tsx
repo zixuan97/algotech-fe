@@ -306,7 +306,7 @@ const CustomerDetails = () => {
                 );
               }}
             >
-              Export Customer's Orders
+              Export Customer Orders
             </Button>
           </div>
           <div className='data-grid-container'>
@@ -371,16 +371,17 @@ const CustomerDetails = () => {
               sx={{ mr: 2 }}
               endIcon={<Download />}
               onClick={() => {
-                const reqBody = { customerEmail: customerData?.email };
+                const reqBody = { payeeEmail: customerData?.email };
+                console.log(reqBody);
                 getExcelFromApi(
                   'POST',
-                  '/customer/excel',
-                  `CustomerOrderData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`,
+                  '/bulkOrder/excel',
+                  `CustomerBulkOrderData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`,
                   reqBody
                 );
               }}
             >
-              Export Customer's Orders
+              Export Customer Bulk Orders
             </Button>
           </div>
           {filteredBulkOrderData && (
