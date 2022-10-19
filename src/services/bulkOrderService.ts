@@ -1,4 +1,4 @@
-import { BulkOrder } from 'src/models/types';
+import { BulkOrder, BulkOrderStatus } from 'src/models/types';
 import axios from 'axios';
 import apiRoot from './util/apiRoot';
 import { MomentRange } from 'src/utils/dateUtils';
@@ -21,4 +21,8 @@ export const getBulkOrdersByRangeSvc = async (
   return axios
     .post(`${apiRoot}/sales/timefilter`, timeFilter)
     .then((res) => res.data);
+};
+
+export const bulkOrderMassUpdate = async (id: number, bulkOrderStatus: BulkOrderStatus): Promise<any> => {
+  return axios.put(`${apiRoot}/bulkOrder/salesOrderStatus`, {id, bulkOrderStatus}).then((res) => res.data);
 };
