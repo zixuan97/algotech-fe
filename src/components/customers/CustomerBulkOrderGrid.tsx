@@ -36,12 +36,17 @@ export const bulkOrderColumns: GridColDef[] = [
   },
   { field: 'paymentMode', 
     headerName: 'Payment Mode', 
-    flex: 1
+    flex: 1,
+    valueFormatter: (params) => _.startCase(params.value.toString().toLowerCase())
     // valueGetter: (params) => params.row.paymentMode,
-    // // valueFormatter: (params) => {<Chip label={_.startCase(params.value.toLowerCase())} />}
     // valueFormatter: (params) => {<PaymentChip bulkOrder={params.value}/>}
   },
-  { field: 'bulkOrderStatus', headerName: 'Order Status', flex: 1 },
+  { field: 'bulkOrderStatus',
+    headerName: 'Order Status',
+    flex: 1,
+    valueFormatter: (params) =>
+    _.startCase(params.value.toString().toLowerCase())
+  },
   {
     field: 'salesOrders',
     headerName: 'No. Of Orders',
