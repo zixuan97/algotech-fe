@@ -85,8 +85,8 @@ const ViewScheduledNewsletter = () => {
   }, []);
 
   React.useEffect(() => {
+    setLoading(true);
     if (id && allCustomers) {
-      setLoading(true);
       asyncFetchCallback(
         getScheduledNewsletterById(id),
         (res) => {
