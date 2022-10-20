@@ -74,6 +74,12 @@ export enum BulkOrderStatus {
   CANCELLED = 'CANCELLED'
 }
 
+export enum JobStatus {
+  SENT = 'SENT',
+  SCHEDULED = 'SCHEDULED',
+  CANCELLED = 'CANCELLED'
+}
+
 export interface User {
   id: number;
   firstName: string;
@@ -295,7 +301,6 @@ export interface CustomerOrderValue {
   month: Date;
   totalamount: number;
   numorders: number;
-
 }
 
 export interface BulkOrder {
@@ -325,5 +330,8 @@ export interface ScheduledNewsletter {
   id: number;
   newsletterId: number;
   customerEmails: String[];
-  sendDate: Date;
+  sentDate: Date;
+  jobStatus: JobStatus;
+  newsletter: NewsletterTemplate;
+  jobId: String;
 }

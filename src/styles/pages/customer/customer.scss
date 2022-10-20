@@ -80,6 +80,7 @@
   justify-content: center;
   flex-direction: column;
   padding: 2rem;
+  height: 100%;
 }
 
 .scheduled-newsletters-toolbar {
@@ -315,11 +316,31 @@
   flex-direction: column;
 }
 
+.schedule-newsletter-top-section {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 0rem;
+}
+
 .schedule-newsletter-heading {
   display: flex;
   flex-direction: row;
   padding-top: 2rem;
   padding-left: 2rem;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.schedule-newsletter-button-container {
+  padding-top: 3rem;
+  padding-bottom: 2rem;
+  display: flex;
+  justify-content: flex-end;
+  width: max-content;
+  gap: 10px 10px;
+  margin: 2% 2% 2% 2%;
+  width: 70%;
 }
 
 .schedule-newsletter-grid {

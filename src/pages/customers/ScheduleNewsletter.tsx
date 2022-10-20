@@ -22,7 +22,8 @@ import { DateTimePicker } from '@mui/x-date-pickers';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   filterAndGetCustomers,
-  getAllNewsletterTemplates
+  getAllNewsletterTemplates,
+  scheduleNewsletter
 } from 'src/services/customerService';
 import PreviewTemplateModal from 'src/components/customers/PreviewTemplateModal';
 import {
@@ -32,6 +33,7 @@ import {
   GridValueGetterParams
 } from '@mui/x-data-grid';
 import FilterCustomersMenu from 'src/components/customers/FilterCustomersMenu';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 export type NewScheduledNewsletter = Partial<ScheduledNewsletter> & {};
 
@@ -80,14 +82,16 @@ const ScheduleNewsletter = () => {
     NewsletterTemplate[]
   >([]);
   const [newScheduledNewsletter, setNewScheduledNewsletter] =
-    React.useState<NewScheduledNewsletter>();
+    React.useState<NewScheduledNewsletter>({});
   const [selectedNewsletterTemplate, setSelectedNewsletterTemplate] =
     React.useState<NewsletterTemplate>();
   const [selectedDate, setSelectedDate] = React.useState<Moment | null>(
     moment()
   );
   const [customers, setCustomers] = React.useState<Customer[]>([]);
+  const [customerEmails, setCustomerEmails] = React.useState<string[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [openPreviewModal, setOpenPreviewModal] =
     React.useState<boolean>(false);
 
@@ -120,6 +124,7 @@ const ScheduleNewsletter = () => {
   ) => {
     await setNewScheduledNewsletter((prev) => {
       if (prev) {
+        console.log(e.target.value);
         return { ...prev, [e.target.name]: e.target.value };
       } else {
         return prev;
@@ -137,22 +142,84 @@ const ScheduleNewsletter = () => {
     const selectedRowsData = ids.map((id) =>
       customers.find((row) => row.id === id)
     );
-    console.log(selectedRowsData);
+
+    selectedRowsData.forEach((cust) => customerEmails.push(cust!.email));
+
+    const uniqueCustomerEmails = new Set(customerEmails);
+    setCustomerEmails([...uniqueCustomerEmails]);
   };
 
   const getFilteredCustomers = (customers: Customer[]) => {
     setCustomers(customers);
   };
 
+  const handleScheduleNewsletter = async () => {
+    if (newScheduledNewsletter?.newsletterId === undefined) {
+      setAlert({
+        severity: 'warning',
+        message: 'Please select a newsletter template!'
+      });
+      return;
+    }
+
+    if (customerEmails.length === 0) {
+      setAlert({
+        severity: 'warning',
+        message: 'Please select at least 1 customer!'
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    let reqBody = {
+      newsletterId: newScheduledNewsletter?.newsletterId,
+      customerEmails: customerEmails,
+      sentDate: selectedDate?.toISOString()
+    };
+
+    await asyncFetchCallback(
+      scheduleNewsletter(reqBody),
+      (res) => {
+        setLoading(false);
+        setAlert({
+          severity: 'success',
+          message: 'Newsletter successfully scheduled!'
+        });
+        setTimeout(() => navigate('/customer/allScheduledNewsletters'), 3000);
+      },
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message:
+            'Newsletter was not scheduled successfully, please try again!'
+        });
+      }
+    );
+  };
+
   return (
     <div className='schedule-newsletter'>
-      <div className='schedule-newsletter-heading'>
-        <Tooltip title='Return to Previous Page' enterDelay={300}>
-          <IconButton size='large' onClick={() => navigate(-1)}>
-            <ChevronLeft />
-          </IconButton>
-        </Tooltip>
-        <h1>Schedule Newsletter</h1>
+      <div className='schedule-newsletter-top-section'>
+        <div className='schedule-newsletter-heading'>
+          <Tooltip title='Return to Previous Page' enterDelay={300}>
+            <IconButton size='large' onClick={() => navigate(-1)}>
+              <ChevronLeft />
+            </IconButton>
+          </Tooltip>
+          <h1>Schedule Newsletter</h1>
+        </div>
+        <div className='schedule-newsletter-button-container'>
+          <Button
+            variant='contained'
+            size='medium'
+            sx={{ height: 'fit-content' }}
+            onClick={handleScheduleNewsletter}
+          >
+            Schedule
+          </Button>
+        </div>
       </div>
       <Backdrop
         sx={{
@@ -163,6 +230,15 @@ const ScheduleNewsletter = () => {
       >
         <CircularProgress color='inherit' />
       </Backdrop>
+      {alert && (
+        <div className='newsletter-alert'>
+          <TimeoutAlert
+            alert={alert}
+            timeout={6000}
+            clearAlert={() => setAlert(null)}
+          />
+        </div>
+      )}
       <Grid container spacing={2} className='schedule-newsletter-grid'>
         <Grid item xs={10} className='schedule-newsletter-grid-item'>
           <h3 className='schedule-newsletter-grid-label-text'>
@@ -213,7 +289,9 @@ const ScheduleNewsletter = () => {
             value={selectedDate}
             minDate={moment()}
             onChange={(date) => setSelectedDate(moment(date))}
-            renderInput={(params) => <TextField required {...params} />}
+            renderInput={(params) => (
+              <TextField style={{ width: 250 }} required {...params} />
+            )}
           />
         </Grid>
       </Grid>
