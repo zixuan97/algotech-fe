@@ -5,7 +5,10 @@ import { toast } from 'react-toastify';
 import OrderToast from 'src/components/common/OrderToast';
 import authContext from 'src/context/auth/authContext';
 import { SalesOrder } from 'src/models/types';
-import { subscribeToShopify } from 'src/services/webhook/pusher';
+import {
+  subscribeToShopify,
+  unsubscribeToPusher
+} from 'src/services/webhook/pusher';
 import Appbar from '../components/common/Appbar';
 import Sidebar from '../components/common/Sidebar';
 
@@ -17,33 +20,40 @@ type HomeProps = {
 };
 
 const Home = ({ children }: HomeProps) => {
-  const { user } = React.useContext(authContext);
+  const { user, isAuthenticated } = React.useContext(authContext);
   const disabled = !user?.isVerified;
   const navigate = useNavigate();
 
-  const shopifyCallback = React.useCallback((salesOrder: SalesOrder) => {
-    toast(
-      <OrderToast
-        salesOrder={salesOrder}
-        navigate={(orderId: string) =>
-          navigate({
-            pathname: 'sales/salesOrderDetails',
-            search: createSearchParams({
-              orderId: orderId
-            }).toString()
-          })
+  const shopifyCallback = React.useCallback(
+    (salesOrder: SalesOrder) => {
+      toast(
+        <OrderToast
+          salesOrder={salesOrder}
+          navigate={(orderId: string) =>
+            navigate({
+              pathname: 'sales/salesOrderDetails',
+              search: createSearchParams({
+                orderId: orderId
+              }).toString()
+            })
+          }
+        />,
+        {
+          toastId: salesOrder.orderId
         }
-      />,
-      {
-        toastId: salesOrder.orderId
-      }
-    );
-  }, []);
+      );
+    },
+    [navigate]
+  );
 
   React.useEffect(() => {
-    subscribeToShopify(shopifyCallback);
+    if (isAuthenticated) {
+      subscribeToShopify(shopifyCallback);
+    } else {
+      unsubscribeToPusher();
+    }
     // eslint-disable-next-line
-  }, []);
+  }, [isAuthenticated]);
 
   return (
     <div style={{ width: '100%' }}>
