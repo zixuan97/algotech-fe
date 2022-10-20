@@ -2,7 +2,13 @@
  * Used to make all API calls to customer-related services
  */
 import axios from 'axios';
-import { Customer, NewsletterTemplate } from 'src/models/types';
+import {
+  Customer,
+  JobStatus,
+  NewsletterTemplate,
+  ScheduledNewsletter
+} from 'src/models/types';
+import { MomentRange } from 'src/utils/dateUtils';
 import apiRoot from './util/apiRoot';
 
 export const getAllCustomers = async (): Promise<Customer[]> => {
@@ -49,4 +55,36 @@ export const filterAndGetCustomers = async (
 
 export const scheduleNewsletter = async (body: object): Promise<void> => {
   return axios.post(`${apiRoot}/newsletter/schedule`, body);
+};
+
+export const getScheduledNewslettersByDateRange = (
+  dateRange: MomentRange,
+  jobStatus: JobStatus
+): Promise<ScheduledNewsletter[]> => {
+  const reqBody = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format(),
+    jobStatus: jobStatus
+  };
+  return axios
+    .post(`${apiRoot}/newsletter/schedule/jobStatus`, reqBody)
+    .then((res) => res.data);
+};
+
+export const getScheduledNewsletterById = async (
+  id: string | number
+): Promise<ScheduledNewsletter> => {
+  return axios
+    .get(`${apiRoot}/newsletter/schedule/${id}`)
+    .then((res) => res.data);
+};
+
+export const editScheduledNewsletter = async (body: object): Promise<void> => {
+  return axios.put(`${apiRoot}/newsletter/schedule`, body);
+};
+
+export const cancelScheduledNewsletter = async (
+  body: object
+): Promise<void> => {
+  return axios.put(`${apiRoot}/newsletter/schedule/cancel`, body);
 };

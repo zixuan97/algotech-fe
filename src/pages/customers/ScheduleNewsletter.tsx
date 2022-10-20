@@ -289,7 +289,9 @@ const ScheduleNewsletter = () => {
             value={selectedDate}
             minDate={moment()}
             onChange={(date) => setSelectedDate(moment(date))}
-            renderInput={(params) => <TextField required {...params} />}
+            renderInput={(params) => (
+              <TextField style={{ width: 250 }} required {...params} />
+            )}
           />
         </Grid>
       </Grid>
