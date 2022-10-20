@@ -1,25 +1,30 @@
 import { ChevronLeft } from '@mui/icons-material';
-import {
-  Box,
-  Button,
-  IconButton,
-  Paper,
-  Tooltip,
-  Typography
-} from '@mui/material';
+import { Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import { BulkOrder, BulkOrderStatus, SalesOrder } from 'src/models/types';
+import {
+  BulkOrder,
+  BulkOrderStatus,
+  OrderStatus,
+  SalesOrder
+} from 'src/models/types';
 import CustomerInfoGrid from 'src/components/sales/bulkOrder/CustomerInfoGrid';
 import BulkOrderSummary from 'src/components/sales/bulkOrder/BulkOrderSummary';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getBulkOrderByIdSvc } from 'src/services/bulkOrderService';
+import {
+  bulkOrderMassUpdate,
+  getBulkOrderByIdSvc
+} from 'src/services/bulkOrderService';
 import { bulkOrderLineItems } from 'src/components/sales/bulkOrder/bulkOrderGridCol';
 import { DataGrid } from '@mui/x-data-grid';
-import BulkOrderStepper, {
-  BulkOrderSteps
-} from 'src/components/sales/bulkOrder/BulkOrderStepper';
+import BulkOrderStepper from 'src/components/sales/bulkOrder/BulkOrderStepper';
+import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import BulkOrderActionButton from 'src/components/sales/bulkOrder/BulkOrderActionButton';
+
+const title = 'Bulk prepare order items';
+const body =
+  'Are you sure you want to bulk prepare the order items in this bulk order? Once updated, there is no reversing the state.';
 
 const BulkOrderDetails = () => {
   const navigate = useNavigate();
@@ -29,7 +34,8 @@ const BulkOrderDetails = () => {
   const [salesOrders, setSalesOrders] = useState<SalesOrder[]>([]);
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [activeStep, setActiveStep] = useState<number>(0);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [canBulkPrep, setCanBulkPrep] = useState<boolean>(false);
 
   useEffect(() => {
     setLoading(true);
@@ -38,13 +44,24 @@ const BulkOrderDetails = () => {
         if (bo) {
           setBulkOrder(bo);
           setSalesOrders(bo.salesOrders);
+          if (
+            bo.salesOrders.some(
+              (order) => order.orderStatus === OrderStatus.PAID
+            ) &&
+            bo.bulkOrderStatus === BulkOrderStatus.PAYMENT_SUCCESS
+          ) {
+            setCanBulkPrep(true);
+          }
+
+          if (
+            !(
+              bo.bulkOrderStatus === BulkOrderStatus.PAYMENT_SUCCESS ||
+              bo.bulkOrderStatus === BulkOrderStatus.FULFILLED
+            )
+          ) {
+            bulkOrderLineItems.pop();
+          }
           setLoading(false);
-            setActiveStep(
-              BulkOrderSteps.findIndex(
-                (step) => step.currentState === bo.bulkOrderStatus
-              )
-            );
-          
         } else {
           setAlert({
             severity: 'error',
@@ -57,8 +74,46 @@ const BulkOrderDetails = () => {
     }
   }, [id, navigate]);
 
+  const bulkOrderPrep = () => {
+    setLoading(true);
+    asyncFetchCallback(
+      bulkOrderMassUpdate(bulkOrder?.id!, bulkOrder?.bulkOrderStatus!),
+      () => {
+        setBulkOrder({
+          ...bulkOrder!,
+          salesOrders: salesOrders.map((so) => {
+            return { ...so, orderStatus: OrderStatus.PREPARED };
+          })
+        });
+        setCanBulkPrep(false);
+        setAlert({
+          severity: 'success',
+          message: 'The orders in this bulk order has been updated.'
+        });
+      },
+      () => {
+        setAlert({
+          severity: 'error',
+          message:
+            'Failed to update the orders in this bulk order. Contact the admin.'
+        });
+      }
+    );
+    setLoading(false);
+    setModalOpen(false);
+  };
+
   return (
     <>
+      <ConfirmationModal
+        open={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+        }}
+        onConfirm={() => bulkOrderPrep()}
+        title={title}
+        body={body}
+      />
       <div className='top-carrot'>
         <Tooltip title='Return to previous page' enterDelay={300}>
           <IconButton size='large' onClick={() => navigate(-1)}>
@@ -75,31 +130,15 @@ const BulkOrderDetails = () => {
             <BulkOrderStepper bulkOrderStatus={bulkOrder?.bulkOrderStatus!} />
             <Paper elevation={3} className='sales-action-card '>
               {bulkOrder && <CustomerInfoGrid bulkOrder={bulkOrder!} />}
-              <div className='action-box'>
-                <Typography sx={{ fontSize: 'inherit' }}>
-                  Next Action:
-                </Typography>
-                <Tooltip
-                  title={BulkOrderSteps[activeStep].tooltip}
-                  enterDelay={500}
-                >
-                  <span>
-                    <Button
-                      variant='contained'
-                      size='medium'
-                      disabled={
-                        bulkOrder?.bulkOrderStatus ===
-                          BulkOrderStatus.CANCELLED ||
-                        bulkOrder?.bulkOrderStatus ===
-                          BulkOrderStatus.PAYMENT_FAILED ||
-                        bulkOrder?.bulkOrderStatus === BulkOrderStatus.FULFILLED
-                      }
-                    >
-                      {BulkOrderSteps[activeStep].nextAction}
-                    </Button>
-                  </span>
-                </Tooltip>
-              </div>
+              {bulkOrder && (
+                <BulkOrderActionButton
+                  bulkOrder={bulkOrder}
+                  canBulkPrep={canBulkPrep}
+                  setBulkOrder={setBulkOrder}
+                  setCanBulkPrep={setCanBulkPrep}
+                  setAlert={setAlert}
+                />
+              )}
             </Paper>
           </div>
 
@@ -107,13 +146,26 @@ const BulkOrderDetails = () => {
             <div className='sales-content-body'>
               <div className='grid-toolbar'>
                 <h3>Order Details</h3>
+                {canBulkPrep && (
+                  <div className='button-group'>
+                    <Button
+                      variant='contained'
+                      size='medium'
+                      onClick={() => {
+                        setModalOpen(true);
+                      }}
+                    >
+                      Bulk Prepare
+                    </Button>
+                  </div>
+                )}
               </div>
               {bulkOrder && (
                 <>
                   <DataGrid
                     style={{ wordWrap: 'break-word' }}
                     columns={bulkOrderLineItems}
-                    rows={salesOrders ?? []}
+                    rows={bulkOrder.salesOrders}
                     autoHeight
                     pageSize={5}
                     loading={loading}

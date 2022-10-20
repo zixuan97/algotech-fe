@@ -1,4 +1,4 @@
-import { Step, StepLabel, Stepper } from '@mui/material';
+import { Step, StepLabel, Stepper, Tooltip } from '@mui/material';
 import { useEffect, useState, useMemo } from 'react';
 import { BulkOrderStatus } from 'src/models/types';
 import {
@@ -18,37 +18,44 @@ export const BulkOrderSteps = [
     label: 'Order Placed',
     icon: <ReceiptLongRounded sx={{ fontSize: 35 }} />,
     nextAction: 'Confirm Payment',
-    tooltip: 'Confirm the payment for this order'
+    altAction: 'Cancel Order',
+    tooltip: 'Once payment has been confirmed, you can begin preparing the order.'
   },
   {
     currentState: BulkOrderStatus.CANCELLED,
     label: 'Order Cancelled',
     icon: <DoDisturbOffRounded sx={{ fontSize: 35 }} />,
     nextAction: 'No Further Actions',
-    tooltip: 'Order has been cancelled, no further actions from your end'
+    altAction: 'No Further Actions',
+    tooltip: 'Order has been cancelled, no further actions from your end.'
   },
   {
     currentState: BulkOrderStatus.PAYMENT_FAILED,
     label: 'Payment Failed',
     icon: <AccountBalanceWalletRounded sx={{ fontSize: 35 }} />,
     nextAction: 'Contact Admin',
-    tooltip: 'Kindly seek admin assitance to retry payment'
+    altAction: 'No Further Actions',
+    tooltip: 'Customers will retry payment, otherwise, there is no actions from your end needed.'
   },
   {
     currentState: BulkOrderStatus.PAYMENT_SUCCESS,
     label: 'Order Paid',
     icon: <AccountBalanceWalletRounded sx={{ fontSize: 35 }} />,
     nextAction: 'Bulk Prepare',
-    tooltip: 'Bulk prepare the orders, otherwise individually prepare each order'
+    altAction: 'Complete Order',
+    tooltip:
+      'Bulk prepare the orders, otherwise individually prepare each order.'
   },
   {
     currentState: BulkOrderStatus.FULFILLED,
     label: 'Order Fulfilled',
     icon: <PlaylistAddCheckCircleRounded sx={{ fontSize: 35 }} />,
     nextAction: 'Back To All Bulk Order',
-    tooltip: 'Order completed, no further actions from your end'
-  },
+    altAction: 'No Further Actions',
+    tooltip: 'Order completed, no further actions from your end.'
+  }
 ];
+
 
 const BulkOrderStepper = ({ bulkOrderStatus }: props) => {
   const [activeStep, setActiveStep] = useState<number>(0);
@@ -94,7 +101,9 @@ const BulkOrderStepper = ({ bulkOrderStatus }: props) => {
     <Stepper activeStep={activeStep} alternativeLabel className='sales-stepper'>
       {statusStepper.map((step) => (
         <Step key={step.label}>
-          <StepLabel icon={step.icon}>{step.label}</StepLabel>
+          <Tooltip title={step.tooltip} enterDelay={300}>
+            <StepLabel icon={step.icon}>{step.label}</StepLabel>
+          </Tooltip>
         </Step>
       ))}
     </Stepper>

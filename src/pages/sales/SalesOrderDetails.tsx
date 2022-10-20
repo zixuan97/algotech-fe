@@ -233,7 +233,8 @@ const SalesOrderDetails = () => {
     } else if (
       newStatus === OrderStatus.READY_FOR_DELIVERY &&
       (salesOrder?.platformType === PlatformType.SHOPIFY ||
-        salesOrder?.platformType === PlatformType.OTHERS)
+        salesOrder?.platformType === PlatformType.OTHERS ||
+        salesOrder?.platformType === PlatformType.B2B)
     ) {
       salesOrder.id &&
         navigate({
@@ -245,7 +246,8 @@ const SalesOrderDetails = () => {
     } else if (
       activeStep > 3 &&
       (salesOrder?.platformType === PlatformType.SHOPIFY ||
-        salesOrder?.platformType === PlatformType.OTHERS)
+        salesOrder?.platformType === PlatformType.OTHERS ||
+        salesOrder?.platformType === PlatformType.B2B)
     ) {
       salesOrder.id &&
         asyncFetchCallback(getDeliveryTypeSvc(salesOrder.id), (res) => {
