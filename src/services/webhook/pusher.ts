@@ -16,6 +16,10 @@ const subscribeToPusher = <T>(event: string, callback: (value: T) => void) => {
   );
 };
 
+export const unsubscribeToPusher = () => {
+  pusher.unsubscribe('algotech-pusher');
+};
+
 export const subscribeToShopify = (
   callback: (salesOrder: SalesOrder) => void
 ) => subscribeToPusher<SalesOrder>('shopify-webhook', callback);
