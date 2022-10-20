@@ -59,7 +59,9 @@ const BulkOrderDetails = () => {
               bo.bulkOrderStatus === BulkOrderStatus.FULFILLED
             )
           ) {
-            bulkOrderLineItems.pop();
+            if (bulkOrderLineItems.length === 6) {
+              bulkOrderLineItems.pop();
+            }
           }
           setLoading(false);
         } else {
@@ -77,7 +79,7 @@ const BulkOrderDetails = () => {
   const bulkOrderPrep = () => {
     setLoading(true);
     asyncFetchCallback(
-      bulkOrderMassUpdate(bulkOrder?.id!, bulkOrder?.bulkOrderStatus!),
+      bulkOrderMassUpdate(bulkOrder?.id!, bulkOrder?.bulkOrderStatus!, OrderStatus.PREPARED),
       () => {
         setBulkOrder({
           ...bulkOrder!,
@@ -127,7 +129,7 @@ const BulkOrderDetails = () => {
           <div className='sales-header-content'>
             <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
             <h1>Bulk Order Details</h1>
-            <BulkOrderStepper bulkOrderStatus={bulkOrder?.bulkOrderStatus!} />
+            {bulkOrder && <BulkOrderStepper bulkOrderStatus={bulkOrder.bulkOrderStatus} />}
             <Paper elevation={3} className='sales-action-card '>
               {bulkOrder && <CustomerInfoGrid bulkOrder={bulkOrder!} />}
               {bulkOrder && (

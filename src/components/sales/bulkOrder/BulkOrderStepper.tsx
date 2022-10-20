@@ -42,7 +42,7 @@ export const BulkOrderSteps = [
     label: 'Order Paid',
     icon: <AccountBalanceWalletRounded sx={{ fontSize: 35 }} />,
     nextAction: 'Bulk Prepare',
-    altAction: 'Complete Order',
+    altAction: 'Fulfil Order',
     tooltip:
       'Bulk prepare the orders, otherwise individually prepare each order.'
   },
@@ -59,7 +59,7 @@ export const BulkOrderSteps = [
 
 const BulkOrderStepper = ({ bulkOrderStatus }: props) => {
   const [activeStep, setActiveStep] = useState<number>(0);
-
+  
   const statusStepper = useMemo(
     () =>
       //Orders always come in paid

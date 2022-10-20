@@ -19,7 +19,7 @@ import { createUserSvc } from 'src/services/accountService';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
 
-const roles = Object.keys(UserRole).filter((v) => isNaN(Number(v)));
+const roles = Object.keys(UserRole).filter((v) => isNaN(Number(v)) && (!['CORPORATE', 'CUSTOMER', 'DISTRIBUTOR'].includes(v)));
 
 export type NewUserType = Partial<User>;
 

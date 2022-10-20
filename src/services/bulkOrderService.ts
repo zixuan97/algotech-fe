@@ -1,4 +1,4 @@
-import { BulkOrder, BulkOrderStatus } from 'src/models/types';
+import { BulkOrder, BulkOrderStatus, OrderStatus } from 'src/models/types';
 import axios from 'axios';
 import apiRoot from './util/apiRoot';
 import { MomentRange } from 'src/utils/dateUtils';
@@ -23,10 +23,14 @@ export const getBulkOrdersByRangeSvc = async (
     .then((res) => res.data);
 };
 
-export const bulkOrderMassUpdate = async (id: number, bulkOrderStatus: BulkOrderStatus): Promise<any> => {
-  return axios.put(`${apiRoot}/bulkOrder/salesOrderStatus`, {id, bulkOrderStatus}).then((res) => res.data);
+export const bulkOrderMassUpdate = async (id: number, bulkOrderStatus: BulkOrderStatus, orderStatus: OrderStatus): Promise<any> => {
+  return axios.put(`${apiRoot}/bulkOrder/salesOrderStatus`, {id, bulkOrderStatus, orderStatus}).then((res) => res.data);
 };
 
 export const updateBulkOrderStatusSvc = async (id: number, bulkOrderStatus: BulkOrderStatus): Promise<any> => {
   return axios.put(`${apiRoot}/bulkOrder/status`, {id, bulkOrderStatus}).then((res) => res.data);
+};
+
+export const updateBulkOrderSvc = async (bulkOrder: BulkOrder): Promise<BulkOrder> => {
+  return axios.put(`${apiRoot}/bulkOrder`, bulkOrder).then((res) => res.data);
 };

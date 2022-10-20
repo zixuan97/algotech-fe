@@ -3,8 +3,17 @@ import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import { AlertType } from 'src/components/common/TimeoutAlert';
-import { BulkOrder, BulkOrderStatus, OrderStatus } from 'src/models/types';
-import { updateBulkOrderStatusSvc } from 'src/services/bulkOrderService';
+import {
+  BulkOrder,
+  BulkOrderStatus,
+  OrderStatus,
+  SalesOrder
+} from 'src/models/types';
+import {
+  bulkOrderMassUpdate,
+  updateBulkOrderStatusSvc,
+  updateBulkOrderSvc
+} from 'src/services/bulkOrderService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { BulkOrderSteps } from './BulkOrderStepper';
 
@@ -55,30 +64,65 @@ const BulkOrderActionButton = ({
     }
   }, [bulkOrder.bulkOrderStatus, bulkOrder.salesOrders]);
 
-  const handleNextStep = () => {
+  const handleButtonPress = () => {
+    if (bulkOrder.bulkOrderStatus === BulkOrderStatus.CREATED) {
+      cancelBulkOrder();
+    } else if (bulkOrder.bulkOrderStatus === BulkOrderStatus.PAYMENT_SUCCESS) {
+      fulfilBulkOrder();
+    }
+  };
+
+  const cancelBulkOrder = () => {
     asyncFetchCallback(
-        updateBulkOrderStatusSvc(bulkOrder?.id!, (bulkOrder.bulkOrderStatus === BulkOrderStatus.CREATED ? BulkOrderStatus.CANCELLED : BulkOrderStatus.FULFILLED)),
-        () => {
-          setBulkOrder({
-            ...bulkOrder!,
-            bulkOrderStatus: (bulkOrder.bulkOrderStatus === BulkOrderStatus.CREATED ? BulkOrderStatus.CANCELLED : BulkOrderStatus.FULFILLED)
-          });
-          setCanBulkPrep(false);
-          setAlert({
-            severity: 'success',
-            message: 'The orders in this bulk order has been updated.'
-          });
-        },
-        () => {
-          setAlert({
-            severity: 'error',
-            message:
-              'Failed to update the orders in this bulk order. Contact the admin.'
-          });
-        }
-      );
+      bulkOrderMassUpdate(bulkOrder.id, BulkOrderStatus.CANCELLED, OrderStatus.CANCELLED),
+      () => {
+        setBulkOrder({
+          ...bulkOrder,
+          bulkOrderStatus: BulkOrderStatus.CANCELLED,
+          salesOrders: bulkOrder.salesOrders.map((so) => {
+            return { ...so, orderStatus: OrderStatus.CANCELLED };
+          })
+        });
+        setCanBulkPrep(false);
+        setAlert({
+          severity: 'success',
+          message: 'This bulk order has been cancelled.'
+        });
+      },
+      () => {
+        setAlert({
+          severity: 'error',
+          message: 'Failed to cancel this bulk order. Contact the admin.'
+        });
+      }
+    );
     setModalOpen(false);
   };
+
+  const fulfilBulkOrder = () => {
+    asyncFetchCallback(
+      updateBulkOrderStatusSvc(bulkOrder?.id!, BulkOrderStatus.FULFILLED),
+      () => {
+        setBulkOrder({
+          ...bulkOrder!,
+          bulkOrderStatus: BulkOrderStatus.FULFILLED
+        });
+        setCanBulkPrep(false);
+        setAlert({
+          severity: 'success',
+          message: 'The orders in this bulk order has been updated.'
+        });
+      },
+      () => {
+        setAlert({
+          severity: 'error',
+          message:
+            'Failed to update the orders in this bulk order. Contact the admin.'
+        });
+      }
+    );
+    setModalOpen(false);
+  }
 
   return (
     <>
@@ -87,7 +131,7 @@ const BulkOrderActionButton = ({
         onClose={() => {
           setModalOpen(false);
         }}
-        onConfirm={() => handleNextStep()}
+        onConfirm={() => handleButtonPress()}
         title={title}
         body={body}
       />
