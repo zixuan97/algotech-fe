@@ -15,7 +15,7 @@ import {
   CircularProgress
 } from '@mui/material';
 import { Search, FilterList } from '@mui/icons-material';
-import { PlatformType } from 'src/models/types';
+import { OrderStatus, PlatformType } from 'src/models/types';
 import SalesOrderTable from 'src/components/sales/order/SalesOrderTable';
 import DateRangePicker from 'src/components/common/DateRangePicker';
 import { MomentRange } from 'src/utils/dateUtils';
@@ -28,10 +28,14 @@ import _ from 'lodash';
 let platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
 platforms.unshift('ALL');
 
+let status = Object.keys(OrderStatus).filter((v) => isNaN(Number(v)));
+status.unshift('ALL');
+
 const AllSalesOrders = () => {
   const [salesOrders, setSalesOrders] = useState<SalesOrder[]>([]);
   const [searchField, setSearchField] = useState<string>('');
   const [filterPlatform, setFilterPlatform] = useState<string>('ALL');
+  const [filterStatus, setFilterStatus] = useState<string>('ALL');
   const [loading, setLoading] = useState<boolean>(true);
   const [dateRange, setDateRange] = React.useState<MomentRange>([
     moment().startOf('day').subtract(10, 'day'),
@@ -48,10 +52,10 @@ const AllSalesOrders = () => {
 
   const filteredData = useMemo(
     () =>
-      filterPlatform || searchField
+      filterPlatform || searchField || filterStatus
         ? salesOrders.filter((saleOrder) => {
             const searchFieldLower = searchField.toLowerCase().trim();
-            if (filterPlatform === 'ALL') {
+            if (filterPlatform === 'ALL' && filterStatus === 'ALL') {
               return (
                 saleOrder.customerAddress
                   .toLowerCase()
@@ -66,7 +70,16 @@ const AllSalesOrders = () => {
               );
             } else {
               return (
-                saleOrder.platformType === filterPlatform &&
+                ((filterPlatform === 'ALL' &&
+                  filterStatus !== 'ALL' &&
+                  saleOrder.orderStatus === filterStatus) ||
+                  (filterPlatform !== 'ALL' &&
+                    filterStatus === 'ALL' &&
+                    saleOrder.platformType === filterPlatform) ||
+                  (filterPlatform !== 'ALL' &&
+                    filterStatus !== 'ALL' &&
+                    saleOrder.platformType === filterPlatform &&
+                    saleOrder.orderStatus === filterStatus)) &&
                 (saleOrder.customerAddress
                   .toLowerCase()
                   .includes(searchFieldLower) ||
@@ -81,7 +94,7 @@ const AllSalesOrders = () => {
             }
           })
         : salesOrders,
-    [salesOrders, filterPlatform, searchField]
+    [filterPlatform, searchField, filterStatus, salesOrders]
   );
 
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -89,6 +102,9 @@ const AllSalesOrders = () => {
   };
   const handleFilterChange = (event: SelectChangeEvent) => {
     setFilterPlatform(event.target.value);
+  };
+  const handleStatusChange = (event: SelectChangeEvent) => {
+    setFilterStatus(event.target.value);
   };
 
   return (
@@ -113,6 +129,23 @@ const AllSalesOrders = () => {
       <div className='order-grid-toolbar'>
         <div className='search-bar'>
           <FilterList />
+          <FormControl style={{ width: '50%' }}>
+            <InputLabel id='search-platform'>Status</InputLabel>
+            <Select
+              id='search-status'
+              value={filterStatus}
+              label='Status'
+              placeholder='Status'
+              onChange={handleStatusChange}
+            >
+              {status.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           <FormControl style={{ width: '50%' }}>
             <InputLabel id='search-platform'>Platform</InputLabel>
             <Select
@@ -146,6 +179,7 @@ const AllSalesOrders = () => {
             onClick={() => {
               setSearchField('');
               setFilterPlatform('ALL');
+              setFilterStatus('ALL');
             }}
           >
             Reset
