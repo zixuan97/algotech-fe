@@ -26,3 +26,7 @@ export const getBulkOrdersByRangeSvc = async (
 export const bulkOrderMassUpdate = async (id: number, bulkOrderStatus: BulkOrderStatus): Promise<any> => {
   return axios.put(`${apiRoot}/bulkOrder/salesOrderStatus`, {id, bulkOrderStatus}).then((res) => res.data);
 };
+
+export const updateBulkOrderStatusSvc = async (id: number, bulkOrderStatus: BulkOrderStatus): Promise<any> => {
+  return axios.put(`${apiRoot}/bulkOrder/status`, {id, bulkOrderStatus}).then((res) => res.data);
+};

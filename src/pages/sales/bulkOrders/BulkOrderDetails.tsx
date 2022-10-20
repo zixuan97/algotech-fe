@@ -1,11 +1,5 @@
 import { ChevronLeft } from '@mui/icons-material';
-import {
-  Box,
-  Button,
-  IconButton,
-  Paper,
-  Tooltip
-} from '@mui/material';
+import { Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
@@ -26,6 +20,7 @@ import { bulkOrderLineItems } from 'src/components/sales/bulkOrder/bulkOrderGrid
 import { DataGrid } from '@mui/x-data-grid';
 import BulkOrderStepper from 'src/components/sales/bulkOrder/BulkOrderStepper';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import BulkOrderActionButton from 'src/components/sales/bulkOrder/BulkOrderActionButton';
 
 const title = 'Bulk prepare order items';
 const body =
@@ -49,7 +44,6 @@ const BulkOrderDetails = () => {
         if (bo) {
           setBulkOrder(bo);
           setSalesOrders(bo.salesOrders);
-          setLoading(false);
           if (
             bo.salesOrders.some(
               (order) => order.orderStatus === OrderStatus.PAID
@@ -58,6 +52,16 @@ const BulkOrderDetails = () => {
           ) {
             setCanBulkPrep(true);
           }
+
+          if (
+            !(
+              bo.bulkOrderStatus === BulkOrderStatus.PAYMENT_SUCCESS ||
+              bo.bulkOrderStatus === BulkOrderStatus.FULFILLED
+            )
+          ) {
+            bulkOrderLineItems.pop();
+          }
+          setLoading(false);
         } else {
           setAlert({
             severity: 'error',
@@ -81,6 +85,7 @@ const BulkOrderDetails = () => {
             return { ...so, orderStatus: OrderStatus.PREPARED };
           })
         });
+        setCanBulkPrep(false);
         setAlert({
           severity: 'success',
           message: 'The orders in this bulk order has been updated.'
@@ -125,6 +130,15 @@ const BulkOrderDetails = () => {
             <BulkOrderStepper bulkOrderStatus={bulkOrder?.bulkOrderStatus!} />
             <Paper elevation={3} className='sales-action-card '>
               {bulkOrder && <CustomerInfoGrid bulkOrder={bulkOrder!} />}
+              {bulkOrder && (
+                <BulkOrderActionButton
+                  bulkOrder={bulkOrder}
+                  canBulkPrep={canBulkPrep}
+                  setBulkOrder={setBulkOrder}
+                  setCanBulkPrep={setCanBulkPrep}
+                  setAlert={setAlert}
+                />
+              )}
             </Paper>
           </div>
 
@@ -151,7 +165,7 @@ const BulkOrderDetails = () => {
                   <DataGrid
                     style={{ wordWrap: 'break-word' }}
                     columns={bulkOrderLineItems}
-                    rows={bulkOrder.salesOrders ?? []}
+                    rows={bulkOrder.salesOrders}
                     autoHeight
                     pageSize={5}
                     loading={loading}
