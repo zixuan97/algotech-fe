@@ -19,10 +19,12 @@ import EventIcon from '@mui/icons-material/Event';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import {
   Customer,
+  JobStatus,
   NewsletterTemplate,
   ScheduledNewsletter
 } from 'src/models/types';
 import {
+  cancelScheduledNewsletter,
   editScheduledNewsletter,
   getAllCustomers,
   getAllNewsletterTemplates,
@@ -224,6 +226,14 @@ const ViewScheduledNewsletter = () => {
   };
 
   const handleScheduledNewsletterUpdate = async () => {
+    if (updatedScheduledNewsletter?.customerEmails.length === 0) {
+      setAlert({
+        severity: 'warning',
+        message: 'Please select at least 1 customer!'
+      });
+      return;
+    }
+
     setLoading(true);
 
     let reqBody = {
@@ -264,6 +274,34 @@ const ViewScheduledNewsletter = () => {
           message: 'Scheduled Newsletter was not updated successfully.'
         });
         setEdit(false);
+      }
+    );
+  };
+
+  const handleScheduledNewsletterCancel = async () => {
+    setOpenDeleteModal(false);
+    setLoading(true);
+
+    let reqBody = {
+      jobId: originalScheduledNewsletter?.jobId
+    };
+
+    asyncFetchCallback(
+      cancelScheduledNewsletter(reqBody),
+      () => {
+        setLoading(false);
+        setAlert({
+          severity: 'success',
+          message: 'Scheduled Newsletter successfully deleted.'
+        });
+        setTimeout(() => navigate('/customer/allScheduledNewsletters'), 3500);
+      },
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message: 'Scheduled Newsletter was not deleted successfully.'
+        });
       }
     );
   };
@@ -342,45 +380,47 @@ const ViewScheduledNewsletter = () => {
         >
           <CircularProgress color='inherit' />
         </Backdrop>
-        <div className='view-newsletter-template-edit-button-container'>
-          <Button
-            variant='contained'
-            onClick={() => {
-              if (!edit) {
-                setEdit(true);
-              } else {
-                handleScheduledNewsletterUpdate();
-              }
-            }}
-          >
-            {edit ? 'Save Changes' : 'Edit'}
-          </Button>
-          {!edit && (
+        {originalScheduledNewsletter?.jobStatus !== JobStatus.SENT && (
+          <div className='view-newsletter-template-edit-button-container'>
             <Button
               variant='contained'
-              onClick={() => setOpenDeleteModal(true)}
+              onClick={() => {
+                if (!edit) {
+                  setEdit(true);
+                } else {
+                  handleScheduledNewsletterUpdate();
+                }
+              }}
             >
-              Delete
+              {edit ? 'Save Changes' : 'Edit'}
             </Button>
-          )}
-          <ConfirmationModal
-            open={openDeleteModal}
-            onClose={() => setOpenDeleteModal(false)}
-            onConfirm={() => {}}
-            title='Delete Scheduled Newsletter'
-            body='Are you sure you want to delete this scheduled newsletter? This action cannot be reversed.'
-          />
-          {edit && (
-            <Button
-              variant='contained'
-              size='medium'
-              sx={{ width: 'fit-content' }}
-              onClick={handleCancelUpdate}
-            >
-              Cancel
-            </Button>
-          )}
-        </div>
+            {!edit && (
+              <Button
+                variant='contained'
+                onClick={() => setOpenDeleteModal(true)}
+              >
+                Delete
+              </Button>
+            )}
+            <ConfirmationModal
+              open={openDeleteModal}
+              onClose={() => setOpenDeleteModal(false)}
+              onConfirm={handleScheduledNewsletterCancel}
+              title='Delete Scheduled Newsletter'
+              body='Are you sure you want to delete this scheduled newsletter? This action cannot be reversed.'
+            />
+            {edit && (
+              <Button
+                variant='contained'
+                size='medium'
+                sx={{ width: 'fit-content' }}
+                onClick={handleCancelUpdate}
+              >
+                Cancel
+              </Button>
+            )}
+          </div>
+        )}
       </div>
       {alert && (
         <div className='newsletter-alert'>
