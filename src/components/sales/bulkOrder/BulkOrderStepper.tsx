@@ -19,6 +19,7 @@ export const BulkOrderSteps = [
     icon: <ReceiptLongRounded sx={{ fontSize: 35 }} />,
     nextAction: 'Confirm Payment',
     altAction: 'Cancel Order',
+    altTooltip: 'Cancel the order. Only when customers have not made payment.',
     tooltip: 'Once payment has been made, you can begin preparing the order.'
   },
   {
@@ -27,6 +28,7 @@ export const BulkOrderSteps = [
     icon: <DoDisturbOffRounded sx={{ fontSize: 35 }} />,
     nextAction: 'No Further Actions',
     altAction: 'No Further Actions',
+    altTooltip: 'Order has been cancelled.',
     tooltip: 'Order has been cancelled, no further actions from your end.'
   },
   {
@@ -35,6 +37,7 @@ export const BulkOrderSteps = [
     icon: <AccountBalanceWalletRounded sx={{ fontSize: 35 }} />,
     nextAction: 'Contact Admin',
     altAction: 'No Further Actions',
+    altTooltip: 'Customers did not make payment for the order. Order has been cancelled.',
     tooltip: 'Customers will retry payment, otherwise, there is no actions from your end needed.'
   },
   {
@@ -43,6 +46,7 @@ export const BulkOrderSteps = [
     icon: <AccountBalanceWalletRounded sx={{ fontSize: 35 }} />,
     nextAction: 'Bulk Prepare',
     altAction: 'Fulfil Order',
+    altTooltip: 'This bulk order can be fulfiled when all sales orders below are delivered.',
     tooltip:
       'Bulk prepare the orders, otherwise individually prepare each order.'
   },
@@ -52,6 +56,7 @@ export const BulkOrderSteps = [
     icon: <PlaylistAddCheckCircleRounded sx={{ fontSize: 35 }} />,
     nextAction: 'Back To All Bulk Order',
     altAction: 'No Further Actions',
+    altTooltip: 'This order has been fulfilled.',
     tooltip: 'Order completed, no further actions from your end.'
   }
 ];
