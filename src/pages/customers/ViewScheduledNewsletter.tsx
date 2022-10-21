@@ -4,6 +4,7 @@ import { ChevronLeft } from '@mui/icons-material';
 import {
   Backdrop,
   Button,
+  Chip,
   CircularProgress,
   Divider,
   Grid,
@@ -369,7 +370,15 @@ const ViewScheduledNewsletter = () => {
               <ChevronLeft />
             </IconButton>
           </Tooltip>
-          <h1>View Scheduled Newsletter ID: #{id}</h1>
+          {originalScheduledNewsletter?.jobStatus === JobStatus.SCHEDULED && (
+            <h1>View Scheduled Newsletter ID: #{id}</h1>
+          )}
+          {originalScheduledNewsletter?.jobStatus === JobStatus.SENT && (
+            <h1>View Sent Newsletter ID: #{id}</h1>
+          )}
+          {originalScheduledNewsletter?.jobStatus === JobStatus.CANCELLED && (
+            <h1>View Cancelled Newsletter ID: #{id}</h1>
+          )}
         </div>
         <Backdrop
           sx={{
@@ -380,7 +389,7 @@ const ViewScheduledNewsletter = () => {
         >
           <CircularProgress color='inherit' />
         </Backdrop>
-        {originalScheduledNewsletter?.jobStatus !== JobStatus.SENT && (
+        {originalScheduledNewsletter?.jobStatus === JobStatus.SCHEDULED && (
           <div className='view-newsletter-template-edit-button-container'>
             <Button
               variant='contained'
@@ -512,13 +521,21 @@ const ViewScheduledNewsletter = () => {
             <DateTimePicker
               label='Date to Send'
               value={selectedDate}
-              // minDate={moment()}
               onChange={(date) => setSelectedDate(moment(date))}
               renderInput={(params) => (
                 <TextField style={{ width: 250 }} required {...params} />
               )}
             />
           )}
+        </Grid>
+      </Grid>
+      <Grid container spacing={2}>
+        <Grid item xs={6} className='view-scheduled-newsletter-grid-item'>
+          <h3 className='view-scheduled-newsletter-grid-label-text'>Status:</h3>
+          <Chip
+            label={originalScheduledNewsletter?.jobStatus}
+            style={{ fontFamily: 'Poppins' }}
+          />
         </Grid>
       </Grid>
       <Divider />
