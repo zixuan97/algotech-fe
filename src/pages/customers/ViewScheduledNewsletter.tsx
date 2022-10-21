@@ -336,7 +336,16 @@ const ViewScheduledNewsletter = () => {
     {
       field: 'totalSpent',
       headerName: 'All Time Order Value',
-      flex: 1
+      flex: 1,
+      valueGetter: (params: GridValueGetterParams) =>
+        '$' + params.row.totalSpent.toFixed(2)
+    },
+    {
+      field: 'avgOrderValue',
+      headerName: 'Avg. Order Value',
+      flex: 1,
+      valueGetter: (params: GridValueGetterParams) =>
+        '$' + (params.row.totalSpent / params.row.ordersCount).toFixed(2)
     },
     {
       field: 'daysSinceLastPurchase',
@@ -544,7 +553,7 @@ const ViewScheduledNewsletter = () => {
       </h2>
       <div className='customers-data-grid'>
         <DataGrid
-          columns={edit ? columns : columns.splice(0, 6)}
+          columns={edit ? columns : columns.splice(0, 7)}
           rows={selectedCustomers}
           autoHeight
           loading={loading}

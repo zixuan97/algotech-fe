@@ -3,23 +3,20 @@ import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import AllCustomersCellAction from 'src/components/customers/AllCustomersCellAction';
 import '../../styles/common/common.scss';
 import '../../styles/pages/customer/customer.scss';
-import { Stack, TextField, Typography } from '@mui/material';
+import { TextField } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import { Customer } from '../../models/types';
 import { getAllCustomers } from 'src/services/customerService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { useNavigate } from 'react-router';
 import moment from 'moment';
-
-
+import FilterCustomersMenu from 'src/components/customers/FilterCustomersMenu';
 
 const columns: GridColDef[] = [
   {
     field: 'firstName',
     headerName: 'First Name',
     flex: 1,
-    valueGetter: (params: GridValueGetterParams) =>
-      params.row.firstName
+    valueGetter: (params: GridValueGetterParams) => params.row.firstName
   },
   {
     field: 'lastName',
@@ -30,8 +27,7 @@ const columns: GridColDef[] = [
     field: 'email',
     headerName: 'Email',
     flex: 1.3,
-    valueGetter: (params: GridValueGetterParams) =>
-      params.row.email
+    valueGetter: (params: GridValueGetterParams) => params.row.email
   },
   {
     field: 'mobile',
@@ -51,18 +47,18 @@ const columns: GridColDef[] = [
     }
   },
   {
+    field: 'totalSpent',
+    headerName: 'All Time Order Value',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) =>
+      '$' + params.row.totalSpent.toFixed(2)
+  },
+  {
     field: 'avgOrderValue',
     headerName: 'Avg. Order Value',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) =>
-      "$" + (params.row.totalSpent/params.row.ordersCount).toFixed(2)
-  },
-  {
-    field: 'totalOrderValue',
-    headerName: 'Total Order Value',
-    flex: 1,
-    valueGetter: (params: GridValueGetterParams) =>
-      "$" + (params.row.totalSpent).toFixed(2)
+      '$' + (params.row.totalSpent / params.row.ordersCount).toFixed(2)
   },
   {
     field: 'action',
@@ -75,24 +71,24 @@ const columns: GridColDef[] = [
 ];
 
 const AllCustomers = () => {
-  const navigate = useNavigate();
-
-  const [customerData, setCustomerData] = React.useState<Customer[]>([]);
   const [filteredData, setFilteredData] = React.useState<Customer[]>([]);
+  const [searchFilteredData, setSearchFilteredData] = React.useState<
+    Customer[]
+  >([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
 
   React.useEffect(() => {
-    setFilteredData(
+    setSearchFilteredData(
       searchField
-        ? customerData.filter((category) =>
+        ? filteredData.filter((category) =>
             Object.values(category).some((value) =>
               String(value).toLowerCase().includes(searchField.toLowerCase())
             )
           )
-        : customerData
+        : filteredData
     );
-  }, [searchField, customerData]);
+  }, [searchField, filteredData]);
 
   React.useEffect(() => {
     // TODO: implement error callback
@@ -100,31 +96,27 @@ const AllCustomers = () => {
     asyncFetchCallback(
       getAllCustomers(),
       (res) => {
+        setFilteredData(res);
+        setSearchFilteredData(res);
         setLoading(false);
-        setCustomerData(res);
-        console.log(res);
       },
       () => setLoading(false)
     );
   }, []);
 
-
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // here
     setSearchField(e.target.value);
+  };
+
+  const getFilteredCustomers = (customers: Customer[]) => {
+    setFilteredData(customers);
   };
 
   return (
     <div className='all-customers'>
-      <Stack
-        direction='row'
-        width='100%'
-        alignItems='center'
-        justifyContent='space-between'
-      >
-        <h1>All Customers</h1>
-      </Stack>
-      <div className='search-bar'>
+      <h1>All Customers</h1>
+      <div className='all-customers-toolbar'>
+        <div className='search-bar'>
           <Search />
           <TextField
             id='search'
@@ -135,14 +127,14 @@ const AllCustomers = () => {
             onChange={handleSearchFieldChange}
           />
         </div>
-      <div className='data-grid-container'>
-        <DataGrid
-          columns={columns}
-          rows={filteredData}
-          autoHeight
-          loading={loading}
-        />
+        <FilterCustomersMenu updateCustomers={getFilteredCustomers} />
       </div>
+      <DataGrid
+        columns={columns}
+        rows={searchFilteredData}
+        autoHeight
+        loading={loading}
+      />
     </div>
   );
 };
