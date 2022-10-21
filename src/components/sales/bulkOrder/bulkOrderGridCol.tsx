@@ -29,7 +29,6 @@ export const BulkOrderCellAction = ({ id }: GridRenderCellParams) => {
 };
 
 export const SalesOrderCellAction = ({ id, row }: GridRenderCellParams) => {
-  console.log('row', row);
   const navigate = useNavigate();
   const navToViewBulkOrder = (edit: boolean) =>
     navigate({
