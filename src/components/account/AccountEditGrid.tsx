@@ -8,8 +8,6 @@ interface props {
 }
 
 const AccountEditGrid = ({ editUser, setEditUser }: props) => {
-  const roles = Object.keys(UserRole).filter((v) => isNaN(Number(v)));
-
   const userFieldOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
     key: string
@@ -108,25 +106,6 @@ const AccountEditGrid = ({ editUser, setEditUser }: props) => {
             userFieldOnChange(e, 'email')
           }
         />
-      </Grid>
-      <Grid item xs={12}>
-        <TextField
-          required
-          fullWidth
-          id='outlined-field'
-          select
-          label='Role'
-          value={editUser?.role}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            userFieldOnChange(e, 'role')
-          }
-        >
-          {roles.map((option) => (
-            <MenuItem key={option} value={option}>
-              {option}
-            </MenuItem>
-          ))}
-        </TextField>
       </Grid>
     </Grid>
   );
