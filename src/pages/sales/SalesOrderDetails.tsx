@@ -38,6 +38,7 @@ import OrderSummaryCard from '../../components/sales/order/OrderSummaryCard';
 import StatusStepper from '../../components/sales/order/StatusStepper';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import ViewCurrentBundleModal from '../../components/sales/order/ViewCurrentBundleModal';
+import OrderInfoEditGrid from 'src/components/sales/order/OrderInfoEditGrid';
 
 const SalesOrderDetails = () => {
   let params = new URLSearchParams(window.location.search);
@@ -545,7 +546,16 @@ const SalesOrderDetails = () => {
             <StatusStepper orderStatus={salesOrder?.orderStatus!} />
             <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
             <Paper elevation={3} className='sales-action-card '>
-              <OrderInfoGrid salesOrder={salesOrder!} />
+              {salesOrder?.platformType === PlatformType.B2B &&
+              salesOrder?.orderStatus === OrderStatus.PREPARING ? (
+                <OrderInfoEditGrid
+                  salesOrder={salesOrder!}
+                  setSalesOrder={setSalesOrder}
+                />
+              ) : (
+                <OrderInfoGrid salesOrder={salesOrder!} />
+              )}
+
               <div className='action-box'>
                 <Typography sx={{ fontSize: 'inherit' }}>
                   Next Action:
