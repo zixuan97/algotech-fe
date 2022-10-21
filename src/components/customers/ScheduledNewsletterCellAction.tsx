@@ -8,6 +8,7 @@ import { JobStatus } from 'src/models/types';
 
 const ScheduledNewsletterCellAction = ({ row }: GridRenderCellParams) => {
   const navigate = useNavigate();
+
   return (
     <div className='action-cell-fit-content'>
       <Button
@@ -23,7 +24,9 @@ const ScheduledNewsletterCellAction = ({ row }: GridRenderCellParams) => {
       >
         {row.jobStatus === JobStatus.SCHEDULED
           ? 'View Scheduled Newsletter'
-          : 'View Sent Newsletter'}
+          : row.jobStatus === JobStatus.SENT
+          ? 'View Sent Newsletter'
+          : 'View Cancelled Newsletter'}
       </Button>
     </div>
   );

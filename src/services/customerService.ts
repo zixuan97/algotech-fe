@@ -88,3 +88,11 @@ export const cancelScheduledNewsletter = async (
 ): Promise<void> => {
   return axios.put(`${apiRoot}/newsletter/schedule/cancel`, body);
 };
+
+export const getSendHistory = async (
+  body: object
+): Promise<ScheduledNewsletter[]> => {
+  return axios
+    .post(`${apiRoot}/newsletter/schedule/newsletterId`, body)
+    .then((res) => res.data);
+};

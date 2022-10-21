@@ -7,6 +7,7 @@ import {
   Backdrop,
   Button,
   CircularProgress,
+  Divider,
   Grid,
   IconButton,
   Paper,
@@ -14,16 +15,41 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { NewsletterTemplate } from 'src/models/types';
+import { NewsletterTemplate, ScheduledNewsletter } from 'src/models/types';
 import {
   deleteNewsletterTemplate,
   editNewsletterTemplate,
-  getNewsletterTemplateById
+  getNewsletterTemplateById,
+  getSendHistory
 } from 'src/services/customerService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import PreviewTemplateModal from 'src/components/customers/PreviewTemplateModal';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
+import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import moment from 'moment';
+import ScheduledNewsletterCellAction from 'src/components/customers/ScheduledNewsletterCellAction';
+
+const columns: GridColDef[] = [
+  {
+    field: 'sentDate',
+    headerName: 'Sent Date',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) => {
+      let date = params.value;
+      let valueFormatted = moment(date).format('DD/MM/YYYY HH:mm');
+      return valueFormatted;
+    }
+  },
+  {
+    field: 'action',
+    headerName: 'Action',
+    headerAlign: 'right',
+    align: 'right',
+    flex: 1,
+    renderCell: ScheduledNewsletterCellAction
+  }
+];
 
 const ViewNewsletterTemplate = () => {
   const navigate = useNavigate();
@@ -34,6 +60,9 @@ const ViewNewsletterTemplate = () => {
     React.useState<NewsletterTemplate>();
   const [updatedNewsletterTemplate, setUpdatedNewsletterTemplate] =
     React.useState<NewsletterTemplate>();
+  const [sendHistory, setSendHistory] = React.useState<ScheduledNewsletter[]>(
+    []
+  );
   const [edit, setEdit] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
@@ -49,6 +78,24 @@ const ViewNewsletterTemplate = () => {
         (res) => {
           setOriginalNewsletterTemplate(res);
           setUpdatedNewsletterTemplate(res);
+          setLoading(false);
+        },
+        () => setLoading(false)
+      );
+    }
+  }, [id]);
+
+  React.useEffect(() => {
+    setLoading(true);
+    if (id) {
+      let reqBody = {
+        newsletterId: Number(id)
+      };
+
+      asyncFetchCallback(
+        getSendHistory(reqBody),
+        (res) => {
+          setSendHistory(res);
           setLoading(false);
         },
         () => setLoading(false)
@@ -377,6 +424,18 @@ const ViewNewsletterTemplate = () => {
           title={originalNewsletterTemplate?.emailBodyTitle}
           body={originalNewsletterTemplate?.emailBody}
           discountCode={originalNewsletterTemplate?.discountCode}
+        />
+      </div>
+      <Divider />
+      <h2 className='send-history-heading'>Send History</h2>
+      <div className='send-history-data-grid'>
+        <DataGrid
+          columns={columns}
+          rows={sendHistory}
+          autoHeight
+          loading={loading}
+          pageSize={5}
+          rowsPerPageOptions={[5]}
         />
       </div>
     </div>
