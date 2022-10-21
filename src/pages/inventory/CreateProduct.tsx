@@ -311,6 +311,10 @@ const CreateProduct = () => {
                       name='qtyThreshold'
                       placeholder='e.g. 10'
                       type='number'
+                      inputProps={{
+                        inputMode: 'numeric',
+                        min: '0'
+                      }}
                       onChange={handleEditProductNumber}
                       value={newProduct?.qtyThreshold}
                     />

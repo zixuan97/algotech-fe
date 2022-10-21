@@ -435,16 +435,11 @@ const ProductDetails = () => {
                         label='Quantity Threshold'
                         name='qtyThreshold'
                         placeholder='e.g. 10'
-                        error={
-                          editProduct?.qtyThreshold! < 0 ||
-                          !editProduct?.qtyThreshold
-                        }
-                        helperText={
-                          editProduct?.qtyThreshold! < 0 ||
-                          !editProduct?.qtyThreshold
-                            ? 'Quantity Threshold is wrong!'
-                            : ''
-                        }
+                        type='number'
+                        inputProps={{
+                          inputMode: 'numeric',
+                          min: '0'
+                        }}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           handleEditProduct(e, true)
                         }
