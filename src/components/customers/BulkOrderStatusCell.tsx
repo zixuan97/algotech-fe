@@ -8,7 +8,7 @@ const BulkOrderStatusCell = ({ row }: GridRenderCellParams) => {
 
   return orderStatus === BulkOrderStatus.PAYMENT_PENDING ? (
     <Chip
-      label='Created'
+      label='Payment Pending'
       style={{ backgroundColor: '#E4F4D8', fontFamily: 'Poppins' }}
     />
   ) : orderStatus === BulkOrderStatus.CANCELLED ? (

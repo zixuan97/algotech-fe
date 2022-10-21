@@ -8,6 +8,7 @@ import { createSearchParams } from 'react-router-dom';
 import _ from 'lodash';
 import PaymentModeCell from 'src/components/customers/PaymentModeCell';
 import BulkOrderStatusCell from 'src/components/customers/BulkOrderStatusCell';
+import { OrderStatus } from 'src/models/types';
 
 export const BulkOrderCellAction = ({ id }: GridRenderCellParams) => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ export const BulkOrderCellAction = ({ id }: GridRenderCellParams) => {
   );
 };
 
-export const SalesOrderCellAction = ({ id }: GridRenderCellParams) => {
+export const SalesOrderCellAction = ({ id, row }: GridRenderCellParams) => {
   const navigate = useNavigate();
   const navToViewBulkOrder = (edit: boolean) =>
     navigate({
@@ -38,9 +39,11 @@ export const SalesOrderCellAction = ({ id }: GridRenderCellParams) => {
     });
   return (
     <div className='action-cell'>
-      <Button variant='contained' onClick={() => navToViewBulkOrder(false)}>
-        View Order
-      </Button>
+      {!(row.orderStatus === 'CREATED' || row.orderStatus === 'CANCELLED') && (
+        <Button variant='contained' onClick={() => navToViewBulkOrder(false)}>
+          View Order
+        </Button>
+      )}
     </div>
   );
 };

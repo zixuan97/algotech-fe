@@ -40,8 +40,9 @@ const BulkOrderDetails = () => {
   useEffect(() => {
     setLoading(true);
     if (id) {
-      asyncFetchCallback(getBulkOrderByIdSvc(id), (bo: BulkOrder) => {
-        if (bo) {
+      asyncFetchCallback(
+        getBulkOrderByIdSvc(id),
+        (bo: BulkOrder) => {
           setBulkOrder(bo);
           setSalesOrders(bo.salesOrders);
           if (
@@ -52,19 +53,9 @@ const BulkOrderDetails = () => {
           ) {
             setCanBulkPrep(true);
           }
-
-          if (
-            !(
-              bo.bulkOrderStatus === BulkOrderStatus.PAYMENT_SUCCESS ||
-              bo.bulkOrderStatus === BulkOrderStatus.FULFILLED
-            )
-          ) {
-            if (bulkOrderLineItems.length === 6) {
-              bulkOrderLineItems.pop();
-            }
-          }
           setLoading(false);
-        } else {
+        },
+        () => {
           setAlert({
             severity: 'error',
             message: 'Sales Order does not exist. You will be redirected back.'
@@ -72,14 +63,18 @@ const BulkOrderDetails = () => {
           setLoading(false);
           setTimeout(() => navigate(-1), 3500);
         }
-      });
+      );
     }
   }, [id, navigate]);
 
   const bulkOrderPrep = () => {
     setLoading(true);
     asyncFetchCallback(
-      bulkOrderMassUpdate(bulkOrder?.id!, bulkOrder?.bulkOrderStatus!, OrderStatus.PREPARED),
+      bulkOrderMassUpdate(
+        bulkOrder?.id!,
+        bulkOrder?.bulkOrderStatus!,
+        OrderStatus.PREPARED
+      ),
       () => {
         setBulkOrder({
           ...bulkOrder!,
@@ -129,7 +124,9 @@ const BulkOrderDetails = () => {
           <div className='sales-header-content'>
             <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
             <h1>Bulk Order Details</h1>
-            {bulkOrder && <BulkOrderStepper bulkOrderStatus={bulkOrder.bulkOrderStatus} />}
+            {bulkOrder && (
+              <BulkOrderStepper bulkOrderStatus={bulkOrder.bulkOrderStatus} />
+            )}
             <Paper elevation={3} className='sales-action-card '>
               {bulkOrder && <CustomerInfoGrid bulkOrder={bulkOrder!} />}
               {bulkOrder && (

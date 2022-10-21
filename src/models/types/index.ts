@@ -6,8 +6,7 @@ export enum UserRole {
   PARTTIME = 'PARTTIME',
   FULLTIME = 'FULLTIME',
   CUSTOMER = 'CUSTOMER',
-  DISTRIBUTOR = 'DISTRIBUTOR',
-  CORPORATE = 'CORPORATE'
+  B2B = 'B2B'
 }
 
 export enum UserStatus {
