@@ -56,15 +56,15 @@ const columns: GridColDef[] = [
   {
     field: 'avgOrderValue',
     headerName: 'Avg. Order Value',
-    flex: 1,
+    flex: 0.8,
     valueGetter: (params: GridValueGetterParams) =>
       '$' + (params.row.totalSpent / params.row.ordersCount).toFixed(2)
   },
   {
     field: 'action',
     headerName: 'Action',
-    headerAlign: 'right',
-    align: 'right',
+    headerAlign: 'center',
+    align: 'center',
     flex: 1,
     renderCell: AllCustomersCellAction
   }
