@@ -15,7 +15,7 @@ interface props {
 export const BulkOrderSteps = [
   {
     currentState: BulkOrderStatus.PAYMENT_PENDING,
-    label: 'Order Placed',
+    label: 'Pending Payment',
     icon: <ReceiptLongRounded sx={{ fontSize: 35 }} />,
     nextAction: 'Confirm Payment',
     altAction: 'Cancel Order',
