@@ -66,7 +66,16 @@ const columns: GridColDef[] = [
   {
     field: 'totalSpent',
     headerName: 'All Time Order Value',
-    flex: 1
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) =>
+      '$' + params.row.totalSpent.toFixed(2)
+  },
+  {
+    field: 'avgOrderValue',
+    headerName: 'Avg. Order Value',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) =>
+      '$' + (params.row.totalSpent / params.row.ordersCount).toFixed(2)
   },
   {
     field: 'daysSinceLastPurchase',

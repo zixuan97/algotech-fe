@@ -9,8 +9,9 @@
   padding: 2rem;
 }
 
-.data-grid-container {
-  padding-top: 2rem;
+.all-customers-toolbar {
+  display: flex;
+  flex-direction: row;
 }
 
 .customer-cards {
