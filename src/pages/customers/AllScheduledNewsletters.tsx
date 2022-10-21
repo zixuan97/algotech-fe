@@ -90,9 +90,10 @@ const ScheduledNewsletters = () => {
           moment(a.sentDate).diff(b.sentDate)
         );
         setScheduledNewsletters(sortedData);
-      }
+        setLoading(false);
+      },
+      () => setLoading(false)
     );
-    setLoading(false);
   }, [dateRange]);
 
   React.useEffect(() => {
