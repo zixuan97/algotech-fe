@@ -1,18 +1,12 @@
-import { Button } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import ConfirmationModal from 'src/components/common/ConfirmationModal';
 import { AlertType } from 'src/components/common/TimeoutAlert';
-import {
-  BulkOrder,
-  BulkOrderStatus,
-  OrderStatus,
-  SalesOrder
-} from 'src/models/types';
+import { BulkOrder, BulkOrderStatus, OrderStatus } from 'src/models/types';
 import {
   bulkOrderMassUpdate,
-  updateBulkOrderStatusSvc,
-  updateBulkOrderSvc
+  updateBulkOrderStatusSvc
 } from 'src/services/bulkOrderService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { BulkOrderSteps } from './BulkOrderStepper';
@@ -74,7 +68,11 @@ const BulkOrderActionButton = ({
 
   const cancelBulkOrder = () => {
     asyncFetchCallback(
-      bulkOrderMassUpdate(bulkOrder.id, BulkOrderStatus.CANCELLED, OrderStatus.CANCELLED),
+      bulkOrderMassUpdate(
+        bulkOrder.id,
+        BulkOrderStatus.CANCELLED,
+        OrderStatus.CANCELLED
+      ),
       () => {
         setBulkOrder({
           ...bulkOrder,
@@ -122,7 +120,7 @@ const BulkOrderActionButton = ({
       }
     );
     setModalOpen(false);
-  }
+  };
 
   return (
     <>
@@ -135,20 +133,23 @@ const BulkOrderActionButton = ({
         title={title}
         body={body}
       />
-
-      <Button
-        variant='contained'
-        color={
-          bulkOrder.bulkOrderStatus === BulkOrderStatus.PAYMENT_PENDING
-            ? 'warning'
-            : 'primary'
-        }
-        size='medium'
-        disabled={disableButton || canBulkPrep}
-        onClick={() => setModalOpen(true)}
-      >
-        {BulkOrderSteps[activeStep].altAction}
-      </Button>
+      <Tooltip title={BulkOrderSteps[activeStep].altTooltip} enterDelay={500}>
+        <span>
+          <Button
+            variant='contained'
+            color={
+              bulkOrder.bulkOrderStatus === BulkOrderStatus.PAYMENT_PENDING
+                ? 'warning'
+                : 'primary'
+            }
+            size='medium'
+            disabled={disableButton || canBulkPrep}
+            onClick={() => setModalOpen(true)}
+          >
+            {BulkOrderSteps[activeStep].altAction}
+          </Button>
+        </span>
+      </Tooltip>
     </>
   );
 };
