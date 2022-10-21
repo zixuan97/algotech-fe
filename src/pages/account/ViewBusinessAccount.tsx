@@ -21,6 +21,7 @@ const ViewBusinessAccount = () => {
   const [loading, setLoading] = React.useState<boolean>(true);
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [edit, setEdit] = useState<boolean>(false);
+  const [approveRej, setApproveRej] = useState<boolean>(false);
 
   useEffect(() => {
     id &&
@@ -29,6 +30,9 @@ const ViewBusinessAccount = () => {
           setUser(user);
           setEditUser(user);
           setLoading(false);
+          if(user.status === UserStatus.PENDING || user.status === UserStatus.REJECTED ) {
+            setApproveRej(true);
+          }
         } else {
           setAlert({
             severity: 'error',
@@ -53,9 +57,11 @@ const ViewBusinessAccount = () => {
         <Box className='center-box'>
           <div className='header-content'>
             <h1>View B2B Account</h1>
-            {user?.status === UserStatus.PENDING && (
+            {user && approveRej && (
               <ApproveRejectButtonGrp
                 id={id!}
+                user={user}
+                setApproveRej={setApproveRej}
                 setAlert={setAlert}
                 setUser={setUser}
                 loading={loading}

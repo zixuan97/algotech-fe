@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import '../../styles/pages/accounts.scss';
-import { TextField } from '@mui/material';
-import { User } from 'src/models/types';
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  TextField
+} from '@mui/material';
+import { User, UserStatus } from 'src/models/types';
 import { getAllB2BRequests } from 'src/services/accountService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import { Search } from '@mui/icons-material';
 import RequestCellAction from 'src/components/account/RequestCellAction';
-import _ from 'lodash';
+import _, { filter } from 'lodash';
 
 //TODO: Include avatar
 const columns: GridColDef[] = [
@@ -25,11 +32,15 @@ const columns: GridColDef[] = [
   }
 ];
 
+let status = Object.keys(UserStatus).filter((v) => isNaN(Number(v)));
+status.unshift('ALL');
+
 const BusinessAccounts = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [filteredData, setFilteredData] = React.useState<User[]>([]);
   const [searchField, setSearchField] = React.useState<string>('');
   const [loading, setLoading] = React.useState<boolean>(true);
+  const [filterStatus, setFilterStatus] = useState<string>('ALL');
 
   useEffect(() => {
     setLoading(true);
@@ -41,18 +52,31 @@ const BusinessAccounts = () => {
 
   useEffect(() => {
     setFilteredData(
-      searchField
-        ? users.filter((user) =>
-            Object.values(user).some((value) =>
-              String(value).toLowerCase().includes(searchField.toLowerCase())
-            )
-          )
+      searchField || filterStatus
+        ? users.filter((user) => {
+            if (filterStatus === 'ALL') {
+              return Object.values(user).some((value) =>
+                String(value).toLowerCase().includes(searchField.toLowerCase())
+              );
+            } else {
+              return Object.values(user).some(
+                (value) =>
+                  String(value)
+                    .toLowerCase()
+                    .includes(searchField.toLowerCase()) &&
+                  user.status === filterStatus
+              );
+            }
+          })
         : users
     );
-  }, [searchField, users]);
+  }, [filterStatus, searchField, users]);
 
   const handleSearchFieldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchField(e.target.value);
+  };
+  const handleStatusChange = (event: SelectChangeEvent) => {
+    setFilterStatus(event.target.value);
   };
 
   !users && <div>Loading ...</div>;
@@ -63,6 +87,23 @@ const BusinessAccounts = () => {
       <div className='grid-toolbar'>
         <div className='search-bar'>
           <Search />
+          <FormControl style={{ width: '50%' }}>
+            <InputLabel id='search-platform'>Status</InputLabel>
+            <Select
+              id='search-status'
+              value={filterStatus}
+              label='Status'
+              placeholder='Status'
+              onChange={handleStatusChange}
+            >
+              {status.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           <TextField
             id='search'
             label='Search'

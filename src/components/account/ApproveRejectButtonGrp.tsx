@@ -11,9 +11,11 @@ import { AlertType } from '../common/TimeoutAlert';
 
 interface props {
   id: string;
+  user: User;
   loading: boolean;
-  setAlert: (alert :AlertType | null) => void;
+  setAlert: (alert: AlertType | null) => void;
   setUser: (user: any) => void;
+  setApproveRej: (bool: boolean) => void;
 }
 interface modalParam {
   title: string;
@@ -21,7 +23,7 @@ interface modalParam {
   funct: () => void;
 }
 
-const AppRejButtonGrp = ({ id, loading, setAlert, setUser }: props) => {
+const AppRejButtonGrp = ({ id, user, loading, setAlert, setUser, setApproveRej }: props) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalParam, setModalParam] = useState<modalParam>({
     title: '',
@@ -58,7 +60,7 @@ const AppRejButtonGrp = ({ id, loading, setAlert, setUser }: props) => {
         setUser((oldUser: User) => {
           return {
             ...oldUser!,
-            status: UserStatus.DISABLED
+            status: UserStatus.REJECTED
           };
         });
       });
@@ -72,6 +74,7 @@ const AppRejButtonGrp = ({ id, loading, setAlert, setUser }: props) => {
           severity: 'success',
           message: 'Account request approved.'
         });
+        setApproveRej(false);
         setModalOpen(false);
         setUser((oldUser: User) => {
           return {
@@ -97,15 +100,18 @@ const AppRejButtonGrp = ({ id, loading, setAlert, setUser }: props) => {
 
       <div className='button-group'>
         {loading && <CircularProgress color='secondary' />}
-        <Button
-          type='submit'
-          variant='contained'
-          className='create-btn'
-          color='warning'
-          onClick={handleRejectButtonClick}
-        >
-          Reject
-        </Button>
+          <Button
+            type='submit'
+            variant='contained'
+            className='create-btn'
+            color='warning'
+            onClick={handleRejectButtonClick}
+            disabled={user.status===UserStatus.REJECTED}
+          >
+            Reject
+          </Button>
+        
+
         <Button
           type='submit'
           variant='contained'
