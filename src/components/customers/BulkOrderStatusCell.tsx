@@ -6,7 +6,7 @@ import { BulkOrderStatus } from 'src/models/types';
 const BulkOrderStatusCell = ({ row }: GridRenderCellParams) => {
   const orderStatus = row.bulkOrderStatus;
 
-  return orderStatus === BulkOrderStatus.CREATED ? (
+  return orderStatus === BulkOrderStatus.PAYMENT_PENDING ? (
     <Chip
       label='Created'
       style={{ backgroundColor: '#E4F4D8', fontFamily: 'Poppins' }}

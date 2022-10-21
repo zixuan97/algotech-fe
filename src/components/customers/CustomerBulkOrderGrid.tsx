@@ -67,7 +67,7 @@ export const bulkOrderColumns: GridColDef[] = [
 
       if (bulkOrderStatus === BulkOrderStatus.CANCELLED) {
         cell = 'Cancelled';
-      } else if (bulkOrderStatus === BulkOrderStatus.CREATED) {
+      } else if (bulkOrderStatus === BulkOrderStatus.PAYMENT_PENDING) {
         cell = 'Created';
       } else if (bulkOrderStatus === BulkOrderStatus.FULFILLED) {
         cell = 'Fulfilled';
