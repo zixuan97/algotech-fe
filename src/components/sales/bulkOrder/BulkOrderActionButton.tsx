@@ -55,7 +55,7 @@ const BulkOrderActionButton = ({
     ) {
       setDisableButton(true);
     }
-    if (bulkOrder.bulkOrderStatus === BulkOrderStatus.CREATED) {
+    if (bulkOrder.bulkOrderStatus === BulkOrderStatus.PAYMENT_PENDING) {
       setTitle('Cancel an order');
       setBody('Are you sure you want to cancel this order?');
     } else {
@@ -65,7 +65,7 @@ const BulkOrderActionButton = ({
   }, [bulkOrder.bulkOrderStatus, bulkOrder.salesOrders]);
 
   const handleButtonPress = () => {
-    if (bulkOrder.bulkOrderStatus === BulkOrderStatus.CREATED) {
+    if (bulkOrder.bulkOrderStatus === BulkOrderStatus.PAYMENT_PENDING) {
       cancelBulkOrder();
     } else if (bulkOrder.bulkOrderStatus === BulkOrderStatus.PAYMENT_SUCCESS) {
       fulfilBulkOrder();
@@ -139,7 +139,7 @@ const BulkOrderActionButton = ({
       <Button
         variant='contained'
         color={
-          bulkOrder.bulkOrderStatus === BulkOrderStatus.CREATED
+          bulkOrder.bulkOrderStatus === BulkOrderStatus.PAYMENT_PENDING
             ? 'warning'
             : 'primary'
         }

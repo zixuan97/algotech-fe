@@ -67,7 +67,7 @@ export enum PaymentMode {
 }
 
 export enum BulkOrderStatus {
-  CREATED = 'CREATED',
+  PAYMENT_PENDING = 'PAYMENT_PENDING',
   PAYMENT_SUCCESS = 'PAYMENT_SUCCESS',
   PAYMENT_FAILED = 'PAYMENT_FAILED',
   FULFILLED = 'FULFILLED',

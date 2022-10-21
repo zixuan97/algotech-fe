@@ -14,12 +14,12 @@ interface props {
 
 export const BulkOrderSteps = [
   {
-    currentState: BulkOrderStatus.CREATED,
+    currentState: BulkOrderStatus.PAYMENT_PENDING,
     label: 'Order Placed',
     icon: <ReceiptLongRounded sx={{ fontSize: 35 }} />,
     nextAction: 'Confirm Payment',
     altAction: 'Cancel Order',
-    tooltip: 'Once payment has been confirmed, you can begin preparing the order.'
+    tooltip: 'Once payment has been made, you can begin preparing the order.'
   },
   {
     currentState: BulkOrderStatus.CANCELLED,
