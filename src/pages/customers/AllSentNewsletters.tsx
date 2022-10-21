@@ -63,10 +63,9 @@ const SentNewsletters = () => {
           moment(a.sentDate).diff(b.sentDate)
         );
         setSentNewsletters(sortedData);
-        setLoading(false);
-      },
-      () => setLoading(false)
+      }
     );
+    setLoading(false);
   }, [dateRange]);
 
   return (
