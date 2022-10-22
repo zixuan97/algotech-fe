@@ -183,6 +183,7 @@ const CustomerDetails = () => {
       <div className='all-customers'>
         <div className='customers-details'>
           <h1>Customer Details</h1>
+          {loading && <CircularProgress color='secondary' />}
         </div>
         <div className='customer-cards'>
           <Paper elevation={2} className='customer-details-card'>
