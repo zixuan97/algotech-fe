@@ -64,6 +64,7 @@ const ViewBusinessAccount = () => {
                 setApproveRej={setApproveRej}
                 setAlert={setAlert}
                 setUser={setUser}
+                setLoading={setLoading}
                 loading={loading}
               />
             )}
