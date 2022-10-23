@@ -19,6 +19,8 @@ const PlatformChip = ({ salesOrder, pretext }: props) => {
               ? '#FFB46F'
               : salesOrder?.platformType === PlatformType.SHOPIFY
               ? '#C6D68F'
+              : salesOrder?.platformType === PlatformType.B2B
+              ? '#CDCDFF'
               : '#D9D9D9',
           color: 'primary'
         }}
