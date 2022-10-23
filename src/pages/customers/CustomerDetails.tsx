@@ -31,6 +31,7 @@ import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import moment from 'moment';
 import _, { values } from 'lodash';
 import OrdersChart from 'src/components/customers/OrdersChart';
+import BulkOrderAmountChart from 'src/components/customers/BulkOrdersChart';
 import { getExcelFromApi } from 'src/utils/fileUtils';
 import { DDMMYYYY, getTodayFormattedDate } from 'src/utils/dateUtils';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
@@ -45,9 +46,7 @@ let orderStatus = Object.keys(BulkOrderStatus)
   });
 orderStatus.unshift('ALL');
 
-
 const CustomerDetails = () => {
-
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
   const navigate = useNavigate();
@@ -65,36 +64,36 @@ const CustomerDetails = () => {
     () =>
       filterPlatform || searchField
         ? customerData?.salesOrders.filter((saleOrder) => {
-          const searchFieldLower = searchField.toLowerCase().trim();
-          if (filterPlatform === 'ALL') {
-            return (
-              saleOrder.customerAddress
-                .toLowerCase()
-                .includes(searchFieldLower) ||
-              saleOrder.orderId.toLowerCase().includes(searchFieldLower) ||
-              saleOrder.salesOrderItems.some((item) =>
-                item.productName?.toLowerCase().includes(searchFieldLower)
-              ) ||
-              _.startCase(saleOrder.orderStatus)
-                .toLowerCase()
-                .includes(searchFieldLower)
-            );
-          } else {
-            return (
-              saleOrder.platformType === filterPlatform &&
-              (saleOrder.customerAddress
-                .toLowerCase()
-                .includes(searchFieldLower) ||
+            const searchFieldLower = searchField.toLowerCase().trim();
+            if (filterPlatform === 'ALL') {
+              return (
+                saleOrder.customerAddress
+                  .toLowerCase()
+                  .includes(searchFieldLower) ||
                 saleOrder.orderId.toLowerCase().includes(searchFieldLower) ||
                 saleOrder.salesOrderItems.some((item) =>
                   item.productName?.toLowerCase().includes(searchFieldLower)
                 ) ||
                 _.startCase(saleOrder.orderStatus)
                   .toLowerCase()
-                  .includes(searchFieldLower))
-            );
-          }
-        })
+                  .includes(searchFieldLower)
+              );
+            } else {
+              return (
+                saleOrder.platformType === filterPlatform &&
+                (saleOrder.customerAddress
+                  .toLowerCase()
+                  .includes(searchFieldLower) ||
+                  saleOrder.orderId.toLowerCase().includes(searchFieldLower) ||
+                  saleOrder.salesOrderItems.some((item) =>
+                    item.productName?.toLowerCase().includes(searchFieldLower)
+                  ) ||
+                  _.startCase(saleOrder.orderStatus)
+                    .toLowerCase()
+                    .includes(searchFieldLower))
+              );
+            }
+          })
         : customerData?.salesOrders,
     [customerData?.salesOrders, filterPlatform, searchField]
   );
@@ -103,28 +102,30 @@ const CustomerDetails = () => {
     () =>
       filterOrderStatus || searchBulkOrderField
         ? customerData?.bulkOrders.filter((bulkOrder) => {
-          const searchFieldLower = searchBulkOrderField.toLowerCase().trim();
-          if (filterOrderStatus === 'ALL') {
-            return (
-              bulkOrder.paymentMode
-                .toLowerCase()
-                .includes(searchFieldLower) ||
-              _.startCase(bulkOrder.bulkOrderStatus)
-                .toLowerCase()
-                .includes(searchFieldLower)
-            );
-          } else {
-            return (
-              bulkOrder.bulkOrderStatus === filterOrderStatus &&
-              (bulkOrder.paymentMode
-                .toLowerCase()
-                .includes(searchFieldLower) ||
+            const searchFieldLower = searchBulkOrderField.toLowerCase().trim();
+            if (filterOrderStatus === 'ALL') {
+              return (
+                bulkOrder.orderId.toString().includes(searchFieldLower) ||
+                bulkOrder.paymentMode
+                  .toLowerCase()
+                  .includes(searchFieldLower) ||
                 _.startCase(bulkOrder.bulkOrderStatus)
                   .toLowerCase()
-                  .includes(searchFieldLower))
-            );
-          }
-        })
+                  .includes(searchFieldLower)
+              );
+            } else {
+              return (
+                _.startCase(bulkOrder.bulkOrderStatus) === filterOrderStatus &&
+                (bulkOrder.orderId.toString().includes(searchFieldLower) ||
+                  bulkOrder.paymentMode
+                    .toLowerCase()
+                    .includes(searchFieldLower) ||
+                  _.startCase(bulkOrder.bulkOrderStatus)
+                    .toLowerCase()
+                    .includes(searchFieldLower))
+              );
+            }
+          })
         : customerData?.bulkOrders,
     [customerData?.bulkOrders, filterOrderStatus, searchBulkOrderField]
   );
@@ -271,7 +272,9 @@ const CustomerDetails = () => {
           <div className='orders-chart'>
             {customerData?.bulkOrdersByMonth && (
               <Grid item xs={6}>
-                <OrdersChart values={customerData?.bulkOrdersByMonth} />
+                <BulkOrderAmountChart
+                  values={customerData?.bulkOrdersByMonth}
+                />
               </Grid>
             )}
           </div>
@@ -346,7 +349,9 @@ const CustomerDetails = () => {
               </Button>
             </div>
             <div className='data-grid-container'>
-              {filteredData && <CustomerOrderTable filteredData={filteredData} />}
+              {filteredData && (
+                <CustomerOrderTable filteredData={filteredData} />
+              )}
             </div>
           </div>
         )}
@@ -386,7 +391,7 @@ const CustomerDetails = () => {
                   label='Search'
                   fullWidth
                   value={searchBulkOrderField}
-                  placeholder='Payment Mode, Order Status'
+                  placeholder='Order ID, Payment Mode, Order Status'
                   onChange={handleBulkOrderSearchFieldChange}
                 />
                 <Button
@@ -412,7 +417,9 @@ const CustomerDetails = () => {
                   getExcelFromApi(
                     'POST',
                     '/bulkOrder/excel',
-                    `CustomerBulkOrderData-${getTodayFormattedDate(DDMMYYYY)}.xlsx`,
+                    `CustomerBulkOrderData-${getTodayFormattedDate(
+                      DDMMYYYY
+                    )}.xlsx`,
                     reqBody
                   );
                 }}

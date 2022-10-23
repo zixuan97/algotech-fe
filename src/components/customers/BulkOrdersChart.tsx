@@ -16,7 +16,7 @@ type OrderAmountProps = {
   values: CustomerOrderValue[];
 };
 
-const OrderAmountChart = ({ values }: OrderAmountProps) => {
+const BulkOrderAmountChart = ({ values }: OrderAmountProps) => {
   const data = {
     labels: values.map((rev) => moment(rev.month).format(READABLE_MMYYYY)),
     datasets: [
@@ -68,11 +68,11 @@ const OrderAmountChart = ({ values }: OrderAmountProps) => {
   };
   return (
     <Card style={{ padding: '0.5em 2em 2em', height: 'auto' }}>
-      <h3>Sales Order Amount</h3>
+      <h3>Bulk Order Amount</h3>
       <Divider className='full-divider' />
       <Bar data={data} options={options} />
     </Card>
   );
 };
 
-export default OrderAmountChart;
+export default BulkOrderAmountChart;
