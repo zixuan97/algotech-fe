@@ -304,6 +304,7 @@ export interface CustomerOrderValue {
 
 export interface BulkOrder {
   id: number;
+  orderId: number;
   amount: number;
   paymentMode: PaymentMode;
   payeeName: String;

@@ -144,7 +144,7 @@ const BulkOrderDetails = () => {
           <Paper elevation={3}>
             <div className='sales-content-body'>
               <div className='grid-toolbar'>
-                <h3>Order Details</h3>
+                <h3>Order ID: #{bulkOrder?.orderId}</h3>
                 {canBulkPrep && (
                   <div className='button-group'>
                     <Button

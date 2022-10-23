@@ -56,6 +56,7 @@ const AllBulkOrders = () => {
             const searchFieldLower = searchField.toLowerCase().trim();
             if (filterOrderStatus === 'ALL') {
               return (
+                bulkOrder.orderId.toString().includes(searchFieldLower) || 
                 bulkOrder.payeeEmail.toLowerCase().includes(searchFieldLower) ||
                 bulkOrder.payeeName.toLowerCase().includes(searchFieldLower) ||
                 bulkOrder.salesOrders.some((salesOrder) => {
@@ -73,7 +74,8 @@ const AllBulkOrders = () => {
             } else {
               return (
                 bulkOrder.bulkOrderStatus === filterOrderStatus &&
-                (bulkOrder.payeeEmail
+                (bulkOrder.orderId.toString().includes(searchFieldLower) || 
+                  bulkOrder.payeeEmail
                   .toLowerCase()
                   .includes(searchFieldLower) ||
                   bulkOrder.payeeName
