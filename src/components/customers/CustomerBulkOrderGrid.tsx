@@ -30,14 +30,21 @@ export const BulkOrderCellAction = ({ id }: GridRenderCellParams) => {
 };
 
 export const bulkOrderColumns: GridColDef[] = [
-  { field: 'createdTime',
+  {
+    field: 'orderId',
+    headerName: 'Order ID',
+    flex: 0.8
+  },
+  {
+    field: 'createdTime',
     headerName: 'Order Date',
-    flex: 1,
+    flex: 0.8,
     valueGetter: (params) => params.row.createdTime,
     valueFormatter: (params) => moment(params.value).format('DD/MM/YYYY')
   },
-  { field: 'paymentMode', 
-    headerName: 'Payment Mode', 
+  {
+    field: 'paymentMode',
+    headerName: 'Payment Mode',
     flex: 1,
     renderCell: PaymentModeCell,
     // valueFormatter: (params) => _.startCase(params.value.toString().toLowerCase())
@@ -57,10 +64,11 @@ export const bulkOrderColumns: GridColDef[] = [
       return cell;
     }
   },
-  { field: 'bulkOrderStatus',
+  {
+    field: 'bulkOrderStatus',
     headerName: 'Order Status',
     flex: 1,
-    renderCell: BulkOrderStatusCell ,
+    renderCell: BulkOrderStatusCell,
     valueGetter: (params) => {
       let bulkOrderStatus = params.row.bulkOrderStatus;
       let cell;
@@ -94,4 +102,3 @@ export const bulkOrderColumns: GridColDef[] = [
     renderCell: BulkOrderCellAction
   }
 ];
-

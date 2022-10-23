@@ -73,7 +73,7 @@ const AllBulkOrders = () => {
               );
             } else {
               return (
-                bulkOrder.bulkOrderStatus === filterOrderStatus &&
+                _.startCase(bulkOrder.bulkOrderStatus) === filterOrderStatus &&
                 (bulkOrder.orderId.toString().includes(searchFieldLower) || 
                   bulkOrder.payeeEmail
                   .toLowerCase()
