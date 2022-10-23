@@ -186,7 +186,7 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
             disabled={disabled}
           >
             <ListItemLink primary='All Customers' to='customer/allCustomers' />
-            <ListItemLink
+            {/* <ListItemLink
               primary='Newsletter Templates'
               to='customer/allNewsletterTemplates'
             />
@@ -197,7 +197,7 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
             <ListItemLink
               primary='Sent Newsletters'
               to='customer/allSentNewsletters'
-            />
+            /> */}
           </NestedList>
 
           <ListItemLink icon={<AccountBox />} primary='HR' to='/hr' disabled />

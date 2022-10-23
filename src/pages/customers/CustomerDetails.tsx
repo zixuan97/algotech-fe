@@ -143,13 +143,13 @@ const CustomerDetails = () => {
         setAlert({
           severity: 'error',
           message:
-            'User does not exist. You will be redirected back to the B2B Accounts page.'
+            'User does not exist. You will be redirected back to the previous page.'
         });
         setLoading(false);
         setTimeout(() => navigate(-1), 3500);
       }
     );
-  }, [id]);
+  }, [id, navigate]);
 
   console.log(customerData?.ordersByMonth);
 
