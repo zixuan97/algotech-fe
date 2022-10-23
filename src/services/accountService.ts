@@ -51,6 +51,11 @@ export const updatePasswordSvc = async (userEmail: string, currentPassword: stri
     .then((res) => res.data);
 };
 
+export const getNumOfUsersSvc = async (): Promise<number> => {
+  return axios.get(`${apiRoot}/user/pending/count`).then((res) => res.data);
+};
+
+
 //-----B2B-----
 export const getAllB2BRequests = async (): Promise<Array<User>> => {
   return axios.get(`${apiRoot}/user/b2b/all`).then((res) => res.data);

@@ -15,11 +15,15 @@ import ListItemLink from './ListItemLink';
 import NestedList from './NestedList';
 
 import logo from '../logo blue.png';
-import { UserRole } from 'src/models/types';
+import { User, UserRole } from 'src/models/types';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
+import { getNumOfUsersSvc } from 'src/services/accountService';
 
 type SidebarProps = {
   sidebarWidth: string;
   disabled?: boolean;
+  user?: User;
+  isAuthenticated: boolean;
 };
 
 type MenuOpen = {
@@ -46,13 +50,25 @@ const menuOpenDefaultState: MenuOpen = {
   catalogue: false
 };
 
-const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
+const Sidebar = ({ sidebarWidth, disabled = false, user, isAuthenticated }: SidebarProps) => {
   const [menuOpen, setMenuOpen] =
     React.useState<MenuOpen>(menuOpenDefaultState);
-
   const toggleMenuOpen = (menu: keyof MenuOpen, open: boolean) => {
     setMenuOpen({ ...menuOpenDefaultState, [menu]: open });
   };
+  const [numRequest, setNumRequest] = React.useState<number>(0);
+
+  React.useEffect(() => {
+    if (user?.role === UserRole.ADMIN && isAuthenticated) {
+      asyncFetchCallback(
+        getNumOfUsersSvc(),
+        (count: number) => {
+          setNumRequest(count);
+        },
+        () => setNumRequest(0)
+      );
+    }
+  }, [isAuthenticated, user?.role]);
 
   return (
     <div>
@@ -209,9 +225,10 @@ const Sidebar = ({ sidebarWidth, disabled = false }: SidebarProps) => {
               toggleOpen={(open) => toggleMenuOpen('accounts', open)}
               icon={<People />}
               disabled={disabled}
+              numRequest={numRequest}
             >
               <ListItemLink primary='ERP Accounts' to='/accounts' />
-              <ListItemLink primary='B2B Accounts' to='/accounts/business' />
+              <ListItemLink primary='B2B Accounts' to='/accounts/business' numRequest={numRequest}/>
             </NestedList>
           </RoleComponent>
         </List>
