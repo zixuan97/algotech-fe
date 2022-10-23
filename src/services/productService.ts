@@ -44,23 +44,37 @@ export const generateExcelSvc = async (): Promise<any> => {
 export const getAllProductsByBrand = async (
   brandId: string | number
 ): Promise<Product[]> => {
-  return axios.get(`${apiRoot}/product/brand/${brandId}`).then((res) => res.data);
+  return axios
+    .get(`${apiRoot}/product/brand/${brandId}`)
+    .then((res) => res.data);
 };
 
 export const getAllProductsByCategory = async (
   categoryId: string | number
 ): Promise<Product[]> => {
-  return axios.get(`${apiRoot}/product/category/${categoryId}`).then((res) => res.data);
+  return axios
+    .get(`${apiRoot}/product/category/${categoryId}`)
+    .then((res) => res.data);
 };
 
 export const getAllProductsByLocation = async (
   locationId: string | number
 ): Promise<Product[]> => {
-  return axios.get(`${apiRoot}/product/location/${locationId}`).then((res) => res.data);
+  return axios
+    .get(`${apiRoot}/product/location/${locationId}`)
+    .then((res) => res.data);
 };
 
 export const getAllProductsByBundle = async (
   bundleId: string | number
 ): Promise<Product[]> => {
-  return axios.get(`${apiRoot}/product/bundle/${bundleId}`).then((res) => res.data);
+  return axios
+    .get(`${apiRoot}/product/bundle/${bundleId}`)
+    .then((res) => res.data);
+};
+
+export const getNonCatalogueProducts = async (): Promise<Product[]> => {
+  return axios
+    .get(`${apiRoot}/product/productCatalogue`)
+    .then((res) => res.data);
 };

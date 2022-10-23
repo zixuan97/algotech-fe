@@ -9,12 +9,9 @@ import {
   FormControl,
   FormGroup,
   IconButton,
-  InputLabel,
+  ListItemText,
   MenuItem,
-  OutlinedInput,
   Paper,
-  Select,
-  SelectChangeEvent,
   TextField,
   Toolbar,
   Tooltip,
@@ -26,7 +23,6 @@ import '../../styles/pages/delivery/delivery.scss';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   createProductCatalogue,
-  getAllProductCatalogues
 } from '../../services/productCatalogueService';
 import { isValidProductCatalogue } from 'src/components/catalogue/catalogueHelper';
 import {
@@ -35,7 +31,7 @@ import {
 } from 'src/components/common/TimeoutAlert';
 import { getBase64 } from 'src/utils/fileUtils';
 import { omit } from 'lodash';
-import { getAllProducts } from 'src/services/productService';
+import { getNonCatalogueProducts } from 'src/services/productService';
 
 const CreateCatalogueProduct = () => {
   const navigate = useNavigate();
@@ -47,7 +43,6 @@ const CreateCatalogueProduct = () => {
   const [newProductCatalogue, setNewProductCatalogue] = React.useState<
     Partial<ProductCatalogue>
   >({});
-  const [allProducts, setAllProducts] = React.useState<Product[]>([]);
   const [availableProducts, setAvailableProducts] = React.useState<Product[]>(
     []
   );
@@ -55,18 +50,8 @@ const CreateCatalogueProduct = () => {
   const [selectedProduct, setSelectedProduct] = React.useState<Product>();
 
   React.useEffect(() => {
-    const existingPdtCtlgIds: number[] = [];
-    asyncFetchCallback(getAllProductCatalogues(), (res) => {
-      res.forEach((pc) => {
-        existingPdtCtlgIds.push(pc.productId);
-      });
-    });
-
-    asyncFetchCallback(getAllProducts(), (res) => {
-      setAllProducts(res);
-      setAvailableProducts(
-        res.filter((pdt) => !existingPdtCtlgIds.includes(pdt.id))
-      );
+    asyncFetchCallback(getNonCatalogueProducts(), (res) => {
+      setAvailableProducts(res);
     });
   }, []);
 
@@ -102,8 +87,10 @@ const CreateCatalogueProduct = () => {
     }));
   };
 
-  const handleEditPdt = (e: SelectChangeEvent<number>) => {
-    const pdt = allProducts.find((product) => product.id === e.target.value);
+  const handleEditPdt = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const pdt = availableProducts.find(
+      (product) => product.sku === e.target.value
+    );
     setNewProductCatalogue((prev) => ({
       ...prev,
       product: pdt
@@ -254,33 +241,29 @@ const CreateCatalogueProduct = () => {
                     style={{ maxWidth: 'calc(98% - 215px)' }}
                   >
                     <FormControl>
-                      <InputLabel id='product-label' required>
-                        Product SKU
-                      </InputLabel>
-                      <Select
-                        required
-                        labelId='product-label'
-                        id='product'
+                      <TextField
+                        id='outlined-required'
+                        label='SKU'
+                        name='sku'
                         value={newProductCatalogue.product?.id}
                         onChange={handleEditPdt}
-                        input={<OutlinedInput label='Product SKU' />}
+                        select
+                        required
+                        fullWidth
                       >
                         {availableProducts.map((option) => (
-                          <MenuItem key={option.id} value={option.id}>
-                            {option.sku}
+                          <MenuItem key={option.id} value={option.sku}>
+                            <ListItemText inset>SKU: {option.sku}</ListItemText>
+                            <Typography
+                              variant='subtitle1'
+                              color='text.secondary'
+                            >
+                              Product Name: {option.name}
+                            </Typography>
                           </MenuItem>
                         ))}
-                      </Select>
+                      </TextField>
                     </FormControl>
-                    <TextField
-                      label='Product Name'
-                      name='productName'
-                      defaultValue=' '
-                      value={selectedProduct?.name}
-                      variant='filled'
-                      disabled
-                      fullWidth
-                    />
                     <TextField
                       label='Product Brand'
                       name='productBrand'
