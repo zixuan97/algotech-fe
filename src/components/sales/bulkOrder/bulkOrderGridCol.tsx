@@ -49,6 +49,7 @@ export const SalesOrderCellAction = ({ id, row }: GridRenderCellParams) => {
 };
 
 export const bulkOrderColumns: GridColDef[] = [
+  { field: 'orderId', headerName: 'Order ID Name', flex: 1 },
   { field: 'payeeName', headerName: 'Payee Name', flex: 1 },
   { field: 'payeeEmail', headerName: 'Email', flex: 1.5 },
   {
