@@ -33,6 +33,7 @@ import _, { values } from 'lodash';
 import OrdersChart from 'src/components/customers/OrdersChart';
 import { getExcelFromApi } from 'src/utils/fileUtils';
 import { DDMMYYYY, getTodayFormattedDate } from 'src/utils/dateUtils';
+import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 let platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
 platforms.unshift('ALL');
@@ -56,6 +57,7 @@ const CustomerDetails = () => {
   const [filterOrderStatus, setFilterOrderStatus] = useState<string>('ALL');
   const [loading, setLoading] = React.useState<boolean>(false);
   const [searchField, setSearchField] = React.useState<string>('');
+  const [alert, setAlert] = useState<AlertType | null>(null);
   const [searchBulkOrderField, setSearchBulkOrderField] =
     React.useState<string>('');
 
@@ -137,7 +139,15 @@ const CustomerDetails = () => {
         setCustomerData(res);
         console.log(res);
       },
-      () => setLoading(false)
+      () => {
+        setAlert({
+          severity: 'error',
+          message:
+            'User does not exist. You will be redirected back to the B2B Accounts page.'
+        });
+        setLoading(false);
+        setTimeout(() => navigate(-1), 3500);
+      }
     );
   }, [id]);
 
@@ -183,7 +193,9 @@ const CustomerDetails = () => {
       <div className='all-customers'>
         <div className='customers-details'>
           <h1>Customer Details</h1>
+          {loading && <CircularProgress color='secondary' />}
         </div>
+        <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
         <div className='customer-cards'>
           <Paper elevation={2} className='customer-details-card'>
             <div className='customer-details-grid'>

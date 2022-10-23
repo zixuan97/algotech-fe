@@ -13,6 +13,7 @@ interface props {
   id: string;
   user: User;
   loading: boolean;
+  setLoading: (bool: boolean) => void;
   setAlert: (alert: AlertType | null) => void;
   setUser: (user: any) => void;
   setApproveRej: (bool: boolean) => void;
@@ -23,7 +24,7 @@ interface modalParam {
   funct: () => void;
 }
 
-const AppRejButtonGrp = ({ id, user, loading, setAlert, setUser, setApproveRej }: props) => {
+const AppRejButtonGrp = ({ id, user, loading, setAlert, setUser, setApproveRej, setLoading }: props) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalParam, setModalParam] = useState<modalParam>({
     title: '',
@@ -50,6 +51,7 @@ const AppRejButtonGrp = ({ id, user, loading, setAlert, setUser, setApproveRej }
   };
 
   const rejectAccount = () => {
+    setLoading(true);
     id &&
       asyncFetchCallback(rejectUserReqSvc(id), () => {
         setAlert({
@@ -63,11 +65,13 @@ const AppRejButtonGrp = ({ id, user, loading, setAlert, setUser, setApproveRej }
             status: UserStatus.REJECTED
           };
         });
+        setLoading(false);
       });
     setModalOpen(false);
   };
 
   const approveAccount = () => {
+    setLoading(true);
     id &&
       asyncFetchCallback(approveUserReqSvc(id), () => {
         setAlert({
@@ -82,6 +86,7 @@ const AppRejButtonGrp = ({ id, user, loading, setAlert, setUser, setApproveRej }
             status: UserStatus.ACTIVE
           };
         });
+        setLoading(false);
       });
     setModalOpen(false);
   };

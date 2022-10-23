@@ -30,13 +30,6 @@ const columns: GridColDef[] = [
     valueGetter: (params: GridValueGetterParams) => params.row.email
   },
   {
-    field: 'mobile',
-    headerName: 'Mobile',
-    flex: 0.7,
-    valueGetter: (params: GridValueGetterParams) =>
-      params.row.contactNo.toString().replace(/\s+/g, '')
-  },
-  {
     field: 'lastOrderDate',
     headerName: 'Last Order Date',
     flex: 1,
