@@ -47,7 +47,8 @@ const BusinessAccounts = () => {
     asyncFetchCallback(getAllB2BRequests(), (users: Array<User>) => {
       setUsers(users);
       setLoading(false);
-    });
+    }, 
+    () => setLoading(false));
   }, []);
 
   useEffect(() => {
