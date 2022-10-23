@@ -4,7 +4,9 @@ import { createSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import OrderToast from 'src/components/common/OrderToast';
 import authContext from 'src/context/auth/authContext';
-import { SalesOrder } from 'src/models/types';
+import { SalesOrder, UserRole } from 'src/models/types';
+import { getNumOfUsersSvc } from 'src/services/accountService';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
   subscribeToShopify,
   unsubscribeToPusher
@@ -58,7 +60,7 @@ const Home = ({ children }: HomeProps) => {
   return (
     <div style={{ width: '100%' }}>
       <Appbar sidebarWidth={sidebarWidth} />
-      <Sidebar sidebarWidth={sidebarWidth} disabled={disabled} />
+      <Sidebar sidebarWidth={sidebarWidth} disabled={disabled} user={user!} isAuthenticated={isAuthenticated}/>
       <div
         style={{
           width: `calc(100% - ${sidebarWidth})`,
