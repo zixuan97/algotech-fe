@@ -28,3 +28,7 @@ export const updateBundle = async (bundle: Bundle): Promise<void> => {
 export const deleteBundle = async (id: string | number): Promise<void> => {
   return axios.delete(`${apiRoot}/bundle/${id}`);
 };
+
+export const getNonCatalogueBundles = async (): Promise<Bundle[]> => {
+  return axios.get(`${apiRoot}/bundle/bundleCatalogue`).then((res) => res.data);
+};

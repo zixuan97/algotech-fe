@@ -22,13 +22,9 @@ import {
 } from '@mui/material';
 import { ChevronLeft, Delete } from '@mui/icons-material';
 import { Bundle, BundleCatalogue } from 'src/models/types';
-// import '../../styles/pages/delivery/delivery.scss';
 import '../../styles/pages/inventory/inventory.scss';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import {
-  createBundleCatalogue,
-  getAllBundleCatalogues
-} from '../../services/bundleCatalogueService';
+import { createBundleCatalogue } from '../../services/bundleCatalogueService';
 import { isValidBundleCatalogue } from 'src/components/catalogue/catalogueHelper';
 import {
   AlertType,
@@ -36,7 +32,7 @@ import {
 } from 'src/components/common/TimeoutAlert';
 import { getBase64 } from 'src/utils/fileUtils';
 import { omit } from 'lodash';
-import { getAllBundles } from 'src/services/bundleService';
+import { getNonCatalogueBundles } from 'src/services/bundleService';
 
 const CreateCatalogueBundle = () => {
   const navigate = useNavigate();
@@ -48,24 +44,13 @@ const CreateCatalogueBundle = () => {
   const [newBundleCatalogue, setNewBundleCatalogue] = React.useState<
     Partial<BundleCatalogue>
   >({});
-  const [allBundles, setAllBundles] = React.useState<Bundle[]>([]);
   const [availableBundles, setAvailableBundles] = React.useState<Bundle[]>([]);
 
   const [selectedBundle, setSelectedBundle] = React.useState<Bundle>();
 
   React.useEffect(() => {
-    const existingBdlCtlgIds: number[] = [];
-    asyncFetchCallback(getAllBundleCatalogues(), (res) => {
-      res.forEach((bc) => {
-        existingBdlCtlgIds.push(bc.bundleId);
-      });
-    });
-
-    asyncFetchCallback(getAllBundles(), (res) => {
-      setAllBundles(res);
-      setAvailableBundles(
-        res.filter((bun) => !existingBdlCtlgIds.includes(bun.id))
-      );
+    asyncFetchCallback(getNonCatalogueBundles(), (res) => {
+      setAvailableBundles(res);
     });
   }, []);
 
@@ -102,7 +87,7 @@ const CreateCatalogueBundle = () => {
   };
 
   const handleEditBundle = (e: SelectChangeEvent<number>) => {
-    const bun = allBundles.find((bundle) => bundle.id === e.target.value);
+    const bun = availableBundles.find((bundle) => bundle.id === e.target.value);
     setNewBundleCatalogue((prev) => ({
       ...prev,
       bundle: bun
