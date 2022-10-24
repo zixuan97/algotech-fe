@@ -5,9 +5,10 @@ import {
   People,
   Receipt,
   LocalShipping,
-  MenuBook
+  MenuBook,
+  FiberManualRecord
 } from '@mui/icons-material';
-import { Button, Divider, Drawer, List, Toolbar } from '@mui/material';
+import { Button, Chip, Divider, Drawer, List, Toolbar } from '@mui/material';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import RoleComponent from '../auth/RoleComponent';
@@ -16,8 +17,8 @@ import NestedList from './NestedList';
 
 import logo from '../logo blue.png';
 import { User, UserRole } from 'src/models/types';
-import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { getNumOfUsersSvc } from 'src/services/accountService';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 
 type SidebarProps = {
   sidebarWidth: string;
@@ -50,7 +51,12 @@ const menuOpenDefaultState: MenuOpen = {
   catalogue: false
 };
 
-const Sidebar = ({ sidebarWidth, disabled = false, user, isAuthenticated }: SidebarProps) => {
+const Sidebar = ({
+  sidebarWidth,
+  disabled = false,
+  user,
+  isAuthenticated
+}: SidebarProps) => {
   const [menuOpen, setMenuOpen] =
     React.useState<MenuOpen>(menuOpenDefaultState);
   const toggleMenuOpen = (menu: keyof MenuOpen, open: boolean) => {
@@ -60,13 +66,7 @@ const Sidebar = ({ sidebarWidth, disabled = false, user, isAuthenticated }: Side
 
   React.useEffect(() => {
     if (user?.role === UserRole.ADMIN && isAuthenticated) {
-      asyncFetchCallback(
-        getNumOfUsersSvc(),
-        (count: number) => {
-          setNumRequest(count);
-        },
-        () => setNumRequest(0)
-      );
+      asyncFetchCallback(getNumOfUsersSvc(), (count) => setNumRequest(count));
     }
   }, [isAuthenticated, user?.role]);
 
@@ -225,10 +225,24 @@ const Sidebar = ({ sidebarWidth, disabled = false, user, isAuthenticated }: Side
               toggleOpen={(open) => toggleMenuOpen('accounts', open)}
               icon={<People />}
               disabled={disabled}
-              numRequest={numRequest}
+              suffix={
+                numRequest > 0 && (
+                  <FiberManualRecord
+                    style={{ fontSize: '15px', color: '#96694C' }}
+                  />
+                )
+              }
             >
               <ListItemLink primary='ERP Accounts' to='/accounts' />
-              <ListItemLink primary='B2B Accounts' to='/accounts/business' numRequest={numRequest}/>
+              <ListItemLink
+                primary='B2B Accounts'
+                to='/accounts/business'
+                suffix={
+                  numRequest > 0 && (
+                    <Chip label={numRequest} color='primary' size='small' />
+                  )
+                }
+              />
             </NestedList>
           </RoleComponent>
         </List>
