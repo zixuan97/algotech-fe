@@ -1,6 +1,5 @@
-import { ExpandLess, ExpandMore, FiberManualRecord } from '@mui/icons-material';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import {
-  Chip,
   Collapse,
   List,
   ListItem,
@@ -16,7 +15,7 @@ type NestedListProps = {
   toggleOpen: (open: boolean) => void;
   children: React.ReactNode;
   disabled?: boolean;
-  numRequest?: number;
+  suffix?: React.ReactNode;
 };
 
 const NestedList = ({
@@ -26,7 +25,7 @@ const NestedList = ({
   toggleOpen,
   children,
   disabled = false,
-  numRequest
+  suffix
 }: NestedListProps) => {
   return (
     <>
@@ -36,9 +35,7 @@ const NestedList = ({
           primary={title}
           primaryTypographyProps={{ fontWeight: 500 }}
         />
-        {numRequest! > 0 && (
-          <FiberManualRecord style={{fontSize: '15px', color: '#96694C'}} />
-        )}
+        {suffix && suffix}
         {open ? <ExpandLess /> : <ExpandMore />}
       </ListItem>
       <Collapse in={open} timeout='auto' unmountOnExit sx={{ pl: '0.5em' }}>

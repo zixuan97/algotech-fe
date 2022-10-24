@@ -1,5 +1,4 @@
 import {
-  Chip,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -18,7 +17,7 @@ type ListItemLinkProps = {
   to: string;
   typographyProps?: TypographyProps;
   disabled?: boolean;
-  numRequest?: number;
+  suffix?: React.ReactNode;
 };
 
 const ListItemLink = ({
@@ -27,7 +26,7 @@ const ListItemLink = ({
   to,
   typographyProps = {},
   disabled = false,
-  numRequest
+  suffix
 }: ListItemLinkProps) => {
   const location = useLocation();
   const renderLink = React.useMemo(
@@ -55,11 +54,7 @@ const ListItemLink = ({
           primary={primary}
           primaryTypographyProps={{ ...typographyProps, fontSize: '0.8em' }}
         />
-         {numRequest && numRequest > 0 ? (
-          <Chip label={numRequest} color='primary' size="small"/>
-        ) : (
-          ''
-        )}
+        {suffix && suffix}
       </ListItem>
     </li>
   );
