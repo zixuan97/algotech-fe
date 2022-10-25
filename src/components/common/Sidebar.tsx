@@ -192,6 +192,10 @@ const Sidebar = ({
               primary='Shippit Deliveries'
               to='/delivery/allShippitDeliveries'
             />
+            <ListItemLink
+              primary='Lalamove Deliveries'
+              to='/delivery/allLalamoveDeliveries'
+            />
           </NestedList>
 
           <NestedList
