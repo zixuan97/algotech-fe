@@ -74,7 +74,7 @@ const columns: GridColDef[] = [
   }
 ];
 
-const AllShippitDeliveries = () => {
+const AllLalamoveDeliveries = () => {
   const [deliveryData, setDeliveryData] = React.useState<DeliveryOrder[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [dateRange, setDateRange] = React.useState<MomentRange>([
@@ -91,9 +91,10 @@ const AllShippitDeliveries = () => {
           moment(a.deliveryDate).diff(b.deliveryDate)
         );
         setDeliveryData(sortedDeliveryDate);
-      }
+        setLoading(false);
+      },
+      () => setLoading(false)
     );
-    setLoading(false);
   }, [dateRange]);
 
   return (
@@ -120,10 +121,9 @@ const AllShippitDeliveries = () => {
         rows={deliveryData}
         autoHeight
         loading={loading}
-        getRowId={(row) => row.shippitTrackingNum}
       />
     </div>
   );
 };
 
-export default AllShippitDeliveries;
+export default AllLalamoveDeliveries;
