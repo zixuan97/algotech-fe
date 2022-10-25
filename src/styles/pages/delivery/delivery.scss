@@ -210,13 +210,11 @@
   width: 100%;
   display: flex;
   flex-direction: row;
-  padding: 2rem;
 }
 
 .create-delivery-order-section-header {
   display: flex;
   flex-direction: row;
-  padding-left: 2rem;
   padding-top: 2rem;
   width: 100%;
   align-items: center;
@@ -260,7 +258,7 @@
 .create-delivery-button-container {
   display: flex;
   justify-content: flex-end;
-  padding-right: 2rem;
+  padding-right: 1rem;
   padding-top: 2rem;
   padding-bottom: 2rem;
 }

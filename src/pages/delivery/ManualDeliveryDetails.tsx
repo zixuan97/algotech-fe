@@ -14,7 +14,8 @@ import {
   MenuItem,
   Backdrop,
   CircularProgress,
-  Chip
+  Chip,
+  Divider
 } from '@mui/material';
 import { ChevronLeft } from '@mui/icons-material';
 import {
@@ -438,6 +439,7 @@ const ManualDeliveryDetails = () => {
         <Paper elevation={2} className='delivery-address-card'>
           <div className='delivery-address-grid'>
             <h3 className='labelText'>Delivery Address</h3>
+            <Divider />
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <h4 className='labelText'>Name</h4>
@@ -467,6 +469,7 @@ const ManualDeliveryDetails = () => {
         <Paper elevation={2} className='delivery-mode-card'>
           <div className='delivery-mode-grid'>
             <h3 className='labelText'>Delivery Details</h3>
+            <Divider />
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <h4 className='labelText'>Delivery Method</h4>
