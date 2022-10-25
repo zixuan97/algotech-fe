@@ -113,14 +113,17 @@ const AllManualDeliveries = () => {
   React.useEffect(() => {
     // TODO: implement error callback
     setLoading(true);
-    asyncFetchCallback(getManualDeliveryOrdersByRangeSvc(dateRange), (res) => {
-      const sortedDeliveryDate = res.sort((a, b) =>
-        moment(a.deliveryDate).diff(b.deliveryDate)
-      );
-      setDeliveryData(sortedDeliveryDate);
-      console.log(sortedDeliveryDate);
-    });
-    setLoading(false);
+    asyncFetchCallback(
+      getManualDeliveryOrdersByRangeSvc(dateRange),
+      (res) => {
+        const sortedDeliveryDate = res.sort((a, b) =>
+          moment(a.deliveryDate).diff(b.deliveryDate)
+        );
+        setDeliveryData(sortedDeliveryDate);
+        setLoading(false);
+      },
+      () => setLoading(false)
+    );
   }, [dateRange]);
 
   return (

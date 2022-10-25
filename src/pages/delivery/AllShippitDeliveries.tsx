@@ -20,11 +20,6 @@ const columns: GridColDef[] = [
     valueGetter: (params: GridValueGetterParams) =>
       params.row.salesOrder.orderId
   },
-  {
-    field: 'id',
-    headerName: 'Delivery Order ID',
-    flex: 1
-  },
   { field: 'shippitTrackingNum', headerName: 'Tracking Number', flex: 1 },
   {
     field: 'status',
@@ -86,13 +81,17 @@ const AllShippitDeliveries = () => {
   React.useEffect(() => {
     // TODO: implement error callback
     setLoading(true);
-    asyncFetchCallback(getShippitDeliveryOrdersByRangeSvc(dateRange), (res) => {
-      const sortedDeliveryDate = res.sort((a, b) =>
-        moment(a.deliveryDate).diff(b.deliveryDate)
-      );
-      setDeliveryData(sortedDeliveryDate);
-    });
-    setLoading(false);
+    asyncFetchCallback(
+      getShippitDeliveryOrdersByRangeSvc(dateRange),
+      (res) => {
+        const sortedDeliveryDate = res.sort((a, b) =>
+          moment(a.deliveryDate).diff(b.deliveryDate)
+        );
+        setDeliveryData(sortedDeliveryDate);
+        setLoading(false);
+      },
+      () => setLoading(false)
+    );
   }, [dateRange]);
 
   return (
