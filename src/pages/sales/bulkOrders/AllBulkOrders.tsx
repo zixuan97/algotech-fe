@@ -20,7 +20,7 @@ import { MomentRange } from 'src/utils/dateUtils';
 import moment from 'moment';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import _ from 'lodash';
-import { getAllBulkOrderSvc } from 'src/services/bulkOrderService';
+import { getBulkOrdersByRangeSvc } from 'src/services/bulkOrderService';
 import { DataGrid } from '@mui/x-data-grid';
 import { bulkOrderColumns } from 'src/components/sales/bulkOrder/bulkOrderGridCol';
 
@@ -43,7 +43,7 @@ const AllBulkOrders = () => {
 
   useEffect(() => {
     setLoading(true);
-    asyncFetchCallback(getAllBulkOrderSvc(), (res) => {
+    asyncFetchCallback(getBulkOrdersByRangeSvc(dateRange), (res) => {
       setBulkOrders(res);
       setLoading(false);
     });
@@ -56,7 +56,7 @@ const AllBulkOrders = () => {
             const searchFieldLower = searchField.toLowerCase().trim();
             if (filterOrderStatus === 'ALL') {
               return (
-                bulkOrder.orderId.toString().includes(searchFieldLower) || 
+                bulkOrder.orderId.toString().includes(searchFieldLower) ||
                 bulkOrder.payeeEmail.toLowerCase().includes(searchFieldLower) ||
                 bulkOrder.payeeName.toLowerCase().includes(searchFieldLower) ||
                 bulkOrder.salesOrders.some((salesOrder) => {
@@ -65,8 +65,7 @@ const AllBulkOrders = () => {
                       ?.toLowerCase()
                       .includes(searchFieldLower);
                   });
-                }) 
-                ||
+                }) ||
                 _.startCase(bulkOrder.bulkOrderStatus)
                   .toLowerCase()
                   .includes(searchFieldLower)
@@ -74,10 +73,10 @@ const AllBulkOrders = () => {
             } else {
               return (
                 _.startCase(bulkOrder.bulkOrderStatus) === filterOrderStatus &&
-                (bulkOrder.orderId.toString().includes(searchFieldLower) || 
+                (bulkOrder.orderId.toString().includes(searchFieldLower) ||
                   bulkOrder.payeeEmail
-                  .toLowerCase()
-                  .includes(searchFieldLower) ||
+                    .toLowerCase()
+                    .includes(searchFieldLower) ||
                   bulkOrder.payeeName
                     .toLowerCase()
                     .includes(searchFieldLower) ||

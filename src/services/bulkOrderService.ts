@@ -19,7 +19,7 @@ export const getBulkOrdersByRangeSvc = async (
     time_to: dateRange[1].format()
   };
   return axios
-    .post(`${apiRoot}/sales/timefilter`, timeFilter)
+    .post(`${apiRoot}/bulkOrder/timefilter`, timeFilter)
     .then((res) => res.data);
 };
 
