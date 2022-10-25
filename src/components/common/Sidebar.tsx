@@ -149,7 +149,7 @@ const Sidebar = ({
                 to='sales/shopPerformance'
               />
               <ListItemLink
-                primary='Order Fulfillment'
+                primary='Sales Orders'
                 to='sales/allSalesOrders'
               />
               <ListItemLink primary='Bulk Orders' to='sales/allBulkOrders' />
