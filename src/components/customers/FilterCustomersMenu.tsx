@@ -101,13 +101,14 @@ const FilterCustomersMenu = ({ updateCustomers }: FilterCustomersMenuProps) => {
 
     setAnchorEl(null);
 
-    let reqBody = Object.assign(
-      {},
-      daysSinceLastPurchase && { daysSinceLastPurchase },
-      allTimeOrderValue && { allTimeOrderValue },
-      minAvgOrderValue && { minAvgOrderValue },
-      maxAvgOrderValue && { maxAvgOrderValue }
-    );
+    let reqBody = {
+      daysSinceLastPurchase: daysSinceLastPurchase,
+      allTimeOrderValue: allTimeOrderValue,
+      minAvgOrderValue: minAvgOrderValue,
+      maxAvgOrderValue: maxAvgOrderValue
+    };
+
+    console.log(reqBody);
 
     setLoading(true);
 
@@ -199,7 +200,7 @@ const FilterCustomersMenu = ({ updateCustomers }: FilterCustomersMenuProps) => {
           </Stack>
           <Divider />
           <Stack direction='column' spacing={2} paddingRight='1rem'>
-            <Typography>All Time Order Value</Typography>
+            <Typography>Minimum All Time Order Value</Typography>
             <TextField
               name='allTimeOrderValue'
               type='number'
