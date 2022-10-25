@@ -283,13 +283,18 @@ const CreateDeliveryOrder = () => {
   const handleLalamoveDeliveryOrderCreation = async () => {
     setLoading(true);
 
+    let formattedContactNo = salesOrder?.customerContactNo.replace(/\s/g, '');
+    if (formattedContactNo?.substring(0, 3) !== '+65') {
+      formattedContactNo = '+65' + formattedContactNo;
+    }
+
     let reqBody = {
       deliveryDate: selectedDeliveryDate,
       comments: newDeliveryOrder.comments,
       senderAddress: salesOrder?.customerAddress,
       senderPostalCode: salesOrder?.postalCode,
       senderName: salesOrder?.customerName,
-      senderPhone: salesOrder?.customerContactNo,
+      senderPhone: formattedContactNo,
       salesOrderId: salesOrder?.id
     };
 

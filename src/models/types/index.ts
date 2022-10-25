@@ -335,3 +335,13 @@ export interface ScheduledNewsletter {
   newsletter: NewsletterTemplate;
   jobId: String;
 }
+
+export interface LalamoveDriverContactInfo {
+  name: String;
+  phone: String;
+}
+
+export interface LalamoveDriver {
+  plateNumber: String;
+  contact: LalamoveDriverContactInfo;
+}

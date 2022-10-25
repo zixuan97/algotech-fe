@@ -2,7 +2,7 @@
  * Used to make all API calls to delivery-related services
  */
 import axios from 'axios';
-import { DeliveryOrder } from 'src/models/types';
+import { DeliveryOrder, LalamoveDriver } from 'src/models/types';
 import { MomentRange } from 'src/utils/dateUtils';
 import apiRoot from './util/apiRoot';
 
@@ -213,4 +213,34 @@ export const getLalamoveDeliveryOrdersByRangeSvc = (
   return axios
     .post(`${apiRoot}/delivery/lalamoveDeliveries/date`, reqBody)
     .then((res) => res.data);
+};
+
+export const getLalamoveDeliveryOrderById = async (
+  id: string | number
+): Promise<DeliveryOrder> => {
+  return axios
+    .get(`${apiRoot}/delivery/lalamove/${id}`)
+    .then((res) => res.data);
+};
+
+export const getLalamoveDeliveryOrderByLalamoveId = async (
+  lalamoveId: string | number
+): Promise<string> => {
+  return axios
+    .get(`${apiRoot}/delivery/lalamove/track/${lalamoveId}`)
+    .then((res) => res.data);
+};
+
+export const getLalamoveDriverDetailsById = async (
+  id: string | number
+): Promise<LalamoveDriver> => {
+  return axios
+    .get(`${apiRoot}/delivery/lalamove/driver/${id}`)
+    .then((res) => res.data);
+};
+
+export const cancelLalamoveDelivery = async (
+  id: string | number
+): Promise<void> => {
+  return axios.post(`${apiRoot}/delivery/lalamove/cancel/${id}`);
 };
