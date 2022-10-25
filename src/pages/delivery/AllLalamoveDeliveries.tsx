@@ -4,13 +4,13 @@ import '../../styles/pages/delivery/delivery.scss';
 import '../../styles/common/common.scss';
 import { DeliveryOrder } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import { getShippitDeliveryOrdersByRangeSvc } from 'src/services/deliveryServices';
+import { getLalamoveDeliveryOrdersByRangeSvc } from 'src/services/deliveryServices';
 import moment from 'moment';
-import ShippitDeliveryCellAction from 'src/components/delivery/ShippitDeliveryCellAction';
 import { MomentRange } from 'src/utils/dateUtils';
 import { Stack, Typography } from '@mui/material';
 import DateRangePicker from 'src/components/common/DateRangePicker';
-import ShippitDeliveryOrderStatusCell from 'src/components/delivery/ShippitDeliveryOrderStatusCell';
+import LalamoveDeliveryOrderStatusCell from 'src/components/delivery/LalamoveDeliveryOrderStatusCell';
+import LalamoveDeliveryCellAction from 'src/components/delivery/LalamoveDeliveryCellAction';
 
 const columns: GridColDef[] = [
   {
@@ -20,24 +20,26 @@ const columns: GridColDef[] = [
     valueGetter: (params: GridValueGetterParams) =>
       params.row.salesOrder.orderId
   },
-  { field: 'shippitTrackingNum', headerName: 'Tracking Number', flex: 1 },
+  {
+    field: 'id',
+    headerName: 'Delivery Order ID',
+    flex: 1
+  },
   {
     field: 'status',
     headerName: 'Delivery Status',
     flex: 1,
-    renderCell: ShippitDeliveryOrderStatusCell,
+    renderCell: LalamoveDeliveryOrderStatusCell,
     valueGetter: (params) => {
       let deliveryStatus = params.row.deliveryStatus.status;
       let cell;
 
-      if (deliveryStatus === 'order_placed') {
-        cell = 'Order Placed';
-      } else if (deliveryStatus === 'despatch_in_progress') {
-        cell = 'Packing Order';
-      } else if (deliveryStatus === 'ready_for_pickup') {
-        cell = 'Booked for Delivery';
-      } else if (deliveryStatus === 'untrackable') {
-        cell = 'Out for Delivery';
+      if (deliveryStatus === 'ASSIGNING_DRIVER') {
+        cell = 'Assigning Driver';
+      } else if (deliveryStatus === 'ON_GOING') {
+        cell = 'Driver Assigned';
+      } else if (deliveryStatus === 'PICKED_UP') {
+        cell = 'Delivery in Progress';
       } else {
         cell = 'Cancelled';
       }
@@ -45,19 +47,21 @@ const columns: GridColDef[] = [
       return cell;
     }
   },
-  { field: 'deliveryMode', headerName: 'Delivery Mode', flex: 1 },
+  {
+    field: 'salesOrder',
+    headerName: 'Address',
+    flex: 1,
+    valueGetter: (params: GridValueGetterParams) =>
+      params.row.salesOrder.customerAddress
+  },
   {
     field: 'deliveryDate',
-    headerName: 'Estimated Delivery Date',
+    headerName: 'Delivery Date',
     flex: 1,
     valueGetter: (params: GridValueGetterParams) => {
-      if (params.value !== null) {
-        let date = params.value;
-        let valueFormatted = moment(date).format('DD/MM/YYYY');
-        return valueFormatted;
-      } else {
-        return 'Delivery in Progress';
-      }
+      let date = params.value;
+      let valueFormatted = moment(date).format('DD/MM/YYYY');
+      return valueFormatted;
     }
   },
   {
@@ -66,7 +70,7 @@ const columns: GridColDef[] = [
     headerAlign: 'right',
     align: 'right',
     flex: 1,
-    renderCell: ShippitDeliveryCellAction
+    renderCell: LalamoveDeliveryCellAction
   }
 ];
 
@@ -79,19 +83,17 @@ const AllShippitDeliveries = () => {
   ]);
 
   React.useEffect(() => {
-    // TODO: implement error callback
     setLoading(true);
     asyncFetchCallback(
-      getShippitDeliveryOrdersByRangeSvc(dateRange),
+      getLalamoveDeliveryOrdersByRangeSvc(dateRange),
       (res) => {
         const sortedDeliveryDate = res.sort((a, b) =>
           moment(a.deliveryDate).diff(b.deliveryDate)
         );
         setDeliveryData(sortedDeliveryDate);
-        setLoading(false);
-      },
-      () => setLoading(false)
+      }
     );
+    setLoading(false);
   }, [dateRange]);
 
   return (
@@ -102,7 +104,7 @@ const AllShippitDeliveries = () => {
         alignItems='center'
         justifyContent='space-between'
       >
-        <h1>All Shippit Deliveries</h1>
+        <h1>All Lalamove Deliveries</h1>
         <Stack direction='row' spacing={2}>
           <Typography className='date-picker-text'>
             View deliveries from

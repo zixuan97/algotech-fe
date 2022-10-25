@@ -4,6 +4,7 @@ import {
   Backdrop,
   Button,
   CircularProgress,
+  Divider,
   Grid,
   IconButton,
   ListItemText,
@@ -31,6 +32,7 @@ import authContext from 'src/context/auth/authContext';
 import { DesktopDatePicker } from '@mui/x-date-pickers';
 import moment, { Moment } from 'moment';
 import {
+  createLalamoveDeliveryOrder,
   createManualDeliveryOrder,
   createShippitDeliveryOrder
 } from 'src/services/deliveryServices';
@@ -38,7 +40,8 @@ import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 
 const shippingType = [
   { id: 1, value: 'Manual' },
-  { id: 2, value: 'Shippit' }
+  { id: 2, value: 'Shippit' },
+  { id: 2, value: 'Lalamove' }
 ];
 
 const shippitDeliveryModes = [
@@ -97,7 +100,8 @@ const CreateDeliveryOrder = () => {
       if (user.role === UserRole.ADMIN || user.role === UserRole.FULLTIME) {
         asyncFetchCallback(getAllUserSvc(), (users: Array<User>) => {
           let filteredUsers = users.filter(
-            (user) => user.role !== UserRole.CUSTOMER
+            (user) =>
+              user.role !== UserRole.CUSTOMER && user.role !== UserRole.B2B
           );
           filteredUsers.push(user);
           setUsers(filteredUsers);
@@ -154,23 +158,15 @@ const CreateDeliveryOrder = () => {
   const handleManualDeliveryOrderCreation = async () => {
     setLoading(true);
 
-    let reqBody;
-    if (newDeliveryOrder.assignedUser?.id) {
-      reqBody = {
-        shippingType: ShippingType.MANUAL,
-        deliveryDate: selectedDeliveryDate,
-        comments: newDeliveryOrder.comments,
-        salesOrderId: Number(id),
+    let reqBody = {
+      shippingType: ShippingType.MANUAL,
+      deliveryDate: selectedDeliveryDate,
+      comments: newDeliveryOrder.comments,
+      salesOrderId: Number(id),
+      ...(newDeliveryOrder.assignedUser?.id && {
         assignedUserId: newDeliveryOrder.assignedUser?.id
-      };
-    } else {
-      reqBody = {
-        shippingType: ShippingType.MANUAL,
-        deliveryDate: selectedDeliveryDate,
-        comments: newDeliveryOrder.comments,
-        salesOrderId: Number(id)
-      };
-    }
+      })
+    };
 
     await asyncFetchCallback(
       createManualDeliveryOrder(reqBody),
@@ -251,29 +247,17 @@ const CreateDeliveryOrder = () => {
 
     setLoading(true);
 
-    let reqBody;
-    if (newDeliveryOrder.carrier) {
-      reqBody = {
-        shippingType: ShippingType.SHIPPIT,
-        deliveryDate: selectedDeliveryDate,
-        // courierType: 'click_and_collect',
-        carrier: newDeliveryOrder.carrier,
-        deliveryMode: newDeliveryOrder.deliveryMode,
-        salesOrderId: Number(id),
-        parcelQuantity: newDeliveryOrder.parcelQty,
-        parcelWeight: newDeliveryOrder.parcelWeight
-      };
-    } else {
-      reqBody = {
-        shippingType: ShippingType.SHIPPIT,
-        deliveryDate: selectedDeliveryDate,
-        // courierType: 'click_and_collect',
-        deliveryMode: newDeliveryOrder.deliveryMode,
-        salesOrderId: Number(id),
-        parcelQuantity: newDeliveryOrder.parcelQty,
-        parcelWeight: newDeliveryOrder.parcelWeight
-      };
-    }
+    let reqBody = {
+      shippingType: ShippingType.SHIPPIT,
+      deliveryDate: selectedDeliveryDate,
+      deliveryMode: newDeliveryOrder.deliveryMode,
+      salesOrderId: Number(id),
+      parcelQuantity: newDeliveryOrder.parcelQty,
+      parcelWeight: newDeliveryOrder.parcelWeight,
+      ...(newDeliveryOrder.carrier && {
+        carrier: newDeliveryOrder.carrier
+      })
+    };
 
     await asyncFetchCallback(
       createShippitDeliveryOrder(reqBody),
@@ -291,6 +275,40 @@ const CreateDeliveryOrder = () => {
           severity: 'error',
           message:
             'Shippit Delivery Order was not created successfully, please try again!'
+        });
+      }
+    );
+  };
+
+  const handleLalamoveDeliveryOrderCreation = async () => {
+    setLoading(true);
+
+    let reqBody = {
+      deliveryDate: selectedDeliveryDate,
+      comments: newDeliveryOrder.comments,
+      senderAddress: salesOrder?.customerAddress,
+      senderPostalCode: salesOrder?.postalCode,
+      senderName: salesOrder?.customerName,
+      senderPhone: salesOrder?.customerContactNo,
+      salesOrderId: salesOrder?.id
+    };
+
+    await asyncFetchCallback(
+      createLalamoveDeliveryOrder(reqBody),
+      (res) => {
+        setLoading(false);
+        setAlert({
+          severity: 'success',
+          message: 'Lalamove Delivery Order successfully created!'
+        });
+        setTimeout(() => navigate('/delivery/allLalamoveDeliveries'), 3000);
+      },
+      (err) => {
+        setLoading(false);
+        setAlert({
+          severity: 'error',
+          message:
+            'Lalamove Delivery Order was not created successfully, please try again!'
         });
       }
     );
@@ -325,15 +343,15 @@ const CreateDeliveryOrder = () => {
           </TextField>
         </div>
       </div>
-      <div className='alert'>
-        {alert && (
+      {alert && (
+        <div className='alert'>
           <TimeoutAlert
             alert={alert}
             timeout={6000}
             clearAlert={() => setAlert(null)}
           />
-        )}
-      </div>
+        </div>
+      )}
       <Backdrop
         sx={{
           color: '#fff',
@@ -347,6 +365,7 @@ const CreateDeliveryOrder = () => {
         <Paper elevation={2} className='create-delivery-order-card'>
           <div className='delivery-address-grid'>
             <h3 className='labelText'>Delivery Details</h3>
+            <Divider />
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <h4 className='labelText'>Order ID</h4>
@@ -366,7 +385,7 @@ const CreateDeliveryOrder = () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid item xs={12}>
                 <h4 className='labelText'>Customer Email</h4>
                 <TextField
                   value={
@@ -388,15 +407,6 @@ const CreateDeliveryOrder = () => {
                   fullWidth
                 />
               </Grid>
-              <Grid item xs={12}>
-                <h4 className='labelText'>Address</h4>
-                <TextField
-                  value={salesOrder?.customerAddress}
-                  variant='filled'
-                  disabled
-                  fullWidth
-                />
-              </Grid>
               <Grid item xs={6}>
                 <h4 className='labelText'>Postal Code</h4>
                 <TextField
@@ -406,12 +416,23 @@ const CreateDeliveryOrder = () => {
                   fullWidth
                 />
               </Grid>
+              <Grid item xs={12}>
+                <h4 className='labelText'>Address</h4>
+                <TextField
+                  value={salesOrder?.customerAddress}
+                  variant='filled'
+                  disabled
+                  multiline
+                  fullWidth
+                />
+              </Grid>
             </Grid>
           </div>
         </Paper>
         <Paper className='create-delivery-order-card'>
           <div className='delivery-input-form-grid'>
             <h3 className='labelText'>Input Delivery Order Details</h3>
+            <Divider />
             {deliveryOption === 'Manual' && (
               <Grid container spacing={2}>
                 <Grid item xs={12}>
@@ -554,6 +575,34 @@ const CreateDeliveryOrder = () => {
                 </Grid>
               </Grid>
             )}
+            {deliveryOption === 'Lalamove' && (
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <h4 className='labelText'>Select Delivery Date</h4>
+                  <DesktopDatePicker
+                    label='Delivery Date'
+                    value={selectedDeliveryDate}
+                    minDate={moment().startOf('day')}
+                    onChange={(date) => setSelectedDeliveryDate(moment(date))}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <h4 className='labelText'>Comments</h4>
+                  <div>
+                    <TextField
+                      id='comments'
+                      label='Comments'
+                      name='comments'
+                      value={newDeliveryOrder?.comments}
+                      onChange={handleEditDeliveryOrder}
+                      fullWidth
+                      multiline
+                    />
+                  </div>
+                </Grid>
+              </Grid>
+            )}
           </div>
         </Paper>
       </div>
@@ -565,7 +614,9 @@ const CreateDeliveryOrder = () => {
           onClick={
             deliveryOption === 'Manual'
               ? handleManualDeliveryOrderCreation
-              : handleShippitDeliveryOrderCreation
+              : deliveryOption === 'Shippit'
+              ? handleShippitDeliveryOrderCreation
+              : handleLalamoveDeliveryOrderCreation
           }
         >
           Create Delivery Order

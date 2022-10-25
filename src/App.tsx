@@ -47,6 +47,7 @@ import CreateSupplier from './pages/procurement/CreateSupplier';
 
 import AllManualDeliveries from './pages/delivery/AllManualDeliveries';
 import AllShippitDeliveries from './pages/delivery/AllShippitDeliveries';
+import AllLalamoveDeliveries from './pages/delivery/AllLalamoveDeliveries';
 import CreateDeliveryOrder from './pages/delivery/CreateDelivery';
 import ManualDeliveryDetails from './pages/delivery/ManualDeliveryDetails';
 import MyDeliveryAssignment from './pages/delivery/MyDeliveryAssignment';
@@ -251,6 +252,10 @@ const App = () => {
                   <Route
                     path='delivery/allShippitDeliveries'
                     element={<AllShippitDeliveries />}
+                  />
+                  <Route
+                    path='delivery/allLalamoveDeliveries'
+                    element={<AllLalamoveDeliveries />}
                   />
                   <Route
                     path='delivery/manualDeliveryDetails'

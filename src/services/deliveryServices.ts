@@ -115,6 +115,12 @@ export const createShippitDeliveryOrder = async (
   return axios.post(`${apiRoot}/delivery/shippit`, body);
 };
 
+export const createLalamoveDeliveryOrder = async (
+  body: object
+): Promise<void> => {
+  return axios.post(`${apiRoot}/delivery/lalamove`, body);
+};
+
 export const getAllDeliveriesPostalCodeByDate = (
   dateRange: MomentRange
 ): Promise<DeliveryOrder[]> => {
@@ -194,5 +200,17 @@ export const getAllAssignedDeliveriesPostalCodeByDate = (
   };
   return axios
     .post(`${apiRoot}/delivery/latlong/assigned`, timeFilter)
+    .then((res) => res.data);
+};
+
+export const getLalamoveDeliveryOrdersByRangeSvc = (
+  dateRange: MomentRange
+): Promise<DeliveryOrder[]> => {
+  const reqBody = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format()
+  };
+  return axios
+    .post(`${apiRoot}/delivery/lalamoveDeliveries/date`, reqBody)
     .then((res) => res.data);
 };
