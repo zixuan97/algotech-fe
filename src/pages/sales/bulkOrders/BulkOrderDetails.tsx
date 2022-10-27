@@ -1,5 +1,12 @@
 import { ChevronLeft } from '@mui/icons-material';
-import { Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  Paper,
+  Tooltip
+} from '@mui/material';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
@@ -123,7 +130,11 @@ const BulkOrderDetails = () => {
         <Box className='center-box'>
           <div className='sales-header-content'>
             <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
-            <h1>Bulk Order Details</h1>
+            <div className='bulk-order-header-title'>
+              <h1>Bulk Order Details</h1>
+              {loading && <CircularProgress color='secondary' />}
+            </div>
+
             {bulkOrder && (
               <BulkOrderStepper bulkOrderStatus={bulkOrder.bulkOrderStatus} />
             )}
