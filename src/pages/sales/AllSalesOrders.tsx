@@ -140,7 +140,7 @@ const AllSalesOrders = () => {
             >
               {status.map((option) => (
                 <MenuItem key={option} value={option}>
-                  {option}
+                  {_.startCase(option.toLowerCase())}
                 </MenuItem>
               ))}
             </Select>
@@ -157,7 +157,7 @@ const AllSalesOrders = () => {
             >
               {platforms.map((option) => (
                 <MenuItem key={option} value={option}>
-                  {option}
+                  {_.startCase(option.toLowerCase())}
                 </MenuItem>
               ))}
             </Select>

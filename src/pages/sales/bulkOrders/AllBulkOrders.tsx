@@ -136,7 +136,7 @@ const AllBulkOrders = () => {
             >
               {orderStatus.map((option) => (
                 <MenuItem key={option} value={option}>
-                  {option}
+                  {_.startCase(option.toLowerCase())}
                 </MenuItem>
               ))}
             </Select>
