@@ -24,6 +24,7 @@ import { SalesOrder } from '../../models/types/index';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { getSalesOrdersByRangeSvc } from 'src/services/salesService';
 import _ from 'lodash';
+import DropdownFilter from 'src/components/sales/DropdownFilter';
 
 let platforms = Object.keys(PlatformType).filter((v) => isNaN(Number(v)));
 platforms.unshift('ALL');
@@ -128,40 +129,19 @@ const AllSalesOrders = () => {
       <Divider className='full-divider' />
       <div className='order-grid-toolbar'>
         <div className='search-bar'>
-          <FilterList />
-          <FormControl style={{ width: '50%' }}>
-            <InputLabel id='search-platform'>Status</InputLabel>
-            <Select
-              id='search-status'
-              value={filterStatus}
-              label='Status'
-              placeholder='Status'
-              onChange={handleStatusChange}
-            >
-              {status.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {_.startCase(option.toLowerCase())}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <DropdownFilter
+            options={status}
+            filterString={filterStatus}
+            handleFilterValueChange={handleStatusChange}
+            labelText={'Status'}
+          />
 
-          <FormControl style={{ width: '50%' }}>
-            <InputLabel id='search-platform'>Platform</InputLabel>
-            <Select
-              id='search-platform'
-              value={filterPlatform}
-              label='Platform'
-              placeholder='Platform'
-              onChange={handleFilterChange}
-            >
-              {platforms.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {_.startCase(option.toLowerCase())}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <DropdownFilter
+            options={platforms}
+            filterString={filterPlatform}
+            handleFilterValueChange={handleFilterChange}
+            labelText={'Platform'}
+          />
 
           <Search />
           <TextField
