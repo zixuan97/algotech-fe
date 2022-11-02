@@ -132,22 +132,30 @@ const BulkOrderDetails = () => {
             <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
             <div className='bulk-order-header-title'>
               <h1>Bulk Order Details</h1>
-              {loading && <CircularProgress color='secondary' />}
             </div>
 
             {bulkOrder && (
               <BulkOrderStepper bulkOrderStatus={bulkOrder.bulkOrderStatus} />
             )}
+
             <Paper elevation={3} className='sales-action-card '>
-              {bulkOrder && <CustomerInfoGrid bulkOrder={bulkOrder!} />}
-              {bulkOrder && (
-                <BulkOrderActionButton
-                  bulkOrder={bulkOrder}
-                  canBulkPrep={canBulkPrep}
-                  setBulkOrder={setBulkOrder}
-                  setCanBulkPrep={setCanBulkPrep}
-                  setAlert={setAlert}
-                />
+              {loading ? (
+                <div className='container-center'>
+                  <CircularProgress color='secondary' />
+                </div>
+              ) : (
+                bulkOrder && (
+                  <>
+                    <CustomerInfoGrid bulkOrder={bulkOrder!} />
+                    <BulkOrderActionButton
+                      bulkOrder={bulkOrder}
+                      canBulkPrep={canBulkPrep}
+                      setBulkOrder={setBulkOrder}
+                      setCanBulkPrep={setCanBulkPrep}
+                      setAlert={setAlert}
+                    />
+                  </>
+                )
               )}
             </Paper>
           </div>
