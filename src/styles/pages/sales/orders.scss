@@ -125,3 +125,10 @@
   margin: 1%;
   min-width: 30%;
 }
+
+.bulk-order-header-title {
+  @extend .container-center;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}

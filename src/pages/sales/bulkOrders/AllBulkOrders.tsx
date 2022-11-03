@@ -23,6 +23,7 @@ import _ from 'lodash';
 import { getBulkOrdersByRangeSvc } from 'src/services/bulkOrderService';
 import { DataGrid } from '@mui/x-data-grid';
 import { bulkOrderColumns } from 'src/components/sales/bulkOrder/bulkOrderGridCol';
+import DropdownFilter from 'src/components/sales/DropdownFilter';
 
 let orderStatus = Object.keys(BulkOrderStatus)
   .filter((v) => isNaN(Number(v)))
@@ -124,23 +125,12 @@ const AllBulkOrders = () => {
       <Divider className='full-divider' />
       <div className='order-grid-toolbar'>
         <div className='search-bar'>
-          <FilterList />
-          <FormControl style={{ width: '50%' }}>
-            <InputLabel id='search-order-status'>Order Status</InputLabel>
-            <Select
-              id='search-order-status'
-              value={filterOrderStatus}
-              label='Order Status'
-              placeholder='Order Status'
-              onChange={handleFilterChange}
-            >
-              {orderStatus.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <DropdownFilter
+            options={orderStatus}
+            filterString={filterOrderStatus}
+            handleFilterValueChange={handleFilterChange}
+            labelText={'Order Status'}
+          />
 
           <Search />
           <TextField

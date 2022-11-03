@@ -1,5 +1,12 @@
 import { ChevronLeft } from '@mui/icons-material';
-import { Box, Button, IconButton, Paper, Tooltip } from '@mui/material';
+import {
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  Paper,
+  Tooltip
+} from '@mui/material';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
@@ -123,20 +130,32 @@ const BulkOrderDetails = () => {
         <Box className='center-box'>
           <div className='sales-header-content'>
             <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
-            <h1>Bulk Order Details</h1>
+            <div className='bulk-order-header-title'>
+              <h1>Bulk Order Details</h1>
+            </div>
+
             {bulkOrder && (
               <BulkOrderStepper bulkOrderStatus={bulkOrder.bulkOrderStatus} />
             )}
+
             <Paper elevation={3} className='sales-action-card '>
-              {bulkOrder && <CustomerInfoGrid bulkOrder={bulkOrder!} />}
-              {bulkOrder && (
-                <BulkOrderActionButton
-                  bulkOrder={bulkOrder}
-                  canBulkPrep={canBulkPrep}
-                  setBulkOrder={setBulkOrder}
-                  setCanBulkPrep={setCanBulkPrep}
-                  setAlert={setAlert}
-                />
+              {loading ? (
+                <div className='container-center'>
+                  <CircularProgress color='secondary' />
+                </div>
+              ) : (
+                bulkOrder && (
+                  <>
+                    <CustomerInfoGrid bulkOrder={bulkOrder!} />
+                    <BulkOrderActionButton
+                      bulkOrder={bulkOrder}
+                      canBulkPrep={canBulkPrep}
+                      setBulkOrder={setBulkOrder}
+                      setCanBulkPrep={setCanBulkPrep}
+                      setAlert={setAlert}
+                    />
+                  </>
+                )
               )}
             </Paper>
           </div>
