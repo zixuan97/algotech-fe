@@ -79,6 +79,11 @@ export enum JobStatus {
   CANCELLED = 'CANCELLED'
 }
 
+export enum DiscountCodeType {
+  PERCENTAGE = 'PERCENTAGE',
+  FLAT_AMOUNT = 'FLAT_AMOUNT'
+}
+
 export interface User {
   id: number;
   firstName: string;
@@ -344,4 +349,14 @@ export interface LalamoveDriverContactInfo {
 export interface LalamoveDriver {
   plateNumber: String;
   contact: LalamoveDriverContactInfo;
+}
+
+export interface DiscountCode {
+  id: number;
+  discountCode: String;
+  amount: number;
+  startDate: Date;
+  endDate?: Date;
+  customerEmails: String[];
+  type: DiscountCodeType;
 }
