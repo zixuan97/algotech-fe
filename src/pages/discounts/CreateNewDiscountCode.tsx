@@ -14,14 +14,16 @@ import {
 import { ChevronLeft } from '@mui/icons-material';
 import { DiscountCode, DiscountCodeType } from 'src/models/types';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
-import BottomButton from 'src/components/common/BottomButton';
+import BottomButton from 'src/components/discounts/BottomButton';
 import DiscountPeriodRadio from 'src/components/discounts/DiscountPeriodRadio';
 import moment from 'moment';
 import _ from 'lodash';
-import DiscountDateRange from 'src/components/discounts/DiscountDateRange';
 import validator from 'validator';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import { createDiscountCodeSvc } from 'src/services/discountCodeService';
+import { DesktopDatePicker } from '@mui/x-date-pickers';
+import { MomentRange, YYYY_MM_DD } from 'src/utils/dateUtils';
+import DateRangePicker from 'src/components/common/DateRangePicker';
 
 let discountCodeType = Object.keys(DiscountCodeType).filter((v) =>
   isNaN(Number(v))
@@ -32,6 +34,10 @@ const CreateNewDiscountCode = () => {
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [radioValue, setRadioValue] = useState<string>('fixed');
+  const [dateRange, setDateRange] = React.useState<MomentRange>([
+    moment().startOf('day'),
+    moment().endOf('year')
+  ]);
   const [newDiscountCode, setNewDiscountCode] = useState<Partial<DiscountCode>>(
     {
       isEnabled: true,
@@ -87,6 +93,7 @@ const CreateNewDiscountCode = () => {
   const validityCheck = (value: string) => {
     return value !== undefined && validator.isEmpty(value!);
   };
+
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRadioValue(event.target.value);
     setNewDiscountCode((prev) => {
@@ -96,6 +103,16 @@ const CreateNewDiscountCode = () => {
       };
     });
   };
+
+  useEffect(() => {
+    setNewDiscountCode((prev) => {
+      return {
+        ...prev,
+        startDate: moment(dateRange[0]).startOf('day').toDate(),
+        endDate: moment(dateRange[1]).startOf('day').toDate()
+      };
+    });
+  }, [dateRange]);
 
   useEffect(() => {
     if (radioValue === 'recurring') {
@@ -249,11 +266,31 @@ const CreateNewDiscountCode = () => {
                     </Grid>
                     <Grid item xs={12}>
                       <Stack direction='row' spacing={2}>
-                        <DiscountDateRange
-                          radioValue={radioValue}
-                          newDiscountCode={newDiscountCode}
-                          setNewDiscountCode={setNewDiscountCode}
-                        />
+                        {radioValue === 'fixed' ? (
+                          <DateRangePicker
+                            dateRange={dateRange}
+                            updateDateRange={setDateRange}
+                            canSelectPastDate={false}
+                          />
+                        ) : (
+                          <DesktopDatePicker
+                            label='Start Date'
+                            value={moment(newDiscountCode?.startDate).format(
+                              YYYY_MM_DD
+                            )}
+                            minDate={moment('2000-01-01')}
+                            shouldDisableDate={(date) =>
+                              moment(date).isBefore(moment().startOf('day'))
+                            }
+                            onChange={(date) => {
+                              setNewDiscountCode({
+                                ...newDiscountCode,
+                                startDate: moment(date).startOf('day').toDate()
+                              });
+                            }}
+                            renderInput={(params) => <TextField {...params} />}
+                          />
+                        )}
                       </Stack>
                     </Grid>
                   </Grid>
