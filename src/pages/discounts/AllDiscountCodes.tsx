@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 import '../../styles/pages/accounts.scss';
 import { Button, SelectChangeEvent, TextField } from '@mui/material';
 import { DiscountCode, DiscountCodeType } from 'src/models/types';
@@ -9,8 +9,6 @@ import { useNavigate } from 'react-router';
 import { getAllDiscountCodes } from 'src/services/discountCodeService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import _ from 'lodash';
-import moment from 'moment';
-import { DD_MM_YYYY } from 'src/utils/dateUtils';
 import { discountOrderGridCols } from 'src/components/discounts/DiscountOrderGridCol';
 
 let discountCodeType = Object.keys(DiscountCodeType).filter((v) =>

@@ -10,14 +10,9 @@ import {
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
-import { getUserDetailsSvc } from 'src/services/accountService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { DiscountCode, User, UserStatus } from 'src/models/types';
+import { DiscountCode} from 'src/models/types';
 import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
-import ApproveRejectButtonGrp from 'src/components/account/ApproveRejectButtonGrp';
-import AccountInfoGrid from 'src/components/account/AccountInfoGrid';
-import AccountEditButtonGrp from 'src/components/account/AccountEditButtonGrp';
-import AccountEditGrid from 'src/components/account/AccountEditGrid';
 import { getDiscountCodeDetailsSvc } from 'src/services/discountCodeService';
 import DiscountInfoGrid from 'src/components/discounts/DiscountInfoGrid';
 
