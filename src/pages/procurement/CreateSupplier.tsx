@@ -1,5 +1,6 @@
 import React, { FormEvent } from 'react';
 import {
+  Autocomplete,
   Box,
   FormGroup,
   TextField,
@@ -15,7 +16,10 @@ import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import { useNavigate } from 'react-router';
 import { Supplier } from '../../models/types';
-import { createSupplier } from '../../services/supplierService';
+import {
+  createSupplier,
+  getAllCurrencies
+} from '../../services/supplierService';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
 import {
   AlertType,
@@ -33,7 +37,9 @@ const CreateSupplier = () => {
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
-  
+
+  const [currencies, setCurrencies] = React.useState<string[]>([]);
+
   const [newSupplier, setNewSupplier] = React.useState<NewSupplier>({
     email: '',
     supplierProduct: []
@@ -42,6 +48,12 @@ const CreateSupplier = () => {
   React.useEffect(() => {
     setDisableSave(!isValidSupplier(newSupplier));
   }, [newSupplier]);
+
+  React.useEffect(() => {
+    asyncFetchCallback(getAllCurrencies(), (res) => {
+      setCurrencies(res);
+    });
+  }, []);
 
   const handleEditSupplier = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -151,9 +163,29 @@ const CreateSupplier = () => {
                       onChange={handleEditSupplier}
                       placeholder='eg.: 123 Clementi Road, #01-01, Singapore 12345'
                     />
+                    <Autocomplete
+                      disablePortal
+                      id='outline-required'
+                      options={currencies}
+                      value={newSupplier?.currency}
+                      onChange={(event, newValue) => {
+                        setNewSupplier({
+                          ...newSupplier,
+                          currency: newValue!
+                        });
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} label='Currency' required />
+                      )}
+                    />
                   </div>
                 </div>
                 <SupplierProductEditGrid
+                  currency={
+                    newSupplier?.currency
+                      ? newSupplier?.currency.split(' - ')[0]
+                      : '-'
+                  }
                   supplierProductList={newSupplier.supplierProduct ?? []}
                   updateSupplierProductList={(pdts) =>
                     setNewSupplier((prev) => ({
@@ -168,7 +200,7 @@ const CreateSupplier = () => {
                     className='cancel-btn'
                     color='primary'
                     onClick={() =>
-                      navigate({ pathname: '/orders/allSuppliers' })
+                      navigate({ pathname: '/procurementOrders/allSuppliers' })
                     }
                   >
                     Cancel

@@ -37,3 +37,9 @@ export const updateSupplier = async (supplier: Supplier): Promise<void> => {
 export const deleteSupplier = async (id: string | number): Promise<void> => {
   return axios.delete(`${apiRoot}/supplier/${id}`);
 };
+
+export const getAllCurrencies = async (): Promise<string[]> => {
+  return axios
+    .get(`${apiRoot}/supplier/currencies/all`)
+    .then((res) => res.data);
+};
