@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import {
+  Autocomplete,
   Backdrop,
   Box,
   FormGroup,
@@ -10,7 +11,7 @@ import {
   IconButton,
   Tooltip,
   Typography,
-  CircularProgress,
+  CircularProgress
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -19,45 +20,24 @@ import { Supplier, SupplierProduct } from '../../models/types';
 import {
   deleteSupplier,
   getSupplierById,
-  updateSupplier
+  updateSupplier,
+  getAllCurrencies
 } from '../../services/supplierService';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
 import validator from 'validator';
 import TimeoutAlert, {
   AlertType,
   AxiosErrDataBody
- } from 'src/components/common/TimeoutAlert';
+} from 'src/components/common/TimeoutAlert';
 import { isValidSupplier } from 'src/components/procurement/procurementHelper';
 import SupplierProductEditGrid from 'src/components/procurement/SupplierProductEditGrid';
-import { 
-  DataGrid, 
-  GridColDef, 
-  GridValueGetterParams 
+import {
+  DataGrid,
+  GridColDef,
+  GridColumnHeaderParams,
+  GridValueGetterParams
 } from '@mui/x-data-grid';
 import ProductCellAction from 'src/components/inventory/ProductCellAction';
-
-const columns: GridColDef[] = [
-  {
-    field: 'name',
-    headerName: 'Product Name',
-    flex: 2,
-    valueGetter: (params: GridValueGetterParams) => params.row.product.name
-  },
-  {
-    field: 'rate',
-    headerName: 'Rate',
-    flex: 1,
-  },
-  {
-    field: 'action',
-    headerName: 'Action',
-    headerAlign: 'right',
-    align: 'right',
-    flex: 1,
-    renderCell: ProductCellAction
-  }
-];
-
 
 const SupplierDetails = () => {
   const navigate = useNavigate();
@@ -77,12 +57,40 @@ const SupplierDetails = () => {
   const [originalSupplier, setOriginalSupplier] =
     React.useState<Supplier>(supplier);
   const [editSupplier, setEditSupplier] = React.useState<Supplier>(supplier);
-  const [supplierProducts, setSupplierProducts] = React.useState<SupplierProduct[]>(
-    []
-  );
+  const [supplierProducts, setSupplierProducts] = React.useState<
+    SupplierProduct[]
+  >([]);
+
+  const [currencies, setCurrencies] = React.useState<string[]>([]);
 
   const [edit, setEdit] = React.useState<boolean>(false);
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
+
+  const columns: GridColDef[] = [
+    {
+      field: 'name',
+      headerName: 'Product Name',
+      flex: 2,
+      valueGetter: (params: GridValueGetterParams) => params.row.product.name
+    },
+    {
+      field: 'rate',
+      renderHeader: (params: GridColumnHeaderParams) => (
+        <strong>{`Rate (${editSupplier?.currency.split(' - ')[0]})`}</strong>
+      ),
+      headerAlign: 'right',
+      align: 'right',
+      flex: 1
+    },
+    {
+      field: 'action',
+      headerName: 'Action',
+      headerAlign: 'right',
+      align: 'right',
+      flex: 1,
+      renderCell: ProductCellAction
+    }
+  ];
 
   React.useEffect(() => {
     id &&
@@ -114,11 +122,15 @@ const SupplierDetails = () => {
       asyncFetchCallback(getSupplierById(id), (res) => {
         setOriginalSupplier(res);
         setEditSupplier(res);
+        console.log('editSupplier', editSupplier);
 
         setSupplierProducts(res.supplierProduct);
         setTableLoading(false);
 
         setLoading(false);
+      });
+      asyncFetchCallback(getAllCurrencies(), (res) => {
+        setCurrencies(res);
       });
     }
   }, [id]);
@@ -341,11 +353,37 @@ const SupplierDetails = () => {
                         {`Supplier Address: ${editSupplier?.address}`}
                       </Typography>
                     )}
+                    {edit ? (
+                      <Autocomplete
+                        disablePortal
+                        id='outline-required'
+                        options={currencies}
+                        value={editSupplier?.currency}
+                        onChange={(event, newValue) => {
+                          setEditSupplier({
+                            ...editSupplier,
+                            currency: newValue!
+                          });
+                        }}
+                        renderInput={(params) => (
+                          <TextField {...params} label='Currency' required />
+                        )}
+                      />
+                    ) : (
+                      <Typography sx={{ padding: '15px' }}>
+                        {`Supplier Currency: ${editSupplier?.currency}`}
+                      </Typography>
+                    )}
                   </div>
                 </div>
                 {/* product table */}
                 {edit ? (
                   <SupplierProductEditGrid
+                    currency={
+                      editSupplier?.currency
+                        ? editSupplier?.currency.split(' - ')[0]
+                        : '-'
+                    }
                     supplierProductList={supplierProducts}
                     updateSupplierProductList={(pdts) =>
                       setEditSupplier((prev) => ({

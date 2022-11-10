@@ -13,9 +13,12 @@ export const isValidSupplier = (
 ): boolean => {
   if (!supplierToValidate) return false;
   return !!(
-    supplierToValidate.name &&
-    supplierToValidate.email &&
-    supplierToValidate.address
+    (
+      supplierToValidate.name &&
+      supplierToValidate.email &&
+      supplierToValidate.address &&
+      supplierToValidate.currency
+    )
     // supplierToValidate.supplierProduct?.length
   );
 };
@@ -28,15 +31,13 @@ export interface SupplierProductGridRow extends SupplierProduct {
 export const convertSupplierProductToGridRow = (
   supplierProduct: SupplierProduct[]
 ): SupplierProductGridRow[] => {
-  return supplierProduct.map((pdt) => ({ ...pdt, gridId: randomId()}));
+  return supplierProduct.map((pdt) => ({ ...pdt, gridId: randomId() }));
 };
 
 export const convertGridRowToSupplierProduct = (
   productGridRows: SupplierProductGridRow[]
 ): SupplierProduct[] => {
-  return productGridRows.map((pdt) =>
-    omit(pdt, ['gridId', 'isNew'])
-  );
+  return productGridRows.map((pdt) => omit(pdt, ['gridId', 'isNew']));
 };
 
 export const getAvailableProducts = (

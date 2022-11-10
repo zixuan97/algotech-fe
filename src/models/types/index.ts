@@ -189,6 +189,7 @@ export interface Supplier {
   email: string;
   name: string;
   address: string;
+  currency: string;
   supplierProduct: SupplierProduct[];
 }
 
