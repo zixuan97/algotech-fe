@@ -353,10 +353,12 @@ export interface LalamoveDriver {
 
 export interface DiscountCode {
   id: number;
-  discountCode: String;
+  discountCode: string;
   amount: number;
+  minOrderAmount: number;
   startDate: Date;
   endDate?: Date;
-  customerEmails: String[];
+  customerEmails: string[];
   type: DiscountCodeType;
+  isEnabled: boolean;
 }
