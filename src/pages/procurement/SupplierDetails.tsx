@@ -11,10 +11,7 @@ import {
   IconButton,
   Tooltip,
   Typography,
-  OutlinedInput,
-  CircularProgress,
-  FormControl,
-  SelectChangeEvent
+  CircularProgress
 } from '@mui/material';
 import '../../styles/pages/inventory/inventory.scss';
 import { ChevronLeft } from '@mui/icons-material';
@@ -34,30 +31,13 @@ import TimeoutAlert, {
 } from 'src/components/common/TimeoutAlert';
 import { isValidSupplier } from 'src/components/procurement/procurementHelper';
 import SupplierProductEditGrid from 'src/components/procurement/SupplierProductEditGrid';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridColumnHeaderParams,
+  GridValueGetterParams
+} from '@mui/x-data-grid';
 import ProductCellAction from 'src/components/inventory/ProductCellAction';
-
-const columns: GridColDef[] = [
-  {
-    field: 'name',
-    headerName: 'Product Name',
-    flex: 2,
-    valueGetter: (params: GridValueGetterParams) => params.row.product.name
-  },
-  {
-    field: 'rate',
-    headerName: 'Rate',
-    flex: 1
-  },
-  {
-    field: 'action',
-    headerName: 'Action',
-    headerAlign: 'right',
-    align: 'right',
-    flex: 1,
-    renderCell: ProductCellAction
-  }
-];
 
 const SupplierDetails = () => {
   const navigate = useNavigate();
@@ -85,6 +65,32 @@ const SupplierDetails = () => {
 
   const [edit, setEdit] = React.useState<boolean>(false);
   const [disableSave, setDisableSave] = React.useState<boolean>(true);
+
+  const columns: GridColDef[] = [
+    {
+      field: 'name',
+      headerName: 'Product Name',
+      flex: 2,
+      valueGetter: (params: GridValueGetterParams) => params.row.product.name
+    },
+    {
+      field: 'rate',
+      renderHeader: (params: GridColumnHeaderParams) => (
+        <strong>{`Rate (${editSupplier?.currency.split(' - ')[0]})`}</strong>
+      ),
+      headerAlign: 'right',
+      align: 'right',
+      flex: 1
+    },
+    {
+      field: 'action',
+      headerName: 'Action',
+      headerAlign: 'right',
+      align: 'right',
+      flex: 1,
+      renderCell: ProductCellAction
+    }
+  ];
 
   React.useEffect(() => {
     id &&
@@ -116,6 +122,7 @@ const SupplierDetails = () => {
       asyncFetchCallback(getSupplierById(id), (res) => {
         setOriginalSupplier(res);
         setEditSupplier(res);
+        console.log('editSupplier', editSupplier);
 
         setSupplierProducts(res.supplierProduct);
         setTableLoading(false);
@@ -359,7 +366,7 @@ const SupplierDetails = () => {
                           });
                         }}
                         renderInput={(params) => (
-                          <TextField {...params} label='Currency' />
+                          <TextField {...params} label='Currency' required />
                         )}
                       />
                     ) : (
@@ -372,6 +379,11 @@ const SupplierDetails = () => {
                 {/* product table */}
                 {edit ? (
                   <SupplierProductEditGrid
+                    currency={
+                      editSupplier?.currency
+                        ? editSupplier?.currency.split(' - ')[0]
+                        : '-'
+                    }
                     supplierProductList={supplierProducts}
                     updateSupplierProductList={(pdts) =>
                       setEditSupplier((prev) => ({
