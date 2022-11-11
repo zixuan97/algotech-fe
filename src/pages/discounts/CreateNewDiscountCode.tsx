@@ -96,12 +96,6 @@ const CreateNewDiscountCode = () => {
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRadioValue(event.target.value);
-    setNewDiscountCode((prev) => {
-      return {
-        ...prev,
-        endDate: prev.startDate
-      };
-    });
   };
 
   useEffect(() => {
@@ -283,10 +277,7 @@ const CreateNewDiscountCode = () => {
                               moment(date).isBefore(moment().startOf('day'))
                             }
                             onChange={(date) => {
-                              setNewDiscountCode({
-                                ...newDiscountCode,
-                                startDate: moment(date).startOf('day').toDate()
-                              });
+                              setDateRange((prev)=> [moment(date).startOf('day'), prev[1]])
                             }}
                             renderInput={(params) => <TextField {...params} />}
                           />
@@ -296,13 +287,13 @@ const CreateNewDiscountCode = () => {
                   </Grid>
                 </div>
               </div>
-
               <BottomButton
                 location='discountCode/allDiscountCodes'
                 firstButtonText='CANCEL'
                 secondButtonText='CREATE'
                 secondButtonFn={handleCreateButtonClick}
                 discountCode={newDiscountCode}
+                loading={loading}
               />
             </form>
           </Paper>

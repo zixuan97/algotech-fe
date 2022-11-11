@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button, CircularProgress } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DiscountCode, DiscountCodeType } from 'src/models/types';
@@ -9,6 +9,7 @@ interface props {
   secondButtonText: string;
   secondButtonFn: Function;
   discountCode: Partial<DiscountCode>;
+  loading: boolean;
 }
 
 const BottomButton: React.FC<props> = ({
@@ -16,7 +17,8 @@ const BottomButton: React.FC<props> = ({
   firstButtonText,
   secondButtonText,
   secondButtonFn,
-  discountCode
+  discountCode,
+  loading
 }) => {
   const navigate = useNavigate();
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
@@ -40,6 +42,7 @@ const BottomButton: React.FC<props> = ({
 
   return (
     <div className='view-button-group'>
+      {loading && <CircularProgress color='secondary' />}
       <Button
         variant='contained'
         className='create-btn'
