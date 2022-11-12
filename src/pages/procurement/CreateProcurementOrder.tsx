@@ -25,6 +25,7 @@ import {
 import {
   DataGrid,
   GridColDef,
+  GridColumnHeaderParams,
   GridRenderCellParams,
   GridValueGetterParams
 } from '@mui/x-data-grid';
@@ -59,6 +60,8 @@ const CreateProcurementOrder = () => {
     React.useState<boolean>(false);
   const id = searchParams.get('id');
 
+  const [currency, setCurrency] = React.useState<string>('-');
+
   React.useEffect(() => {
     asyncFetchCallback(getAllSuppliers(), setSuppliers);
     asyncFetchCallback(getAllLocations(), setWarehouseData);
@@ -82,12 +85,14 @@ const CreateProcurementOrder = () => {
   };
 
   const handleEditSupplier = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let newSupplier = suppliers.find(
+      (supplier) => supplier.id.toString() == e.target.value
+    );
     setNewProcurementOrder((prev) => ({
       ...prev,
-      supplier: suppliers.find(
-        (supplier) => supplier.id.toString() == e.target.value
-      )
+      supplier: newSupplier
     }));
+    setCurrency(newSupplier!.currency);
   };
 
   const handleEditLocation = (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -163,7 +168,13 @@ const CreateProcurementOrder = () => {
       flex: 1,
       valueGetter: (params: GridValueGetterParams) => params.row.product.name
     },
-    { field: 'rate', headerName: 'Rate per Unit', flex: 1 },
+    {
+      field: 'rate',
+      renderHeader: (params: GridColumnHeaderParams) => (
+        <strong>{`Rate per Unit (${currency.split(' - ')[0]})`}</strong>
+      ),
+      flex: 1
+    },
     { field: 'quantity', headerName: 'Quantity', flex: 1 },
     {
       field: 'actions',
@@ -367,6 +378,7 @@ const CreateProcurementOrder = () => {
                 Add Product to Order
               </Button>
               <AddProductModal
+                suppliers={suppliers}
                 productIdToDisplay={productIdToDisplay}
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}

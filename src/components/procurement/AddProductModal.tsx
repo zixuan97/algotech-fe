@@ -13,6 +13,7 @@ import Box from '@mui/material/Box';
 import React from 'react';
 import {
   Product,
+  Supplier,
   SupplierProduct,
   SupplierProductInfo
 } from 'src/models/types';
@@ -26,6 +27,7 @@ import '../../styles/pages/procurement.scss';
 import TimeoutAlert, { AlertType } from '../common/TimeoutAlert';
 
 type AddProductModalProps = {
+  suppliers: Supplier[];
   productIdToDisplay: number | undefined;
   open: boolean;
   onClose: () => void;
@@ -42,6 +44,7 @@ type AddProductModalProps = {
 };
 
 const AddProductModal = ({
+  suppliers,
   productIdToDisplay,
   open,
   onClose,
@@ -273,7 +276,21 @@ const AddProductModal = ({
                             color='text.secondary'
                             style={{ display: 'flex', paddingLeft: '4rem' }}
                           >
-                            Rate: ${option.rate}
+                            Rate:{' '}
+                            {suppliers.find(
+                              (supplier) =>
+                                supplier.id.toString() ==
+                                option.supplierId.toString()
+                            )
+                              ? suppliers
+                                  .find(
+                                    (supplier) =>
+                                      supplier.id.toString() ==
+                                      option.supplierId.toString()
+                                  )!
+                                  .currency.split(' - ')[0] + ' '
+                              : ''}
+                            {option.rate}
                           </Typography>
                         </MenuItem>
                       ))}
