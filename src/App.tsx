@@ -87,6 +87,9 @@ import ViewBusinessAccount from './pages/account/ViewBusinessAccount';
 import BusinessAccounts from './pages/account/BusinessAccounts';
 import AllBulkOrders from './pages/sales/bulkOrders/AllBulkOrders';
 import BulkOrderDetails from './pages/sales/bulkOrders/BulkOrderDetails';
+import AllDiscountCodes from './pages/discounts/AllDiscountCodes';
+import CreateNewDiscountCode from './pages/discounts/CreateNewDiscountCode';
+import DiscountCodeDetails from './pages/discounts/DiscountCodeDetails';
 
 const theme = createTheme({
   palette: {
@@ -372,6 +375,22 @@ const App = () => {
                   <Route
                     path='procurementOrders/supplierDetails'
                     element={<SupplierDetails />}
+                  />
+
+                  {/* --- Discount Routes --- */}
+                  <Route
+                    path='discountCode/allDiscountCodes'
+                    element={<AllDiscountCodes />}
+                  />
+
+                  <Route
+                    path='discountCode/createNewDiscountCode'
+                    element={<CreateNewDiscountCode />}
+                  />
+
+                  <Route
+                    path='/discountCode/discountCodeDetail'
+                    element={<DiscountCodeDetails />}
                   />
 
                   {/* --- Account Routes --- */}

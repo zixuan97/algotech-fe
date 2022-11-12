@@ -6,7 +6,9 @@ import {
   Receipt,
   LocalShipping,
   MenuBook,
-  FiberManualRecord
+  FiberManualRecord,
+  Percent,
+  LocalOffer
 } from '@mui/icons-material';
 import { Button, Chip, Divider, Drawer, List, Toolbar } from '@mui/material';
 import React from 'react';
@@ -34,7 +36,6 @@ type MenuOpen = {
   procurement: boolean;
   delivery: boolean;
   customers: boolean;
-  hr: boolean;
   accounts: boolean;
   catalogue: boolean;
 };
@@ -46,7 +47,6 @@ const menuOpenDefaultState: MenuOpen = {
   procurement: false,
   delivery: false,
   customers: false,
-  hr: false,
   accounts: false,
   catalogue: false
 };
@@ -148,10 +148,7 @@ const Sidebar = ({
                 primary='Shop Performance'
                 to='sales/shopPerformance'
               />
-              <ListItemLink
-                primary='Sales Orders'
-                to='sales/allSalesOrders'
-              />
+              <ListItemLink primary='Sales Orders' to='sales/allSalesOrders' />
               <ListItemLink primary='Bulk Orders' to='sales/allBulkOrders' />
             </List>
           </NestedList>
@@ -218,9 +215,11 @@ const Sidebar = ({
               primary='Sent Newsletters'
               to='customer/allSentNewsletters'
             />
+            <ListItemLink
+              primary='Discount Codes'
+              to='discountCode/allDiscountCodes'
+            />
           </NestedList>
-
-          <ListItemLink icon={<AccountBox />} primary='HR' to='/hr' disabled />
 
           <RoleComponent allowedRoles={[UserRole.ADMIN]}>
             <NestedList
