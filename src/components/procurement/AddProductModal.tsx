@@ -64,7 +64,8 @@ const AddProductModal = ({
   const [allSupplierProducts, setAllSupplierProducts] = React.useState<
     SupplierProductInfo[]
   >([]);
-  const [selectedProduct, setSelectedProduct] = React.useState<Product>();
+  const [selectedProduct, setSelectedProduct] =
+    React.useState<Product | null>();
   const [alert, setAlert] = React.useState<AlertType | null>(null);
 
   const onSkuChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,6 +95,7 @@ const AddProductModal = ({
   const onCancelHandler = () => {
     setSku('');
     setRate('');
+    setSelectedProduct(null);
     setSupplierId('');
     setQuantity('');
 
@@ -334,7 +336,7 @@ const AddProductModal = ({
             </Button>
             <Button
               onClick={() =>
-                submitHandler(sku, rate, quantity, selectedProduct, supplierId)
+                submitHandler(sku, rate, quantity, selectedProduct!, supplierId)
               }
               autoFocus={focusPassthrough}
             >
