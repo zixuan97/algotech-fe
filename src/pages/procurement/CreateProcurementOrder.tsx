@@ -128,18 +128,20 @@ const CreateProcurementOrder = () => {
     setLoading(true);
 
     if (supplierId) {
+      let newSupplier = suppliers.find(
+        (supplier) => supplier.id.toString() == supplierId
+      );
       setNewProcurementOrder((prev) => ({
         ...prev,
-        supplier: suppliers.find(
-          (supplier) => supplier.id.toString() == supplierId
-        )
+        supplier: newSupplier
       }));
+      setCurrency(newSupplier!.currency);
     }
 
     if (selectedProduct) {
       let newProcurementOrderItem: NewProcurementOrderItem = {
         quantity: parseInt(quantity),
-        rate: parseInt(rate),
+        rate: parseFloat(rate),
         product: selectedProduct
       };
       let updatedOrderItems = Object.assign([], orderItems);
@@ -175,13 +177,24 @@ const CreateProcurementOrder = () => {
           currency.split(' - ')[0]
         })`}</div>
       ),
+      flex: 1,
+      type: 'number',
+      valueFormatter: (params) => params.value.toFixed(2)
+    },
+    {
+      field: 'quantity',
+      headerName: 'Quantity',
+      type: 'number',
+      headerAlign: 'right',
+      align: 'right',
       flex: 1
     },
-    { field: 'quantity', headerName: 'Quantity', flex: 1 },
     {
       field: 'actions',
       headerName: 'Actions',
       flex: 1,
+      headerAlign: 'right',
+      align: 'right',
       renderCell: ({ id }: GridRenderCellParams) => {
         return (
           <Button
