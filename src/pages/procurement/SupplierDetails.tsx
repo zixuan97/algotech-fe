@@ -313,7 +313,7 @@ const SupplierDetails = () => {
                         required
                         fullWidth
                         id='outlined-required'
-                        label='Supplier Email'
+                        label='Email'
                         name='email'
                         value={editSupplier?.email}
                         error={
@@ -333,7 +333,7 @@ const SupplierDetails = () => {
                       />
                     ) : (
                       <Typography sx={{ padding: '15px' }}>
-                        {`Supplier Email: ${editSupplier?.email}`}
+                        {`Email: ${editSupplier?.email}`}
                       </Typography>
                     )}
 
@@ -342,7 +342,7 @@ const SupplierDetails = () => {
                         required
                         fullWidth
                         id='outlined-required'
-                        label='Supplier Address'
+                        label='Address'
                         name='address'
                         value={editSupplier?.address}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -352,7 +352,7 @@ const SupplierDetails = () => {
                       />
                     ) : (
                       <Typography sx={{ padding: '15px' }}>
-                        {`Supplier Address: ${editSupplier?.address}`}
+                        {`Address: ${editSupplier?.address}`}
                       </Typography>
                     )}
                     {edit ? (
@@ -373,7 +373,7 @@ const SupplierDetails = () => {
                       />
                     ) : (
                       <Typography sx={{ padding: '15px' }}>
-                        {`Supplier Currency: ${editSupplier?.currency}`}
+                        {`Currency: ${editSupplier?.currency}`}
                       </Typography>
                     )}
                   </div>
