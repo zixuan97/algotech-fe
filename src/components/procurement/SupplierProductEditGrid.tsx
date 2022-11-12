@@ -133,7 +133,7 @@ export default function SupplierProductEditGrid({
     {
       field: 'rate',
       renderHeader: (params: GridColumnHeaderParams) => (
-        <strong>{`Rate (${currency})`}</strong>
+        <div style={{ fontWeight: '500' }}>{`Rate (${currency})`}</div>
       ),
       type: 'number',
       flex: 1,

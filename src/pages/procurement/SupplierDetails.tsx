@@ -76,7 +76,9 @@ const SupplierDetails = () => {
     {
       field: 'rate',
       renderHeader: (params: GridColumnHeaderParams) => (
-        <strong>{`Rate (${editSupplier?.currency.split(' - ')[0]})`}</strong>
+        <div style={{ fontWeight: '500' }}>{`Rate (${
+          editSupplier?.currency.split(' - ')[0]
+        })`}</div>
       ),
       headerAlign: 'right',
       align: 'right',

@@ -171,7 +171,9 @@ const CreateProcurementOrder = () => {
     {
       field: 'rate',
       renderHeader: (params: GridColumnHeaderParams) => (
-        <strong>{`Rate per Unit (${currency.split(' - ')[0]})`}</strong>
+        <div style={{ fontWeight: '500' }}>{`Rate per Unit (${
+          currency.split(' - ')[0]
+        })`}</div>
       ),
       flex: 1
     },
