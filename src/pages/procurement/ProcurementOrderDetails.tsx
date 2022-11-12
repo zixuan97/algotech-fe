@@ -80,9 +80,20 @@ const ProcurementOrderDetails = () => {
           currency.split(' - ')[0]
         })`}</div>
       ),
-      flex: 1
+      flex: 1,
+      type: 'number',
+      headerAlign: 'right',
+      align: 'right',
+      valueFormatter: (params) => params.value.toFixed(2)
     },
-    { field: 'quantity', headerName: 'Quantity', flex: 1 }
+    {
+      field: 'quantity',
+      headerName: 'Quantity',
+      type: 'number',
+      headerAlign: 'right',
+      align: 'right',
+      flex: 1
+    }
   ];
 
   React.useEffect(() => {
@@ -330,7 +341,9 @@ const ProcurementOrderDetails = () => {
             <DisplayedField
               label='Order Total'
               value={
-                currency.split(' - ')[0] + ' ' + originalOrder?.totalAmount
+                currency.split(' - ')[0] +
+                ' ' +
+                originalOrder?.totalAmount.toFixed(2)
               }
             />
           </div>

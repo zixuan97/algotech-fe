@@ -82,7 +82,9 @@ const SupplierDetails = () => {
       ),
       headerAlign: 'right',
       align: 'right',
-      flex: 1
+      flex: 1,
+      type: 'number',
+      valueFormatter: (params) => params.value.toFixed(2)
     },
     {
       field: 'action',
