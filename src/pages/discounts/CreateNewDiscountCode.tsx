@@ -29,6 +29,10 @@ let discountCodeType = Object.keys(DiscountCodeType).filter((v) =>
   isNaN(Number(v))
 );
 
+export const validityCheck = (value: string) => {
+  return value !== undefined && validator.isEmpty(value!);
+};
+
 const CreateNewDiscountCode = () => {
   const navigate = useNavigate();
   const [alert, setAlert] = useState<AlertType | null>(null);
@@ -90,9 +94,7 @@ const CreateNewDiscountCode = () => {
     });
   };
 
-  const validityCheck = (value: string) => {
-    return value !== undefined && validator.isEmpty(value!);
-  };
+
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRadioValue(event.target.value);

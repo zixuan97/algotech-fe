@@ -17,6 +17,10 @@ export const editDiscountCodeSvc = async (discountCode: DiscountCode): Promise<a
   return axios.put(`${apiRoot}/discountCode`, discountCode).then((res) => res.data);
 };
 
+export const deleteDiscountCodeSvc = async (id: string): Promise<any> => {
+  return axios.delete(`${apiRoot}/discountCode/${id}`).then((res) => res.data);
+};
+
 export const getDiscountCodeDetailsSvc = async (id: string): Promise<DiscountCode> => {
   return axios.get(`${apiRoot}/discountCode/id/${id}`).then((res) => res.data);
 };
