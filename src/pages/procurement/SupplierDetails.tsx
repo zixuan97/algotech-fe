@@ -76,11 +76,15 @@ const SupplierDetails = () => {
     {
       field: 'rate',
       renderHeader: (params: GridColumnHeaderParams) => (
-        <strong>{`Rate (${editSupplier?.currency.split(' - ')[0]})`}</strong>
+        <div style={{ fontWeight: '500' }}>{`Rate (${
+          editSupplier?.currency.split(' - ')[0]
+        })`}</div>
       ),
       headerAlign: 'right',
       align: 'right',
-      flex: 1
+      flex: 1,
+      type: 'number',
+      valueFormatter: (params) => params.value.toFixed(2)
     },
     {
       field: 'action',
@@ -311,7 +315,7 @@ const SupplierDetails = () => {
                         required
                         fullWidth
                         id='outlined-required'
-                        label='Supplier Email'
+                        label='Email'
                         name='email'
                         value={editSupplier?.email}
                         error={
@@ -331,7 +335,7 @@ const SupplierDetails = () => {
                       />
                     ) : (
                       <Typography sx={{ padding: '15px' }}>
-                        {`Supplier Email: ${editSupplier?.email}`}
+                        {`Email: ${editSupplier?.email}`}
                       </Typography>
                     )}
 
@@ -340,7 +344,7 @@ const SupplierDetails = () => {
                         required
                         fullWidth
                         id='outlined-required'
-                        label='Supplier Address'
+                        label='Address'
                         name='address'
                         value={editSupplier?.address}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
@@ -350,7 +354,7 @@ const SupplierDetails = () => {
                       />
                     ) : (
                       <Typography sx={{ padding: '15px' }}>
-                        {`Supplier Address: ${editSupplier?.address}`}
+                        {`Address: ${editSupplier?.address}`}
                       </Typography>
                     )}
                     {edit ? (
@@ -371,7 +375,7 @@ const SupplierDetails = () => {
                       />
                     ) : (
                       <Typography sx={{ padding: '15px' }}>
-                        {`Supplier Currency: ${editSupplier?.currency}`}
+                        {`Currency: ${editSupplier?.currency}`}
                       </Typography>
                     )}
                   </div>

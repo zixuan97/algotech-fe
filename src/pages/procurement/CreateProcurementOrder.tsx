@@ -25,6 +25,7 @@ import {
 import {
   DataGrid,
   GridColDef,
+  GridColumnHeaderParams,
   GridRenderCellParams,
   GridValueGetterParams
 } from '@mui/x-data-grid';
@@ -59,6 +60,8 @@ const CreateProcurementOrder = () => {
     React.useState<boolean>(false);
   const id = searchParams.get('id');
 
+  const [currency, setCurrency] = React.useState<string>('-');
+
   React.useEffect(() => {
     asyncFetchCallback(getAllSuppliers(), setSuppliers);
     asyncFetchCallback(getAllLocations(), setWarehouseData);
@@ -82,19 +85,21 @@ const CreateProcurementOrder = () => {
   };
 
   const handleEditSupplier = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let newSupplier = suppliers.find(
+      (supplier) => supplier.id.toString() === e.target.value.toString()
+    );
     setNewProcurementOrder((prev) => ({
       ...prev,
-      supplier: suppliers.find(
-        (supplier) => supplier.id.toString() == e.target.value
-      )
+      supplier: newSupplier
     }));
+    setCurrency(newSupplier!.currency);
   };
 
   const handleEditLocation = (e: React.ChangeEvent<HTMLInputElement>) =>
     setNewProcurementOrder((prev) => ({
       ...prev,
       location: warehouseData.find(
-        (warehouse) => warehouse.id.toString() == e.target.value
+        (warehouse) => warehouse.id.toString() === e.target.value.toString()
       )
     }));
 
@@ -123,18 +128,20 @@ const CreateProcurementOrder = () => {
     setLoading(true);
 
     if (supplierId) {
+      let newSupplier = suppliers.find(
+        (supplier) => supplier.id.toString() == supplierId
+      );
       setNewProcurementOrder((prev) => ({
         ...prev,
-        supplier: suppliers.find(
-          (supplier) => supplier.id.toString() == supplierId
-        )
+        supplier: newSupplier
       }));
+      setCurrency(newSupplier!.currency);
     }
 
     if (selectedProduct) {
       let newProcurementOrderItem: NewProcurementOrderItem = {
         quantity: parseInt(quantity),
-        rate: parseInt(rate),
+        rate: parseFloat(rate),
         product: selectedProduct
       };
       let updatedOrderItems = Object.assign([], orderItems);
@@ -163,12 +170,31 @@ const CreateProcurementOrder = () => {
       flex: 1,
       valueGetter: (params: GridValueGetterParams) => params.row.product.name
     },
-    { field: 'rate', headerName: 'Rate per Unit', flex: 1 },
-    { field: 'quantity', headerName: 'Quantity', flex: 1 },
+    {
+      field: 'rate',
+      renderHeader: (params: GridColumnHeaderParams) => (
+        <div style={{ fontWeight: '500' }}>{`Rate per Unit (${
+          currency.split(' - ')[0]
+        })`}</div>
+      ),
+      flex: 1,
+      type: 'number',
+      valueFormatter: (params) => params.value.toFixed(2)
+    },
+    {
+      field: 'quantity',
+      headerName: 'Quantity',
+      type: 'number',
+      headerAlign: 'right',
+      align: 'right',
+      flex: 1
+    },
     {
       field: 'actions',
       headerName: 'Actions',
       flex: 1,
+      headerAlign: 'right',
+      align: 'right',
       renderCell: ({ id }: GridRenderCellParams) => {
         return (
           <Button
@@ -367,6 +393,7 @@ const CreateProcurementOrder = () => {
                 Add Product to Order
               </Button>
               <AddProductModal
+                suppliers={suppliers}
                 productIdToDisplay={productIdToDisplay}
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}

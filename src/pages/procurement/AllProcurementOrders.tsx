@@ -57,7 +57,13 @@ const columns: GridColDef[] = [
     flex: 1,
     renderCell: OrderFulfilmentStatusCell
   },
-  { field: 'totalAmount', headerName: 'Order Total', type: 'number', flex: 1 },
+  {
+    field: 'totalAmount',
+    headerName: 'Order Total',
+    type: 'number',
+    valueFormatter: (params) => params.value.toFixed(2),
+    flex: 1
+  },
   {
     field: 'action',
     headerName: 'Action',
