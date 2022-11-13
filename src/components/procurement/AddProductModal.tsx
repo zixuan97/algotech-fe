@@ -85,8 +85,8 @@ const AddProductModal = ({
   const onRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let selectedSupplierProduct = allSupplierProducts.find(
       (supplierProduct) =>
-        supplierProduct.productId == selectedProduct?.id &&
-        supplierProduct.supplierId.toString() == e.target.value
+        supplierProduct.productId === selectedProduct?.id &&
+        supplierProduct.supplierId.toString() === e.target.value.toString()
     );
     setRate(selectedSupplierProduct!.rate.toString());
     setSupplierId(e.target.value);
@@ -281,13 +281,13 @@ const AddProductModal = ({
                             Rate:{' '}
                             {suppliers.find(
                               (supplier) =>
-                                supplier.id.toString() ==
+                                supplier.id.toString() ===
                                 option.supplierId.toString()
                             )
                               ? suppliers
                                   .find(
                                     (supplier) =>
-                                      supplier.id.toString() ==
+                                      supplier.id.toString() ===
                                       option.supplierId.toString()
                                   )!
                                   .currency.split(' - ')[0] + ' '

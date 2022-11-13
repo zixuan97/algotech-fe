@@ -86,7 +86,7 @@ const CreateProcurementOrder = () => {
 
   const handleEditSupplier = (e: React.ChangeEvent<HTMLInputElement>) => {
     let newSupplier = suppliers.find(
-      (supplier) => supplier.id.toString() == e.target.value
+      (supplier) => supplier.id.toString() === e.target.value.toString()
     );
     setNewProcurementOrder((prev) => ({
       ...prev,
@@ -99,7 +99,7 @@ const CreateProcurementOrder = () => {
     setNewProcurementOrder((prev) => ({
       ...prev,
       location: warehouseData.find(
-        (warehouse) => warehouse.id.toString() == e.target.value
+        (warehouse) => warehouse.id.toString() === e.target.value.toString()
       )
     }));
 
