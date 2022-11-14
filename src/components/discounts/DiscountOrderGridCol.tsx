@@ -62,9 +62,9 @@ export const discountOrderGridCols: GridColDef[] = [
 export const customerEmailGridCol: GridColDef[] = [
   {
     field: 'email',
-    headerName: 'Emails allowed to use this discount code',
+    headerName: 'Emails Allowed To Use This Discount Code',
     headerAlign: 'center',
     flex: 1,
     valueGetter: (params) => params.row
-  },
+  }
 ];

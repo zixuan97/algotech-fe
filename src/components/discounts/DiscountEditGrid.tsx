@@ -1,14 +1,12 @@
-import {
-  Grid,
-  InputAdornment,
-  MenuItem,
-  TextField,
-  Typography
-} from '@mui/material';
+import { Grid, InputAdornment, MenuItem, TextField } from '@mui/material';
 import _ from 'lodash';
+import moment from 'moment';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { DiscountCode, DiscountCodeType } from 'src/models/types';
 import { validityCheck } from 'src/pages/discounts/CreateNewDiscountCode';
+import { MomentRange } from 'src/utils/dateUtils';
+import DiscountDateToggle from './DiscountDateToggle';
 
 interface props {
   editDiscountCode: DiscountCode;
@@ -22,6 +20,10 @@ let discountCodeType = Object.keys(DiscountCodeType).filter((v) =>
 const DiscountEditGrid = ({ editDiscountCode, setEditDiscountCode }: props) => {
   const [showAmtError, setShowAmtError] = useState<boolean>(false);
   const [showMinAmtError, setShowMinAmtError] = useState<boolean>(false);
+  const [dateRange, setDateRange] = React.useState<MomentRange>([
+    moment(editDiscountCode.startDate),
+    moment(editDiscountCode.endDate)
+  ]);
 
   const disountFieldsOnChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -37,6 +39,16 @@ const DiscountEditGrid = ({ editDiscountCode, setEditDiscountCode }: props) => {
       };
     });
   };
+
+  useEffect(() => {
+    setEditDiscountCode((prev: DiscountCode) => {
+      return {
+        ...prev,
+        startDate: moment(dateRange[0]).startOf('day').toDate(),
+        endDate: moment(dateRange[1]).startOf('day').toDate()
+      };
+    });
+  }, [dateRange, setEditDiscountCode]);
 
   return (
     <Grid container spacing={2}>
@@ -136,6 +148,14 @@ const DiscountEditGrid = ({ editDiscountCode, setEditDiscountCode }: props) => {
             setShowMinAmtError(true);
           }}
           value={editDiscountCode?.minOrderAmount}
+        />
+      </Grid>
+
+      <Grid item xs={12}>
+        <DiscountDateToggle
+          editDiscountCode={editDiscountCode}
+          dateRange={dateRange}
+          setDateRange={setDateRange}
         />
       </Grid>
     </Grid>

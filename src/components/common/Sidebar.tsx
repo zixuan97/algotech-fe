@@ -204,6 +204,10 @@ const Sidebar = ({
           >
             <ListItemLink primary='All Customers' to='customer/allCustomers' />
             <ListItemLink
+              primary='Discount Codes'
+              to='discountCode/allDiscountCodes'
+            />
+            <ListItemLink
               primary='Newsletter Templates'
               to='customer/allNewsletterTemplates'
             />
@@ -214,10 +218,6 @@ const Sidebar = ({
             <ListItemLink
               primary='Sent Newsletters'
               to='customer/allSentNewsletters'
-            />
-            <ListItemLink
-              primary='Discount Codes'
-              to='discountCode/allDiscountCodes'
             />
           </NestedList>
 

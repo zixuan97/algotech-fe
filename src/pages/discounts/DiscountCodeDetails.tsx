@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Paper,
-  Button,
-  IconButton,
-  Tooltip,
-  CircularProgress
-} from '@mui/material';
+import { Box, Paper, Button, IconButton, Tooltip } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
