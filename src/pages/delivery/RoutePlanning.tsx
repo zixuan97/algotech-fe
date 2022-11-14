@@ -83,7 +83,7 @@ const RoutePlanning = () => {
 
     const [tableData, setTableData] = React.useState<DeliveryOrder[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
-    const [latlng, setLatLng] = React.useState<any>();
+    const [address, setAddress] = React.useState<any>();
     const [currentLocation, setCurrentLocation] = React.useState<string>();
     const authContext = React.useContext(AuthContext);
     const { user } = authContext;
@@ -98,7 +98,8 @@ const RoutePlanning = () => {
             getCurrentLocationLatLng({ address: currentLocation }),
             (res) => {
                 setLoading(false);
-                setLatLng(res);
+                setAddress(res);
+                console.log(res.address);
                 console.log(res.length);
                 if (res.length === 0) {
                     setAlert({
@@ -187,9 +188,9 @@ const RoutePlanning = () => {
                 </Button>
                 {loading && <CircularProgress color='secondary' />}
             </div>
-            {currentLocation &&
+            {address && 
                 <div className='search-bar'>
-                    <h3>Your starting postal code is : {currentLocation}</h3>
+                    <h3>Your starting address is : {address.ADDRESS}</h3>
                     <Button
                         variant='contained'
                         size='small'
