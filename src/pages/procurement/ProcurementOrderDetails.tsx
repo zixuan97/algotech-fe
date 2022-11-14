@@ -19,7 +19,12 @@ import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineContent from '@mui/lab/TimelineContent';
 import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridValueGetterParams,
+  GridColumnHeaderParams
+} from '@mui/x-data-grid';
 import { useSearchParams } from 'react-router-dom';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
@@ -32,23 +37,6 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import apiRoot from 'src/services/util/apiRoot';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import moment from 'moment';
-
-const columns: GridColDef[] = [
-  {
-    field: 'sku',
-    headerName: 'SKU',
-    flex: 1,
-    valueGetter: (params: GridValueGetterParams) => params.row.productSku
-  },
-  {
-    field: 'name',
-    headerName: 'Product Name',
-    flex: 1,
-    valueGetter: (params: GridValueGetterParams) => params.row.productName
-  },
-  { field: 'rate', headerName: 'Rate per Unit', flex: 1 },
-  { field: 'quantity', headerName: 'Quantity', flex: 1 }
-];
 
 const paymentStatusOptions = [
   { id: 1, value: 'PAID' },
@@ -70,6 +58,44 @@ const ProcurementOrderDetails = () => {
   const [edit, setEdit] = React.useState<boolean>(false);
   const [alert, setAlert] = React.useState<AlertType | null>(null);
 
+  const [currency, setCurrency] = React.useState<string>('-');
+
+  const columns: GridColDef[] = [
+    {
+      field: 'sku',
+      headerName: 'SKU',
+      flex: 1,
+      valueGetter: (params: GridValueGetterParams) => params.row.productSku
+    },
+    {
+      field: 'name',
+      headerName: 'Product Name',
+      flex: 1,
+      valueGetter: (params: GridValueGetterParams) => params.row.productName
+    },
+    {
+      field: 'rate',
+      renderHeader: (params: GridColumnHeaderParams) => (
+        <div style={{ fontWeight: '500' }}>{`Rate per Unit (${
+          currency.split(' - ')[0]
+        })`}</div>
+      ),
+      flex: 1,
+      type: 'number',
+      headerAlign: 'right',
+      align: 'right',
+      valueFormatter: (params) => params.value.toFixed(2)
+    },
+    {
+      field: 'quantity',
+      headerName: 'Quantity',
+      type: 'number',
+      headerAlign: 'right',
+      align: 'right',
+      flex: 1
+    }
+  ];
+
   React.useEffect(() => {
     setLoading(true);
     if (id) {
@@ -83,6 +109,8 @@ const ProcurementOrderDetails = () => {
           setOriginalOrder(res);
           setUpdatedOrder(res);
           setLoading(false);
+          console.log(res.supplier);
+          setCurrency(res.supplier.currency);
         },
         () => setLoading(false)
       );
@@ -312,7 +340,11 @@ const ProcurementOrderDetails = () => {
             )}
             <DisplayedField
               label='Order Total'
-              value={originalOrder?.totalAmount}
+              value={
+                currency.split(' - ')[0] +
+                ' ' +
+                originalOrder?.totalAmount.toFixed(2)
+              }
             />
           </div>
           <div className='horizontal-text-fields'>

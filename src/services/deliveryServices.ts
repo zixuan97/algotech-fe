@@ -203,6 +203,22 @@ export const getAllAssignedDeliveriesPostalCodeByDate = (
     .then((res) => res.data);
 };
 
+export const getPlannedRoute = (
+  dateRange: MomentRange,
+  id: number | any,
+  startingPoint: number
+): Promise<DeliveryOrder[]> => {
+  const filter = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format(),
+    id: id,
+    startingPoint : startingPoint
+  };
+  return axios
+    .post(`${apiRoot}/delivery/route/assigned`, filter)
+    .then((res) => res.data);
+};
+
 export const getLalamoveDeliveryOrdersByRangeSvc = (
   dateRange: MomentRange
 ): Promise<DeliveryOrder[]> => {

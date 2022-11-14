@@ -13,6 +13,7 @@ import Box from '@mui/material/Box';
 import React from 'react';
 import {
   Product,
+  Supplier,
   SupplierProduct,
   SupplierProductInfo
 } from 'src/models/types';
@@ -26,6 +27,7 @@ import '../../styles/pages/procurement.scss';
 import TimeoutAlert, { AlertType } from '../common/TimeoutAlert';
 
 type AddProductModalProps = {
+  suppliers: Supplier[];
   productIdToDisplay: number | undefined;
   open: boolean;
   onClose: () => void;
@@ -42,6 +44,7 @@ type AddProductModalProps = {
 };
 
 const AddProductModal = ({
+  suppliers,
   productIdToDisplay,
   open,
   onClose,
@@ -61,7 +64,8 @@ const AddProductModal = ({
   const [allSupplierProducts, setAllSupplierProducts] = React.useState<
     SupplierProductInfo[]
   >([]);
-  const [selectedProduct, setSelectedProduct] = React.useState<Product>();
+  const [selectedProduct, setSelectedProduct] =
+    React.useState<Product | null>();
   const [alert, setAlert] = React.useState<AlertType | null>(null);
 
   const onSkuChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,8 +85,8 @@ const AddProductModal = ({
   const onRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let selectedSupplierProduct = allSupplierProducts.find(
       (supplierProduct) =>
-        supplierProduct.productId == selectedProduct?.id &&
-        supplierProduct.supplierId.toString() == e.target.value
+        supplierProduct.productId === selectedProduct?.id &&
+        supplierProduct.supplierId.toString() === e.target.value.toString()
     );
     setRate(selectedSupplierProduct!.rate.toString());
     setSupplierId(e.target.value);
@@ -91,6 +95,7 @@ const AddProductModal = ({
   const onCancelHandler = () => {
     setSku('');
     setRate('');
+    setSelectedProduct(null);
     setSupplierId('');
     setQuantity('');
 
@@ -273,7 +278,21 @@ const AddProductModal = ({
                             color='text.secondary'
                             style={{ display: 'flex', paddingLeft: '4rem' }}
                           >
-                            Rate: ${option.rate}
+                            Rate:{' '}
+                            {suppliers.find(
+                              (supplier) =>
+                                supplier.id.toString() ===
+                                option.supplierId.toString()
+                            )
+                              ? suppliers
+                                  .find(
+                                    (supplier) =>
+                                      supplier.id.toString() ===
+                                      option.supplierId.toString()
+                                  )!
+                                  .currency.split(' - ')[0] + ' '
+                              : ''}
+                            {option.rate}
                           </Typography>
                         </MenuItem>
                       ))}
@@ -317,7 +336,7 @@ const AddProductModal = ({
             </Button>
             <Button
               onClick={() =>
-                submitHandler(sku, rate, quantity, selectedProduct, supplierId)
+                submitHandler(sku, rate, quantity, selectedProduct!, supplierId)
               }
               autoFocus={focusPassthrough}
             >
