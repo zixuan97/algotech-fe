@@ -25,6 +25,12 @@ const DiscountDateToggle = ({
     setRadioValue(event.target.value);
   };
 
+  useEffect(() => {
+    if (radioValue === 'recurring') {
+      setDateRange((prev) => [prev[0], moment(null)]);
+    }
+  }, [radioValue, setDateRange]);
+
   return (
     <>
       <Grid container spacing={2}>

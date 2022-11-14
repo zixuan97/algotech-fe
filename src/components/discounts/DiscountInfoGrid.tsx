@@ -57,11 +57,17 @@ const DiscountInfoGrid = ({ discountCode, loading }: props) => {
           <div>
             <h4>Discount Date</h4>
             <Typography>
-              {discountCode.endDate
+              {`${moment(discountCode.startDate).format(DD_MM_YYYY)} to ${
+                discountCode.endDate && moment(discountCode.endDate).isValid()
+                  ? moment(discountCode.endDate).format(DD_MM_YYYY)
+                  : '-'
+              }`}
+
+              {/* {discountCode.endDate
                 ? `${moment(discountCode.startDate).format(
                     DD_MM_YYYY
                   )} to ${moment(discountCode.endDate).format(DD_MM_YYYY)}`
-                : moment(discountCode.startDate).format(DD_MM_YYYY)}
+                : moment(discountCode.startDate).format(DD_MM_YYYY)} */}
             </Typography>
           </div>
         </Grid>
