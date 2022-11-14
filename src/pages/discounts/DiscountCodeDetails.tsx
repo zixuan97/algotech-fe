@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Box,
-  Paper,
-  Button,
-  IconButton,
-  Tooltip,
-  CircularProgress
-} from '@mui/material';
+import { Box, Paper, Button, IconButton, Tooltip } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../services/util/asyncFetchCallback';
-import { DiscountCode} from 'src/models/types';
+import { DiscountCode } from 'src/models/types';
 import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
 import { getDiscountCodeDetailsSvc } from 'src/services/discountCodeService';
 import DiscountInfoGrid from 'src/components/discounts/DiscountInfoGrid';
+import DiscountEditButtonGrp from 'src/components/discounts/DiscountEditButtonGrp';
+import DiscountEditGrid from 'src/components/discounts/DiscountEditGrid';
 
 const DiscountCodeDetails = () => {
   let params = new URLSearchParams(window.location.search);
@@ -23,6 +18,7 @@ const DiscountCodeDetails = () => {
   const [discountCode, setDiscountCode] = useState<DiscountCode>();
   const [editDiscountCode, setEditDiscountCode] = useState<DiscountCode>();
   const [loading, setLoading] = React.useState<boolean>(true);
+  const [edit, setEdit] = useState<boolean>(false);
   const [alert, setAlert] = useState<AlertType | null>(null);
 
   useEffect(() => {
@@ -63,13 +59,39 @@ const DiscountCodeDetails = () => {
         <Box className='center-box'>
           <div className='header-content'>
             <h1>View Discount Code</h1>
-            {loading && <CircularProgress color='secondary' />}
+            <DiscountEditButtonGrp
+              id={id!}
+              loading={loading}
+              edit={edit}
+              discountCode={discountCode!}
+              editDiscountCode={editDiscountCode!}
+              setEditDiscountCode={() => setEditDiscountCode(discountCode!)}
+              setEdit={setEdit}
+              setLoading={setLoading}
+              setAlert={setAlert}
+              setDiscountCode={setDiscountCode}
+              viewPath='/discountCode/discountCodeDetail'
+              deletePath='/discountCode/allDiscountCodes'
+            />
           </div>
           <TimeoutAlert alert={alert} clearAlert={() => setAlert(null)} />
           <Paper elevation={2}>
             <div className='content-body'>
               <div className='right-content'>
-                {discountCode && (<DiscountInfoGrid discountCode={discountCode}/>)}
+                {edit
+                  ? editDiscountCode && (
+                      <DiscountEditGrid
+                        discountCode={discountCode!}
+                        editDiscountCode={editDiscountCode!}
+                        setEditDiscountCode={setEditDiscountCode}
+                      />
+                    )
+                  : discountCode && (
+                      <DiscountInfoGrid
+                        discountCode={discountCode}
+                        loading={loading}
+                      />
+                    )}
               </div>
             </div>
             <div className='view-button-group'>
