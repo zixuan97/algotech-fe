@@ -86,7 +86,7 @@ export default function EditEmailGrid({
     const updatedEmailsRows = emailGridRows.filter((row) => row.gridId !== id);
     setEmailGridRows(updatedEmailsRows);
     updateEmails(convertGridRowToEmail(updatedEmailsRows));
-    originalEmails.includes(email) &&
+    originalEmails.includes(email) && !customersEmails.includes(email) &&
       setCustomersEmails((prev) => [...prev, email]);
   };
 
