@@ -89,7 +89,6 @@ const DiscountEditButtonGrp = ({
   };
 
   const handleSaveButtonClick = (e: any) => {
-    console.log('editDiscountCode', editDiscountCode);
     e.preventDefault();
     setLoading(true);
     asyncFetchCallback(

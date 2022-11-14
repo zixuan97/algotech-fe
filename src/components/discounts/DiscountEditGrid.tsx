@@ -52,128 +52,138 @@ const DiscountEditGrid = ({ editDiscountCode, setEditDiscountCode }: props) => {
   }, [dateRange, setEditDiscountCode]);
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={6}>
-        <TextField
-          disabled
-          fullWidth
-          id='outlined-amount'
-          label='Discount Code *'
-          value={editDiscountCode.discountCode}
-        />
-      </Grid>
+    <form>
+      <Grid container spacing={2}>
+        <Grid item xs={6}>
+          <TextField
+            disabled
+            fullWidth
+            id='outlined-amount'
+            label='Discount Code *'
+            value={editDiscountCode.discountCode}
+          />
+        </Grid>
 
-      <Grid item xs={6}>
-        <TextField
-          fullWidth
-          id='outlined-amount'
-          select
-          label='Discount Type *'
-          value={editDiscountCode.type}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            disountFieldsOnChange(e, 'type');
-          }}
-        >
-          {discountCodeType.map((option) => (
-            <MenuItem key={option} value={option}>
-              {_.startCase(option.toLowerCase())}
-            </MenuItem>
-          ))}
-        </TextField>
-      </Grid>
+        <Grid item xs={6}>
+          <TextField
+            fullWidth
+            id='outlined-amount'
+            select
+            label='Discount Type *'
+            value={editDiscountCode.type}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              disountFieldsOnChange(e, 'type');
+            }}
+          >
+            {discountCodeType.map((option) => (
+              <MenuItem key={option} value={option}>
+                {_.startCase(option.toLowerCase())}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
 
-      <Grid item xs={6}>
-        <TextField
-          fullWidth
-          id='outlined-required'
-          label='Discount Amount *'
-          name='amount'
-          placeholder='e.g. 10'
-          type='number'
-          error={
-            validityCheck(editDiscountCode.amount?.toString()!) && showAmtError
-          }
-          helperText={
-            validityCheck(editDiscountCode.amount?.toString()!) && showAmtError
-              ? 'Please provide an amount for discount'
-              : ''
-          }
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position='start'>
-                {editDiscountCode?.type === DiscountCodeType.FLAT_AMOUNT
-                  ? '$'
-                  : '%'}
-              </InputAdornment>
-            )
-          }}
-          inputProps={{
-            inputMode: 'numeric',
-            min: '0'
-          }}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            disountFieldsOnChange(e, 'amount');
-            setShowAmtError(true);
-          }}
-          value={editDiscountCode?.amount}
-        />
-      </Grid>
+        <Grid item xs={6}>
+          <TextField
+            fullWidth
+            id='outlined-required'
+            label='Discount Amount *'
+            name='amount'
+            placeholder='e.g. 10'
+            type='number'
+            error={
+              (validityCheck(editDiscountCode.amount?.toString()!) ||
+                (editDiscountCode?.type === DiscountCodeType.PERCENTAGE &&
+                  editDiscountCode.amount > 99)) &&
+              showAmtError
+            }
+            helperText={
+              (validityCheck(editDiscountCode.amount?.toString()!) ||
+                (editDiscountCode?.type === DiscountCodeType.PERCENTAGE &&
+                  editDiscountCode.amount > 99)) &&
+              showAmtError
+                ? 'Please provide an appropriate amount for discount'
+                : ''
+            }
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position='start'>
+                  {editDiscountCode?.type === DiscountCodeType.FLAT_AMOUNT
+                    ? '$'
+                    : '%'}
+                </InputAdornment>
+              )
+            }}
+            inputProps={{
+              inputMode: 'numeric',
+              min: '0'
+            }}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              disountFieldsOnChange(e, 'amount');
+              setShowAmtError(true);
+            }}
+            value={editDiscountCode?.amount}
+          />
+        </Grid>
 
-      <Grid item xs={6}>
-        <TextField
-          fullWidth
-          id='outlined-required'
-          label='Minimum Order Amount *'
-          name='minOrderAmount'
-          placeholder='e.g. 150'
-          type='number'
-          error={
-            validityCheck(editDiscountCode.minOrderAmount?.toString()!) &&
-            showMinAmtError
-          }
-          helperText={
-            validityCheck(editDiscountCode.minOrderAmount?.toString()!) &&
-            showMinAmtError
-              ? 'Please provide an minimum amount for discount to be applicable'
-              : ''
-          }
-          InputProps={{
-            startAdornment: <InputAdornment position='start'>$</InputAdornment>
-          }}
-          inputProps={{
-            inputMode: 'numeric',
-            min: '0'
-          }}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            disountFieldsOnChange(e, 'minOrderAmount');
-            setShowMinAmtError(true);
-          }}
-          value={editDiscountCode?.minOrderAmount}
-        />
-      </Grid>
+        <Grid item xs={6}>
+          <TextField
+            fullWidth
+            id='outlined-required'
+            label='Minimum Order Amount *'
+            name='minOrderAmount'
+            placeholder='e.g. 150'
+            type='number'
+            error={
+              validityCheck(editDiscountCode.minOrderAmount?.toString()!) &&
+              showMinAmtError
+            }
+            helperText={
+              validityCheck(editDiscountCode.minOrderAmount?.toString()!) &&
+              showMinAmtError
+                ? 'Please provide a minimum amount for discount to be applicable'
+                : ''
+            }
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position='start'>$</InputAdornment>
+              )
+            }}
+            inputProps={{
+              inputMode: 'numeric',
+              min: '0'
+            }}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+              disountFieldsOnChange(e, 'minOrderAmount');
+              setShowMinAmtError(true);
+            }}
+            value={editDiscountCode?.minOrderAmount}
+          />
+        </Grid>
 
-      <Grid item xs={12}>
-        <DiscountDateToggle
-          editDiscountCode={editDiscountCode}
-          dateRange={dateRange}
-          setDateRange={setDateRange}
-        />
+        <Grid item xs={12}>
+          <DiscountDateToggle
+            editDiscountCode={editDiscountCode}
+            dateRange={dateRange}
+            setDateRange={setDateRange}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <EditEmailGrid
+            emails={editDiscountCode.customerEmails}
+            updateEmails={(emails) =>
+              setEditDiscountCode(
+                (prev: DiscountCode) =>
+                  prev && {
+                    ...prev,
+                    customerEmails: emails
+                  }
+              )
+            }
+          />
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <EditEmailGrid
-          emails={editDiscountCode.customerEmails}
-          updateEmails={(emails) =>
-            setEditDiscountCode(
-              (prev: DiscountCode) =>
-                prev && {
-                  ...prev,
-                  customerEmails: emails
-                }
-            )
-          }
-        />
-      </Grid>
-    </Grid>
+    </form>
   );
 };
 

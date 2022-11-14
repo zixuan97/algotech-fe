@@ -30,10 +30,11 @@ interface EditToolbarProps {
   setRowModesModel: (
     newModel: (oldModel: GridRowModesModel) => GridRowModesModel
   ) => void;
+  disableAdd: boolean;
 }
 
 export function EditToolbar(props: EditToolbarProps) {
-  const { setRows, setRowModesModel } = props;
+  const { setRows, setRowModesModel, disableAdd } = props;
 
   const handleClick = () => {
     const gridId = randomId();
@@ -46,7 +47,7 @@ export function EditToolbar(props: EditToolbarProps) {
 
   return (
     <GridToolbarContainer>
-      <Button color='primary' startIcon={<Add />} onClick={handleClick}>
+      <Button color='primary' startIcon={<Add />} onClick={handleClick} disabled={disableAdd}>
         Add Email
       </Button>
     </GridToolbarContainer>

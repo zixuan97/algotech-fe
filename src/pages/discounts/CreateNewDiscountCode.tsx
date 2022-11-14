@@ -30,7 +30,7 @@ let discountCodeType = Object.keys(DiscountCodeType).filter((v) =>
 );
 
 export const validityCheck = (value: string) => {
-  return value !== undefined && validator.isEmpty(value!);
+  return (value !== undefined && validator.isEmpty(value!)) || value === 'NaN';
 };
 
 const CreateNewDiscountCode = () => {

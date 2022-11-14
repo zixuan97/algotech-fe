@@ -7,7 +7,6 @@ type EmailEditCellActionProps = {
 };
 
 const EmailEditCellAction = ({ params }: EmailEditCellActionProps) => {
-  console.log('EmailEditCellAction fired');
   const { id: gridId, field, value } = params;
 
   const apiRef = useGridApiContext();
