@@ -1,12 +1,15 @@
 import { CircularProgress, Button } from '@mui/material';
 import { useState } from 'react';
-import { DiscountCode  } from 'src/models/types';
+import { DiscountCode } from 'src/models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 // import validator from 'validator';
 import ConfirmationModal from '../common/ConfirmationModal';
 import { AlertType } from '../common/TimeoutAlert';
 import { useNavigate } from 'react-router-dom';
-import { deleteDiscountCodeSvc, editDiscountCodeSvc } from 'src/services/discountCodeService';
+import {
+  deleteDiscountCodeSvc,
+  editDiscountCodeSvc
+} from 'src/services/discountCodeService';
 
 interface props {
   id: string;
@@ -14,11 +17,11 @@ interface props {
   loading: boolean;
   discountCode: DiscountCode;
   editDiscountCode: DiscountCode;
-  setEditDiscountCode: (dc : DiscountCode) => void;
-  setDiscountCode: (dc : DiscountCode) => void;
+  setEditDiscountCode: (dc: DiscountCode) => void;
+  setDiscountCode: (dc: DiscountCode) => void;
   setEdit: (param: boolean) => void;
-  setLoading: (loading: boolean) => void
-  setAlert: (alert :AlertType | null) => void;
+  setLoading: (loading: boolean) => void;
+  setAlert: (alert: AlertType | null) => void;
   deletePath: string;
   viewPath: string;
 }
@@ -78,17 +81,19 @@ const DiscountEditButtonGrp = ({
           setModalOpen(false);
           setAlert({
             severity: 'error',
-            message: 'Cannot delete discount code at this point. Try again later.'
+            message:
+              'Cannot delete discount code at this point. Try again later.'
           });
         }
       );
   };
 
   const handleSaveButtonClick = (e: any) => {
+    console.log('editDiscountCode', editDiscountCode);
     e.preventDefault();
     setLoading(true);
     asyncFetchCallback(
-        editDiscountCodeSvc(editDiscountCode!),
+      editDiscountCodeSvc(editDiscountCode!),
       () => {
         setAlert({
           severity: 'success',
@@ -138,12 +143,12 @@ const DiscountEditButtonGrp = ({
           variant='contained'
           className='create-btn'
           color='primary'
-        //   disabled={
-        //     edit &&
-        //     (!validator.isEmail(editUser?.email!) ||
-        //       validator.isEmpty(editUser?.lastName!) ||
-        //       validator.isEmpty(editUser?.firstName!))
-        //   }
+          //   disabled={
+          //     edit &&
+          //     (!validator.isEmail(editUser?.email!) ||
+          //       validator.isEmpty(editUser?.lastName!) ||
+          //       validator.isEmpty(editUser?.firstName!))
+          //   }
           onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
             if (!edit) {
               setEdit(true);
