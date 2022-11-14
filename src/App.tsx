@@ -53,6 +53,7 @@ import ManualDeliveryDetails from './pages/delivery/ManualDeliveryDetails';
 import MyDeliveryAssignment from './pages/delivery/MyDeliveryAssignment';
 import ShippitDeliveryDetails from './pages/delivery/ShippitDeliveryDetails';
 import LalamoveDeliveryDetails from './pages/delivery/LalamoveDeliveryDetails';
+import RoutePlanning from './pages/delivery/RoutePlanning';
 
 import AllCustomers from './pages/customers/AllCustomers';
 import CustomerDetails from './pages/customers/CustomerDetails';
@@ -248,6 +249,10 @@ const App = () => {
                   <Route
                     path='delivery/allManualDeliveries'
                     element={<AllManualDeliveries />}
+                  />
+                  <Route
+                    path='delivery/routePlanning'
+                    element={<RoutePlanning />}
                   />
                   <Route
                     path='delivery/createDelivery'

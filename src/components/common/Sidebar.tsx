@@ -178,6 +178,10 @@ const Sidebar = ({
             disabled={disabled}
           >
             <ListItemLink
+              primary='Delivery Route Planning'
+              to='/delivery/routePlanning'
+            />
+            <ListItemLink
               primary='Delivery Assignment'
               to='/delivery/myDeliveryAssignment'
             />
