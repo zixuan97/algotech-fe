@@ -2,6 +2,7 @@
  * Used to make all API calls to delivery-related services
  */
 import axios from 'axios';
+import { Moment } from 'moment';
 import { DeliveryOrder, LalamoveDriver } from 'src/models/types';
 import { MomentRange } from 'src/utils/dateUtils';
 import apiRoot from './util/apiRoot';
@@ -204,16 +205,17 @@ export const getAllAssignedDeliveriesPostalCodeByDate = (
 };
 
 export const getPlannedRoute = (
-  dateRange: MomentRange,
+  date: Moment | any,
   id: number | any,
-  startingPoint: number
+  startingPoint: string | any
 ): Promise<DeliveryOrder[]> => {
   const filter = {
-    time_from: dateRange[0].format(),
-    time_to: dateRange[1].format(),
+    time_from: date.startOf('day').format(),
+    time_to: date.endOf('day').format(),
     id: id,
     startingPoint : startingPoint
   };
+  console.log(filter);
   return axios
     .post(`${apiRoot}/delivery/route/assigned`, filter)
     .then((res) => res.data);

@@ -19,18 +19,14 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import { DeliveryOrder, OrderStatus } from '../../models/types';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import {
-    getAllAssignedDeliveriesPostalCodeByDate,
-    getAllAssignedDeliveriesByDate,
-    getAllUnassignedDeliveries,
-    getAllUnassignedDeliveriesPostalCodeByDate,
+    getPlannedRoute,
     getCurrentLocationLatLng
 } from 'src/services/deliveryServices';
 import AuthContext from 'src/context/auth/authContext';
-import { MomentRange } from 'src/utils/dateUtils';
 import moment, { Moment } from 'moment';
-import ManualDeliveryOrderStatusCell from 'src/components/delivery/ManualDeliveryOrderStatusCell';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import { DesktopDatePicker } from '@mui/x-date-pickers';
+import RoutePlanningOrderStatusCell from 'src/components/delivery/RoutePlanningOrderStatusCell';
 
 const columns: GridColDef[] = [
     {
@@ -38,15 +34,15 @@ const columns: GridColDef[] = [
         headerName: ' Sales Order ID',
         flex: 1,
         valueGetter: (params: GridValueGetterParams) =>
-            params.row.salesOrder.orderId
+            params.row.order?.orderId
     },
     {
         field: 'orderStatus',
         headerName: 'Delivery Status',
         flex: 1,
-        renderCell: ManualDeliveryOrderStatusCell,
+        renderCell: RoutePlanningOrderStatusCell,
         valueGetter: (params) => {
-            let orderStatus = params.row.salesOrder.orderStatus;
+            let orderStatus = params.row.order?.orderStatus;
             let deliveryStatus = params.row.deliveryStatus?.status;
             let cell;
 
@@ -71,17 +67,7 @@ const columns: GridColDef[] = [
         headerName: 'Address',
         flex: 1,
         valueGetter: (params: GridValueGetterParams) =>
-            params.row.salesOrder.customerAddress
-    },
-    {
-        field: 'deliveryDate',
-        headerName: 'Delivery Date',
-        flex: 1,
-        valueGetter: (params: GridValueGetterParams) => {
-            let date = params.value;
-            let valueFormatted = moment(date).format('DD/MM/YYYY');
-            return valueFormatted;
-        }
+            params.row.order?.customerAddress
     },
     {
         field: 'action',
@@ -95,16 +81,6 @@ const columns: GridColDef[] = [
 
 const RoutePlanning = () => {
 
-    const [assignedDeliveries, setAssignedDeliveries] = React.useState<
-        DeliveryOrder[]
-    >([]);
-    const [unassignedDeliveries, setUnassignedDeliveries] = React.useState<
-        DeliveryOrder[]
-    >([]);
-    const [unassignedDeliveryPostalCode, setUnassignedDeliveryPostalCode] =
-        React.useState<any[]>([]);
-    const [assignedDeliveryPostalCode, setAssignedDeliveryPostalCode] =
-        React.useState<any[]>([]);
     const [tableData, setTableData] = React.useState<DeliveryOrder[]>([]);
     const [loading, setLoading] = React.useState<boolean>(false);
     const [latlng, setLatLng] = React.useState<any>();
@@ -115,7 +91,7 @@ const RoutePlanning = () => {
     const [selectedDate, setSelectedDate] = React.useState<Moment | null>(
         moment()
     );
-    
+
     const findCurrentLocation = (event: React.MouseEvent<HTMLElement>) => {
         setLoading(true);
         asyncFetchCallback(
@@ -132,26 +108,26 @@ const RoutePlanning = () => {
                 } else {
                     setAlert({
                         severity: 'success',
-                        message: 'Route planned successfully.'
+                        message: 'Starting location set successfully.'
                     });
                 }
             }
         );
     };
 
-    //   React.useEffect(() => {
-    //     asyncFetchCallback(
-    //       getAllUnassignedDeliveriesPostalCodeByDate(dateRange),
-    //       setUnassignedDeliveryPostalCode
-    //     );
-    //   }, [dateRange, unassignedDeliveries]);
-
-    //   React.useEffect(() => {
-    //     asyncFetchCallback(
-    //       getAllAssignedDeliveriesPostalCodeByDate(dateRange, user?.id),
-    //       setAssignedDeliveryPostalCode
-    //     );
-    //   }, [dateRange, user?.id, assignedDeliveries]);
+    const planRoute = (event: React.MouseEvent<HTMLElement>) => {
+        setLoading(true);
+        asyncFetchCallback(
+            getPlannedRoute(selectedDate,user?.id,currentLocation),
+            (res) => {
+                setLoading(false);
+                var newRes = res.slice(1,-1);
+                setTableData(newRes);
+                // console.log(newRes.length);
+                // console.log(newRes);
+            }
+        );
+    };
 
     const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCurrentLocation(e.target.value);
@@ -207,12 +183,24 @@ const RoutePlanning = () => {
                     color='primary'
                     onClick={findCurrentLocation}
                 >
-                    Plan Route
+                    Set Current Location
                 </Button>
                 {loading && <CircularProgress color='secondary' />}
             </div>
             {currentLocation &&
-                <h3>Your starting postal code is : {currentLocation}</h3>
+                <div className='search-bar'>
+                    <h3>Your starting postal code is : {currentLocation}</h3>
+                    <Button
+                        variant='contained'
+                        size='small'
+                        sx={{ height: 'fit-content' }}
+                        color='primary'
+                        onClick={planRoute}
+                    >
+                        Plan Route
+                    </Button>
+                    {loading && <CircularProgress color='secondary' />}
+                </div>
             }
             <br></br>
             <DataGrid
