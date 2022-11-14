@@ -34,6 +34,27 @@
   justify-content: center;
 }
 
+.address-field {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width : 60%;
+}
+
+.address-text {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width : 25%;
+}
+
+.address-bar {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  width : 65%;
+}
+
 .view-delivery-details {
   width: 90%;
   display: flex;
