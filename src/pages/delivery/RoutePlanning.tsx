@@ -102,8 +102,6 @@ const RoutePlanning = () => {
       (res) => {
         setLoading(false);
         setAddress(res);
-        console.log(res.address);
-        console.log(res.length);
         if (res.length === 0) {
           setAlert({
             severity: 'error',
@@ -144,7 +142,6 @@ const RoutePlanning = () => {
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentLocation(e.target.value);
-    console.log(currentLocation);
   };
 
   return (
@@ -171,7 +168,7 @@ const RoutePlanning = () => {
           />
         </Stack>
       </Stack>
-      <br></br>
+      <br/>
       {alert && (
         <TimeoutAlert
           alert={alert}
@@ -200,7 +197,7 @@ const RoutePlanning = () => {
         </Button>
         {loading && <CircularProgress color='secondary' />}
       </div>
-      <br></br>
+      <br/>
       {address && (
         <div className='address-bar'>
           <Typography className='address-text'>
@@ -225,7 +222,7 @@ const RoutePlanning = () => {
           {loading && <CircularProgress color='secondary' />}
         </div>
       )}
-      <br></br>
+      <br/>
       <DataGrid
         columns={columns}
         rows={tableData}
