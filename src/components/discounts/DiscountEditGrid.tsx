@@ -10,6 +10,7 @@ import DiscountDateToggle from './DiscountDateToggle';
 import EditEmailGrid from './EditEmailGrid';
 
 interface props {
+  discountCode: DiscountCode;
   editDiscountCode: DiscountCode;
   setEditDiscountCode: (discountCode: any) => void;
 }
@@ -18,7 +19,7 @@ let discountCodeType = Object.keys(DiscountCodeType).filter((v) =>
   isNaN(Number(v))
 );
 
-const DiscountEditGrid = ({ editDiscountCode, setEditDiscountCode }: props) => {
+const DiscountEditGrid = ({ editDiscountCode, setEditDiscountCode, discountCode }: props) => {
   const [showAmtError, setShowAmtError] = useState<boolean>(false);
   const [showMinAmtError, setShowMinAmtError] = useState<boolean>(false);
   const [dateRange, setDateRange] = React.useState<MomentRange>([
@@ -166,6 +167,7 @@ const DiscountEditGrid = ({ editDiscountCode, setEditDiscountCode }: props) => {
             editDiscountCode={editDiscountCode}
             dateRange={dateRange}
             setDateRange={setDateRange}
+            discountCode={discountCode}
           />
         </Grid>
         <Grid item xs={12}>

@@ -81,6 +81,7 @@ const DiscountCodeDetails = () => {
                 {edit
                   ? editDiscountCode && (
                       <DiscountEditGrid
+                        discountCode={discountCode!}
                         editDiscountCode={editDiscountCode!}
                         setEditDiscountCode={setEditDiscountCode}
                       />

@@ -142,12 +142,10 @@ const DiscountEditButtonGrp = ({
           variant='contained'
           className='create-btn'
           color='primary'
-          //   disabled={
-          //     edit &&
-          //     (!validator.isEmail(editUser?.email!) ||
-          //       validator.isEmpty(editUser?.lastName!) ||
-          //       validator.isEmpty(editUser?.firstName!))
-          //   }
+          disabled={
+            edit &&
+            (!editDiscountCode.amount || !editDiscountCode.minOrderAmount)
+          }
           onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
             if (!edit) {
               setEdit(true);

@@ -8,6 +8,7 @@ import DateRangePicker from '../common/DateRangePicker';
 import DiscountPeriodRadio from './DiscountPeriodRadio';
 
 interface props {
+  discountCode: DiscountCode;
   editDiscountCode: DiscountCode;
   dateRange: MomentRange;
   setDateRange: (newRange: (oldRange: MomentRange) => MomentRange) => void;
@@ -16,7 +17,8 @@ interface props {
 const DiscountDateToggle = ({
   editDiscountCode,
   dateRange,
-  setDateRange
+  setDateRange,
+  discountCode
 }: props) => {
   const [radioValue, setRadioValue] = useState<string>(
     dateRange[1].isValid() ? 'fixed' : 'recurring'
@@ -28,8 +30,10 @@ const DiscountDateToggle = ({
   useEffect(() => {
     if (radioValue === 'recurring') {
       setDateRange((prev) => [prev[0], moment(null)]);
+    } else {
+      setDateRange((prev) => [prev[0], moment(discountCode.endDate)]);
     }
-  }, [radioValue, setDateRange]);
+  }, [discountCode.endDate, radioValue, setDateRange]);
 
   return (
     <>
@@ -53,9 +57,6 @@ const DiscountDateToggle = ({
                 label='Start Date'
                 value={moment(editDiscountCode?.startDate).format(YYYY_MM_DD)}
                 minDate={moment('2000-01-01')}
-                shouldDisableDate={(date) =>
-                  moment(date).isBefore(moment().startOf('day'))
-                }
                 onChange={(date) => {
                   setDateRange((prev) => [
                     moment(date).startOf('day'),
