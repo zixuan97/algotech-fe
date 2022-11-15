@@ -22,6 +22,8 @@ import {
   convertGridRowToEmail,
   EditToolbar
 } from './discountHelper';
+import { getAllCustomers } from 'src/services/customerService';
+import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 
 type EmailEditGridProps = {
   emails: string[];
@@ -38,6 +40,24 @@ export default function EditEmailGrid({
   const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
     {}
   );
+  const [customersEmails, setCustomersEmails] = React.useState<string[]>([]);
+  const [originalEmails, setOriginalEmails] = React.useState<string[]>([]);
+  const [invalidField, setInvalidField] = React.useState<boolean>(true);
+
+  React.useEffect(() => {
+    asyncFetchCallback(getAllCustomers(), (res) => {
+      setCustomersEmails(
+        res.map((customer) => {
+          return customer.email;
+        })
+      );
+      setOriginalEmails(
+        res.map((customer) => {
+          return customer.email;
+        })
+      );
+    });
+  }, []);
 
   const handleRowEditStart = (
     params: GridRowParams,
@@ -57,14 +77,17 @@ export default function EditEmailGrid({
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
   };
 
-  const handleSaveClick = (id: GridRowId) => () => {
+  const handleSaveClick = (id: GridRowId, email: string) => () => {
+    setInvalidField(true);
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
-  const handleDeleteClick = (id: GridRowId) => () => {
+  const handleDeleteClick = (id: GridRowId, email: string) => () => {
     const updatedEmailsRows = emailGridRows.filter((row) => row.gridId !== id);
     setEmailGridRows(updatedEmailsRows);
     updateEmails(convertGridRowToEmail(updatedEmailsRows));
+    originalEmails.includes(email) && !customersEmails.includes(email) &&
+      setCustomersEmails((prev) => [...prev, email]);
   };
 
   const handleCancelClick = (id: GridRowId) => () => {
@@ -95,12 +118,20 @@ export default function EditEmailGrid({
   const columns: GridColumns = [
     {
       field: 'email',
-      headerName: 'Existing Emails',
+      headerName: 'Customer Emails',
       headerAlign: 'center',
       flex: 1,
       editable: true,
       valueGetter: (params) => params.row.email,
-      renderEditCell: (params) => <EmailEditCellAction params={params} />
+      renderEditCell: (params) => (
+        <EmailEditCellAction
+          emails={emails}
+          params={params}
+          customersEmails={customersEmails}
+          setCustomersEmails={setCustomersEmails}
+          setInvalidField={setInvalidField}
+        />
+      )
     },
     {
       field: 'actions',
@@ -108,15 +139,15 @@ export default function EditEmailGrid({
       headerName: 'Actions',
       flex: 0.5,
       cellClassName: 'actions',
-      getActions: ({ id }) => {
+      getActions: ({ id, row }) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
         if (isInEditMode) {
           return [
             <GridActionsCellItem
               icon={<SaveIcon />}
               label='Save'
-              onClick={handleSaveClick(id)}
+              onClick={handleSaveClick(id, row.email)}
+              disabled={invalidField}
             />,
             <GridActionsCellItem
               icon={<CancelIcon />}
@@ -144,7 +175,7 @@ export default function EditEmailGrid({
             disabled={anyCellEditing}
             icon={<DeleteIcon />}
             label='Delete'
-            onClick={handleDeleteClick(id)}
+            onClick={handleDeleteClick(id, row.email)}
             color='inherit'
           />
         ];
