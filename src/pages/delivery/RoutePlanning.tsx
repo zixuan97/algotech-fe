@@ -27,11 +27,11 @@ import RoutePlanningOrderStatusCell from 'src/components/delivery/RoutePlanningO
 
 const columns: GridColDef[] = [
   {
-    field: 'Stops',
+    field: 'stopOrder',
     headerName: 'Sequence',
     flex: 0.5,
     valueGetter: (params) => {
-      return 'Stop ' + params.row.id;
+      return 'Stop ' + params.row.stopOrder;
     }
   },
   {
@@ -125,7 +125,7 @@ const RoutePlanning = () => {
       (res) => {
         setLoadingRoute(false);
         var newRes = res.slice(1, -1);
-        setTableData(newRes);
+        setTableData(newRes.map((order, index) => ({...order, stopOrder: index + 1 })));
         if (res.length === 0) {
           setAlert({
             severity: 'error',
@@ -153,7 +153,7 @@ const RoutePlanning = () => {
         alignItems='center'
         justifyContent='space-between'
       >
-        <h1>Route Planning</h1>
+        <h1>Route Planner</h1>
         <Stack direction='row' spacing={2}>
           <Typography className='date-picker-text'>
             Plan route for deliveries on

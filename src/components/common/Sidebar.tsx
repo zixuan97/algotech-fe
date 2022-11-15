@@ -178,7 +178,7 @@ const Sidebar = ({
             disabled={disabled}
           >
             <ListItemLink
-              primary='Delivery Route Planning'
+              primary='Delivery Route Planner'
               to='/delivery/routePlanning'
             />
             <ListItemLink
