@@ -86,6 +86,7 @@ const columns: GridColDef[] = [
 const RoutePlanning = () => {
   const [tableData, setTableData] = React.useState<DeliveryOrder[]>([]);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [loadingRoute, setLoadingRoute] = React.useState<boolean>(false);
   const [address, setAddress] = React.useState<any>();
   const [currentLocation, setCurrentLocation] = React.useState<string>();
   const authContext = React.useContext(AuthContext);
@@ -118,11 +119,11 @@ const RoutePlanning = () => {
   };
 
   const planRoute = (event: React.MouseEvent<HTMLElement>) => {
-    setLoading(true);
+    setLoadingRoute(true);
     asyncFetchCallback(
       getPlannedRoute(selectedDate, user?.id, currentLocation),
       (res) => {
-        setLoading(false);
+        setLoadingRoute(false);
         var newRes = res.slice(1, -1);
         setTableData(newRes);
         if (res.length === 0) {
@@ -219,7 +220,6 @@ const RoutePlanning = () => {
           >
             Plan Route
           </Button>
-          {loading && <CircularProgress color='secondary' />}
         </div>
       )}
       <br/>
@@ -227,7 +227,7 @@ const RoutePlanning = () => {
         columns={columns}
         rows={tableData}
         autoHeight
-        loading={loading}
+        loading={loadingRoute}
       />
     </div>
   );
