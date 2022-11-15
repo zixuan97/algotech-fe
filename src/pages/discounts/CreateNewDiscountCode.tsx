@@ -24,6 +24,7 @@ import { createDiscountCodeSvc } from 'src/services/discountCodeService';
 import { DesktopDatePicker } from '@mui/x-date-pickers';
 import { MomentRange, YYYY_MM_DD } from 'src/utils/dateUtils';
 import DateRangePicker from 'src/components/common/DateRangePicker';
+import EditEmailGrid from 'src/components/discounts/EditEmailGrid';
 
 let discountCodeType = Object.keys(DiscountCodeType).filter((v) =>
   isNaN(Number(v))
@@ -46,7 +47,8 @@ const CreateNewDiscountCode = () => {
     {
       isEnabled: true,
       startDate: moment().startOf('day').toDate(),
-      endDate: moment().startOf('day').toDate()
+      endDate: moment().startOf('day').toDate(),
+      customerEmails: []
     }
   );
   const [showDiscCodeError, setShowDiscCodeError] = useState<boolean>(false);
@@ -93,8 +95,6 @@ const CreateNewDiscountCode = () => {
       };
     });
   };
-
-
 
   const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRadioValue(event.target.value);
@@ -279,12 +279,29 @@ const CreateNewDiscountCode = () => {
                               moment(date).isBefore(moment().startOf('day'))
                             }
                             onChange={(date) => {
-                              setDateRange((prev)=> [moment(date).startOf('day'), prev[1]])
+                              setDateRange((prev) => [
+                                moment(date).startOf('day'),
+                                prev[1]
+                              ]);
                             }}
                             renderInput={(params) => <TextField {...params} />}
                           />
                         )}
                       </Stack>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <EditEmailGrid
+                        emails={newDiscountCode.customerEmails!}
+                        updateEmails={(emails) =>
+                          setNewDiscountCode(
+                            (prev: Partial<DiscountCode>) =>
+                              prev && {
+                                ...prev,
+                                customerEmails: emails
+                              }
+                          )
+                        }
+                      />
                     </Grid>
                   </Grid>
                 </div>
