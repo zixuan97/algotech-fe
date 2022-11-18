@@ -30,7 +30,10 @@ const ViewBusinessAccount = () => {
           setUser(user);
           setEditUser(user);
           setLoading(false);
-          if(user.status === UserStatus.PENDING || user.status === UserStatus.REJECTED ) {
+          if (
+            user.status === UserStatus.PENDING ||
+            user.status === UserStatus.REJECTED
+          ) {
             setApproveRej(true);
           }
         } else {
@@ -100,7 +103,7 @@ const ViewBusinessAccount = () => {
                 )}
               </div>
             </div>
-            <div className='view-button-group'>
+            {/* <div className='view-button-group'>
               <Button
                 variant='contained'
                 color='primary'
@@ -110,7 +113,7 @@ const ViewBusinessAccount = () => {
               >
                 Back
               </Button>
-            </div>
+            </div> */}
           </Paper>
         </Box>
       </div>

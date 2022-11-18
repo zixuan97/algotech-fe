@@ -14,9 +14,7 @@ import {
 } from '@mui/material';
 import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
-import {
-  getUserDetailsSvc
-} from 'src/services/accountService';
+import { getAllTiers, getUserDetailsSvc } from 'src/services/accountService';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User, UserStatus, UserRole } from 'src/models/types';
 import TimeoutAlert, { AlertType } from '../../components/common/TimeoutAlert';
@@ -34,6 +32,20 @@ const ViewAccount = () => {
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [edit, setEdit] = useState<boolean>(false);
   const id = params.get('id');
+
+  const [tiers, setTiers] = useState<string[]>([]);
+
+  React.useEffect(() => {
+    setLoading(true);
+    asyncFetchCallback(
+      getAllTiers(),
+      (res) => {
+        setLoading(false);
+        setTiers(res);
+      },
+      () => setLoading(false)
+    );
+  }, []);
 
   useEffect(() => {
     id &&
@@ -81,22 +93,22 @@ const ViewAccount = () => {
             <div className='button-group'>
               {loading && <CircularProgress color='secondary' />}
               {user?.status !== UserStatus.PENDING &&
-              user?.status !== UserStatus.REJECTED && (
-                <AccountEditButtonGrp
-                  id={id!}
-                  loading ={loading}
-                  edit={edit}
-                  user={user!}
-                  editUser={editUser!}
-                  setEditUser={() => setEditUser(user!)}
-                  setEdit={setEdit}
-                  setLoading={setLoading}
-                  setAlert={setAlert}
-                  setUser={setUser}
-                  viewPath='/accounts/viewAccount'
-                  deletePath='/accounts'
-                />
-              )}
+                user?.status !== UserStatus.REJECTED && (
+                  <AccountEditButtonGrp
+                    id={id!}
+                    loading={loading}
+                    edit={edit}
+                    user={user!}
+                    editUser={editUser!}
+                    setEditUser={() => setEditUser(user!)}
+                    setEdit={setEdit}
+                    setLoading={setLoading}
+                    setAlert={setAlert}
+                    setUser={setUser}
+                    viewPath='/accounts/viewAccount'
+                    deletePath='/accounts'
+                  />
+                )}
             </div>
           </div>
 
@@ -104,7 +116,7 @@ const ViewAccount = () => {
           <Paper elevation={2}>
             <div className='content-body'>
               <div className='right-content'>
-                <Grid container spacing={1}>
+                <Grid container spacing={2}>
                   <Grid item xs={6}>
                     {edit ? (
                       <TextField
@@ -156,7 +168,7 @@ const ViewAccount = () => {
                       </div>
                     )}
                   </Grid>
-                  <Grid item xs={edit ? 12 : 6}>
+                  <Grid item xs={12}>
                     {edit ? (
                       <TextField
                         required
@@ -183,7 +195,7 @@ const ViewAccount = () => {
                       </div>
                     )}
                   </Grid>
-                  <Grid item xs={edit ? 12 : 6}>
+                  <Grid item xs={6}>
                     {edit ? (
                       <TextField
                         required
@@ -211,10 +223,36 @@ const ViewAccount = () => {
                       </div>
                     )}
                   </Grid>
+                  <Grid item xs={6}>
+                    {edit ? (
+                      <TextField
+                        required
+                        fullWidth
+                        id='outlined-field'
+                        select
+                        label='Leave Tier'
+                        value={editUser?.tier}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          userFieldOnChange(e, 'tier')
+                        }
+                      >
+                        {tiers.map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    ) : (
+                      <div>
+                        <h4>Leave Tier</h4>
+                        <Typography>{user?.tier}</Typography>
+                      </div>
+                    )}
+                  </Grid>
                 </Grid>
               </div>
             </div>
-            <div className='view-button-group'>
+            {/* <div className='view-button-group'>
               <Button
                 type='submit'
                 variant='contained'
@@ -226,7 +264,7 @@ const ViewAccount = () => {
               >
                 Back
               </Button>
-            </div>
+            </div> */}
           </Paper>
         </Box>
       </div>

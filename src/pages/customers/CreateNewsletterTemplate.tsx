@@ -189,7 +189,7 @@ const CreateNewsletterTemplate = () => {
         </Grid>
         <Grid item xs={12} style={{ paddingLeft: '4rem' }}>
           <h3 className='create-newsletter-grid-label-text'>
-            Email Body Title
+            Email Body Header
           </h3>
           <TextField
             id='outlined-required'

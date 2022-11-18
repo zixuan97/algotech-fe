@@ -26,7 +26,8 @@ const columns: GridColDef[] = [
   {
     field: 'action',
     headerName: 'Action',
-    headerAlign: 'center',
+    headerAlign: 'right',
+    align: 'right',
     flex: 1,
     renderCell: RequestCellAction
   }
@@ -44,11 +45,14 @@ const BusinessAccounts = () => {
 
   useEffect(() => {
     setLoading(true);
-    asyncFetchCallback(getAllB2BRequests(), (users: Array<User>) => {
-      setUsers(users);
-      setLoading(false);
-    }, 
-    () => setLoading(false));
+    asyncFetchCallback(
+      getAllB2BRequests(),
+      (users: Array<User>) => {
+        setUsers(users);
+        setLoading(false);
+      },
+      () => setLoading(false)
+    );
   }, []);
 
   useEffect(() => {
