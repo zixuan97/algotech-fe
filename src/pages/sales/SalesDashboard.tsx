@@ -17,6 +17,7 @@ import React from 'react';
 import DateRangePicker from 'src/components/common/DateRangePicker';
 import NumberCard from 'src/components/common/NumberCard';
 import BestsellerList from 'src/components/sales/dashboard/BestsellerList';
+import AverageOrderNumber from 'src/components/sales/dashboard/AverageOrderNumber';
 import OrdersCard from 'src/components/sales/dashboard/OrdersCard';
 import PlatformPieChart from 'src/components/sales/dashboard/PlatformPieChart';
 import RevenueChart from 'src/components/sales/dashboard/RevenueChart';
@@ -29,6 +30,9 @@ import {
   SalesRevenue
 } from 'src/models/types';
 import {
+  getAllProductSalesByRangeSvc,
+  getAverageOrderNumSvc,
+  getAverageOrderValueSvc,
   getDailySalesByRangeSvc,
   getSalesBestsellersByRangeSvc,
   getSalesOrdersByRangeSvc,
@@ -48,6 +52,9 @@ import {
 } from 'src/utils/fileUtils';
 import '../../styles/common/common.scss';
 import '../../styles/pages/sales/orders.scss';
+import AverageValueOrder from 'src/components/sales/dashboard/AverageValueOrder';
+import ProductSales from 'src/components/sales/dashboard/ProductSales';
+import ProductSalesChart from 'src/components/sales/dashboard/ProductSalesChart';
 
 const ALL_PLATFORMS = 'ALL';
 
@@ -64,6 +71,9 @@ const SalesDashboard = () => {
   const [bestSellers, setBestSellers] = React.useState<SalesBestseller[]>([]);
   const [dailySales, setDailySales] = React.useState<DailySales[]>([]);
   const [revenue, setRevenue] = React.useState<SalesRevenue[]>([]);
+  const [avgOrderNum, setAvgOrderNum] = React.useState<number>(0);
+  const [avgOrderVal, setAvgOrderVal] = React.useState<number>(0);
+  const [bestsellerProducts, setBestsellerProducts] = React.useState<SalesBestseller[]>([]);
 
   // component state
   const [pdfLoading, setPdfLoading] = React.useState<boolean>(false);
@@ -120,6 +130,16 @@ const SalesDashboard = () => {
       );
       setRevenue(sortedRevenue);
     });
+    asyncFetchCallback(getAverageOrderNumSvc(dateRange), (res) => {
+      setAvgOrderNum(res);
+    });
+    asyncFetchCallback(getAverageOrderValueSvc(dateRange), (res) => {
+      setAvgOrderVal(res);
+    });
+    asyncFetchCallback(getAllProductSalesByRangeSvc(dateRange), (res) => {
+      const sortedBestsellers = res.sort((a, b) => b.quantity - a.quantity);
+      setBestsellerProducts(sortedBestsellers);
+    });
   }, [dateRange]);
 
   const generateDashboardPdf = React.useCallback(async () => {
@@ -171,10 +191,14 @@ const SalesDashboard = () => {
           <Grid item xs={12}>
             <h4>At a glance</h4>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <OrdersCard dailySales={dailySales} />
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={2}>
+            <AverageOrderNumber avgOrderNum={avgOrderNum} />
+          </Grid>
+
+          <Grid item xs={3}>
             <NumberCard
               value={`$${revenue
                 .reduce((prev, curr) => prev + curr.revenue, 0)
@@ -182,12 +206,10 @@ const SalesDashboard = () => {
               text={`Revenue earned from ${dateRange[0].format(
                 READABLE_DDMMYY
               )} to ${dateRange[1].format(READABLE_DDMMYY)}`}
-              //   component={
-              //     <IconButton>
-              //       <MoreVert />
-              //     </IconButton>
-              //   }
             />
+          </Grid>
+          <Grid item xs={3}>
+            <AverageValueOrder avgOrderVal={avgOrderVal} />
           </Grid>
           <Grid item xs={6}>
             <RevenueChart revenue={revenue} />
@@ -197,6 +219,15 @@ const SalesDashboard = () => {
           </Grid>
           <Grid item xs={3}>
             <PlatformPieChart salesOrders={salesOrders} />
+          </Grid>
+          <Grid item xs={6}>
+            <ProductSales bestSellers={bestSellers} />
+          </Grid>
+          <Grid item xs={6}>
+            <ProductSalesChart
+              bestsellers={bestSellers}
+              dateRange={dateRange}
+            />
           </Grid>
           <Grid item xs={12}>
             <Divider
