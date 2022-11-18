@@ -1,7 +1,12 @@
 import { CircularProgress, Button } from '@mui/material';
 import { useState } from 'react';
 import { User, UserStatus } from 'src/models/types';
-import { deleteUserSvc, disableUserSvc, editUserSvc, enableUserSvc } from 'src/services/accountService';
+import {
+  deleteUserSvc,
+  disableUserSvc,
+  editUserSvc,
+  enableUserSvc
+} from 'src/services/accountService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
 import validator from 'validator';
 import ConfirmationModal from '../common/ConfirmationModal';
@@ -17,8 +22,8 @@ interface props {
   setEditUser: (user: User) => void;
   setUser: (user: any) => void;
   setEdit: (param: boolean) => void;
-  setLoading: (loading: boolean) => void
-  setAlert: (alert :AlertType | null) => void;
+  setLoading: (loading: boolean) => void;
+  setAlert: (alert: AlertType | null) => void;
   deletePath: string;
   viewPath: string;
 }
@@ -186,7 +191,7 @@ const AccountEditButtonGrp = ({
               setEditUser(user);
             }}
           >
-            DISCARD CHANGES
+            Discard Changes
           </Button>
         )}
         <Button
@@ -208,7 +213,7 @@ const AccountEditButtonGrp = ({
             }
           }}
         >
-          {edit ? 'SAVE CHANGES' : 'EDIT'}
+          {edit ? 'Save Changes' : 'Edit'}
         </Button>
         {!edit && (
           <Button
@@ -218,7 +223,7 @@ const AccountEditButtonGrp = ({
             color='primary'
             onClick={handleDeleteButtonClick}
           >
-            DELETE
+            Delete
           </Button>
         )}
 
@@ -234,7 +239,7 @@ const AccountEditButtonGrp = ({
                 : handleEnableButtonClick
             }
           >
-            {user?.status === 'ACTIVE' ? 'DISABLE' : 'ENABLE'}
+            {user?.status === 'ACTIVE' ? 'Disable' : 'Enable'}
           </Button>
         )}
       </div>

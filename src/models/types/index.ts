@@ -95,6 +95,7 @@ export interface User {
   isVerified: boolean;
   company?: string;
   contactNo?: string;
+  tier: string;
 }
 
 export interface Category {
