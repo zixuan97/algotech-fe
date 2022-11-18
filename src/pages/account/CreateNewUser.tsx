@@ -18,6 +18,7 @@ import { User, UserRole } from 'src/models/types';
 import { createUserSvc, getAllTiers } from 'src/services/accountService';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
+import { isValidUser } from 'src/components/account/userHelper';
 
 const roles = Object.keys(UserRole).filter(
   (v) =>
@@ -29,7 +30,10 @@ export type NewUserType = Partial<User>;
 const CreateNewUser = () => {
   const [alert, setAlert] = useState<AlertType | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [disableSave, setDisableSave] = useState<boolean>(true);
+
   const [newUser, setNewUser] = useState<NewUserType>({});
+
   const [showFNError, setShowFNError] = useState<boolean>(false);
   const [showLNError, setShowLNError] = useState<boolean>(false);
   const [showRoleError, setShowRoleError] = useState<boolean>(false);
@@ -51,14 +55,12 @@ const CreateNewUser = () => {
     );
   }, []);
 
+  React.useEffect(() => {
+    setDisableSave(!isValidUser(newUser));
+  }, [newUser]);
+
   const handleCreateButtonClick = (e: any) => {
-    if (
-      newUser.email &&
-      newUser.firstName &&
-      newUser.lastName &&
-      newUser.role &&
-      newUser.tier
-    ) {
+    if (newUser) {
       console.log('newUser', newUser);
       setLoading(true);
       e.preventDefault();
@@ -224,6 +226,7 @@ const CreateNewUser = () => {
                         select
                         label='Leave Tier'
                         value={newUser?.tier}
+                        disabled={newUser.role === UserRole.B2B}
                         error={
                           newUser.tier !== undefined &&
                           validator.isEmpty(newUser.tier!) &&
@@ -256,31 +259,24 @@ const CreateNewUser = () => {
               <div className='view-button-group'>
                 {loading && <CircularProgress color='secondary' />}
                 <Button
-                  type='submit'
-                  variant='contained'
+                  variant='text'
                   className='create-btn'
                   color='primary'
                   onClick={() => {
                     navigate(`/accounts`);
                   }}
                 >
-                  CANCEL
+                  Cancel
                 </Button>
                 <Button
-                  disabled={
-                    !newUser?.email ||
-                    !newUser?.lastName ||
-                    !newUser?.firstName ||
-                    !newUser?.role ||
-                    !newUser?.tier
-                  }
+                  disabled={disableSave}
                   type='submit'
                   variant='contained'
                   className='create-btn'
                   color='primary'
                   onClick={handleCreateButtonClick}
                 >
-                  CREATE ACCOUNT
+                  Create Account
                 </Button>
               </div>
             </form>
