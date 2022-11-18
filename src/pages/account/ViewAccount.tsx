@@ -116,7 +116,7 @@ const ViewAccount = () => {
           <Paper elevation={2}>
             <div className='content-body'>
               <div className='right-content'>
-                <Grid container spacing={1}>
+                <Grid container spacing={2}>
                   <Grid item xs={6}>
                     {edit ? (
                       <TextField
@@ -168,7 +168,7 @@ const ViewAccount = () => {
                       </div>
                     )}
                   </Grid>
-                  <Grid item xs={edit ? 12 : 6}>
+                  <Grid item xs={12}>
                     {edit ? (
                       <TextField
                         required
@@ -195,7 +195,7 @@ const ViewAccount = () => {
                       </div>
                     )}
                   </Grid>
-                  <Grid item xs={edit ? 12 : 6}>
+                  <Grid item xs={6}>
                     {edit ? (
                       <TextField
                         required
@@ -223,7 +223,7 @@ const ViewAccount = () => {
                       </div>
                     )}
                   </Grid>
-                  <Grid item xs={edit ? 12 : 6}>
+                  <Grid item xs={6}>
                     {edit ? (
                       <TextField
                         required
