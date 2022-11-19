@@ -9,7 +9,7 @@ type NumberCardProps = {
 
 const NumberCard = ({ value, text, component }: NumberCardProps) => {
   return (
-    <Card className='number-card' style={{minHeight: '18vh'}}>
+    <Card className='number-card'>
       <div style={{ paddingRight: '5em' }}>
         <h1>{value}</h1>
         {text}
