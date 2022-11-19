@@ -2,6 +2,7 @@ import { Card, Divider } from '@mui/material';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import moment from 'moment';
 import { Bar } from 'react-chartjs-2';
+import HeaderTooltip from 'src/components/common/HeaderTooltip';
 import { SalesRevenue } from 'src/models/types';
 import { READABLE_DDMMYY } from 'src/utils/dateUtils';
 
@@ -49,7 +50,10 @@ const RevenueChart = ({ revenue }: RevenueChartProps) => {
   };
   return (
     <Card style={{ padding: '0.5em 2em 2em', height: '48vh' }}>
-      <h3>Revenue</h3>
+      <HeaderTooltip
+        title={'Revenue'}
+        tooltipText={'Net revenue for the date provided'}
+      />
       <Divider className='full-divider' />
       <Bar data={data} options={options} />
     </Card>

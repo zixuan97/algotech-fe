@@ -286,6 +286,10 @@ export interface SupplierProductInfo {
   rate: number;
 }
 
+export interface ProductSalesQty { 
+  quantity: number;
+  createddate: Date;
+}
 export interface Customer {
   id: number;
   firstName: string;

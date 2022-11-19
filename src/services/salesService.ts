@@ -3,6 +3,7 @@ import {
   DailySales,
   DeliveryOrder,
   OrderStatus,
+  ProductSalesQty,
   SalesBestseller,
   SalesOrder,
   SalesRevenue
@@ -73,6 +74,57 @@ export const getSalesBestsellersByRangeSvc = async (
   };
   return axios
     .post(`${apiRoot}/sales/timefilterbyday/bestseller`, timeFilter)
+    .then((res) => res.data);
+};
+
+export const getAverageOrderNumSvc = async (
+  dateRange: MomentRange
+): Promise<number> => {
+  const timeFilter = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format()
+  };
+  return axios
+    .post(`${apiRoot}/sales/timefilterbyday/average/orders`, timeFilter)
+    .then((res) => res.data);
+};
+
+export const getAverageOrderValueSvc = async (
+  dateRange: MomentRange
+): Promise<number> => {
+  const timeFilter = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format()
+  };
+  return axios
+    .post(`${apiRoot}/sales/timefilterbyday/average/value/orders`, timeFilter)
+    .then((res) => res.data);
+};
+
+export const getAllProductSalesByRangeSvc = async (
+  dateRange: MomentRange,
+): Promise<SalesBestseller[]> => {
+  const timeFilter = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format()
+  };
+  return axios
+    .post(`${apiRoot}/sales/timefilterbyday/items/bestseller`, timeFilter)
+    .then((res) => res.data);
+};
+
+export const getProductSalesByRangeSvc = async (
+  dateRange: MomentRange,
+  productName: string
+): Promise<ProductSalesQty[]> => {
+  const timeFilter = {
+    time_from: dateRange[0].format(),
+    time_to: dateRange[1].format(),
+    productName: productName
+  };
+
+  return axios
+    .post(`${apiRoot}/sales/timefilterbyday/products`, timeFilter)
     .then((res) => res.data);
 };
 

@@ -6,6 +6,7 @@ import {
   ListItemText,
   Typography
 } from '@mui/material';
+import HeaderTooltip from 'src/components/common/HeaderTooltip';
 import { SalesBestseller } from 'src/models/types';
 
 export type BestsellerListProps = {
@@ -17,7 +18,10 @@ const BestsellerList = ({ bestsellers }: BestsellerListProps) => {
     <Card
       style={{ padding: '0.5em 2em 2em', height: '48vh', overflow: 'auto' }}
     >
-      <h3>Bestsellers</h3>
+      <HeaderTooltip
+        title={'Bestsellers'}
+        tooltipText={'Bestseller items for TKG'}
+      />
       <Divider className='full-divider' />
       {bestsellers.length ? (
         <List>
