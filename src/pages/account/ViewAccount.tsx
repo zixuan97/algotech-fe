@@ -232,6 +232,7 @@ const ViewAccount = () => {
                         select
                         label='Leave Tier'
                         value={editUser?.tier}
+                        disabled={editUser?.role === UserRole.B2B}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                           userFieldOnChange(e, 'tier')
                         }
