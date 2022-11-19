@@ -286,7 +286,7 @@ export interface SupplierProductInfo {
 }
 
 export interface ProductSalesQty { 
-  total: number;
+  quantity: number;
   createddate: Date;
 }
 export interface Customer {

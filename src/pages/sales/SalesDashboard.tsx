@@ -209,7 +209,7 @@ const SalesDashboard = () => {
             />
           </Grid>
           <Grid item xs={3}>
-            <AverageValueOrder avgOrderVal={avgOrderVal} />
+            <AverageValueOrder avgOrderVal={avgOrderVal}  dateRange={dateRange}/>
           </Grid>
           <Grid item xs={6}>
             <RevenueChart revenue={revenue} />
@@ -221,11 +221,11 @@ const SalesDashboard = () => {
             <PlatformPieChart salesOrders={salesOrders} />
           </Grid>
           <Grid item xs={6}>
-            <ProductSales bestSellers={bestSellers} />
+            <ProductSales bestSellers={bestsellerProducts} />
           </Grid>
           <Grid item xs={6}>
             <ProductSalesChart
-              bestsellers={bestSellers}
+              bestsellers={bestsellerProducts}
               dateRange={dateRange}
             />
           </Grid>

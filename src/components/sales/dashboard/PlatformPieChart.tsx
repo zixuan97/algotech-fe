@@ -5,6 +5,7 @@ import { Chart as ChartJS, ChartTypeRegistry, TooltipItem } from 'chart.js';
 import { OrderedMap } from 'immutable';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { startCase } from 'lodash';
+import HeaderTooltip from 'src/components/common/HeaderTooltip';
 
 ChartJS.register(ChartDataLabels);
 
@@ -86,7 +87,10 @@ const PlatformPieChart = ({ salesOrders }: PlatformPieChartProps) => {
   };
   return (
     <Card style={{ padding: '0.5em 2em 2em', height: '48vh' }}>
-      <h3>Sales by Platform</h3>
+      <HeaderTooltip
+        title={'Sales by Platform'}
+        tooltipText={'Breakdown of sales per platform'}
+      />
       <Divider className='full-divider' sx={{ mb: 3 }} />
       {salesOrders.length ? (
         <Doughnut data={data} options={options} />

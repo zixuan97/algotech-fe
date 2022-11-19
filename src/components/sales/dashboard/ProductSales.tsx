@@ -1,15 +1,16 @@
-import { Card, Divider } from '@mui/material';
+import { HelpOutline } from '@mui/icons-material';
+import { Card, Divider, Tooltip } from '@mui/material';
 import { Chart as ChartJS, registerables } from 'chart.js';
 import _ from 'lodash';
 import { Bar } from 'react-chartjs-2';
 import { SalesBestseller } from 'src/models/types';
+import HeaderTooltip from 'src/components/common/HeaderTooltip';
 
 ChartJS.register(...registerables);
 
 type RevenueChartProps = {
   bestSellers: SalesBestseller[];
 };
-
 
 const ProductSales = ({ bestSellers }: RevenueChartProps) => {
   const data = {
@@ -33,7 +34,7 @@ const ProductSales = ({ bestSellers }: RevenueChartProps) => {
         },
         ticks: {
           callback: (value: any) => {
-              return _.truncate(bestSellers[value].productname, {length: 9})
+            return _.truncate(bestSellers[value].productname, { length: 9 });
           }
         }
       },
@@ -53,7 +54,10 @@ const ProductSales = ({ bestSellers }: RevenueChartProps) => {
 
   return (
     <Card style={{ padding: '0.5em 2em 2em', height: '48vh' }}>
-      <h3>Product Sales</h3>
+      <HeaderTooltip
+        title={'Best Selling Products'}
+        tooltipText={'Best selling items for TKG'}
+      />
       <Divider className='full-divider' />
       <Bar data={data} options={options} />
     </Card>

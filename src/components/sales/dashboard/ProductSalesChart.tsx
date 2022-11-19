@@ -10,6 +10,7 @@ import {
 import moment from 'moment';
 import React from 'react';
 import { Line } from 'react-chartjs-2';
+import HeaderTooltip from 'src/components/common/HeaderTooltip';
 import { ProductSalesQty, SalesBestseller } from 'src/models/types';
 import { getProductSalesByRangeSvc } from 'src/services/salesService';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
@@ -68,7 +69,7 @@ const ProductSalesChart = ({ bestsellers, dateRange }: OrdersCardProps) => {
     datasets: [
       {
         label: 'Quantity',
-        data: productSalesQty.map((prodSale) => prodSale.total),
+        data: productSalesQty.map((prodSale) => prodSale.quantity),
         fill: false,
         borderColor: 'rgb(75, 192, 192)',
         tension: 0.1
@@ -86,8 +87,11 @@ const ProductSalesChart = ({ bestsellers, dateRange }: OrdersCardProps) => {
         }}
         className='container-center'
       >
-        <h3>Sales By Product</h3>
-        <FormControl style={{ width: '70%' }}>
+        <HeaderTooltip
+          title={'Sales By Product'}
+          tooltipText={'Sales performance of a single product'}
+        />
+        <FormControl style={{ width: '60%' }}>
           <InputLabel id='demo-simple-select-label'>Select Product</InputLabel>
           <Select
             size='small'
