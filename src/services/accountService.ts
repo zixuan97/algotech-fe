@@ -6,7 +6,6 @@ import { User } from 'src/models/types';
 import { NewUserType } from '../pages/account/CreateNewUser';
 import apiRoot from './util/apiRoot';
 
-
 export const getAllUserSvc = async (): Promise<Array<User>> => {
   return axios.get(`${apiRoot}/user/all`).then((res) => res.data);
 };
@@ -39,15 +38,25 @@ export const deleteUserSvc = async (userId: string): Promise<any> => {
   return axios.delete(`${apiRoot}/user/${userId}`).then((res) => res.data);
 };
 
-export const forgetPasswordSvc = async (recipientEmail: string): Promise<any> => {
+export const forgetPasswordSvc = async (
+  recipientEmail: string
+): Promise<any> => {
   return axios
     .post(`${apiRoot}/user/forgetpw`, { recipientEmail })
     .then((res) => res.data);
 };
 
-export const updatePasswordSvc = async (userEmail: string, currentPassword: string, newPassword: string): Promise<any> => {
+export const updatePasswordSvc = async (
+  userEmail: string,
+  currentPassword: string,
+  newPassword: string
+): Promise<any> => {
   return axios
-    .post(`${apiRoot}/user/updatepw`, {userEmail, currentPassword, newPassword})
+    .post(`${apiRoot}/user/updatepw`, {
+      userEmail,
+      currentPassword,
+      newPassword
+    })
     .then((res) => res.data);
 };
 
@@ -55,6 +64,9 @@ export const getNumOfUsersSvc = async (): Promise<number> => {
   return axios.get(`${apiRoot}/user/pending/count`).then((res) => res.data);
 };
 
+export const getAllTiers = async (): Promise<string[]> => {
+  return axios.get(`${apiRoot}/leave/alltiers`).then((res) => res.data);
+};
 
 //-----B2B-----
 export const getAllB2BRequests = async (): Promise<Array<User>> => {

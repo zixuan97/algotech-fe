@@ -18,7 +18,8 @@ const columns: GridColDef[] = [
   {
     field: 'action',
     headerName: 'Action',
-    headerAlign: 'center',
+    headerAlign: 'right',
+    align: 'right',
     flex: 1,
     renderCell: AccountCellAction
   }
@@ -83,7 +84,12 @@ const Accounts = () => {
           Create New User
         </Button>
       </div>
-      <DataGrid columns={columns} rows={filteredData} autoHeight loading={loading}/>
+      <DataGrid
+        columns={columns}
+        rows={filteredData}
+        autoHeight
+        loading={loading}
+      />
     </div>
   );
 };

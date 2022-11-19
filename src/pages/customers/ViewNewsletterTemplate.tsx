@@ -348,7 +348,7 @@ const ViewNewsletterTemplate = () => {
           </Grid>
           <Grid item xs={12} className='view-newsletter-template-grid-item'>
             <h3 className='view-newsletter-template-label-text'>
-              Email Body Title
+              Email Body Header
             </h3>
             {edit ? (
               <TextField

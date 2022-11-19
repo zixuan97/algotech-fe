@@ -15,11 +15,18 @@ import '../../styles/pages/accounts.scss';
 import { ChevronLeft } from '@mui/icons-material';
 import asyncFetchCallback from '../../../src/services/util/asyncFetchCallback';
 import { User, UserRole } from 'src/models/types';
-import { createUserSvc } from 'src/services/accountService';
+import { createUserSvc, getAllTiers } from 'src/services/accountService';
 import TimeoutAlert, { AlertType } from 'src/components/common/TimeoutAlert';
 import validator from 'validator';
 
+<<<<<<< HEAD
 const roles = Object.keys(UserRole).filter((v) => isNaN(Number(v)) && (!['CORPORATE', 'CUSTOMER', 'DISTRIBUTOR', 'B2B'].includes(v)));
+=======
+const roles = Object.keys(UserRole).filter(
+  (v) =>
+    isNaN(Number(v)) && !['CORPORATE', 'CUSTOMER', 'DISTRIBUTOR'].includes(v)
+);
+>>>>>>> main
 
 export type NewUserType = Partial<User>;
 
@@ -30,15 +37,33 @@ const CreateNewUser = () => {
   const [showFNError, setShowFNError] = useState<boolean>(false);
   const [showLNError, setShowLNError] = useState<boolean>(false);
   const [showRoleError, setShowRoleError] = useState<boolean>(false);
+  const [showTierError, setShowTierError] = useState<boolean>(false);
+
+  const [tiers, setTiers] = useState<string[]>([]);
 
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    setLoading(true);
+    asyncFetchCallback(
+      getAllTiers(),
+      (res) => {
+        setLoading(false);
+        setTiers(res);
+      },
+      () => setLoading(false)
+    );
+  }, []);
+
   const handleCreateButtonClick = (e: any) => {
     if (
       newUser.email &&
       newUser.firstName &&
       newUser.lastName &&
-      newUser.role
+      newUser.role &&
+      newUser.tier
     ) {
+      console.log('newUser', newUser);
       setLoading(true);
       e.preventDefault();
       asyncFetchCallback(
@@ -54,6 +79,7 @@ const CreateNewUser = () => {
           setShowFNError(false);
           setShowLNError(false);
           setShowRoleError(false);
+          setShowTierError(false);
           setTimeout(() => navigate('/accounts'), 3500);
         },
         () => {
@@ -146,10 +172,14 @@ const CreateNewUser = () => {
                         placeholder='eg.: johntan@gmail.com'
                         value={newUser?.email}
                         error={
-                          newUser.email !== undefined && !validator.isEmail(newUser.email!) && !!newUser?.email
+                          newUser.email !== undefined &&
+                          !validator.isEmail(newUser.email!) &&
+                          !!newUser?.email
                         }
                         helperText={
-                          newUser.email !== undefined && !validator.isEmail(newUser.email!) && !!newUser?.email
+                          newUser.email !== undefined &&
+                          !validator.isEmail(newUser.email!) &&
+                          !!newUser?.email
                             ? 'Enter a valid email: example@email.com'
                             : ''
                         }
@@ -166,12 +196,14 @@ const CreateNewUser = () => {
                         label='Role'
                         value={newUser?.role}
                         error={
-                          newUser.role !== undefined && validator.isEmpty(newUser.role!) &&
+                          newUser.role !== undefined &&
+                          validator.isEmpty(newUser.role!) &&
                           !newUser?.role &&
                           showRoleError
                         }
                         helperText={
-                          newUser.role !== undefined &&  validator.isEmpty(newUser.role!) &&
+                          newUser.role !== undefined &&
+                          validator.isEmpty(newUser.role!) &&
                           !newUser?.role &&
                           showRoleError
                             ? 'Please select a role'
@@ -183,6 +215,39 @@ const CreateNewUser = () => {
                         }}
                       >
                         {roles.map((option) => (
+                          <MenuItem key={option} value={option}>
+                            {option}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        id='outlined-field'
+                        select
+                        label='Leave Tier'
+                        value={newUser?.tier}
+                        error={
+                          newUser.tier !== undefined &&
+                          validator.isEmpty(newUser.tier!) &&
+                          !newUser?.tier &&
+                          showTierError
+                        }
+                        helperText={
+                          newUser.tier !== undefined &&
+                          validator.isEmpty(newUser.tier!) &&
+                          !newUser?.tier &&
+                          showTierError
+                            ? 'Please select a leave tier'
+                            : ''
+                        }
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          userFieldOnChange(e, 'tier');
+                          setShowTierError(true);
+                        }}
+                      >
+                        {tiers.map((option) => (
                           <MenuItem key={option} value={option}>
                             {option}
                           </MenuItem>
@@ -210,7 +275,8 @@ const CreateNewUser = () => {
                     !newUser?.email ||
                     !newUser?.lastName ||
                     !newUser?.firstName ||
-                    !newUser?.role
+                    !newUser?.role ||
+                    !newUser?.tier
                   }
                   type='submit'
                   variant='contained'
