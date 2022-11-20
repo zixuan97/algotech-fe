@@ -3,6 +3,7 @@ import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
 import ManualDeliveryCellAction from 'src/components/delivery/ManualDeliveryCellAction';
 import '../../styles/pages/inventory/inventory.scss';
 import '../../styles/common/common.scss';
+import '../../styles/pages/delivery/delivery.scss'
 import {
   TextField,
   Stack,
@@ -201,14 +202,13 @@ const RoutePlanning = () => {
       <br/>
       {address && (
         <div className='address-bar'>
-          <Typography className='address-text'>
-            Your starting address is :
+          <Typography>
+            Your starting address is :  
           </Typography>
-          {/* <Typography className='address-field'>{address.ADDRESS}</Typography> */}
-          <Chip className='address-field'
+          <Chip 
             label={address.ADDRESS}
             style={{ backgroundColor: '#ADD8E6', fontFamily: 'Poppins' }}
-            sx={{ borderRadius : 2, mr : 2 }}
+            sx={{ borderRadius : 2, mx : 2 }}
           />
           <Button
             variant='contained'
