@@ -9,7 +9,7 @@ const AverageOrderNumber = ({ avgOrderNum }: OrdersCardProps) => {
   return (
     <NumberCard
       value={avgOrderNum.toFixed(2)}
-      text={`Average number of orders`}
+      text={`Average number of orders per day`}
     />
   );
 };
