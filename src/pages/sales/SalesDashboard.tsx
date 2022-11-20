@@ -79,7 +79,7 @@ const SalesDashboard = () => {
   const [pdfLoading, setPdfLoading] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(false);
   const [dateRange, setDateRange] = React.useState<MomentRange>([
-    moment().startOf('day'),
+    moment().startOf('month'),
     moment().endOf('day')
   ]);
 
