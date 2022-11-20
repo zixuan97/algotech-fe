@@ -207,10 +207,10 @@ const Sidebar = ({
             disabled={disabled}
           >
             <ListItemLink primary='All Customers' to='customer/allCustomers' />
-            <ListItemLink
+            {/* <ListItemLink
               primary='Discount Codes'
               to='discountCode/allDiscountCodes'
-            />
+            /> */}
             <ListItemLink
               primary='Newsletter Templates'
               to='customer/allNewsletterTemplates'
