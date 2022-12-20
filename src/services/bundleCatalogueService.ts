@@ -15,15 +15,15 @@ export const getBundleCatalogueById = async (
 };
 
 export const createBundleCatalogue = async (
-  bundleCatalogue: BundleCatalogue
+  formData: FormData
 ): Promise<void> => {
-  return axios.post(`${apiRoot}/bundlecatalogue`, bundleCatalogue);
+  return axios.post(`${apiRoot}/bundlecatalogue`, formData);
 };
 
 export const updateBundleCatalogue = async (
-  bundleCatalogue: BundleCatalogue
+  formData: FormData
 ): Promise<void> => {
-  return axios.put(`${apiRoot}/bundlecatalogue`, bundleCatalogue);
+  return axios.put(`${apiRoot}/bundlecatalogue`, formData);
 };
 
 export const deleteBundleCatalogue = async (

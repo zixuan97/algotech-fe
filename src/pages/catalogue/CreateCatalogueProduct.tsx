@@ -21,9 +21,7 @@ import { ChevronLeft, Delete } from '@mui/icons-material';
 import { Product, ProductCatalogue } from 'src/models/types';
 import '../../styles/pages/delivery/delivery.scss';
 import asyncFetchCallback from 'src/services/util/asyncFetchCallback';
-import {
-  createProductCatalogue,
-} from '../../services/productCatalogueService';
+import { createProductCatalogue } from '../../services/productCatalogueService';
 import { isValidProductCatalogue } from 'src/components/catalogue/catalogueHelper';
 import {
   AlertType,
@@ -120,6 +118,10 @@ const CreateCatalogueProduct = () => {
             }),
           (err) => console.log(err)
         );
+        setNewProductCatalogue((prev) => ({
+          ...prev,
+          file: e.target.files![0]
+        }));
       }
     }
   };
@@ -130,8 +132,13 @@ const CreateCatalogueProduct = () => {
     if (newProductCatalogue) {
       console.log('newProductCatalogue: ', newProductCatalogue);
       setLoading(true);
+      let formData = new FormData();
+      formData.append('file', newProductCatalogue.file as File);
+      formData.append('price', String(newProductCatalogue.price));
+      formData.append('product', JSON.stringify(newProductCatalogue.product));
+      formData.append('description', String(newProductCatalogue.description));
       await asyncFetchCallback(
-        createProductCatalogue(newProductCatalogue as ProductCatalogue),
+        createProductCatalogue(formData),
         () => {
           setLoading(false);
           setAlert({

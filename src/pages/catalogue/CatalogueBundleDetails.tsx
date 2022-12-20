@@ -149,6 +149,10 @@ const CatalogueBundleDetails = () => {
             }),
           (err) => console.log(err)
         );
+        setEditCatalogueBundle((prev) => ({
+          ...prev,
+          file: e.target.files![0]
+        }));
       }
     }
   };
@@ -157,8 +161,15 @@ const CatalogueBundleDetails = () => {
     if (editCatalogueBundle) {
       console.log('edited: ', editCatalogueBundle);
       setLoading(true);
+      setLoading(true);
+      let formData = new FormData();
+      formData.append('file', editCatalogueBundle.file as File);
+      formData.append('id', String(editCatalogueBundle.id));
+      formData.append('price', String(editCatalogueBundle.price));
+      formData.append('bundle', JSON.stringify(editCatalogueBundle.bundle));
+      formData.append('description', String(editCatalogueBundle.description));
       await asyncFetchCallback(
-        updateBundleCatalogue(editCatalogueBundle as BundleCatalogue),
+        updateBundleCatalogue(formData),
         () => {
           setLoading(false);
           setOriginalCatalogueBundle(editCatalogueBundle);

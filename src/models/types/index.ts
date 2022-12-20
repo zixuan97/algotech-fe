@@ -153,6 +153,7 @@ export interface ProductCatalogue {
   product: Product;
   productId: number;
   image?: string;
+  file?: File;
   description: string;
 }
 
@@ -162,6 +163,7 @@ export interface BundleCatalogue {
   bundle: Bundle;
   bundleId: number;
   image?: string;
+  file?: File;
   description: string;
 }
 
@@ -286,7 +288,7 @@ export interface SupplierProductInfo {
   rate: number;
 }
 
-export interface ProductSalesQty { 
+export interface ProductSalesQty {
   quantity: number;
   createddate: Date;
 }

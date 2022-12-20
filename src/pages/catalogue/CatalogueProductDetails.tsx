@@ -149,6 +149,10 @@ const CatalogueProductDetails = () => {
             }),
           (err) => console.log(err)
         );
+        setEditCatalogueProduct((prev) => ({
+          ...prev,
+          file: e.target.files![0]
+        }));
       }
     }
   };
@@ -157,8 +161,14 @@ const CatalogueProductDetails = () => {
     if (editCatalogueProduct) {
       console.log('edited: ', editCatalogueProduct);
       setLoading(true);
+      let formData = new FormData();
+      formData.append('file', editCatalogueProduct.file as File);
+      formData.append('id', String(editCatalogueProduct.id));
+      formData.append('price', String(editCatalogueProduct.price));
+      formData.append('product', JSON.stringify(editCatalogueProduct.product));
+      formData.append('description', String(editCatalogueProduct.description));
       await asyncFetchCallback(
-        updateProductCatalogue(editCatalogueProduct as ProductCatalogue),
+        updateProductCatalogue(formData),
         () => {
           setLoading(false);
           setOriginalCatalogueProduct(editCatalogueProduct);
