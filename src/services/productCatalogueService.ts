@@ -17,15 +17,15 @@ export const getProductCatalogueById = async (
 };
 
 export const createProductCatalogue = async (
-  productCatalogue: ProductCatalogue
+  formData: FormData
 ): Promise<void> => {
-  return axios.post(`${apiRoot}/productcatalogue`, productCatalogue);
+  return axios.post(`${apiRoot}/productcatalogue`, formData);
 };
 
 export const updateProductCatalogue = async (
-  productCatalogue: ProductCatalogue
+  formData: FormData
 ): Promise<void> => {
-  return axios.put(`${apiRoot}/productcatalogue`, productCatalogue);
+  return axios.put(`${apiRoot}/productcatalogue`, formData);
 };
 
 export const deleteProductCatalogue = async (
